@@ -1,14 +1,6 @@
 ﻿#include "player.h"
 #include "appframe.h"
 
-// プレイヤーの移動
-bool Player::PlayerMove(VECTOR v)
-{
-	/*_pos.x += v.x;
-	_pos.z += v.z;*/
-	return true;
-}
-
 // 初期化
 bool Player::Initialize()
 {
@@ -59,7 +51,7 @@ bool Player::Initialize()
 	_hold_threshold = 15;		// 十字キー水平入力保持閾値設定
 
 	_axis_lock_dir = VGet(0.0f, 0.0f, -1.0f);
-	
+
 	// 円形移動用パラメータ初期化
 	_arc_pivot_dist = 50.0f;	// 回転中心までの距離（調整可）
 	_arc_turn_speed = 1.0f;		// 円形移動速度係数（調整可）
@@ -150,17 +142,18 @@ bool Player::Process()
 	{
 		// キャラ移動(カメラ設定に合わせて)
 
-		// 移動方向を決める（ローカル入力）
-		if(key & PAD_INPUT_DOWN) { v.x = 1; }
-		if(key & PAD_INPUT_UP) { v.x = -1; }
-		if(key & PAD_INPUT_LEFT) { v.z = -1; }
-		if(key & PAD_INPUT_RIGHT) { v.z = 1; }
+        // ローカル入力を取得
+        VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
+        if(key & PAD_INPUT_DOWN) { inputLocal.x = 1; }
+        if(key & PAD_INPUT_UP)   { inputLocal.x = -1; }
+        if(key & PAD_INPUT_LEFT) { inputLocal.z = -1; }
+        if(key & PAD_INPUT_RIGHT){ inputLocal.z = 1; }
 
-		// 回転前のローカル入力を保存（斜め判定に使う）
-		_input_v = v;
+        // 回転前のローカル入力を保存（斜め判定に使う）
+        _input_v = inputLocal;
 
-		// 十字キー保持での軸ロック開始判定
-		if(key & PAD_INPUT_5)
+        // 十字キー保持での軸ロック開始判定
+		if(key & PAD_INPUT_4)
 		{
 			_axis_hold_count++;
 			if(_axis_hold_count >= _hold_threshold)
@@ -169,6 +162,7 @@ bool Player::Process()
 				if(!_axis_lock)
 				{
 					_axis_lock = true;
+					
 					// 現在の向きをロック方向として保存
 					_axis_lock_dir = _dir;
 					_axis_lock_dir.y = 0.0f;
@@ -190,57 +184,77 @@ bool Player::Process()
 			_axis_lock = false;
 		}
 
-		// vをrad分回転させる（ローカル入力の角度）
-		if(VSize(v) > 0.0f)
-		{
-			// 軸ロック中は移動速度を遅くする（倍率は調整可）
-			const float AXIS_MOVE_MULT = 0.5f; // 例: 0.5 -> 半分の速さ
-			length = _axis_lock ? _mv_speed * AXIS_MOVE_MULT : _mv_speed;
-		}
-		rad = atan2(v.z, v.x);
-
 		// 十字キー水平入力ロック処理
 		if(_axis_lock)
 		{
-			// 軸ロック：現在の向きを固定したまま、入力方向に移動する
-			VECTOR forward = _axis_lock_dir;
-			forward.y = 0.0f;
-			if(VSize(forward) > 0.0f) forward = VNorm(forward);
+			// 軸ロック中の移動処理（向き固定で前後左右に移動）
+			VECTOR axis_lock_input = VGet(0.0f, 0.0f, 0.0f);
+			
+			// 軸ロック専用の入力を取得
+			if(key & PAD_INPUT_DOWN) { axis_lock_input.x = 0.5f; }
+			if(key & PAD_INPUT_UP) { axis_lock_input.x = -0.5f; }
+			if(key & PAD_INPUT_LEFT) { axis_lock_input.z = -0.5f; }
+			if(key & PAD_INPUT_RIGHT) { axis_lock_input.z = 0.5f; }
 
-			// 右ベクトル（XZ平面で前方の90度回転）
-			VECTOR right = VGet(forward.z, 0.0f, -forward.x);
-
-			// ローカル入力 v.x = 前後(UP/DOWN), v.z = 左右(LEFT/RIGHT)
-			float forwardInput = -v.x; // UP = 前進, DOWN = 後退
-			float sideInput = v.z;     // RIGHT = 右移動, LEFT = 左移動
-
-			// 移動ベクトルを計算（前方向 + 横方向）
-			VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
-			moveDir.x = forward.x * forwardInput + right.x * sideInput;
-			moveDir.z = forward.z * forwardInput + right.z * sideInput;
-
-			// 移動ベクトルを正規化してから速度を掛ける
-			if(VSize(moveDir) > 0.0f)
+			_input_v = axis_lock_input;
+			
+			// 入力があれば軸ロック移動を計算
+			if(VSize(axis_lock_input) > 0.0f)
 			{
-				moveDir = VNorm(moveDir);
-				v.x = moveDir.x * length;
-				v.z = moveDir.z * length;
+				VECTOR forward = _axis_lock_dir;
+				forward.y = 0.0f;
+				if(VSize(forward) > 0.0f) forward = VNorm(forward);
+
+				// 右ベクトル（XZ平面で前方の90度回転）
+				VECTOR right = VGet(forward.z, 0.0f, -forward.x);
+
+				// ローカル入力 axis_lock_input.x = 前後(UP/DOWN), axis_lock_input.z = 左右(LEFT/RIGHT)
+				float forwardInput = -axis_lock_input.x; // UP = 前進, DOWN = 後退
+				float sideInput = axis_lock_input.z;     // RIGHT = 右移動, LEFT = 左移動
+
+				// 移動ベクトルを計算（前方向 + 横方向）
+				VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
+				moveDir.x = forward.x * forwardInput + right.x * sideInput;
+				moveDir.z = forward.z * forwardInput + right.z * sideInput;
+
+				// 移動ベクトルを正規化してから速度を掛ける
+				if(VSize(moveDir) > 0.0f)
+				{
+					moveDir = VNorm(moveDir);
+					v.x = moveDir.x * _mv_speed;
+					v.z = moveDir.z * _mv_speed;
+				}
+				else
+				{
+					v.x = 0.0f;
+					v.z = 0.0f;
+				}
+
+				// 向きは固定
+				_dir = forward;
 			}
 			else
 			{
-				v.x = 0.0f;
-				v.z = 0.0f;
+				// 入力がない場合は移動しない
+				v = VGet(0.0f, 0.0f, 0.0f);
 			}
-
-			// 向きは固定
-			_dir = forward;
 		}
-		else
-		{
-			// 通常：カメラ方向に合わせて回転して移動（v はローカル入力）
-			v.x = cos(rad + camrad) * length;
-			v.z = sin(rad + camrad) * length;
-		}
+        else
+        {
+            // 通常：カメラ方向に合わせて回転して移動（inputLocal はローカル入力）
+            // vをrad分回転させる（ローカル入力の角度）
+            if(VSize(inputLocal) > 0.0f)
+            {
+                length = _mv_speed;
+                float localRad = atan2(inputLocal.z, inputLocal.x);
+                v.x = cos(localRad + camrad) * length;
+                v.z = sin(localRad + camrad) * length;
+            }
+            else
+            {
+                v = VGet(0.0f, 0.0f, 0.0f);
+            }
+        }
 	}
 
 	// 以下は既存のロジック（攻撃、ジャンプ、空中処理等）。v はここからワールド移動量として使われます。
@@ -466,7 +480,7 @@ bool Player::Process()
 				}
 
 				_status = STATUS::WALK;
-				//PlayerMove(v);
+
 			}
 			else
 			{
@@ -577,26 +591,6 @@ bool Player::Process()
 		_play_time = 0.0f;
 	}
 
-	// --- ここから追加 ---
-	// ワールド移動量 v が決まった直後に「目標向き」を計算し、現在向きを補間で近づける
-	{
-		// 軸ロック中は向き補間をスキップ（軸ロック内で向きを計算済み）
-		if(!_axis_lock)
-		{
-			VECTOR desired_dir = _dir; // デフォルトは現在向き
-
-			// 入力があるなら入力方向を目標にする
-			if(VSize(v) > 0.0f)
-			{
-				desired_dir = VNorm(v);
-			}
-
-			// AXIS_TURN_SPEED を使って毎フレームの最大回転角を決めて補間（参照渡し）
-			mymath::RotateDirTowards(_dir, desired_dir, AXIS_TURN_SPEED);
-		}
-	}
-	// --- ここまで追加 ---
-
 	return true;
 }
 
@@ -619,4 +613,3 @@ bool Player::Render()
 	return true;
 
 }
-
