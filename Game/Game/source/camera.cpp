@@ -4,7 +4,7 @@
 bool Camera::Initialize()
 {
 	// カメラの設定(わかりやすい位置に)
-	_v_pos = VGet(0.0f, 90.0f, -300.0f);
+	_v_pos = VGet(0.0f, 600.0f, -300.0f);
 	_v_target = VGet(0.0f, 60.0f, 0.0f);
 	_clip_near = 2.0f;
 	_clip_far = 10000.0f;

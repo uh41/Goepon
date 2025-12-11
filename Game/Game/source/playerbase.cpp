@@ -27,6 +27,3 @@ bool PlayerBase::Render()
 	base::Render();
 	return true;
 }
-
-// テスト
-

@@ -74,6 +74,10 @@ protected:
 
 	VECTOR _axis_lock_dir;
 
+	// 円形移動用パラメータ
+	float _arc_pivot_dist;		// 回転中心までの距離
+	float _arc_turn_speed;		// 円形移動時の回転速度係数
+
 	std::vector<mymath::ATTACKCOLLISION> _attack_collision; // 攻撃用カプセル当たり判定リスト
 
 };

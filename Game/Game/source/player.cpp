@@ -4,8 +4,8 @@
 // プレイヤーの移動
 bool Player::PlayerMove(VECTOR v)
 {
-	_pos.x += v.x;
-	_pos.z += v.z;
+	/*_pos.x += v.x;
+	_pos.z += v.z;*/
 	return true;
 }
 
@@ -59,6 +59,10 @@ bool Player::Initialize()
 	_hold_threshold = 15;		// 十字キー水平入力保持閾値設定
 
 	_axis_lock_dir = VGet(0.0f, 0.0f, -1.0f);
+	
+	// 円形移動用パラメータ初期化
+	_arc_pivot_dist = 50.0f;	// 回転中心までの距離（調整可）
+	_arc_turn_speed = 1.0f;		// 円形移動速度係数（調整可）
 	return true;
 }
 
@@ -165,22 +169,17 @@ bool Player::Process()
 				if(!_axis_lock)
 				{
 					_axis_lock = true;
-					// 押されている十字キーからロック方向（XZ 平面）を決定
-					VECTOR axis_init = VGet(0.0f, 0.0f, 0.0f);
-					if(key & PAD_INPUT_LEFT)  axis_init.x = -1.0f;
-					if(key & PAD_INPUT_RIGHT) axis_init.x = 1.0f;
-					if(key & PAD_INPUT_UP)    axis_init.z = 1.0f;
-					if(key & PAD_INPUT_DOWN)  axis_init.z = -1.0f;
-					if(VSize(axis_init) > 0.0f)
+					// 現在の向きをロック方向として保存
+					_axis_lock_dir = _dir;
+					_axis_lock_dir.y = 0.0f;
+					if(VSize(_axis_lock_dir) > 0.0f)
 					{
-						_axis_lock_dir = VNorm(axis_init);
+						_axis_lock_dir = VNorm(_axis_lock_dir);
 					}
 					else
 					{
-						// 十字キーが押されていない場合は現在の向きを採用
-						_axis_lock_dir = _dir;
-						_axis_lock_dir.y = 0.0f;
-						if(VSize(_axis_lock_dir) > 0.0f) _axis_lock_dir = VNorm(_axis_lock_dir);
+						// 向きが不定の場合はデフォルト方向を採用
+						_axis_lock_dir = VGet(0.0f, 0.0f, -1.0f);
 					}
 				}
 			}
@@ -203,7 +202,7 @@ bool Player::Process()
 		// 十字キー水平入力ロック処理
 		if(_axis_lock)
 		{
-			// 軸ロック：キャプチャした前方を基準に前後・左右入力をワールド移動に変換する
+			// 軸ロック：現在の向きを固定したまま、入力方向に移動する
 			VECTOR forward = _axis_lock_dir;
 			forward.y = 0.0f;
 			if(VSize(forward) > 0.0f) forward = VNorm(forward);
@@ -211,21 +210,21 @@ bool Player::Process()
 			// 右ベクトル（XZ平面で前方の90度回転）
 			VECTOR right = VGet(forward.z, 0.0f, -forward.x);
 
-			// ローカル入力 v.x = 前後, v.z = 右左 をワールドに変換
-			VECTOR move_world = VGet(
-				forward.x * v.x + right.x * v.z,
-				0.0f,
-				forward.z * v.x + right.z * v.z
-			);
+			// ローカル入力 v.x = 前後(UP/DOWN), v.z = 左右(LEFT/RIGHT)
+			float forwardInput = -v.x; // UP = 前進, DOWN = 後退
+			float sideInput = v.z;     // RIGHT = 右移動, LEFT = 左移動
 
-			if(VSize(move_world) > 0.0f)
+			// 移動ベクトルを計算（前方向 + 横方向）
+			VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
+			moveDir.x = forward.x * forwardInput + right.x * sideInput;
+			moveDir.z = forward.z * forwardInput + right.z * sideInput;
+
+			// 移動ベクトルを正規化してから速度を掛ける
+			if(VSize(moveDir) > 0.0f)
 			{
-				// 対角速度過多を抑えるため正規化して長さを length に合わせる
-				move_world = VNorm(move_world);
-				move_world.x *= length;
-				move_world.z *= length;
-				// 以降の処理で v をワールド移動量として使う
-				v = move_world;
+				moveDir = VNorm(moveDir);
+				v.x = moveDir.x * length;
+				v.z = moveDir.z * length;
 			}
 			else
 			{
@@ -233,12 +232,8 @@ bool Player::Process()
 				v.z = 0.0f;
 			}
 
-			// 向きを固定（ロック中は常にキャプチャした前方を向く）
-			if(VSize(forward) > 0.0f)
-			{
-				_dir.x = forward.x;
-				_dir.z = forward.z;
-			}
+			// 向きは固定
+			_dir = forward;
 		}
 		else
 		{
@@ -471,7 +466,7 @@ bool Player::Process()
 				}
 
 				_status = STATUS::WALK;
-				PlayerMove(v);
+				//PlayerMove(v);
 			}
 			else
 			{
@@ -582,6 +577,26 @@ bool Player::Process()
 		_play_time = 0.0f;
 	}
 
+	// --- ここから追加 ---
+	// ワールド移動量 v が決まった直後に「目標向き」を計算し、現在向きを補間で近づける
+	{
+		// 軸ロック中は向き補間をスキップ（軸ロック内で向きを計算済み）
+		if(!_axis_lock)
+		{
+			VECTOR desired_dir = _dir; // デフォルトは現在向き
+
+			// 入力があるなら入力方向を目標にする
+			if(VSize(v) > 0.0f)
+			{
+				desired_dir = VNorm(v);
+			}
+
+			// AXIS_TURN_SPEED を使って毎フレームの最大回転角を決めて補間（参照渡し）
+			mymath::RotateDirTowards(_dir, desired_dir, AXIS_TURN_SPEED);
+		}
+	}
+	// --- ここまで追加 ---
+
 	return true;
 }
 
@@ -604,3 +619,4 @@ bool Player::Render()
 	return true;
 
 }
+
