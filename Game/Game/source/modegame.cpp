@@ -2,6 +2,9 @@
 #include "applicationmain.h"
 #include "modeeffekseer.h"
 
+// テスト
+
+
 // 初期化
 bool ModeGame::Initialize()
 {
