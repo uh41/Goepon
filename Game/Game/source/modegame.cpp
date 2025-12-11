@@ -25,14 +25,22 @@ bool ModeGame::Initialize()
 		object->Initialize();
 	}
 
+	// プレイヤー
+	for(auto& player_base : _player_base)
+	{
+		player_base->Initialize();
+	}
 
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
+	_player_tanuki->SetCamera(_camera);
 
 	DebugInitialize();// デバック初期化
 
 	_resolve_on_y = false;
 	_landed_on_up = false;
+
+	_show_tanuki = false;
 	return true;
 }
 
@@ -51,6 +59,11 @@ bool ModeGame::Terminate()
 		object->Terminate();
 	}
 	_object.clear();
+	for(auto& player_base : _player_base)
+	{
+		player_base->Terminate();
+	}
+	_player_base.clear();
 	delete _camera;
 	return true;
 }
@@ -76,10 +89,10 @@ bool ModeGame::IsHitCircle(CharaBase* c1, CharaBase* c2)
 }
 
 // プレイヤーのカメラ情報表示
-bool ModeGame::PlayerCameraInfo()
+bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 {
 	// カメラの位置/視点の移動を、プレイヤーの移動量に追従する
-	VECTOR playermove = VSub(_player->GetPos(), _player->GetOldPos());
+	VECTOR playermove = VSub(player->GetPos(), player->GetOldPos());
 	_camera->_v_pos = VAdd(_camera->_v_pos, playermove);
 	_camera->_v_target = VAdd(_camera->_v_target, playermove);
 	return true;
@@ -94,7 +107,35 @@ bool ModeGame::Process()
 	_camera->Process();
 	
 	DebugProcess();// デバック処理
-	
+
+	int trg = ApplicationMain::GetInstance()->GetTrg();
+	// タヌキプレイヤー表示切替
+	if(trg & PAD_INPUT_7)
+	{
+		_show_tanuki = !_show_tanuki;
+		// 切り替え時に同じ場所で表示されるよう座標を同期する
+		if(_show_tanuki)
+		{
+			// プレイヤー→タヌキに切替：タヌキをプレイヤー位置へ
+			_player_tanuki->SetPos(_player->GetPos());
+		}
+		else
+		{
+			// タヌキ→プレイヤーに切替：プレイヤーをタヌキ位置へ
+			_player->SetPos(_player_tanuki->GetPos());
+		}
+	}
+
+	// プレイヤーの処理（現在表示中のプレイヤーのみ）
+	if(_show_tanuki)
+	{
+		_player_tanuki->Process();
+	}
+	else
+	{
+		_player->Process();
+	}
+
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)
 	{
@@ -121,16 +162,24 @@ bool ModeGame::Process()
 	}
 
 	// 当たり判定の処理をここに書く
-	EscapeCollision();
+	
 	CharaToCubeCollision(_player.get(), _cube.get());
 	LandCheck();
 
 	// 攻撃判定の更新処理
 	UpdateCheckAttackCollision();
 
-
-	// プレイヤーのカメラ情報表示
-	PlayerCameraInfo();
+	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）
+	if(_show_tanuki)
+	{
+		EscapeCollision(_player_tanuki.get());
+		PlayerCameraInfo(_player_tanuki.get());
+	}
+	else
+	{
+		EscapeCollision(_player.get());
+		PlayerCameraInfo(_player.get());
+	}
 
 	return true;
 }
@@ -145,11 +194,15 @@ bool ModeGame::Render()
 	SetCameraPositionAndTarget_UpVecY(_camera->_v_pos, _camera->_v_target);
 	SetCameraNearFar(_camera->_clip_near, _camera->_clip_far);
 
-	// キャラを描画（生存しているもののみ）
+	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
 	{
 		if(chara->IsAlive())
 		{
+			if(chara.get() == _player.get() || chara.get() == _player_tanuki.get())
+			{
+				continue; // プレイヤーは別処理
+			}
 			chara->Render();
 		}
 	}
@@ -158,6 +211,25 @@ bool ModeGame::Render()
 	for(auto& object : _object)
 	{
 		object->Render();
+	}
+
+	// プレイヤーの描画（フラグに応じて片方のみ）
+	for(auto & player_base : _player_base)
+	{
+		if(_show_tanuki)
+		{
+			if(player_base.get() == _player_tanuki.get() && player_base->IsAlive())
+			{
+				player_base->Render();
+			}
+		}
+		else
+		{
+			if(player_base.get() == _player.get() && player_base->IsAlive())
+			{
+				player_base->Render();
+			}
+		}
 	}
 
 	DebugRender();// デバック描画処理

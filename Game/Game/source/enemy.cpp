@@ -26,20 +26,6 @@ bool Enemy::Initialize()
 	// 索敵範囲の初期設定（半径400cm、角度60度）
 	SetDetectionSector(400.0f, 60.0f);
 
-	// 初期ステータスに対応するアニメを即アタッチしておく
-	{
-		int animIndex = MV1GetAnimIndex(_handle, "idle");
-		if(animIndex != -1)
-		{
-			_attach_index = MV1AttachAnim(_handle, animIndex, -1, FALSE);
-			if(_attach_index != -1)
-			{
-				_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
-				_play_time = (float)(rand() % 30); // 少しずらす
-			}
-		}
-	}
-
 	return true;
 }
 
@@ -85,12 +71,24 @@ bool Enemy::Process()
 		{
 			case STATUS::WAIT:
 			{
-				_attach_index = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "idle"), -1, FALSE);
+				int animIndex = MV1GetAnimIndex(_handle, "idle");
+				if(animIndex != -1)
+				{
+					_attach_index = MV1AttachAnim(_handle, animIndex, -1, FALSE);
+					if(_attach_index != -1)
+					{
+						_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
+						_play_time = (float)(rand() % 30); // 少しずらす
+					}
+				}
 				break;
 			}
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
-		_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
+		if(_attach_index != -1)
+		{
+			_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
+		}
 		// 再生時間を初期化
 		_play_time = 0.0f;
 		// 再生時間をランダムにずらす

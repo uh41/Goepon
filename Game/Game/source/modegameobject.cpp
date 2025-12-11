@@ -18,6 +18,12 @@ bool ModeGame::ObjectInitialize()
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
 	_chara.emplace_back(_player);
+	_player_base.emplace_back(_player);
+	
+	// タヌキプレイヤー初期化
+	_player_tanuki = std::make_shared<PlayerTanuki>();
+	_chara.emplace_back(_player_tanuki);
+	_player_base.emplace_back(_player_tanuki);
 
 	// 敵初期化
 	_enemy.emplace_back(std::make_shared<Enemy>());

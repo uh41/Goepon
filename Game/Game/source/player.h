@@ -12,11 +12,6 @@ public:
 	virtual bool Render();
 
 
-	const VECTOR& GetInputVector() const { return _input_v; }
-	float GetMoveSpeed() const { return _mv_speed; }
-	auto GetLand() const { return _land; }
-	void SetLand(bool land) { _land = land; }
-
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
 	// 攻撃用カプセル当たり判定
@@ -34,18 +29,13 @@ public:
 		VECTOR dir
 	);
 
-	bool PlayerMove(VECTOR v);
-
 	bool Attack();
 
 	std::vector<mymath::ATTACKCOLLISION>& GetAttackCollisionList() { return _attack_collision; }
 
 protected:
 	Camera* _cam;
-	float _mv_speed;
-	VECTOR _input_v;
-	
-	bool _land;// 着地しているかどうか 
+
 	float _jump_height; // ジャンプの高さ
 	float _gravity; // 重力の強さ
 
