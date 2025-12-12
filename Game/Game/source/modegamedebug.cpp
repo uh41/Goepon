@@ -32,7 +32,7 @@ bool ModeGame::DebugProcess()
 	}
 
 	// デバッグ機能
-	if(trg & PAD_INPUT_6)
+	if(trg & PAD_INPUT_7)
 	{
 		_d_view_collision = !_d_view_collision;
 	}
