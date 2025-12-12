@@ -8,8 +8,8 @@
 bool ModeGame::ObjectInitialize()
 {
 	// キューブ初期化
-	_cube = std::make_shared<Cube>();
-	_object.emplace_back(_cube);
+	/*_cube = std::make_shared<Cube>();
+	_object.emplace_back(_cube);*/
 
 	// マップ初期化
 	_map = std::make_shared<Map>();

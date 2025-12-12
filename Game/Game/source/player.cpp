@@ -153,7 +153,7 @@ bool Player::Process()
         _input_v = inputLocal;
 
         // 十字キー保持での軸ロック開始判定
-		if(key & PAD_INPUT_4)
+		if(key & PAD_INPUT_5)
 		{
 			_axis_hold_count++;
 			if(_axis_hold_count >= _hold_threshold)

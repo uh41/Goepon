@@ -110,7 +110,7 @@ bool ModeGame::Process()
 
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 	// タヌキプレイヤー表示切替
-	if(trg & PAD_INPUT_7)
+	if(trg & PAD_INPUT_4)
 	{
 		_show_tanuki = !_show_tanuki;
 		// 切り替え時に同じ場所で表示されるよう座標を同期する
