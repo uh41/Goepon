@@ -14,7 +14,7 @@ public:
 	}
 
 	~CFile();
-	std::string	Filename() { return _filename; }
+	std::string	Filename() { return _fileName; }
 	void* Data() { return _data; }
 	std::string DataStr() { return std::string(_data); }
 	int Size() { return _size; }
@@ -23,7 +23,7 @@ public:
 private:
 	void Init();
 
-	std::string		_filename;
+	std::string		_fileName;
 
 	int		_size;
 	char* _data;

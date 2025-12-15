@@ -7,9 +7,9 @@ ApplicationBase	*ApplicationBase::_lp_instance = nullptr;
 ApplicationBase::ApplicationBase()
 {
 	_lp_instance = this;
-	_gkey = 0;
-	_gtrg = 0;
-	_server_mode = nullptr;
+	_gKey = 0;
+	_gTrg = 0;
+	_serverMode = nullptr;
 }
 
 ApplicationBase::~ApplicationBase()
@@ -63,7 +63,7 @@ bool ApplicationBase::Initialize(HINSTANCE hInstance)
 	srand((unsigned int)time(NULL));
 
 	// モードサーバの初期化
-	_server_mode = new ModeServer();
+	_serverMode = new ModeServer();
 
 	return true;
 }
@@ -82,25 +82,25 @@ bool ApplicationBase::Terminate()
 bool ApplicationBase::Input()
 {
 	// キーの入力、トリガ入力を得る
-	int keyold = _gkey;
-	_gkey = GetJoypadInputState(DX_INPUT_KEY_PAD1);
-	_gtrg = (_gkey ^ keyold) & _gkey;	// キーのトリガ情報生成（押した瞬間しか反応しないキー情報）
+	int keyold = _gKey;
+	_gKey = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+	_gTrg = (_gKey ^ keyold) & _gKey;	// キーのトリガ情報生成（押した瞬間しか反応しないキー情報）
 
 	return true;
 }
 
 bool ApplicationBase::Process()
 {
-	_server_mode->ProcessInit();
-	_server_mode->Process();
-	_server_mode->ProcessFinish();
+	_serverMode->ProcessInit();
+	_serverMode->Process();
+	_serverMode->ProcessFinish();
 	return true;
 }
 
 bool ApplicationBase::Render()
 {
-	_server_mode->RenderInit();
-	_server_mode->Render();
-	_server_mode->RenderFinish();
+	_serverMode->RenderInit();
+	_serverMode->Render();
+	_serverMode->RenderFinish();
 	return true;
 }

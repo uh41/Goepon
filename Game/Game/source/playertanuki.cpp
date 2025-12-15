@@ -22,7 +22,7 @@ bool PlayerTanuki::Initialize()
 	_collision_r = 30.0f;
 	_collision_weight = 20.0f;
 	_cam = nullptr;
-	_mv_speed = 6.0f;
+	_mvSpeed = 6.0f;
 
 	_land = true;
 
@@ -76,12 +76,12 @@ bool PlayerTanuki::Process()
 	}
 
 	// 入力ベクトルを保存（EscapeCollisionで使用）
-	_input_v = inputLocal;
+	_inputV = inputLocal;
 
 	// カメラ方向に合わせて移動量を計算
 	if(VSize(inputLocal) > 0.0f)
 	{
-		length = _mv_speed;
+		length = _mvSpeed;
 		float localRad = atan2(inputLocal.z, inputLocal.x);
 		v.x = cos(localRad + camrad) * length;
 		v.z = sin(localRad + camrad) * length;

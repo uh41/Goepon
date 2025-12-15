@@ -1,5 +1,13 @@
-﻿#pragma once
-#include <string>
+﻿/*********************************************************************/
+// * \file   menuitembase.h
+// * \brief  デバックメニュークラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+/*********************************************************************/
+
+#pragma once
+#include "appframe.h"
 #include "modeeffekseer.h"
 #include "modegame.h"
 

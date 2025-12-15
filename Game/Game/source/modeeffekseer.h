@@ -1,8 +1,13 @@
-﻿#pragma once
-#include "appframe.h"
+﻿/*********************************************************************/
+// * \file   modeeffeckseer.h
+// * \brief  エフェクシアクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+/*********************************************************************/
 
-#include <string>
-#include <vector>
+#pragma once
+#include "appframe.h"
 
 class ModeEffekseer : public ModeBase
 {
