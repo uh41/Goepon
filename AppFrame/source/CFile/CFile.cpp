@@ -7,7 +7,7 @@
 CFile::CFile(const std::string filename) {
 	// メンバの初期化
 	Init();
-	_filename = filename;
+	_fileName = filename;
 
 	// ファイルを開く
 	std::ifstream ifs(filename, std::ios::in | std::ios::binary);	// 入力をバイナリ形式で
@@ -42,7 +42,7 @@ CFile::CFile(const std::string filename) {
 CFile::CFile(const std::string filename, void* data, int size) {
 	// メンバの初期化
 	Init();
-	_filename = filename;
+	_fileName = filename;
 
 	// ファイルを開く
 	std::ofstream ofs(filename, std::ios::out | std::ios::binary);	// 出力をバイナリ形式で
@@ -71,6 +71,6 @@ CFile::~CFile() {
 void CFile::Init() {
 	_size = 0;
 	_data = NULL;
-	_filename = "";
+	_fileName = "";
 	_success = false;
 }

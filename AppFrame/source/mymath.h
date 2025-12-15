@@ -10,24 +10,24 @@ namespace mymath
 	// 当たり判定用構造体
 	struct COLLISIONCAPSULE
 	{
-		VECTOR underpos;		// カプセルの下端座標
-		VECTOR overpos;			// カプセルの上端座標
+		VECTOR underPos;		// カプセルの下端座標
+		VECTOR overPos;			// カプセルの上端座標
 		float r;				// カプセルの半径
-		int modelhandle;		// 追従させるモデルのハンドル
-		int framenum;			// 追従させるモデルのフレーム番号
+		int modelHandle;		// 追従させるモデルのハンドル
+		int frameNum;			// 追従させるモデルのフレーム番号
 	};
 
 	// 攻撃判定用構造体
 	struct ATTACKCOLLISION
 	{
 		COLLISIONCAPSULE capsule; // 攻撃判定用カプセル
-		COLLISIONCAPSULE oldcapsule; // 1フレーム前の攻撃判定用カプセル
+		COLLISIONCAPSULE oldCapsule; // 1フレーム前の攻撃判定用カプセル
 		std::string attackChara; // 攻撃をしたキャラクターの名前
 		MATRIX modelId; // 1フレーム前の追従させるモデルのフレーム変換行列
 		VECTOR vector;	// 攻撃の向き
 		float damage;	// ダメージ量
-		int waittime;	// 攻撃が有効になるまでの時間
-		int activetime;	// 攻撃が有効な時間
+		int waitTime;	// 攻撃が有効になるまでの時間
+		int activeTime;	// 攻撃が有効な時間
 		bool follow;	// カメラ方向に追従するかどうか
 		bool isHit = false;		// 当たったかどうか
 	};

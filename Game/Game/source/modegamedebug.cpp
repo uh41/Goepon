@@ -31,6 +31,8 @@ bool ModeGame::DebugProcess()
 		modemenu->Add(new MenuItemViewShadowMap(this, "ShadowMapView"));
 	}
 
+	//
+
 	// デバッグ機能
 	if(trg & PAD_INPUT_7)
 	{

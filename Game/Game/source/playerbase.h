@@ -1,4 +1,12 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   playerbase.h
+// * \brief  プレイヤーベースクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+/*********************************************************************/
+
+#pragma once
 #include "charabase.h"
 #include "camera.h"
 
@@ -16,13 +24,13 @@ public:
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
-	const VECTOR& GetInputVector() const { return _input_v; }
-	float GetMoveSpeed() const { return _mv_speed; }
+	const VECTOR& GetInputVector() const { return _inputV; }
+	float GetMoveSpeed() const { return _mvSpeed; }
 protected:
 
 	Camera* _cam;
 	bool _land;
-	float _mv_speed;
-	VECTOR _input_v;
+	float _mvSpeed;
+	VECTOR _inputV;
 };
 

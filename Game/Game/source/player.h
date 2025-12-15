@@ -1,5 +1,12 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   player.h
+// * \brief  人狸状態クラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+/*********************************************************************/
 
+#pragma once
 #include "playerbase.h"
 #include "camera.h"
 class Player : public PlayerBase
@@ -14,49 +21,8 @@ public:
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
-	// 攻撃用カプセル当たり判定
-	bool AttackCapsule
-	(
-		VECTOR underpos,	// カプセルの下位置
-		VECTOR overpos,		// カプセルの上下位置
-		float r,			// 半径
-		int waittime,		// 発生までの時間
-		int activetime,		// 有効時間
-		int timespeed,		// カプセルの伸縮速度
-		bool follow,		// カプセルがキャラに追従するか		
-		float damage,		// ダメージ量
-		int framenum,		// ノックバックフレーム数
-		VECTOR dir
-	);
-
-	bool Attack();
-
-	std::vector<mymath::ATTACKCOLLISION>& GetAttackCollisionList() { return _attack_collision; }
-
 protected:
 	Camera* _cam;
-
-	float _jump_height; // ジャンプの高さ
-	float _gravity; // 重力の強さ
-
-	bool _is_dashing;// ダッシュ中かどうか
-	float _dash_speed;
-	float _dash_time;
-	float _dash_timer;
-	VECTOR _dash_direction;
-
-	
-	bool _is_rolling; 
-	float _roll_speed; 
-	float _roll_time; 
-	float _roll_timer;			// ドッジロール残り時間
-	VECTOR _roll_direction;		// ドッジロール方向
-
-	bool _jump_count;			// ジャンプ回数制限用フラグ
-	float _air_control;			// 空中制御係数
-
-	bool _is_attack;			// 攻撃中かどうか
-	bool _air_attack_used;		// 空中攻撃を使用したかどうか
 
 	int _axis_hold_count;		// 十字キー水平入力保持カウント
 	bool _axis_lock;			// 十字キー水平入力ロックフラグ
@@ -67,8 +33,6 @@ protected:
 	// 円形移動用パラメータ
 	float _arc_pivot_dist;		// 回転中心までの距離
 	float _arc_turn_speed;		// 円形移動時の回転速度係数
-
-	std::vector<mymath::ATTACKCOLLISION> _attack_collision; // 攻撃用カプセル当たり判定リスト
 
 };
 

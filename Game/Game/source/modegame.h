@@ -1,8 +1,13 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   modegame.h
+// * \brief  モードゲームクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+/*********************************************************************/
+
+#pragma once
 #include "appframe.h"
-#include <string>
-#include <vector>
-#include <memory>
 #include "modemenu.h"
 #include "charabase.h"
 #include "objectbase.h"
