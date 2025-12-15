@@ -1,39 +1,48 @@
-﻿#include "player.h"
+﻿/*********************************************************************/
+// * \file   player.cpp
+// * \brief  人狸状態クラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "player.h"
 #include "appframe.h"
 
 // 初期化
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel("res/Player/Player.mv1");
-	_attach_index = -1;
+	_iHandle = MV1LoadModel("res/Player/Player.mv1");
+	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
 	// 再生時間の初期化
-	_total_time = 0.0f;
-	_play_time = 0.0f;
+	_fTotalTime = 0.0f;
+	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_pos = VGet(0.0f, 0.0f, 0.0f); // 初期位置が同じだが、押し出され処理のおかげで位置がずれる
-	_dir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = VGet(0.0f, 0.0f, 0.0f); // 初期位置が同じだが、押し出され処理のおかげで位置がずれる
+	_vDir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
-	_col_sub_y = 40.0f;
+	_fColSubY = 40.0f;
 	// コリジョン半径の設定
-	_collision_r = 30.0f;
-	_collision_weight = 20.0f;
+	_fCollisionR = 30.0f;
+	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
-	_mvSpeed = 6.0f;
+	_fMvSpeed = 6.0f;
 
-	_axis_hold_count = 0;		// 十字キー水平入力保持カウント初期化
-	_axis_lock = false;			// 十字キー水平入力ロックフラグ初期化
-	_hold_threshold = 15;		// 十字キー水平入力保持閾値設定
+	_iAxisHoldCount = 0;		// 十字キー水平入力保持カウント初期化
+	_bAxisUseLock = false;			// 十字キー水平入力ロックフラグ初期化
+	_iAxisThreshold = 15;		// 十字キー水平入力保持閾値設定
 
-	_axis_lock_dir = VGet(0.0f, 0.0f, -1.0f);
+	_vAxisLockDir = VGet(0.0f, 0.0f, -1.0f);
 
 	// 円形移動用パラメータ初期化
 	_arc_pivot_dist = 50.0f;	// 回転中心までの距離（調整可）
 	_arc_turn_speed = 1.0f;		// 円形移動速度係数（調整可）
 	
-	_land = true;
+	_bLand = true;
 	
 	return true;
 }
@@ -53,7 +62,7 @@ bool Player::Process()
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
 	// 処理前の位置を保存
-	_old_pos = _pos;
+	_vOldPos = _vPos;
 
 	// 補間ターン速度（ラジアン／フレーム）: 小さくするとゆっくり回る
 	const float AXIS_TURN_SPEED = 0.12f; // 調整可
@@ -64,8 +73,8 @@ bool Player::Process()
 	float length = 0.0f;
 
 	// カメラの向いている角度を取得
-	float sx = _cam->_v_pos.x - _cam->_v_target.x;
-	float sz = _cam->_v_pos.z - _cam->_v_target.z;
+	float sx = _cam->_vPos.x - _cam->_vTarget.x;
+	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
 	float rad = 0.0f;
 
@@ -81,42 +90,42 @@ bool Player::Process()
         if(key & PAD_INPUT_RIGHT){ inputLocal.z = 1; }
 
         // 回転前のローカル入力を保存（斜め判定に使う）
-        _inputV = inputLocal;
+        _vInput = inputLocal;
 
         // 十字キー保持での軸ロック開始判定
 		if(key & PAD_INPUT_6)
 		{
-			_axis_hold_count++;
-			if(_axis_hold_count >= _hold_threshold)
+			_iAxisHoldCount++;
+			if(_iAxisHoldCount >= _iAxisThreshold)
 			{
 				// ロックに入る瞬間に一度だけロック方向をキャプチャする
-				if(!_axis_lock)
+				if(!_bAxisUseLock)
 				{
-					_axis_lock = true;
+					_bAxisUseLock = true;
 					
 					// 現在の向きをロック方向として保存
-					_axis_lock_dir = _dir;
-					_axis_lock_dir.y = 0.0f;
-					if(VSize(_axis_lock_dir) > 0.0f)
+					_vAxisLockDir = _vDir;
+					_vAxisLockDir.y = 0.0f;
+					if(VSize(_vAxisLockDir) > 0.0f)
 					{
-						_axis_lock_dir = VNorm(_axis_lock_dir);
+						_vAxisLockDir = VNorm(_vAxisLockDir);
 					}
 					else
 					{
 						// 向きが不定の場合はデフォルト方向を採用
-						_axis_lock_dir = VGet(0.0f, 0.0f, -1.0f);
+						_vAxisLockDir = VGet(0.0f, 0.0f, -1.0f);
 					}
 				}
 			}
 		}
 		else
 		{
-			_axis_hold_count = 0;
-			_axis_lock = false;
+			_iAxisHoldCount = 0;
+			_bAxisUseLock = false;
 		}
 
 		// 十字キー水平入力ロック処理
-		if(_axis_lock)
+		if(_bAxisUseLock)
 		{
 			// 軸ロック中の移動処理（向き固定で前後左右に移動）
 			VECTOR axis_lock_input = VGet(0.0f, 0.0f, 0.0f);
@@ -127,12 +136,12 @@ bool Player::Process()
 			if(key & PAD_INPUT_LEFT) { axis_lock_input.z = -0.5f; }
 			if(key & PAD_INPUT_RIGHT) { axis_lock_input.z = 0.5f; }
 
-			_inputV = axis_lock_input;
+			_vInput = axis_lock_input;
 			
 			// 入力があれば軸ロック移動を計算
 			if(VSize(axis_lock_input) > 0.0f)
 			{
-				VECTOR forward = _axis_lock_dir;
+				VECTOR forward = _vAxisLockDir;
 				forward.y = 0.0f;
 				if(VSize(forward) > 0.0f) forward = VNorm(forward);
 
@@ -152,8 +161,8 @@ bool Player::Process()
 				if(VSize(moveDir) > 0.0f)
 				{
 					moveDir = VNorm(moveDir);
-					v.x = moveDir.x * _mvSpeed;
-					v.z = moveDir.z * _mvSpeed;
+					v.x = moveDir.x * _fMvSpeed;
+					v.z = moveDir.z * _fMvSpeed;
 				}
 				else
 				{
@@ -162,7 +171,7 @@ bool Player::Process()
 				}
 
 				// 向きは固定
-				_dir = forward;
+				_vDir = forward;
 			}
 			else
 			{
@@ -176,7 +185,7 @@ bool Player::Process()
             // vをrad分回転させる（ローカル入力の角度）
             if(VSize(inputLocal) > 0.0f)
             {
-                length = _mvSpeed;
+                length = _fMvSpeed;
                 float localRad = atan2(inputLocal.z, inputLocal.x);
                 v.x = cos(localRad + camrad) * length;
                 v.z = sin(localRad + camrad) * length;
@@ -191,15 +200,15 @@ bool Player::Process()
 	// 地上移動
 	if(VSize(v) > 0.0f)
 	{
-		if(_axis_lock)
+		if(_bAxisUseLock)
 		{
 			// 向きを固定（移動は v のまま）
-			_dir.x = _axis_lock_dir.x;
-			_dir.z = _axis_lock_dir.z;
+			_vDir.x = _vAxisLockDir.x;
+			_vDir.z = _vAxisLockDir.z;
 		}
 		else
 		{
-			_dir = v;
+			_vDir = v;
 		}
 
 		_status = STATUS::WALK;
@@ -210,49 +219,49 @@ bool Player::Process()
 	}
 
 	// 地上位置への移動
-	_pos.x += v.x;
-	_pos.z += v.z;
+	_vPos.x += v.x;
+	_vPos.z += v.z;
 
 	// アニメーション時間・アタッチ管理
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
-		_play_time += anim_speed;
+		_fPlayTime += anim_speed;
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_play_time += (float)(rand() % 10) / 100.0f;
+			_fPlayTime += (float)(rand() % 10) / 100.0f;
 			break;
 		}
 	}
 	else
 	{
-		if(_attach_index != -1)
+		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_handle, _attach_index);
-			_attach_index = -1;
+			MV1DetachAnim(_iHandle, _iAttachIndex);
+			_iAttachIndex = -1;
 		}
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_attach_index = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "mot_attack_charge_loop"), -1, FALSE);
+			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_attack_charge_loop"), -1, FALSE);
 			break;
 		case STATUS::WALK:
-			_attach_index = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "mot_move_run"), -1, FALSE);
+			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_move_run"), -1, FALSE);
 			break;
 		}
-		_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
-		_play_time = 0.0f;
+		_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+		_fPlayTime = 0.0f;
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_play_time += rand() % 30;
+			_fPlayTime += rand() % 30;
 			break;
 		}
 	}
-	if(_play_time >= _total_time)
+	if(_fPlayTime >= _fTotalTime)
 	{
-		_play_time = 0.0f;
+		_fPlayTime = 0.0f;
 	}
 
 	return true;
@@ -263,16 +272,16 @@ bool Player::Render()
 {
 	base::Render();
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(_handle, _attach_index, _play_time);
+	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
 
 	// 位置
-	MV1SetPosition(_handle, _pos);
+	MV1SetPosition(_iHandle, _vPos);
 	// 向きからY軸回転を算出
 	VECTOR vrot = { 0,0,0, };
-	vrot.y = atan2(_dir.x * -1, _dir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
-	MV1SetRotationXYZ(_handle, vrot);
+	vrot.y = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	MV1SetRotationXYZ(_iHandle, vrot);
 	// 描画
-	MV1DrawModel(_handle);
+	MV1DrawModel(_iHandle);
 
 	return true;
 

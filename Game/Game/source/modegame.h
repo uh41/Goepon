@@ -4,6 +4,7 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -71,9 +72,9 @@ protected:
 	// キャラクタ管理
 	std::vector<std::shared_ptr<CharaBase>> _chara;
 	std::vector<std::shared_ptr<ObjectBase>> _object;
-	std::vector<std::shared_ptr<PlayerBase>> _player_base;
+	std::vector<std::shared_ptr<PlayerBase>> _playerBase;
 	std::shared_ptr<Player> _player;
-	std::shared_ptr<PlayerTanuki> _player_tanuki;
+	std::shared_ptr<PlayerTanuki> _playerTanuki;
 	// マップ
 	std::shared_ptr<Map> _map;
 	// キューブ
@@ -86,10 +87,10 @@ protected:
 	bool _d_view_camera_info;
 	bool _d_view_shadow_map;
 
-	bool _resolve_on_y;// Y方向のコリジョン解決を行うかどうか
-	bool _landed_on_up;// 上方向に着地したかどうか
+	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
+	bool _bLandedOnUp;// 上方向に着地したかどうか
 
-	bool _show_tanuki;// タヌキプレイヤー表示フラグ
+	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
 
 };
 

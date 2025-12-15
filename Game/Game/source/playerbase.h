@@ -4,6 +4,7 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -19,18 +20,18 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	auto GetLand() const { return _land; }
-	void SetLand(bool land) { _land = land; }
+	auto GetLand() const { return _bLand; }
+	void SetLand(bool land) { _bLand = land; }
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
-	const VECTOR& GetInputVector() const { return _inputV; }
-	float GetMoveSpeed() const { return _mvSpeed; }
+	const VECTOR& GetInputVector() const { return _vInput; }
+	float GetMoveSpeed() const { return _fMvSpeed; }
 protected:
 
 	Camera* _cam;
-	bool _land;
-	float _mvSpeed;
-	VECTOR _inputV;
+	bool _bLand;
+	float _fMvSpeed;
+	VECTOR _vInput;
 };
 

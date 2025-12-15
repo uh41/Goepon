@@ -4,6 +4,7 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -19,11 +20,9 @@ public:
 	virtual bool Render();
 
 protected:
-	int _effect_resource_handle;	// エフェクトファイルをロードするハンドル
-	int _playing_effect_handle;		// ロードしたエフェクトファイルから、エフェクトを生成したもの
+	int _iEffectResourceHandle;	// エフェクトファイルをロードするハンドル
+	int _iPlayingEffectHandle;		// ロードしたエフェクトファイルから、エフェクトを生成したもの
 
-	// エフェクト位置
-	float _position_x;
-	float _position_y;
+	VECTOR _vPos;
 };
 

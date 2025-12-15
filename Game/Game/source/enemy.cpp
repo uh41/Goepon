@@ -1,27 +1,36 @@
-﻿#include "enemy.h"
+﻿/*********************************************************************/
+// * \file   enemy.cpp
+// * \brief  エネミークラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "enemy.h"
 
 // 初期化
 bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/PoorEnemy.mv1");
-	_attach_index = -1;
+	_iHandle = MV1LoadModel("res/PoorEnemyMelee/PoorEnemy.mv1");
+	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::WAIT;
 	// 再生時間の初期化
-	_total_time = 0.0f;
-	_play_time = 0.0f;
+	_fTotalTime = 0.0f;
+	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_pos = VGet(100.0f, 0.0f, 0.0f);
-	_dir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = VGet(100.0f, 0.0f, 0.0f);
+	_vDir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
-	_col_sub_y = 40.0f;
+	_fColSubY = 40.0f;
 	// コリジョン半径の設定
-	_collision_r = 30.0f;
-	_collision_weight = 10.0f;
+	_fCollisionR = 30.0f;
+	_fCollisionWeight = 10.0f;
 
-	_hp = 30.0f;
+	_fHp = 30.0f;
 
 	// 索敵範囲の初期設定（半径400cm、角度60度）
 	SetDetectionSector(400.0f, 60.0f);
@@ -47,13 +56,13 @@ bool Enemy::Process()
 	if(old_status == _status)
 	{
 		//再生時間を進める
-		_play_time += 0.5f;
+		_fPlayTime += 0.5f;
 		// 再生時間をランダムに揺らがせる
 		switch(_status)
 		{
 			case STATUS::WAIT:
 			{
-				_play_time += (float)(rand() % 10) / 100.0f;// 0.00 ～ 0.09 の揺らぎ。積算するとずれが起きる
+				_fPlayTime += (float)(rand() % 10) / 100.0f;// 0.00 ～ 0.09 の揺らぎ。積算するとずれが起きる
 				break;
 			}
 		}
@@ -61,51 +70,51 @@ bool Enemy::Process()
 	else
 	{
 		// アニメーションがアタッチされていたら、デタッチする
-		if(_attach_index != -1)
+		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_handle, _attach_index);
-			_attach_index = -1;
+			MV1DetachAnim(_iHandle, _iAttachIndex);
+			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
 		switch(_status)
 		{
 			case STATUS::WAIT:
 			{
-				int animIndex = MV1GetAnimIndex(_handle, "idle");
+				int animIndex = MV1GetAnimIndex(_iHandle, "idle");
 				if(animIndex != -1)
 				{
-					_attach_index = MV1AttachAnim(_handle, animIndex, -1, FALSE);
-					if(_attach_index != -1)
+					_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+					if(_iAttachIndex != -1)
 					{
-						_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
-						_play_time = (float)(rand() % 30); // 少しずらす
+						_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+						_fPlayTime = (float)(rand() % 30); // 少しずらす
 					}
 				}
 				break;
 			}
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
-		if(_attach_index != -1)
+		if(_iAttachIndex != -1)
 		{
-			_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
+			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
 		}
 		// 再生時間を初期化
-		_play_time = 0.0f;
+		_fPlayTime = 0.0f;
 		// 再生時間をランダムにずらす
 		switch(_status)
 		{
 			case STATUS::WAIT:
 			{
-				_play_time += rand() % 30; // 0 ～ 29 の揺らぎ
+				_fPlayTime += rand() % 30; // 0 ～ 29 の揺らぎ
 				break;
 			}
 		}
 	}
 
 	// 再生時間がアニメーションの総再生時間に達したら再生時間を0に戻す
-	if(_play_time >= _total_time)
+	if(_fPlayTime >= _fTotalTime)
 	{
-		_play_time = 0.0f;
+		_fPlayTime = 0.0f;
 	}
 
 	return true;
@@ -114,25 +123,25 @@ bool Enemy::Process()
 // 索敵範囲の設定
 void Enemy::SetDetectionSector(float radius, float angle)
 {
-	_detection_sector.radius = radius;
-	_detection_sector.angle = angle;
-	_has_detection_sector = true;
+	_detectionSector.radius = radius;
+	_detectionSector.angle = angle;
+	_bHasDetectionSector = true;
 }
 
 // プレイヤーが索敵範囲内にいるかチェック
 bool Enemy::IsPlayerInDetectionRange(const VECTOR& playerPos) const
 {
-	if (!_has_detection_sector)
+	if (!_bHasDetectionSector)
 	{
 		return false;
 	}
 
 	// 索敵範囲情報を一時的な変数として作成
 	DetectionSector currentSector;
-	currentSector.center = _pos;
-	currentSector.forward = _dir;
-	currentSector.radius = _detection_sector.radius;
-	currentSector.angle = _detection_sector.angle;
+	currentSector.center = _vPos;
+	currentSector.forward = _vDir;
+	currentSector.radius = _detectionSector.radius;
+	currentSector.angle = _detectionSector.angle;
 
 	// 敵からプレイヤーへのベクトル
 	VECTOR toPlayer = VSub(playerPos, currentSector.center);
@@ -172,7 +181,7 @@ bool Enemy::IsPlayerInDetectionRange(const VECTOR& playerPos) const
 // デバッグ用：索敵範囲の描画
 void Enemy::RenderDetectionSector() const
 {
-	if (!_has_detection_sector)
+	if (!_bHasDetectionSector)
 	{
 		return;
 	}
@@ -182,11 +191,11 @@ void Enemy::RenderDetectionSector() const
 
 	// 扇形を描画するための分割数
 	const int segments = 32;
-	const float halfAngle = _detection_sector.angle * 0.5f;
+	const float halfAngle = _detectionSector.angle * 0.5f;
 
 	// 現在の敵の位置と向きを使用
-	VECTOR center = _pos;
-	VECTOR forward = _dir;
+	VECTOR center = _vPos;
+	VECTOR forward = _vDir;
 
 	// 正面方向からの角度オフセットを計算
 	float forwardAngle = atan2f(-forward.x, -forward.z);
@@ -201,8 +210,8 @@ void Enemy::RenderDetectionSector() const
 		float angle1 = startAngle + (endAngle - startAngle) * i / (float)segments;
 		float angle2 = startAngle + (endAngle - startAngle) * (i + 1) / (float)segments;
 
-		VECTOR pos1 = VAdd(center, VGet(sinf(angle1) * _detection_sector.radius, 0, cosf(angle1) * _detection_sector.radius));
-		VECTOR pos2 = VAdd(center, VGet(sinf(angle2) * _detection_sector.radius, 0, cosf(angle2) * _detection_sector.radius));
+		VECTOR pos1 = VAdd(center, VGet(sinf(angle1) * _detectionSector.radius, 0, cosf(angle1) * _detectionSector.radius));
+		VECTOR pos2 = VAdd(center, VGet(sinf(angle2) * _detectionSector.radius, 0, cosf(angle2) * _detectionSector.radius));
 
 		// 3D空間での線描画
 		DrawLine3D(pos1, pos2, color);
@@ -214,8 +223,8 @@ void Enemy::RenderDetectionSector() const
 	}
 
 	// 中心から両端への線を描画
-	VECTOR leftEdge = VAdd(center, VGet(sinf(startAngle) * _detection_sector.radius, 0, cosf(startAngle) * _detection_sector.radius));
-	VECTOR rightEdge = VAdd(center, VGet(sinf(endAngle) * _detection_sector.radius, 0, cosf(endAngle) * _detection_sector.radius));
+	VECTOR leftEdge = VAdd(center, VGet(sinf(startAngle) * _detectionSector.radius, 0, cosf(startAngle) * _detectionSector.radius));
+	VECTOR rightEdge = VAdd(center, VGet(sinf(endAngle) * _detectionSector.radius, 0, cosf(endAngle) * _detectionSector.radius));
 
 	DrawLine3D(center, leftEdge, color);
 	DrawLine3D(center, rightEdge, color);
@@ -243,17 +252,17 @@ bool Enemy::Render()
 {
 	base::Render();
 	// 再生時間をセット
-	MV1SetAttachAnimTime(_handle, _attach_index, _play_time);
+	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
 
 	// 位置
-	MV1SetPosition(_handle, _pos);
+	MV1SetPosition(_iHandle, _vPos);
 	// 向きからY軸回転を算出
 	VECTOR vrot = { 0,0,0, };
-	vrot.y = atan2f(-_dir.x, -_dir.z);
-	MV1SetRotationXYZ(_handle, vrot);
+	vrot.y = atan2f(-_vDir.x, -_vDir.z);
+	MV1SetRotationXYZ(_iHandle, vrot);
 
 	// 描画
-	MV1DrawModel(_handle);
+	MV1DrawModel(_iHandle);
 
 	// 索敵範囲の描画（デバッグ用）
 	RenderDetectionSector();

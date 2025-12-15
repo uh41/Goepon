@@ -1,10 +1,19 @@
-﻿#include "objectbase.h"
+﻿/*********************************************************************/
+// * \file   objectbase.cpp
+// * \brief  オブジェクトベースクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "objectbase.h"
 
 // 初期化
 bool ObjectBase::Initialize()
 {
 	_cam = nullptr;
-	_handle = -1;
+	_iHandle = -1;
 	_half_polygon_size = 0.0f;
 	_diffuse = GetColorU8(255, 255, 255, 255);
 	_specular = GetColorU8(0, 0, 0, 0);

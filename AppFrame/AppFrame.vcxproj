@@ -156,8 +156,9 @@
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
-    <ClInclude Include="source\CFile\CFile.h" />
-    <ClInclude Include="source\Mode\ModeBase.h" />
+    <ClInclude Include="source\CFile\cfile.h" />
+    <ClInclude Include="source\container.h" />
+    <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\ModeServer.h" />
     <ClInclude Include="source\mymath.h" />
   </ItemGroup>

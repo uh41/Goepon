@@ -1,4 +1,13 @@
-﻿#include "modegame.h"
+﻿/*********************************************************************/
+// * \file   modegamecollison.cpp
+// * \brief  モードゲームクラス(当たり判定処理用)
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "modegame.h"
 
 // コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
 bool ModeGame::EscapeCollision(PlayerBase* player)
@@ -22,8 +31,8 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		VECTOR oldv = v;
 		float rad = atan2((float)v.z, (float)v.x);
 		float length = player->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
-		float sx = _camera->_v_pos.x - _camera->_v_target.x;
-		float sz = _camera->_v_pos.z - _camera->_v_target.z;
+		float sx = _camera->_vPos.x - _camera->_vTarget.x;
+		float sz = _camera->_vPos.z - _camera->_vTarget.z;
 		float camrad = atan2(sz, sx);
 
 		// escapeTbl[i]の分だけ移動量v回転
@@ -153,8 +162,8 @@ bool ModeGame::CharaToCubeCollision(CharaBase* chara, Cube* cube)
 		return false;
 	}
 
-	_resolve_on_y = false;
-	_landed_on_up = false;
+	_bResolveOnY = false;
+	_bLandedOnUp = false;
 
 	mymath::AABB box = cube->GetAABB();
 	VECTOR pos = chara->GetPos();
@@ -245,11 +254,11 @@ bool ModeGame::CharaToCubeCollision(CharaBase* chara, Cube* cube)
 	else if(absy <= absx && absy <= absz)
 	{
 		pos.y += resolvery;
-		_resolve_on_y = true;
+		_bResolveOnY = true;
 		float land_y = (resolvery - dymax) * (resolvery - dymax);
 		if(land_y < !0.0f)
 		{
-			_landed_on_up = true;
+			_bLandedOnUp = true;
 		}
 	}
 	else if(absz <= absx && absz <= absy)
@@ -259,7 +268,7 @@ bool ModeGame::CharaToCubeCollision(CharaBase* chara, Cube* cube)
 
 	chara->SetPos(pos);
 
-	if(_d_use_collision && _resolve_on_y && _landed_on_up)
+	if(_d_use_collision && _bResolveOnY && _bLandedOnUp)
 	{
 		_player->SetLand(true);
 		// キューブの上面に着地した場合、Y座標をキューブの上面に合わせる
@@ -283,7 +292,7 @@ bool ModeGame::CharaToCubeCollision(CharaBase* chara, Cube* cube)
 		{
 			float ground_y = hitpoly.HitPosition.y;
 
-			if(_landed_on_up)
+			if(_bLandedOnUp)
 			{
 				//当たったY位置をキャラ座標にする
 				VECTOR tmpPos = chara->GetPos();
@@ -347,7 +356,7 @@ bool ModeGame::LandCheck()
 		// キューブの上にいるか？ - _landed_on_upフラグで判定
 		if(!is_ground && _d_use_collision)
 		{
-			is_ground = _landed_on_up;
+			is_ground = _bLandedOnUp;
 		}
 
 		// どの足場にも乗っていなければ、空中状態にする

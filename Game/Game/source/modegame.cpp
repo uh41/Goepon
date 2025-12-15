@@ -1,4 +1,13 @@
-﻿#include "modegame.h"
+﻿/*********************************************************************/
+// * \file   modegame.cpp
+// * \brief  モードゲームクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "modegame.h"
 #include "applicationmain.h"
 #include "modeeffekseer.h"
 
@@ -26,21 +35,21 @@ bool ModeGame::Initialize()
 	}
 
 	// プレイヤー
-	for(auto& player_base : _player_base)
+	for(auto& player_base : _playerBase)
 	{
 		player_base->Initialize();
 	}
 
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
-	_player_tanuki->SetCamera(_camera);
+	_playerTanuki->SetCamera(_camera);
 
 	DebugInitialize();// デバック初期化
 
-	_resolve_on_y = false;
-	_landed_on_up = false;
+	_bResolveOnY = false;
+	_bLandedOnUp = false;
 
-	_show_tanuki = false;
+	_bShowTanuki = false;
 	return true;
 }
 
@@ -59,11 +68,11 @@ bool ModeGame::Terminate()
 		object->Terminate();
 	}
 	_object.clear();
-	for(auto& player_base : _player_base)
+	for(auto& player_base : _playerBase)
 	{
 		player_base->Terminate();
 	}
-	_player_base.clear();
+	_playerBase.clear();
 	delete _camera;
 	return true;
 }
@@ -93,8 +102,8 @@ bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 {
 	// カメラの位置/視点の移動を、プレイヤーの移動量に追従する
 	VECTOR playermove = VSub(player->GetPos(), player->GetOldPos());
-	_camera->_v_pos = VAdd(_camera->_v_pos, playermove);
-	_camera->_v_target = VAdd(_camera->_v_target, playermove);
+	_camera->_vPos = VAdd(_camera->_vPos, playermove);
+	_camera->_vTarget = VAdd(_camera->_vTarget, playermove);
 	return true;
 }
 
@@ -112,24 +121,24 @@ bool ModeGame::Process()
 	// タヌキプレイヤー表示切替
 	if(trg & PAD_INPUT_4)
 	{
-		_show_tanuki = !_show_tanuki;
+		_bShowTanuki = !_bShowTanuki;
 		// 切り替え時に同じ場所で表示されるよう座標を同期する
-		if(_show_tanuki)
+		if(_bShowTanuki)
 		{
 			// プレイヤー→タヌキに切替：タヌキをプレイヤー位置へ
-			_player_tanuki->SetPos(_player->GetPos());
+			_playerTanuki->SetPos(_player->GetPos());
 		}
 		else
 		{
 			// タヌキ→プレイヤーに切替：プレイヤーをタヌキ位置へ
-			_player->SetPos(_player_tanuki->GetPos());
+			_player->SetPos(_playerTanuki->GetPos());
 		}
 	}
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
-	if(_show_tanuki)
+	if(_bShowTanuki)
 	{
-		_player_tanuki->Process();
+		_playerTanuki->Process();
 	}
 	else
 	{
@@ -170,10 +179,10 @@ bool ModeGame::Process()
 	UpdateCheckAttackCollision();
 
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）
-	if(_show_tanuki)
+	if(_bShowTanuki)
 	{
-		EscapeCollision(_player_tanuki.get());
-		PlayerCameraInfo(_player_tanuki.get());
+		EscapeCollision(_playerTanuki.get());
+		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
@@ -191,15 +200,15 @@ bool ModeGame::Render()
 
 	
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(_camera->_v_pos, _camera->_v_target);
-	SetCameraNearFar(_camera->_clip_near, _camera->_clip_far);
+	SetCameraPositionAndTarget_UpVecY(_camera->_vPos, _camera->_vTarget);
+	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
 
 	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
 	{
 		if(chara->IsAlive())
 		{
-			if(chara.get() == _player.get() || chara.get() == _player_tanuki.get())
+			if(chara.get() == _player.get() || chara.get() == _playerTanuki.get())
 			{
 				continue; // プレイヤーは別処理
 			}
@@ -214,11 +223,11 @@ bool ModeGame::Render()
 	}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto & player_base : _player_base)
+	for(auto & player_base : _playerBase)
 	{
-		if(_show_tanuki)
+		if(_bShowTanuki)
 		{
-			if(player_base.get() == _player_tanuki.get() && player_base->IsAlive())
+			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
 			{
 				player_base->Render();
 			}

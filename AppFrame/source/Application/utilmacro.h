@@ -1,1 +1,10 @@
-﻿#define	SAFE_DELETE(x)	if(x){ delete x; x = nullptr; }
+﻿/*********************************************************************/
+// * \file   utilmacro.h
+// * \brief  Utility Macro
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#define	SAFE_DELETE(x)	if(x){ delete x; x = nullptr; }

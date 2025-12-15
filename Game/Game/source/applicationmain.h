@@ -1,6 +1,14 @@
-﻿#pragma once
-#include "appframe.h"
+﻿/*********************************************************************/
+// * \file   applicationmain.h
+// * \brief  アプリケーションメインクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
 
+#pragma once
+#include "appframe.h"
 
 class ApplicationMain : public ApplicationBase
 {

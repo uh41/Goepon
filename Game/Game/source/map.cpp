@@ -1,4 +1,13 @@
-﻿#include "map.h"
+﻿/*********************************************************************/
+// * \file   map.cpp
+// * \brief  マップクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "map.h"
 
 // 初期化
 bool Map::Initialize()
@@ -6,35 +15,35 @@ bool Map::Initialize()
 	if(!base::Initialize()) { return false; }
 
 	// マップ
-	_handle_sky_sphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
+	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
 	constexpr int MAP_SELECT = 0;
 
 	if(MAP_SELECT == 0)
 	{
 		// ダンジョン
-		_handle_map = MV1LoadModel("res/Dungeon/Dungeon.mv1");
-		_frame_map_collision = MV1SearchFrame(_handle_map, "dungeon_collision");
+		_iHandleMap = MV1LoadModel("res/Dungeon/Dungeon.mv1");
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "dungeon_collision");
 
 		// コリジョン情報の生成
-		MV1SetupCollInfo(_handle_map, _frame_map_collision, 16, 16, 16);
-		MV1SetFrameVisible(_handle_map, _frame_map_collision, FALSE);
+		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
+		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
 	else if(MAP_SELECT == 1)
 	{
 		// フィールド
-		_handle_map = MV1LoadModel("res/Ground/Ground.mv1");
-		_frame_map_collision = MV1SearchFrame(_handle_map, "ground_navmesh");
+		_iHandleMap = MV1LoadModel("res/Ground/Ground.mv1");
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "ground_navmesh");
 
 		// コリジョン情報の生成
-		MV1SetupCollInfo(_handle_map, _frame_map_collision, 16, 16, 16);
-		MV1SetFrameVisible(_handle_map, _frame_map_collision, FALSE);
+		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
+		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
 	else if(MAP_SELECT == 2)
 	{
 		// 地面を使うパターン（モデルは読み込まない）
-		_handle_map = -1;
-		_frame_map_collision = -1;
+		_iHandleMap = -1;
+		_iFrameMapCollision = -1;
 
 		_ground_handle = LoadGraph("res/Texture/Groundplants1_D.jpg");
 		// 以降の初期化（省略せず元の処理を入れてください）
@@ -53,12 +62,12 @@ bool Map::Initialize()
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
 	// コリジョン情報の生成
-	MV1SetupCollInfo(_handle_map, _frame_map_collision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
+	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
 	// コリジョンのフレームを描画しない設定
-	MV1SetFrameVisible(_handle_map, _frame_map_collision, FALSE);
+	MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 
 	// シャドウマップの生成
-	_handle_shadow_map = MakeShadowMap(2048, 2048);
+	_iHandleShadowMap = MakeShadowMap(2048, 2048);
 
 	return true;
 }
@@ -146,12 +155,12 @@ bool Map::Render()
 #endif
 
 	// シャドウマップが想定するライトの方向もセット
-	SetShadowMapLightDirection(_handle_shadow_map, lightdir);
+	SetShadowMapLightDirection(_iHandleShadowMap, lightdir);
 
 	// シャドウマップに描画する範囲を設定
 	// カメラの注視点を中心にする
 	float lenght = 800.f;
-	SetShadowMapDrawArea(_handle_shadow_map, VAdd(_cam->_v_target, VGet(-lenght, -1.0f, -lenght)), VAdd(_cam->_v_target, VGet(lenght, lenght, lenght)));
+	SetShadowMapDrawArea(_iHandleShadowMap, VAdd(_cam->_vTarget, VGet(-lenght, -1.0f, -lenght)), VAdd(_cam->_vTarget, VGet(lenght, lenght, lenght)));
 
 	// 2回まわして、path = 0: シャドウマップへの描画、path = 1: モデルの：描画
 	for(int path = 0; path < 2; path++)
@@ -159,20 +168,20 @@ bool Map::Render()
 		if(path == 0)
 		{
 			// シャドウマップへの描画の準備
-			ShadowMap_DrawSetup(_handle_shadow_map);
+			ShadowMap_DrawSetup(_iHandleShadowMap);
 		}
 		else if(path == 1)
 		{
 			// シャドウマップへの描画終了
 			ShadowMap_DrawEnd();
 			// 描画に使用するシャドウマップを設定
-			SetUseShadowMap(0, _handle_shadow_map);
+			SetUseShadowMap(0, _iHandleShadowMap);
 		}
 
 		// マップモデルを描画
 		{
-			MV1DrawModel(_handle_map);
-			MV1DrawModel(_handle_sky_sphere);
+			MV1DrawModel(_iHandleMap);
+			MV1DrawModel(_iHandleSkySphere);
 		}
 	}
 	SetUseShadowMap(0, -1); // シャドウマップの解除

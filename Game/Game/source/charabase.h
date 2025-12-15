@@ -1,6 +1,16 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   charabase.h
+// * \brief  キャラベースクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#pragma once
 #include "objectbase.h"
 #include "camera.h"
+
 class CharaBase : public ObjectBase
 {
 	typedef ObjectBase base;
@@ -25,31 +35,31 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	const VECTOR& GetPos() const { return _pos; }
-	const VECTOR& GetOldPos() const { return _old_pos; }
-	auto GetColSubY() const { return _col_sub_y; }
+	const VECTOR& GetPos() const { return _vPos; }
+	const VECTOR& GetOldPos() const { return _vOldPos; }
+	auto GetColSubY() const { return _fColSubY; }
 
-	const VECTOR& SetPos(const VECTOR& pos) { return _pos = pos; }
-	auto GetCollisionR() const { return _collision_r; }
-	auto GetCollisionWeight() const { return _collision_weight; }
+	const VECTOR& SetPos(const VECTOR& pos) { return _vPos = pos; }
+	auto GetCollisionR() const { return _fCollisionR; }
+	auto GetCollisionWeight() const { return _fCollisionWeight; }
 
 	bool Damage(float damage);
 
-	float GetHP() const { return _hp; }	// HP取得用ゲッター
-	bool IsAlive() const { return _is_alive; } // 生存確認用ゲッター
+	float GetHP() const { return _fHp; }	// HP取得用ゲッター
+	bool IsAlive() const { return _bIsAlive; } // 生存確認用ゲッター
 
 protected:
-	int _attach_index;
-	float _total_time;
-	float _play_time;
-	VECTOR _pos; // キャラの位置
-	VECTOR _old_pos; // 1フレーム前のキャラの位置
-	VECTOR _dir; // キャラの向き
-	float _col_sub_y; // コリジョン判定用のYオフセット
-	float _collision_r; // 円の半径
-	float _collision_weight; // キャラの重さ
+	float _iAttachIndex;
+	float _fTotalTime;
+	float _fPlayTime;
+	VECTOR _vPos; // キャラの位置
+	VECTOR _vOldPos; // 1フレーム前のキャラの位置
+	VECTOR _vDir; // キャラの向き
+	float _fColSubY; // コリジョン判定用のYオフセット
+	float _fCollisionR; // 円の半径
+	float _fCollisionWeight; // キャラの重さ
 
-	float _hp;// キャラの体力
-	bool _is_alive;// 生存フラグ
+	float _fHp;// キャラの体力
+	bool _bIsAlive;// 生存フラグ
 };
 

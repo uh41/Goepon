@@ -1,4 +1,13 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   map.h
+// * \brief  マップクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#pragma once
 #include "objectbase.h"
 #include "appframe.h"
 #include "camera.h"
@@ -12,23 +21,22 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	auto& GetHandleMap() { return _handle_map; }
-	auto GetHandleSkySphere() const { return _handle_sky_sphere; }
-	auto GetFrameMapCollision() const { return _frame_map_collision; }
-	auto GetHandleShadowMap() const { return _handle_shadow_map; }
+	auto& GetHandleMap() { return _iHandleMap; }
+	auto GetHandleSkySphere() const { return _iHandleSkySphere; }
+	auto GetFrameMapCollision() const { return _iFrameMapCollision; }
+	auto GetHandleShadowMap() const { return _iHandleShadowMap; }
 
 	void SetCamera(Camera* cam) override { _cam = cam; }
 
 protected:
 	Camera* _cam;
 	// マップ用
-	// しまって取り出すときにstd::mapで管理
-	int _handle_map;// std::map<マップ名, ハンドル>
-	int _handle_sky_sphere;
-	int _frame_map_collision;
+	int _iHandleMap;// std::map<マップ名, ハンドル>
+	int _iHandleSkySphere;
+	int _iFrameMapCollision;
 
 	// シャドウマップ用
-	int _handle_shadow_map;
+	int _iHandleShadowMap;
 
 	// 地面のテクスチャ
 	int _ground_handle;

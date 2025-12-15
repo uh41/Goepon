@@ -1,4 +1,13 @@
-﻿#include "modegame.h"
+﻿/*********************************************************************/
+// * \file   modegamedebug.cpp
+// * \brief  モードゲームクラス(デバック用)
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "modegame.h"
 #include "menuitembase.h"
 
 // デバックの初期化
@@ -78,8 +87,8 @@ bool ModeGame::DebugRender()
 
 		if(_camera)
 		{
-			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Pos : %0.2f, %0.2f, %0.2f", _camera->_v_pos.x, _camera->_v_pos.y, _camera->_v_pos.z); y += line;
-			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Target : %0.2f, %0.2f, %0.2f", _camera->_v_target.x, _camera->_v_target.y, _camera->_v_target.z); y += line;
+			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Pos : %0.2f, %0.2f, %0.2f", _camera->_vPos.x, _camera->_vPos.y, _camera->_vPos.z); y += line;
+			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Target : %0.2f, %0.2f, %0.2f", _camera->_vTarget.x, _camera->_vTarget.y, _camera->_vTarget.z); y += line;
 		}
 	}
 
@@ -97,9 +106,9 @@ bool ModeGame::DebugRender()
 		float linelength = 10.f;
 		if(_camera)
 		{
-			DrawLine3D(VAdd(_camera->_v_target, VGet(-linelength, 0, 0)), VAdd(_camera->_v_target, VGet(linelength, 0, 0)), GetColor(255, 255, 0));
-			DrawLine3D(VAdd(_camera->_v_target, VGet(0, -linelength, 0)), VAdd(_camera->_v_target, VGet(0, linelength, 0)), GetColor(255, 255, 0));
-			DrawLine3D(VAdd(_camera->_v_target, VGet(0, 0, -linelength)), VAdd(_camera->_v_target, VGet(0, 0, linelength)), GetColor(255, 255, 0));
+			DrawLine3D(VAdd(_camera->_vTarget, VGet(-linelength, 0, 0)), VAdd(_camera->_vTarget, VGet(linelength, 0, 0)), GetColor(255, 255, 0));
+			DrawLine3D(VAdd(_camera->_vTarget, VGet(0, -linelength, 0)), VAdd(_camera->_vTarget, VGet(0, linelength, 0)), GetColor(255, 255, 0));
+			DrawLine3D(VAdd(_camera->_vTarget, VGet(0, 0, -linelength)), VAdd(_camera->_vTarget, VGet(0, 0, linelength)), GetColor(255, 255, 0));
 		}
 	}
 

@@ -1,4 +1,13 @@
-﻿#include "modeeffekseer.h"
+﻿/*********************************************************************/
+// * \file   modeeffeckseer.cpp
+// * \brief  エフェクシアクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "modeeffekseer.h"
 #include "appframe.h"
 #include "applicationmain.h"
 #include "applicationglobal.h"
@@ -10,7 +19,9 @@ bool ModeEffekseer::Initialize()
 
 	// エフェクトリソースを読み込む。
 	// 読み込む時に大きさを指定する。
-	_effect_resource_handle = LoadEffekseerEffect("res/Laser01.efkefc", 10.0f);
+	_iEffectResourceHandle = LoadEffekseerEffect("res/Laser01.efkefc", 10.0f);
+
+	_vPos = VGet(0.0f, 0.0f, 0.0f);
 
 	return true;
 }
@@ -21,7 +32,7 @@ bool ModeEffekseer::Terminate()
 	base::Terminate();
 
 	// エフェクトリソースを削除する
-	DeleteEffekseerEffect(_effect_resource_handle);
+	DeleteEffekseerEffect(_iEffectResourceHandle);
 
 	return true;
 }
@@ -47,15 +58,15 @@ bool ModeEffekseer::Process()
 	if(GetModeCount() % 60 == 0)
 	{
 		// エフェクトを再生する。
-		_playing_effect_handle = PlayEffekseer3DEffect(_effect_resource_handle);
+		_iPlayingEffectHandle = PlayEffekseer3DEffect(_iEffectResourceHandle);
 
 		// エフェクトの位置をリセットする。
-		_position_x = 0.0f;
+		_vPos.x = 0.0f;
 	}
 
 	// 再生中のエフェクトを移動する。
-	SetPosPlayingEffekseer3DEffect(_playing_effect_handle, _position_x, 50.f, 0);
-	_position_x += 0.2f;
+	SetPosPlayingEffekseer3DEffect(_iPlayingEffectHandle, _vPos.x, 50.f, 0);
+	_vPos.x += 0.2f;
 
 	// Effekseerにより再生中のエフェクトを更新する。
 	UpdateEffekseer3D();

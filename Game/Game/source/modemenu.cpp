@@ -1,4 +1,13 @@
-﻿#include "modemenu.h"
+﻿/*********************************************************************/
+// * \file   modemenu.cpp
+// * \brief  モードメニュークラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "modemenu.h"
 #include "appframe.h"
 #include "applicationmain.h"
 #include "applicationglobal.h"
@@ -9,8 +18,8 @@ bool ModeMenu::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	_cur_pos = 0;
-	_cur_anim_cnt = 0;
+	_iCurPos = 0;
+	_iCurAnimCnt = 0;
 
 	return true;
 }
@@ -59,23 +68,23 @@ bool ModeMenu::Process()
 	// 上下でカーソルを移動する
 	if(trg & PAD_INPUT_UP)
 	{
-		_cur_pos--;
-		_cur_anim_cnt = 0;
+		_iCurPos--;
+		_iCurAnimCnt = 0;
 	}
 	if(trg & PAD_INPUT_DOWN)
 	{
-		_cur_pos++;
-		_cur_anim_cnt = 0;
+		_iCurPos++;
+		_iCurAnimCnt = 0;
 	}
 
 	// カーソル位置を上下ループ
 	int itemNum = (int)_items.size();
-	_cur_pos = (_cur_pos + itemNum) % itemNum;
+	_iCurPos = (_iCurPos + itemNum) % itemNum;
 
 	// 決定でアイテムのSelected()を呼ぶ
 	if(trg & PAD_INPUT_1)
 	{
-		int ret = _items[_cur_pos]->Selected();
+		int ret = _items[_iCurPos]->Selected();
 		if(ret == 1)
 		{
 			// メニューを閉じる
@@ -89,7 +98,7 @@ bool ModeMenu::Process()
 		ModeServer::GetInstance()->Del(this);
 	}
 
-	_cur_anim_cnt++;
+	_iCurAnimCnt++;
 
 	return true;
 }
@@ -136,7 +145,7 @@ bool ModeMenu::Render()
 	}
 	// カーソルの描画
 	// x座標はアニメーションする
-	DrawGraph(x + 4 + ((_cur_anim_cnt / 6) % 4) * 4, y + start_y + fontPitch * _cur_pos, gGlobal._cg_cursor, TRUE);
+	DrawGraph(x + 4 + ((_iCurAnimCnt / 6) % 4) * 4, y + start_y + fontPitch * _iCurPos, gGlobal._iCgCursor, TRUE);
 
 	return true;
 }

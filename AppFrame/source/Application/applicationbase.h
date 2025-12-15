@@ -1,10 +1,14 @@
-﻿
-#include "dxlib.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+﻿/*********************************************************************/
+// * \file   applicationbase.h
+// * \brief  アプリケーションベースクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "../container.h"
 #include "../Mode//ModeServer.h"
-#include "EffekseerForDXLib.h"
 
 class ApplicationBase
 {

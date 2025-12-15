@@ -1,3 +1,12 @@
+/*********************************************************************/
+// * \file   playertanuki.cpp
+// * \brief  狸状態クラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
 #include "playertanuki.h"
 #include "appframe.h"
 
@@ -6,25 +15,25 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_handle = MV1LoadModel("res/SDChar/SDChar.mv1");
-	_attach_index = -1;
+	_iHandle = MV1LoadModel("res/SDChar/SDChar.mv1");
+	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
 	// 再生時間の初期化
-	_total_time = 0.0f;
-	_play_time = 0.0f;
+	_fTotalTime = 0.0f;
+	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_pos = VGet(0.0f, 0.0f, 0.0f);
-	_dir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = VGet(0.0f, 0.0f, 0.0f);
+	_vDir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
-	_col_sub_y = 40.0f;
+	_fColSubY = 40.0f;
 	// コリジョン半径の設定
-	_collision_r = 30.0f;
-	_collision_weight = 20.0f;
+	_fCollisionR = 30.0f;
+	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
-	_mvSpeed = 6.0f;
+	_fMvSpeed = 6.0f;
 
-	_land = true;
+	_bLand = true;
 
 	return true;
 }
@@ -45,7 +54,7 @@ bool PlayerTanuki::Process()
 	int key = ApplicationBase::GetInstance()->GetKey();
 
 	// 処理前の位置を保存
-	_old_pos = _pos;
+	_vOldPos = _vPos;
 
 	// 補間ターン速度（ラジアン／フレーム）
 	const float AXIS_TURN_SPEED = 0.12f;
@@ -56,8 +65,8 @@ bool PlayerTanuki::Process()
 	float length = 0.0f;
 
 	// カメラの向いている角度を取得
-	float sx = _cam->_v_pos.x - _cam->_v_target.x;
-	float sz = _cam->_v_pos.z - _cam->_v_target.z;
+	float sx = _cam->_vPos.x - _cam->_vTarget.x;
+	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
 
 	// キャラ移動(カメラ設定に合わせて)
@@ -76,16 +85,16 @@ bool PlayerTanuki::Process()
 	}
 
 	// 入力ベクトルを保存（EscapeCollisionで使用）
-	_inputV = inputLocal;
+	_vInput = inputLocal;
 
 	// カメラ方向に合わせて移動量を計算
 	if(VSize(inputLocal) > 0.0f)
 	{
-		length = _mvSpeed;
+		length = _fMvSpeed;
 		float localRad = atan2(inputLocal.z, inputLocal.x);
 		v.x = cos(localRad + camrad) * length;
 		v.z = sin(localRad + camrad) * length;
-		_dir = v;
+		_vDir = v;
 		_status = STATUS::WALK;
 	}
 	else
@@ -98,43 +107,43 @@ bool PlayerTanuki::Process()
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
-		_play_time += anim_speed;
+		_fPlayTime += anim_speed;
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_play_time += (float)(rand() % 10) / 100.0f;
+			_fPlayTime += (float)(rand() % 10) / 100.0f;
 			break;
 		}
 	}
 	else
 	{
-		if(_attach_index != -1)
+		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_handle, _attach_index);
-			_attach_index = -1;
+			MV1DetachAnim(_iHandle, _iAttachIndex);
+			_iAttachIndex = -1;
 		}
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_attach_index = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "idle"), -1, FALSE);
+			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE);
 			break;
 		case STATUS::WALK:
-			_attach_index = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "run"), -1, FALSE);
+			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "run"), -1, FALSE);
 			break;
 		}
-		_total_time = MV1GetAttachAnimTotalTime(_handle, _attach_index);
-		_play_time = 0.0f;
+		_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+		_fPlayTime = 0.0f;
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_play_time += rand() % 30;
+			_fPlayTime += rand() % 30;
 			break;
 		}
 	}
 
-	if(_play_time >= _total_time)
+	if(_fPlayTime >= _fTotalTime)
 	{
-		_play_time = 0.0f;
+		_fPlayTime = 0.0f;
 	}
 
 	return true;
@@ -146,16 +155,16 @@ bool PlayerTanuki::Render()
 	base::Render();
 
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(_handle, _attach_index, _play_time);
+	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
 
 	// 位置
-	MV1SetPosition(_handle, _pos);
+	MV1SetPosition(_iHandle, _vPos);
 	// 向きからY軸回転を算出
 	VECTOR vrot = { 0,0,0, };
-	vrot.y = atan2(_dir.x * -1, _dir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
-	MV1SetRotationXYZ(_handle, vrot);
+	vrot.y = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	MV1SetRotationXYZ(_iHandle, vrot);
 	// 描画
-	MV1DrawModel(_handle);
+	MV1DrawModel(_iHandle);
 	
 	return true;
 }

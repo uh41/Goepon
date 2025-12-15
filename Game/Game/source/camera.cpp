@@ -1,13 +1,22 @@
-﻿#include "camera.h"
+﻿/*********************************************************************/
+// * \file   camera.cpp
+// * \brief  カメラクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "camera.h"
 #include "appframe.h"
 
 bool Camera::Initialize()
 {
 	// カメラの設定(わかりやすい位置に)
-	_v_pos = VGet(0.0f, 600.0f, -300.0f);
-	_v_target = VGet(0.0f, 60.0f, 0.0f);
-	_clip_near = 2.0f;
-	_clip_far = 10000.0f;
+	_vPos = VGet(0.0f, 600.0f, -300.0f);
+	_vTarget = VGet(0.0f, 60.0f, 0.0f);
+	_fClipNear = 2.0f;
+	_fClipFar = 10000.0f;
 
 	return true;
 }
@@ -20,8 +29,8 @@ bool Camera::Process()
 	if((key & (PAD_INPUT_7 | PAD_INPUT_8)) == (PAD_INPUT_7 | PAD_INPUT_8))
 	{
 		// 距離、ターゲットの高さ変更
-		float sx = _v_pos.x - _v_target.x;
-		float sz = _v_pos.z - _v_target.z;
+		float sx = _vPos.x - _vTarget.x;
+		float sz = _vPos.z - _vTarget.z;
 		float rad = atan2(sz, sx);
 		float length = sqrt(sz * sz + sx * sx);
 		if(key & PAD_INPUT_LEFT)
@@ -32,25 +41,25 @@ bool Camera::Process()
 		{
 			length += 1.0f;
 		}
-		_v_pos.x = _v_target.x + cos(rad) * length;
-		_v_pos.z = _v_target.z + sin(rad) * length;
+		_vPos.x = _vTarget.x + cos(rad) * length;
+		_vPos.z = _vTarget.z + sin(rad) * length;
 
 		// Y位置
 		if(key & PAD_INPUT_DOWN)
 		{
-			_v_target.y -= 1.0f;
+			_vTarget.y -= 1.0f;
 		}
 		if(key & PAD_INPUT_UP)
 		{
-			_v_target.y += 1.0f;
+			_vTarget.y += 1.0f;
 		}
 	}
 	else if(key & PAD_INPUT_7)
 	{
 		// 角度変更
 		// Y軸回転
-		float sx = _v_pos.x - _v_target.x;
-		float sz = _v_pos.z - _v_target.z;
+		float sx = _vPos.x - _vTarget.x;
+		float sz = _vPos.z - _vTarget.z;
 		float rad = atan2(sz, sx);
 		float length = sqrt(sz * sz + sx * sx);
 		if(key & PAD_INPUT_LEFT)
@@ -61,24 +70,24 @@ bool Camera::Process()
 		{
 			rad += 0.05f;
 		}
-		_v_pos.x = _v_target.x + cos(rad) * length;
-		_v_pos.z = _v_target.z + sin(rad) * length;
+		_vPos.x = _vTarget.x + cos(rad) * length;
+		_vPos.z = _vTarget.z + sin(rad) * length;
 
 		// Y軸位置
 		if(key & PAD_INPUT_DOWN)
 		{
-			_v_pos.y -= 5.0f;
+			_vPos.y -= 5.0f;
 		}
 		if(key & PAD_INPUT_UP)
 		{
-			_v_pos.y += 5.0f;
+			_vPos.y += 5.0f;
 		}
 	}
 	else if(key & PAD_INPUT_8)
 	{
 		// カメラ位置(注目位置もXZスライド)
-		float sx = _v_pos.x - _v_target.x;
-		float sz = _v_pos.z - _v_target.z;
+		float sx = _vPos.x - _vTarget.x;
+		float sz = _vPos.z - _vTarget.z;
 		float camrad = atan2(sz, sx);
 
 		// 移動方向を決める
@@ -112,8 +121,8 @@ bool Camera::Process()
 		v.z = sin(rad + camrad) * length;
 
 		// vの分移動
-		_v_pos = VAdd(_v_pos, v);
-		_v_target = VAdd(_v_target, v);
+		_vPos = VAdd(_vPos, v);
+		_vTarget = VAdd(_vTarget, v);
 	}
 	return true;
 }
@@ -123,10 +132,10 @@ bool Camera::Render()
 	int x = 0, y = 0, size = 16;
 	SetFontSize(size);
 	DrawFormatString(x, y, GetColor(255, 0, 0), "Camera:"); y += size;
-	DrawFormatString(x, y, GetColor(255, 0, 0), "  target = (%5.2f, %5.2f, %5.2f)", _v_target.x, _v_target.y, _v_target.z); y += size;
-	DrawFormatString(x, y, GetColor(255, 0, 0), "  pos    = (%5.2f, %5.2f, %5.2f)", _v_pos.x, _v_pos.y, _v_pos.z); y += size;
-	float sx = _v_pos.x - _v_target.x;
-	float sz = _v_pos.z - _v_target.z;
+	DrawFormatString(x, y, GetColor(255, 0, 0), "  target = (%5.2f, %5.2f, %5.2f)", _vTarget.x, _vTarget.y, _vTarget.z); y += size;
+	DrawFormatString(x, y, GetColor(255, 0, 0), "  pos    = (%5.2f, %5.2f, %5.2f)", _vPos.x, _vPos.y, _vPos.z); y += size;
+	float sx = _vPos.x - _vTarget.x;
+	float sz = _vPos.z - _vTarget.z;
 	float length = sqrt(sz * sz + sx * sx);
 	float rad = atan2(sz, sx);
 	float deg = RAD2DEG(rad);

@@ -4,6 +4,7 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -24,11 +25,11 @@ public:
 protected:
 	Camera* _cam;
 
-	int _axis_hold_count;		// 十字キー水平入力保持カウント
-	bool _axis_lock;			// 十字キー水平入力ロックフラグ
-	int _hold_threshold;		// 十字キー水平入力保持閾値
+	int _iAxisHoldCount;		// 十字キー水平入力保持カウント
+	bool _bAxisUseLock;			// 十字キー水平入力ロックフラグ
+	int _iAxisThreshold;		// 十字キー水平入力保持閾値
 
-	VECTOR _axis_lock_dir;
+	VECTOR _vAxisLockDir;
 
 	// 円形移動用パラメータ
 	float _arc_pivot_dist;		// 回転中心までの距離

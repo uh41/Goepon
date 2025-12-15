@@ -1,4 +1,13 @@
-﻿#include "menuitembase.h"
+﻿/*********************************************************************/
+// * \file   menuitembase.cpp
+// * \brief  デバックメニュークラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#include "menuitembase.h"
 
 // コンストラクタ
 MenuItemBase::MenuItemBase(void* param, std::string text)

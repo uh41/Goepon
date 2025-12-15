@@ -1,4 +1,13 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   enemy.h
+// * \brief  エネミークラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
+
+#pragma once
 #include "enemybase.h"
 
 // 索敵範囲の情報を格納する構造体
@@ -30,7 +39,7 @@ public:
 	void RenderDetectionSector() const;
 
 protected:
-	DetectionSector _detection_sector;  // 索敵範囲
-	bool _has_detection_sector;         // 索敵範囲が設定されているか
+	DetectionSector _detectionSector;  // 索敵範囲
+	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
 };
 

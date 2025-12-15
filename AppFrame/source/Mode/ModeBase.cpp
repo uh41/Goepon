@@ -1,8 +1,16 @@
-﻿
-#include "ModeBase.h"
+﻿/*********************************************************************/
+// * \file   modebase.cpp
+// * \brief  モードベースクラス
+// *
+// * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+/*********************************************************************/
 
+#include "modebase.h"
 
-ModeBase::ModeBase() {
+ModeBase::ModeBase()
+{
 	_szName = "";
 	_uid = 1;
 	_layer = 0;
@@ -19,22 +27,22 @@ ModeBase::ModeBase() {
 	SetCallOfCount(1);
 }
 
-ModeBase::~ModeBase() {
+ModeBase::~ModeBase()
+{
+	// デストラクタ
 }
 
-
 // ModeServerに接続時、Process()の前に一度だけ呼ばれる
-bool	ModeBase::Initialize() {
-
+bool	ModeBase::Initialize()
+{
 	return true;
 }
 
 // ModeServerから削除される際、一度だけ呼ばれる
-bool	ModeBase::Terminate() {
-
+bool	ModeBase::Terminate()
+{
 	return true;
 }
-
 
 // --------------------------------------------------------------------------
 /// @brief 毎フレーム呼ばれる。処理部を記述
@@ -53,9 +61,11 @@ bool	ModeBase::Render()
 }
 
 // 時間経過をさせる
-void ModeBase::StepTime(unsigned long tmNow) {
+void ModeBase::StepTime(unsigned long tmNow)
+{
 	// 時間経過処理
-	if (_cntMode == 0) {
+	if (_cntMode == 0) 
+	{
 		_tmMode = 0;
 		_tmStep = 0;
 		_tmModeBase = tmNow;
@@ -71,6 +81,7 @@ void ModeBase::StepTime(unsigned long tmNow) {
 }
 
 // カウントを進める
-void ModeBase::StepCount() {
+void ModeBase::StepCount()
+{
 	_cntMode++;
 }
