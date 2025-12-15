@@ -29,6 +29,8 @@ public:
 
 	virtual void SetCamera(Camera* cam) { _cam = cam; }
 
+	bool PadInput(int key, int trg);
+
 protected:
 	Camera* _cam;
 	int _iHandle;

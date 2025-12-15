@@ -64,9 +64,6 @@ bool Player::Process()
 	// 処理前の位置を保存
 	_vOldPos = _vPos;
 
-	// 補間ターン速度（ラジアン／フレーム）: 小さくするとゆっくり回る
-	const float AXIS_TURN_SPEED = 0.12f; // 調整可
-
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
 	VECTOR v = { 0,0,0 };
@@ -217,10 +214,6 @@ bool Player::Process()
 	{
 		_status = STATUS::WAIT;
 	}
-
-	// 地上位置への移動
-	_vPos.x += v.x;
-	_vPos.z += v.z;
 
 	// アニメーション時間・アタッチ管理
 	if(old_status == _status)

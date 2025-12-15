@@ -28,6 +28,14 @@ bool ObjectBase::Terminate()
 {
 	return true;
 }
+
+bool ObjectBase::PadInput(int key, int trg)
+{
+	int key = ApplicationBase::GetInstance()->GetKey();
+	int trg = ApplicationBase::GetInstance()->GetTrg();
+	return true;
+}
+
 // 計算処理
 bool ObjectBase::Process()
 {
