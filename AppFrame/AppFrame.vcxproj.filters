@@ -21,13 +21,13 @@
     <ClCompile Include="source\Application\winmain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\Mode\ModeBase.cpp">
+    <ClCompile Include="source\Mode\modebase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\Mode\ModeServer.cpp">
+    <ClCompile Include="source\Mode\modeserver.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\CFile\CFile.cpp">
+    <ClCompile Include="source\CFile\cfile.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClInclude Include="source\Mode\modebase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\Mode\ModeServer.h">
+    <ClInclude Include="source\Mode\modeserver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\CFile\cfile.h">

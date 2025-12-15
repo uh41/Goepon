@@ -159,15 +159,15 @@
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
     <ClInclude Include="source\Mode\modebase.h" />
-    <ClInclude Include="source\Mode\ModeServer.h" />
+    <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
-    <ClCompile Include="source\CFile\CFile.cpp" />
-    <ClCompile Include="source\Mode\ModeBase.cpp" />
-    <ClCompile Include="source\Mode\ModeServer.cpp" />
+    <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\Mode\modebase.cpp" />
+    <ClCompile Include="source\Mode\modeserver.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
