@@ -17,7 +17,7 @@ bool Enemy::Initialize()
 	_iHandle = MV1LoadModel("res/PoorEnemyMelee/PoorEnemy.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
-	_status = STATUS::WAIT;
+	_status = STATUS::NONE;
 	// 再生時間の初期化
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
@@ -51,6 +51,11 @@ bool Enemy::Process()
 	base::Process();
 
 	CharaBase::STATUS old_status = _status;
+
+	if(_status == STATUS::NONE)
+	{
+		_status = STATUS::WAIT;
+	}
 
 	// ステータスが変わっていないか？
 	if(old_status == _status)
