@@ -158,16 +158,28 @@
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
+    <ClInclude Include="source\Manager\imagemanager.h" />
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
+    <ClInclude Include="source\Sound\sounditembase.h" />
+    <ClInclude Include="source\Sound\sounditembgm.h" />
+    <ClInclude Include="source\Sound\sounditemoneshot.h" />
+    <ClInclude Include="source\Sound\sounditemse.h" />
+    <ClInclude Include="source\Sound\sounditemstatic.h" />
+    <ClInclude Include="source\Sound\sounditemstream.h" />
+    <ClInclude Include="source\Sound\sounditemvoice.h" />
+    <ClInclude Include="source\Sound\soundserver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\Manager\imagemanager.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\Sound\sounditembase.cpp" />
+    <ClCompile Include="source\Sound\soundserver.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
