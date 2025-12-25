@@ -73,24 +73,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -170,7 +170,6 @@
     <ClInclude Include="source\Sound\sounditemstream.h" />
     <ClInclude Include="source\Sound\sounditemvoice.h" />
     <ClInclude Include="source\Sound\soundserver.h" />
-    <ClInclude Include="source\Sound\soundtypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\applicationbase.cpp" />
@@ -179,7 +178,6 @@
     <ClCompile Include="source\Manager\imagemanager.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
-    <ClCompile Include="source\mymath.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
   </ItemGroup>

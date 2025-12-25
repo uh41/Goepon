@@ -9,6 +9,7 @@
 
 #include "dxlib.h"
 #include "EffekseerForDXLib.h"
+#include <nlohmann/json.hpp>	// VC++ includeディレクトリに $(ProjectDir)include 指定
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

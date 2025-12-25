@@ -9,8 +9,7 @@
 /*********************************************************************/
 
 #include "map.h"
-#include <nlohmann/json.hpp>	// VC++ includeディレクトリに $(ProjectDir)include 指定
-#include <fstream>
+#include "appframe.h"
 
 // 初期化
 bool Map::Initialize()
@@ -20,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 2;
 
 	if(MAP_SELECT == 0)
 	{
@@ -47,6 +46,52 @@ bool Map::Initialize()
 		_sPath = "res/IslandJson/";
 		_sJsonFile = "IsLand.json";
 		_sJsonObjectName = "Island";
+
+		_iFile.open(_sPath + _sJsonFile);
+		nlohmann::json json;
+
+		_iFile >> json;
+
+		nlohmann::json stage = json.at(_sJsonObjectName);
+		for(auto& data : stage)
+		{
+			mymath::BLOCKPOS pos;
+			data.at("objectName").get_to(pos.name);
+			// UEは左手座標系/Zup →左手座標系/Yup に変換しつつ取得
+			data.at("translate").at("x").get_to(pos.x);
+			data.at("translate").at("z").get_to(pos.y);
+			data.at("translate").at("y").get_to(pos.z);
+			pos.z *= -1.0f;
+			data.at("rotate").at("x").get_to(pos.rx);
+			data.at("rotate").at("z").get_to(pos.ry);
+			data.at("rotate").at("y").get_to(pos.rz);
+			pos.rx = DEG2RAD(pos.rx);
+			pos.ry = DEG2RAD(pos.ry);
+			pos.rz = DEG2RAD(pos.rz);
+			data.at("scale").at("x").get_to(pos.sx);
+			data.at("scale").at("z").get_to(pos.sy);
+			data.at("scale").at("y").get_to(pos.sz);
+
+			// 名前のモデルがすでに読み込み済か？
+			if(_mModelHandle.count(pos.name) > 0)
+			{
+				// まだ読み込まれていない。読み込みを行う
+				std::string filename = _sPath + pos.name + ".mv1";
+				_mModelHandle[pos.name] = MV1LoadModel(filename.c_str());
+			}
+			// 名前から使うモデルハンドル＆表示フレームを決める
+			if(_mModelHandle.count(pos.name) > 0)
+			{
+				pos.modelHandle = _mModelHandle[pos.name];
+				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
+			}
+
+			// データをコンテナに追加（モデル番号があれば）
+			if(pos.modelHandle != -1)
+			{
+				_vBlockPos.push_back(pos);
+			}
+		}
 	}
 	else if(MAP_SELECT == 3)
 	{
@@ -211,6 +256,15 @@ bool Map::Render()
 	}
 	auto polygon_num = index_num / 3;
 	DrawPolygonIndexed3D(_ground_vertex.data(), vertex_num, _ground_index.data(), polygon_num, _ground_handle, FALSE);
+
+	for(auto & block : _vBlockPos)
+	{
+		// ブロックモデルを描画
+		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+		MV1DrawModel(block.modelHandle);
+	}
 
 	return true;
 }

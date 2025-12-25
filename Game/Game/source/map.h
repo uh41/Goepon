@@ -4,7 +4,8 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \作業内容: 新規作成				鈴木裕稀　2025/12/15
+//				Jsonファイル読み込み　	鈴木裕稀　2025/12/25
 /*********************************************************************/
 
 #pragma once
@@ -56,8 +57,11 @@ protected:
 	VECTOR _ground_pos_3;
 	std::array<VECTOR, 4> _ground_pos_list;
 
+	std::vector<mymath::BLOCKPOS> _vBlockPos;
+
 	std::string _sPath;
 	std::string _sJsonFile;
 	std::string _sJsonObjectName;
+	std::ifstream _iFile;
 };
 
