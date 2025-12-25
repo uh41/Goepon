@@ -38,9 +38,9 @@ namespace soundserver
 		virtual bool IsPlay();						// サウンドが再生中か？
 		virtual void Stop();						// サウンドの停止
 
-		virtual int GetVolume();					// ボリューム取得
-		virtual int GetPan();						// パン取得
-		virtual int GetFrequency();					// 周波数取得
+		virtual int GetVolume() { return _iVolume; }				// ボリューム取得
+		virtual int GetPan() { return _iPan; }						// パン取得
+		virtual int GetFrequency() { return _iFrequency; }					// 周波数取得
 		virtual void SetVolume(int volume);			// ボリューム設定
 		virtual void SetPan(int pan);				// パン設定
 		virtual void SetFrequency(int frequency);	// 周波数設定
@@ -50,7 +50,7 @@ namespace soundserver
 		virtual std::string GetFileName() { return _sFileName; } // ファイル名取得
 		virtual int GetSoundHandle() { return _iSoundHandle; } // サウンドハンドル取得
 
-		virtual void Updata() {};					// サウンドの更新
+		virtual void Update() {};					// サウンドの更新
 
 	protected:
 		virtual void  PlayMem(int flat);			// メモリからサウンド再生
@@ -60,6 +60,7 @@ namespace soundserver
 		int	_iSoundHandle; // サウンドハンドル
 		std::string _sFileName; // ファイル名
 		int	_iFlag;	 // フラグ
+		int	_iVolume; // ボリューム
 		int	_iPan;	 // パン
 		int _iFrequency; // 周波数
 		SoundServer* _soundServer; // サウンドサーバー
