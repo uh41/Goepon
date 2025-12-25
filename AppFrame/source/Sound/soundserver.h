@@ -9,7 +9,13 @@
 
 #pragma once
 #include "../container.h"
-#include "sounditemoneshot.h"
+#include "sounditembase.h" // include base so TYPE is visible
+
+// 前方宣言
+namespace soundserver 
+{
+	class SoundItemOneShot;
+}
 
 // サウンドサーバークラス
 namespace soundserver

@@ -11,8 +11,6 @@
 #include "sounditemstream.h"
 #include "soundserver.h"
 
-class SoundServer;
-
 namespace soundserver
 {
 	class SoundItemOneShot : public SoundItemStream

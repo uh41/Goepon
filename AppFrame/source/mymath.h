@@ -8,6 +8,7 @@
 /*********************************************************************/
 
 #pragma once
+#include "appframe.h"
 // 計算用マクロ
 #define	PI	(3.1415926535897932386f)
 #define	DEG2RAD(x)			( ((x) / 180.0f ) * PI )
@@ -103,16 +104,16 @@ namespace mymath
 		return dist2 <= radius * radius;
 	}
 
-	// 角度を-rad..radの範囲に丸める
-	inline float NormalizeAngle(float a)
+	// 3Dブロック情報
+	struct BLOCKPOS
 	{
-		float TWO_PI = PI * 2.0f;
-		// a を -PI .. PI の範囲にする
-		a = fmodf(a + PI, TWO_PI);
-		if(a < 0.0f)
-		{
-			a += TWO_PI;
-		}
-		return a - PI;
-	}
+		std::string name;	// ブロック名
+		float x, y, z;	// ブロックの位置
+		float rx, ry, rz; // ブロックの回転
+		float sx, sy, sz; // ブロックのスケール
+		int modelHandle; // ブロックのモデルハンドル
+		int drawFrame; // ブロックの描画フレーム
+	};
+	// Declare the vector as extern to avoid multiple definitions
+	extern std::vector<BLOCKPOS> _vBlockPos;
 }

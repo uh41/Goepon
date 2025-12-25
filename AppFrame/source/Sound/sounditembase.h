@@ -10,7 +10,11 @@
 #pragma once
 #include "../container.h"
 
-class SoundServer;
+// forward declare SoundServer in the soundserver namespace to avoid circular include
+namespace soundserver
+{
+	class SoundServer;
+}
 
 // サウンドアイテム基底クラス
 namespace soundserver
@@ -30,7 +34,7 @@ namespace soundserver
 		SoundItemBase(std::string filename, int flg);
 		virtual ~SoundItemBase();
 
-		void SetSoundServer(SoundServer* soundserver) { _soundServer = soundserver; }
+		void SetSoundServer(soundserver::SoundServer* soundserver) { _soundServer = soundserver; }
 
 		virtual void Unload();						// サウンドのアンロード
 		virtual bool IsLoad();						// サウンドがロードされているか？
@@ -63,7 +67,7 @@ namespace soundserver
 		int	_iVolume; // ボリューム
 		int	_iPan;	 // パン
 		int _iFrequency; // 周波数
-		SoundServer* _soundServer; // サウンドサーバー
+		soundserver::SoundServer* _soundServer; // サウンドサーバー
 	};
 }
 

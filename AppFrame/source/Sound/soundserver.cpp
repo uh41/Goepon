@@ -10,6 +10,7 @@
 
 #include "soundserver.h"
 #include "sounditembase.h"
+#include "sounditemoneshot.h"
 
 // コンストラクタ
 soundserver::SoundServer::SoundServer()

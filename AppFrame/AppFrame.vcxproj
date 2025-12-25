@@ -170,6 +170,7 @@
     <ClInclude Include="source\Sound\sounditemstream.h" />
     <ClInclude Include="source\Sound\sounditemvoice.h" />
     <ClInclude Include="source\Sound\soundserver.h" />
+    <ClInclude Include="source\Sound\soundtypes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\applicationbase.cpp" />
@@ -178,6 +179,7 @@
     <ClCompile Include="source\Manager\imagemanager.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\mymath.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
   </ItemGroup>
