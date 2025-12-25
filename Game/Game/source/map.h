@@ -31,6 +31,7 @@ public:
 protected:
 	Camera* _cam;
 	// マップ用
+	std::map<std::string, int> _mModelHandle;// std::map<マップ名, ハンドル>
 	int _iHandleMap;// std::map<マップ名, ハンドル>
 	int _iHandleSkySphere;
 	int _iFrameMapCollision;
@@ -55,5 +56,8 @@ protected:
 	VECTOR _ground_pos_3;
 	std::array<VECTOR, 4> _ground_pos_list;
 
+	std::string _sPath;
+	std::string _sJsonFile;
+	std::string _sJsonObjectName;
 };
 

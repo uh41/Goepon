@@ -3,11 +3,14 @@
 // * \brief  マップクラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
+// * \date   2025/12/25
 // * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+//				Jsonファイル読み込み　鈴木裕稀　2025/12/25
 /*********************************************************************/
 
 #include "map.h"
+#include <nlohmann/json.hpp>	// VC++ includeディレクトリに $(ProjectDir)include 指定
+#include <fstream>
 
 // 初期化
 bool Map::Initialize()
@@ -40,6 +43,12 @@ bool Map::Initialize()
 		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
 	else if(MAP_SELECT == 2)
+	{
+		_sPath = "res/IslandJson/";
+		_sJsonFile = "IsLand.json";
+		_sJsonObjectName = "Island";
+	}
+	else if(MAP_SELECT == 3)
 	{
 		// 地面を使うパターン（モデルは読み込まない）
 		_iHandleMap = -1;

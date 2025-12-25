@@ -112,22 +112,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\AppFrame\source;$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
