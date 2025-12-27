@@ -80,9 +80,29 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected()
 	{
+		ModeGame* game = static_cast<ModeGame*>(_param);
+		if(!game) return 1;
+		// 既に起動済みなら停止（モードを検索して削除予約）
+		if(game->GetEffekseerLaunched())
+		{
+			ModeBase* existing = ModeServer::GetInstance()->Get("effectsample");
+			if(existing)
+			{
+				ModeServer::GetInstance()->Del(existing);
+				game->SetEffekseerLaunched(false);
+			}
+			else
+			{
+				// フラグが立っているがモードが見つからない場合はフラグをクリアする
+				game->SetEffekseerLaunched(false);
+			}
+			return 1; // メニューを閉じる
+		}
 		// ModeGameより上のレイヤーに登録する
 		ModeServer::GetInstance()->Add(new ModeEffekseer(), 100, "effectsample");
-		return 0;
+		// フラグを立ててメニューを閉じる
+		game->SetEffekseerLaunched(true);
+		return 1; // メニューを閉じる
 	}
 };
 

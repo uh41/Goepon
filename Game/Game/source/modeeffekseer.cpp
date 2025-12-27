@@ -44,15 +44,6 @@ bool ModeEffekseer::Process()
 	int key = ApplicationMain::GetInstance()->GetKey();
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
-	// このモードより下のレイヤーはProcess()を呼ばない
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-
-	// ESCキーで閉じる
-	bool close = false;
-	if(trg & PAD_INPUT_9)
-	{
-		close = true;
-	}
 
 	// モードカウンタを使って60fpsでエフェクトを生成
 	if(GetModeCount() % 120 == 0)
@@ -70,13 +61,6 @@ bool ModeEffekseer::Process()
 
 	// Effekseerにより再生中のエフェクトを更新する。
 	UpdateEffekseer3D();
-
-	// 閉じる
-	if(close)
-	{
-		// このモードを削除する
-		ModeServer::GetInstance()->Del(this);
-	}
 
 	return true;
 }

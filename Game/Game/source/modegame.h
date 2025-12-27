@@ -42,6 +42,10 @@ public:
 	void SetCameraControlMode(bool b) {_bCameraControlMode = b;}
 	bool GetCameraControlMode() const { return _bCameraControlMode; }
 
+	// Effekseer 再生フラグ管理
+	bool GetEffekseerLaunched() const { return _effekseerLaunched; }
+	void SetEffekseerLaunched(bool b) { _effekseerLaunched = b; }
+
 
 	bool PushChara(CharaBase* move, CharaBase* stop);
 	
@@ -110,6 +114,9 @@ protected:
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+
+	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
+	bool _effekseerLaunched = false;
 
 };
 
