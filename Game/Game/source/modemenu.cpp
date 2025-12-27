@@ -20,6 +20,7 @@ bool ModeMenu::Initialize()
 
 	_iCurPos = 0;
 	_iCurAnimCnt = 0;
+	_owner = nullptr;
 
 	return true;
 }
@@ -85,10 +86,32 @@ bool ModeMenu::Process()
 	if(trg & PAD_INPUT_1)
 	{
 		int ret = _items[_iCurPos]->Selected();
+		MenuItemBase* sel = _items[_iCurPos];
 		if(ret == 1)
 		{
+			// カメラ項目かつメニュー閉じの返り値なら、確実に Start してから閉じる
+			if(sel->IsCameraControlItem())
+			{
+				ModeGame* owner = static_cast<ModeGame*>(_owner);
+				if(owner && !owner->GetCameraControlMode())
+				{
+					owner->StartCameraControlAndSave();
+				}
+			}
 			// メニューを閉じる
 			close = true;
+		}
+		else
+		{
+			// ret == 0 のとき、カメラ項目なら Selected() likely ended camera control; ensure End is called
+			if(sel->IsCameraControlItem())
+			{
+				ModeGame* owner = static_cast<ModeGame*>(_owner);
+				if(owner && owner->GetCameraControlMode())
+				{
+					owner->EndCameraControlAndRestore();
+				}
+			}
 		}
 	}
 

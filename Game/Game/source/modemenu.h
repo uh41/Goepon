@@ -24,10 +24,15 @@ public:
 	void Add(MenuItemBase* itemBase);
 	void Clear();
 
+	// オーナーを設定（ModeGame ポインタを渡してメニューからカメラ操作させる）
+	void SetOwner(void* owner) { _owner = owner; }
+
 protected:
 	std::vector<MenuItemBase*> _items;
 
 	int _iCurPos;
 	int _iCurAnimCnt;
+
+	void* _owner;
 };
 

@@ -15,7 +15,7 @@ bool ModeGame::DebugInitialize()
 {
 	// その他初期化
 	_d_view_collision = true;
-	_d_use_collision = true;
+	_d_use_collision = false;
 	_d_view_camera_info = true;
 	_d_view_shadow_map = false;
 
@@ -32,12 +32,16 @@ bool ModeGame::DebugProcess()
 		ModeMenu* modemenu = new ModeMenu();
 		// ModeGameより上のレイヤーにメニューを登録する
 		ModeServer::GetInstance()->Add(modemenu, 99, "menu");
+		// オーナーにこの ModeGame を設定
+		modemenu->SetOwner(this);
 		// ModeMenuにメニュー項目を追加する
 		modemenu->Add(new MenuItemViewCollision(this, "ViewCollision"));
 		modemenu->Add(new MenuItemUseCollision(this, "UseCollision"));
 		modemenu->Add(new MenuItemViewCameraInfo(this, "ViewCameraInfo"));
 		modemenu->Add(new MenuItemLaunchEffekseer(this, "Effekseer"));
 		modemenu->Add(new MenuItemViewShadowMap(this, "ShadowMapView"));
+		// カメラ操作モード切替項目を追加
+		modemenu->Add(new MenuItemCameraControlMode(this, "CameraControlMode"));
 	}
 
 	//

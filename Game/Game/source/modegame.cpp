@@ -48,6 +48,8 @@ bool ModeGame::Initialize()
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
+	_bCameraControlMode = false;
+	_hasSavedCameraState = false;
 
 	_bShowTanuki = false;
 	return true;
@@ -117,6 +119,63 @@ bool ModeGame::Process()
 	
 	DebugProcess();// デバック処理
 
+	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
+	if(_bCameraControlMode)
+	{
+		int key = ApplicationMain::GetInstance()->GetKey();
+		int trg = ApplicationMain::GetInstance()->GetTrg();
+		const float panSpeed = 2.0f;
+		const float zoomStep = 10.0f;
+
+		// PAD_INPUT_3 を押している間は上下でズーム、左右で回転
+		if(key & PAD_INPUT_3)
+		{
+			if(key & PAD_INPUT_UP)
+			{
+				CameraZoomTowardsTarget(zoomStep); // 上でズームイン（近づく）
+			}
+			if(key & PAD_INPUT_DOWN)
+			{
+				CameraZoomTowardsTarget(-zoomStep); // 下でズームアウト（離れる）
+			}
+			if(key & PAD_INPUT_LEFT)
+			{
+				// 左でターゲット回転（反時計回り）
+				if(_camera) _camera->RotateAroundTarget(-0.05f);
+			}
+			if(key & PAD_INPUT_RIGHT)
+			{
+				// 右でターゲット回転（時計回り）
+				if(_camera) _camera->RotateAroundTarget(0.05f);
+			}
+		}
+		else
+		{
+			// 上下の向きが逆だったので反転
+			if(key & PAD_INPUT_UP)
+			{
+				CameraMoveBy(VGet(0.0f, 0.0f, panSpeed));
+			}
+			if(key & PAD_INPUT_DOWN)
+			{
+				CameraMoveBy(VGet(0.0f, 0.0f, -panSpeed));
+			}
+			if(key & PAD_INPUT_LEFT)
+			{
+				CameraMoveBy(VGet(-panSpeed, 0.0f, 0.0f));
+			}
+			if(key & PAD_INPUT_RIGHT)
+			{
+				CameraMoveBy(VGet(panSpeed, 0.0f, 0.0f));
+			}
+		}
+
+		// カメラ編集モード中は他の処理を行わず戻る
+		return true;
+	}
+
+	// ここから通常のゲーム処理
+	
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 	// タヌキプレイヤー表示切替
 	if(trg & PAD_INPUT_4)
@@ -165,15 +224,7 @@ bool ModeGame::Process()
 	}
 
 	// 敵との当たり判定処理（生存している敵のみ）
-	for(auto& enemy : _enemy)
-	{
-		if(enemy->IsAlive())
-		{
-			CharaToCharaCollision(_player.get(), enemy.get());
-			CharaToCubeCollision(enemy.get(), _cube.get());
-		}
-	}
-
+// 	...
 	// 当たり判定の処理をここに書く
 	
 	CharaToCubeCollision(_player.get(), _cube.get());
@@ -182,7 +233,7 @@ bool ModeGame::Process()
 	// 攻撃判定の更新処理
 	UpdateCheckAttackCollision();
 
-	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）
+	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get());
@@ -265,4 +316,47 @@ bool ModeGame::Render()
 		"Player HP: %.1f", _player->GetHP());
 
 	return true;
+}
+
+// 追加: ModeGame のカメラ操作ラッパー
+void ModeGame::CameraMoveBy(const VECTOR& delta)
+{
+	if(_camera)
+	{
+		_camera->MoveBy(delta);
+	}
+}
+
+void ModeGame::CameraZoomTowardsTarget(float amount)
+{
+	if(_camera)
+	{
+		_camera->ZoomTowardsTarget(amount);
+	}
+}
+
+// メニューからカメラ操作を開始する際に現在のカメラ位置を保存する
+void ModeGame::StartCameraControlAndSave()
+{
+	if(_camera && !_hasSavedCameraState)
+	{
+		_savedCamPos = _camera->_vPos;
+		_savedCamTarget = _camera->_vTarget;
+		_hasSavedCameraState = true;
+		// カメラ操作モードを有効にする
+		_bCameraControlMode = true;
+	}
+}
+
+// メニューからカメラ操作を終了する際に保存しておいたカメラ位置に戻す
+void ModeGame::EndCameraControlAndRestore()
+{
+	if(_camera && _hasSavedCameraState)
+	{
+		_camera->_vPos = _savedCamPos;
+		_camera->_vTarget = _savedCamTarget;
+		_hasSavedCameraState = false;
+		// カメラ操作モードを無効にする
+		_bCameraControlMode = false;
+	}
 }

@@ -142,3 +142,43 @@ bool Camera::Render()
 	DrawFormatString(x, y, GetColor(255, 0, 0), "  len = %5.2f, rad = %5.2f, deg = %5.2f", length, rad, deg); y += size;
 	return true;
 }
+
+void Camera::MoveBy(const VECTOR& delta)
+{
+	_vPos = VAdd(_vPos, delta);
+	_vTarget = VAdd(_vTarget, delta);
+}
+
+void Camera::ZoomTowardsTarget(float amount)
+{
+	// 方向ベクトル = target - pos
+	VECTOR dir = VSub(_vTarget, _vPos);
+	// 長さ
+	float len = sqrtf(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+	if(len <= 0.0f) 
+	{
+		return;
+	} // 近すぎたら無視
+	// 正規化 -> dir * (amount / len)
+	VECTOR step = VScale(dir, amount / len);
+	_vPos = VAdd(_vPos, step);
+
+	// オプション: 最短距離や最長距離でクランプしたければここで制限を入れる
+}
+
+// ターゲットを中心にY軸回転する（deltaRadは回転ラジアン）
+void Camera::RotateAroundTarget(float deltaRad)
+{
+    // 現在の水平距離と角度を取得
+    float sx = _vPos.x - _vTarget.x;
+    float sz = _vPos.z - _vTarget.z;
+    float length = sqrtf(sx * sx + sz * sz);
+	if(length <= 0.0f) 
+	{
+		return;
+	}
+    float rad = atan2f(sz, sx);
+    rad += deltaRad;
+    _vPos.x = _vTarget.x + cosf(rad) * length;
+    _vPos.z = _vTarget.z + sinf(rad) * length;
+}

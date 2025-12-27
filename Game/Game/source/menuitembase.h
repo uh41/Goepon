@@ -22,6 +22,9 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected();
 
+	// この項目がカメラ操作切替項目かどうか（ModeMenu が判定するため）
+	virtual bool IsCameraControlItem() { return false; }
+
 	void* _param;      // 項目に関連付けるパラメータ
 	std::string _text; // メニューに表示するテキスト
 };
@@ -95,4 +98,32 @@ public:
 		game->SetDebugViewShadowMap(!game->GetDebugViewShadowMap());
 		return 0;
 	}
+};
+
+// カメラ操作モード切替メニュー項目（メニューを開いている間のみカメラ操作を有効にする）
+class MenuItemCameraControlMode : public MenuItemBase
+{
+public:
+	MenuItemCameraControlMode(void* param, std::string text) : MenuItemBase(param, text) {}
+	virtual int Selected()
+	{
+		ModeGame* game = static_cast<ModeGame*>(_param);
+		if(!game)
+		{
+			return 0;
+		}
+		// カメラが未編集状態なら開始してメニューを閉じる
+		if(!game->GetCameraControlMode())
+		{
+			game->StartCameraControlAndSave();
+			return 1; // メニューを閉じる（編集モードへ）
+		}
+		else
+		{
+			// 既に編集中なら、選択で保存状態に戻す（メニューは継続）
+			game->EndCameraControlAndRestore();
+			return 0; // メニュー継続
+		}
+	}
+	virtual bool IsCameraControlItem() override { return true; }
 };

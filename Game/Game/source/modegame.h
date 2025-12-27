@@ -39,6 +39,9 @@ public:
 	void SetDebugUseCollision(bool d) { this->_d_use_collision = d; }
 	void SetDebugViewCameraInfo(bool d) { this->_d_view_camera_info = d; }
 	void SetDebugViewShadowMap(bool d) { this->_d_view_shadow_map = d; }
+	void SetCameraControlMode(bool b) {_bCameraControlMode = b;}
+	bool GetCameraControlMode() const { return _bCameraControlMode; }
+
 
 	bool PushChara(CharaBase* move, CharaBase* stop);
 	
@@ -66,8 +69,20 @@ public:
 	// オブジェクト関数
 	bool ObjectInitialize();
 
+	// カメラ操作公開API（メニューから呼び出すため）
+	void CameraMoveBy(const VECTOR& delta);
+	void CameraZoomTowardsTarget(float amount);
+
+	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
+	void StartCameraControlAndSave();
+	void EndCameraControlAndRestore();
+
 protected:
 	Camera* _camera;
+    // メニュー開始前のカメラ状態を保存するためのメンバ
+    VECTOR _savedCamPos;
+    VECTOR _savedCamTarget;
+    bool _hasSavedCameraState;
 
 	// キャラクタ管理
 	std::vector<std::shared_ptr<CharaBase>> _chara;
@@ -86,6 +101,10 @@ protected:
 	bool _d_use_collision;
 	bool _d_view_camera_info;
 	bool _d_view_shadow_map;
+
+	// メニューから切り替える「カメラ操作モード」フラグ
+	bool _bCameraControlMode;
+	
 
 	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
 	bool _bLandedOnUp;// 上方向に着地したかどうか

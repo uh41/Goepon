@@ -216,20 +216,6 @@ bool Player::Process()
 		_status = STATUS::WAIT;
 	}
 
-	// --- ここで実際に位置とカメラを移動させる ---
-	if(VSize(v) > 0.0f)
-	{
-		// プレイヤーの位置を移動
-		_vPos = VAdd(_vPos, v);
-
-		// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
-		if(_cam != nullptr)
-		{
-			_cam->_vPos = VAdd(_vPos, _camOffset);
-			_cam->_vTarget = VAdd(_vPos, _camTargetOffset);
-		}
-	}
-
 	// アニメーション時間・アタッチ管理
 	if(old_status == _status)
 	{
