@@ -19,9 +19,9 @@ bool ModeEffekseer::Initialize()
 
 	// エフェクトリソースを読み込む。
 	// 読み込む時に大きさを指定する。
-	_iEffectResourceHandle = LoadEffekseerEffect("res/Laser01.efkefc", 10.0f);
+	_iEffectResourceHandle = LoadEffekseerEffect("res/EF_windtry.efkefc", 1.0f);
 
-	_vPos = VGet(0.0f, 0.0f, 0.0f);
+	_vPos = VGet(1000.0f, 0.0f, 0.0f);
 
 	return true;
 }
@@ -61,7 +61,7 @@ bool ModeEffekseer::Process()
 		_iPlayingEffectHandle = PlayEffekseer3DEffect(_iEffectResourceHandle);
 
 		// エフェクトの位置をリセットする。
-		_vPos.x = 0.0f;
+		//_vPos.x = 0.0f;
 	}
 
 	// 再生中のエフェクトを移動する。
