@@ -21,9 +21,13 @@ public:
 	bool Process() override;
 	bool Render() override;
 
-	void SetCamera(Camera* cam)  override {_cam = cam;}
+	void SetCamera(Camera* cam)  override { _cam = cam; if(_cam) { _camOffset = VSub(_cam->_vPos, _vPos); _camTargetOffset = VSub(_cam->_vTarget, _vPos); } }
 
 protected:
 	Camera* _cam;
+
+	// カメラ追従用オフセット
+	VECTOR _camOffset;
+	VECTOR _camTargetOffset;
 };
 

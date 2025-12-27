@@ -38,9 +38,13 @@ bool Player::Initialize()
 
 	_vAxisLockDir = VGet(0.0f, 0.0f, -1.0f);
 
+	// カメラオフセット初期化
+	_camOffset = VGet(0.0f, 0.0f, 0.0f);
+	_camTargetOffset = VGet(0.0f, 0.0f, 0.0f);
+
 	// 円形移動用パラメータ初期化
-	_arc_pivot_dist = 50.0f;	// 回転中心までの距離（調整可）
-	_arc_turn_speed = 1.0f;		// 円形移動速度係数（調整可）
+	_arc_pivot_dist = 50.0f;    // 回転中心までの距離（調整可）
+	_arc_turn_speed = 1.0f;     // 円形移動速度係数（調整可）
 	
 	_bLand = true;
 	
@@ -126,15 +130,23 @@ bool Player::Process()
 		{
 			// 軸ロック中の移動処理（向き固定で前後左右に移動）
 			VECTOR axis_lock_input = VGet(0.0f, 0.0f, 0.0f);
-			
+
 			// 軸ロック専用の入力を取得
-			if(key & PAD_INPUT_DOWN) { axis_lock_input.x = 0.5f; }
-			if(key & PAD_INPUT_UP) { axis_lock_input.x = -0.5f; }
-			if(key & PAD_INPUT_LEFT) { axis_lock_input.z = -0.5f; }
-			if(key & PAD_INPUT_RIGHT) { axis_lock_input.z = 0.5f; }
+			if(key & PAD_INPUT_DOWN) {
+				axis_lock_input.x = 0.5f;
+			}
+			if(key & PAD_INPUT_UP) {
+				axis_lock_input.x = -0.5f;
+			}
+			if(key & PAD_INPUT_LEFT) {
+				axis_lock_input.z = -0.5f;
+			}
+			if(key & PAD_INPUT_RIGHT) {
+				axis_lock_input.z = 0.5f;
+			}
 
 			_vInput = axis_lock_input;
-			
+
 			// 入力があれば軸ロック移動を計算
 			if(VSize(axis_lock_input) > 0.0f)
 			{
@@ -161,20 +173,12 @@ bool Player::Process()
 					v.x = moveDir.x * _fMvSpeed;
 					v.z = moveDir.z * _fMvSpeed;
 				}
-				else
-				{
-					v.x = 0.0f;
-					v.z = 0.0f;
-				}
+
 
 				// 向きは固定
 				_vDir = forward;
 			}
-			else
-			{
-				// 入力がない場合は移動しない
-				v = VGet(0.0f, 0.0f, 0.0f);
-			}
+
 		}
         else
         {
@@ -187,10 +191,7 @@ bool Player::Process()
                 v.x = cos(localRad + camrad) * length;
                 v.z = sin(localRad + camrad) * length;
             }
-            else
-            {
-                v = VGet(0.0f, 0.0f, 0.0f);
-            }
+
         }
 	}
 
@@ -213,6 +214,20 @@ bool Player::Process()
 	else
 	{
 		_status = STATUS::WAIT;
+	}
+
+	// --- ここで実際に位置とカメラを移動させる ---
+	if(VSize(v) > 0.0f)
+	{
+		// プレイヤーの位置を移動
+		_vPos = VAdd(_vPos, v);
+
+		// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
+		if(_cam != nullptr)
+		{
+			_cam->_vPos = VAdd(_vPos, _camOffset);
+			_cam->_vTarget = VAdd(_vPos, _camTargetOffset);
+		}
 	}
 
 	// アニメーション時間・アタッチ管理

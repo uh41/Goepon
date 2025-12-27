@@ -40,6 +40,9 @@ public:
 	auto GetColSubY() const { return _fColSubY; }
 
 	const VECTOR& SetPos(const VECTOR& pos) { return _vPos = pos; }
+	const VECTOR& GetDir() const { return _vDir; }
+	void SetDir(const VECTOR& dir) { _vDir = dir; }
+
 	auto GetCollisionR() const { return _fCollisionR; }
 	auto GetCollisionWeight() const { return _fCollisionWeight; }
 

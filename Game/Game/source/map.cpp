@@ -73,7 +73,7 @@ bool Map::Initialize()
 			data.at("scale").at("y").get_to(pos.sz);
 
 			// 名前のモデルがすでに読み込み済か？
-			if(_mModelHandle.count(pos.name) > 0)
+			if(_mModelHandle.count(pos.name) == 0)
 			{
 				// まだ読み込まれていない。読み込みを行う
 				std::string filename = _sPath + pos.name + ".mv1";

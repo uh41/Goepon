@@ -20,7 +20,7 @@ public:
 	virtual bool Render();
 
 
-	void SetCamera(Camera* cam)  override { _cam = cam; }
+	void SetCamera(Camera* cam)  override { _cam = cam; if(_cam) { _camOffset = VSub(_cam->_vPos, _vPos); _camTargetOffset = VSub(_cam->_vTarget, _vPos); } }
 
 protected:
 	Camera* _cam;
@@ -34,6 +34,10 @@ protected:
 	// 円形移動用パラメータ
 	float _arc_pivot_dist;		// 回転中心までの距離
 	float _arc_turn_speed;		// 円形移動時の回転速度係数
+
+	// カメラ追従用オフセット（カメラ位置 = _vPos + _camOffset）
+	VECTOR _camOffset;
+	VECTOR _camTargetOffset;
 
 };
 

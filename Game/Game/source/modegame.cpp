@@ -127,11 +127,15 @@ bool ModeGame::Process()
 		{
 			// プレイヤー→タヌキに切替：タヌキをプレイヤー位置へ
 			_playerTanuki->SetPos(_player->GetPos());
+			// 向きも合わせる
+			_playerTanuki->SetDir(_player->GetDir());
 		}
 		else
 		{
 			// タヌキ→プレイヤーに切替：プレイヤーをタヌキ位置へ
 			_player->SetPos(_playerTanuki->GetPos());
+			// 向きも合わせる
+			_player->SetDir(_playerTanuki->GetDir());
 		}
 	}
 
@@ -208,10 +212,6 @@ bool ModeGame::Render()
 	{
 		if(chara->IsAlive())
 		{
-			if(chara.get() == _player.get() || chara.get() == _playerTanuki.get())
-			{
-				continue; // プレイヤーは別処理
-			}
 			chara->Render();
 		}
 	}
