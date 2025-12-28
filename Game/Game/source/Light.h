@@ -1,3 +1,13 @@
+/*********************************************************************/
+// * \file   camera.cpp
+// * \brief  カメラクラス
+// *
+// * \author 石森虹大
+// * \date   2025/12/26
+// * \作業内容: 新規作成 石森虹大　2025/12/26
+/*********************************************************************/
+
+
 #pragma once
 #include "DxLib.h"
 enum class LightType
@@ -20,8 +30,8 @@ public:
 	void   SetDir(const VECTOR& d) { dir = d   ; }	
 	VECTOR GetDir() const          { return dir; }
 
-	void SetPosition(const VECTOR& p)  { pos = p;    }
-	VECTOR GetPosition() const         { return pos; }
+	void SetPos(const VECTOR& p) { pos = p; }
+	VECTOR GetPos() const { return pos; }
 	
 	// 色設定
 	void SetAmbient (const VECTOR& a, float aA = 1.0f) { ambient = a; ambientA = aA  ; }
