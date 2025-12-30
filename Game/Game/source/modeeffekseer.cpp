@@ -19,7 +19,7 @@ bool ModeEffekseer::Initialize()
 
 	// エフェクトリソースを読み込む。
 	// 読み込む時に大きさを指定する。
-	_iEffectResourceHandle = LoadEffekseerEffect("res/EF_windtry.efkefc", 100.0f);
+	_iEffectResourceHandle = LoadEffekseerEffect("res/Effect/hennsin.efkefc", 100.0f);
 
 	_vPos = VGet(1000.0f, 0.0f, 0.0f);
 
