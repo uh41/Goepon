@@ -12,6 +12,7 @@
 #include "objectbase.h"
 #include "appframe.h"
 #include "camera.h"
+#include "Light.h"
 
 class Map : public ObjectBase
 {
@@ -63,5 +64,8 @@ protected:
 	std::string _sJsonFile;
 	std::string _sJsonObjectName;
 	std::ifstream _iFile;
+
+	// ライト情報
+	Light _mainLight{ LightType::Directional };
 };
 

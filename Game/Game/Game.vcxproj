@@ -26,6 +26,7 @@
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
+    <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
     <ClInclude Include="source\menuitembase.h" />
     <ClInclude Include="source\modeeffekseer.h" />
@@ -44,6 +45,7 @@
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
+    <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
     <ClCompile Include="source\menuitembase.cpp" />
     <ClCompile Include="source\modeeffekseer.cpp" />

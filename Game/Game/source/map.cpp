@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 2;
+	constexpr int MAP_SELECT = 0;
 
 	if(MAP_SELECT == 0)
 	{
@@ -123,6 +123,12 @@ bool Map::Initialize()
 	// シャドウマップの生成
 	_iHandleShadowMap = MakeShadowMap(2048, 2048);
 
+	// ライト初期設定（例）
+	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
+	_mainLight.SetAmbient(VGet(0.0f, 0.0f, 0.0f), 0.0f);
+	_mainLight.SetDiffuse(VGet(1.0f, 1.0f, 1.0f), 1.0f);
+	_mainLight.SetSpecular(VGet(0.0f, 0.0f, 0.0f), 0.0f);
+	_mainLight.SetCastShadow(true);
 	return true;
 }
 
