@@ -21,6 +21,8 @@ bool ModeEffekseer::Initialize()
 	// 読み込む時に大きさを指定する。
 	_iEffectResourceHandle = LoadEffekseerEffect("res/EF_windtry.efkefc", 100.0f);
 
+	//MV1SetShapeRate();
+
 	_vPos = VGet(1000.0f, 0.0f, 0.0f);
 
 	return true;

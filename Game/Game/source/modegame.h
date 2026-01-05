@@ -81,6 +81,10 @@ public:
 	void StartCameraControlAndSave();
 	void EndCameraControlAndRestore();
 
+	// ブロック取得処理
+	//void InitHpBlock();
+	//void UpdateHpBlock();
+
 protected:
 	Camera* _camera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
@@ -114,6 +118,11 @@ protected:
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+
+	int _iBlocks;	// ブロック数
+	std::vector<float> _vBlockFill; // 表示用現在値(0..1)
+	std::vector<float> _vBlockTarget; // 目標値(0..1)
+	float _fBlockAnimSpeed; // ブロックアニメーション速度
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;

@@ -44,6 +44,8 @@ bool ModeGame::Initialize()
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 
+	//InitHpBlock();// ブロック初期化
+
 	DebugInitialize();// デバック初期化
 
 	_bResolveOnY = false;
@@ -314,6 +316,29 @@ bool ModeGame::Render()
 	// プレイヤーのHP情報も表示
 	DrawFormatString(10, 50, GetColor(0, 255, 0), 
 		"Player HP: %.1f", _player->GetHP());
+
+	//if(_player)
+	//{
+	//	int padding = 16; // フォントサイズ分の余白
+	//	int block_w = 10; // 1ブロック幅
+	//	int block_h = 18;  // 1ブロック高さ
+	//	int gap = 4; // ブロック間の隙間
+
+	//	int bolock = _hud
+
+	//	int screen_w = ApplicationMain::GetInstance()->DispSizeW();
+	//	int screen_h = ApplicationMain::GetInstance()->DispSizeH();
+
+	//	int bar_x = screen_w - bar_w - padding;
+	//	int bar_y = screen_h - bar_h - padding;
+
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192); // 半透明に設定
+	//	DrawBox(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, GetColor(40, 40, 40), TRUE); // 黒い背景
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモード解除
+
+	//	float hp = _player->GetHP();
+
+	//}
 
 	return true;
 }
