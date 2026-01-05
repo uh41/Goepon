@@ -9,7 +9,7 @@
 
 #pragma once
 #include "camera.h"
-#include "appframe.h"
+#include "appframe.h" 
 
 namespace
 {
@@ -28,8 +28,37 @@ public:
 	virtual bool Render();
 
 	virtual void SetCamera(Camera* cam) { _cam = cam; }
+	//jsonデータの格納
+	virtual void SetJsonDataUE(nlohmann::json j);
+
+	// セッター
+	void SetPos(const VECTOR& pos) { _pos = pos; }
+	void SetEulerAngle(const VECTOR& set) { _eulerAngle = set; }
+	void SetEulerAngleDeg(const VECTOR& set) { _eulerAngle = { DEG2RAD(set.x), DEG2RAD(set.y), DEG2RAD(set.z) }; }
+	void SetScale(const VECTOR& set) { _scale = set; }
+
+	//回転縮小平行移動を計算し、モデルに適用する
+	void ModelMatrixSetUp();
 
 protected:
+
+	//モデルのハンドル
+	int _handle;
+	//モデルの当たり判定用フレームのアタッチ番号
+	int _attachIndex;
+
+	VECTOR _pos;				//ワールド座標
+
+	VECTOR _eulerAngle;			//角度
+
+	VECTOR _scale;				//拡縮
+
+	std::string _name;			//名前
+
+	//DamageData _damageData;		//ダメージデータ
+
+	//STATE _state;				//状態
+
 	Camera* _cam;
 	int _iHandle;
 	float _half_polygon_size;

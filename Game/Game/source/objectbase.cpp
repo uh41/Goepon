@@ -8,6 +8,8 @@
 /*********************************************************************/
 
 #include "objectbase.h"
+#include"DxLib.h"
+
 
 // 初期化
 bool ObjectBase::Initialize()
@@ -38,4 +40,40 @@ bool ObjectBase::Process()
 bool ObjectBase::Render()
 {
 	return true;
+}
+
+//座標などの読み込み
+void ObjectBase::SetJsonDataUE(nlohmann::json j)
+{
+	SetPos(VECTOR
+	{
+	j.at("translate").at("x").get<float>(),
+	j.at("translate").at("z").get<float>(),
+	-1.0f * j.at("translate").at("y").get<float>()
+	});
+	SetEulerAngleDeg(VECTOR
+	{
+		j.at("rotate").at("x").get<float>(),
+		j.at("rotate").at("z").get<float>(),
+		j.at("rotate").at("y").get<float>()
+	});
+	SetScale(VECTOR
+	{
+		j.at("scale").at("x").get<float>(),
+		j.at("scale").at("z").get<float>(),
+		j.at("scale").at("y").get<float>()
+	});
+	ModelMatrixSetUp();
+}
+
+// モデルに角度と移動値を判定する
+void ObjectBase::ModelMatrixSetUp()
+{
+	MATRIX matrix = MGetIdent();
+	matrix = MMult(matrix, MGetRotX(_eulerAngle.x));
+	matrix = MMult(matrix, MGetRotZ(_eulerAngle.z));
+	matrix = MMult(matrix, MGetRotY(_eulerAngle.y + PI));
+	MV1SetMatrix(_handle, matrix);
+
+	MV1RefreshCollInfo(_handle, _attachIndex);
 }
