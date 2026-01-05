@@ -14,7 +14,10 @@
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_iHandle = MV1LoadModel("res/Player/Player.mv1");
+	_iHandle = MV1LoadModel("res/Player/goepon.mv1");
+
+	float model_scale = 10.0f;// モデルの大きさ調整用スケール
+	MV1SetScale(_iHandle, VGet(model_scale, model_scale, model_scale));
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
