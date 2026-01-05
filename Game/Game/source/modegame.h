@@ -19,6 +19,8 @@
 #include "enemy.h"
 #include "map.h"
 #include "cube.h"
+#include "uibase.h"
+#include "uihp.h"
 
 
 
@@ -81,10 +83,6 @@ public:
 	void StartCameraControlAndSave();
 	void EndCameraControlAndRestore();
 
-	// ブロック取得処理
-	//void InitHpBlock();
-	//void UpdateHpBlock();
-
 protected:
 	Camera* _camera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
@@ -104,6 +102,9 @@ protected:
 	std::shared_ptr<Cube> _cube;
 	// 敵
 	std::vector<std::shared_ptr<Enemy>> _enemy;
+	// UI
+	std::vector<std::shared_ptr<UiBase>> _uiBase;
+	std::shared_ptr<UiHp> _uiHp;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

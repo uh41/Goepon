@@ -4,7 +4,8 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
+//				: UI HP追加	鈴木裕稀 2026/01/06
 /*********************************************************************/
 
 #include "modegame.h"
@@ -38,6 +39,12 @@ bool ModeGame::Initialize()
 	for(auto& player_base : _playerBase)
 	{
 		player_base->Initialize();
+	}
+
+	// UI
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Initialize();
 	}
 
 	_map->SetCamera(_camera);
@@ -77,6 +84,11 @@ bool ModeGame::Terminate()
 		player_base->Terminate();
 	}
 	_playerBase.clear();
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Terminate();
+	}
+	_uiBase.clear();
 	delete _camera;
 	return true;
 }
@@ -225,8 +237,14 @@ bool ModeGame::Process()
 		object->Process();
 	}
 
+	// UI処理
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Process();
+	}
+
 	// 敵との当たり判定処理（生存している敵のみ）
-// 	...
+	// 	...
 	// 当たり判定の処理をここに書く
 	
 	CharaToCubeCollision(_player.get(), _cube.get());
@@ -255,7 +273,6 @@ bool ModeGame::Render()
 {
 	base::Render();
 
-	
 	// カメラ設定更新
 	SetCameraPositionAndTarget_UpVecY(_camera->_vPos, _camera->_vTarget);
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
@@ -292,6 +309,13 @@ bool ModeGame::Render()
 				player_base->Render();
 			}
 		}
+	}
+
+
+	// UIを描画
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Render();
 	}
 
 	DebugRender();// デバック描画処理
