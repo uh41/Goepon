@@ -26,7 +26,7 @@ public:
 	bool Terminate();		// 終了処理
 	bool ProcessInit();		// 処理の手前に呼び出す初期化
 	bool Process();			// 処理
-	bool Render();		// 描画
+	bool Render();		    // 描画
 
 	// オーナー
 	class ModeGame* GetGame()const { return _game; }

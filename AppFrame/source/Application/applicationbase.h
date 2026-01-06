@@ -28,6 +28,10 @@ public:
 	virtual int DispSizeW() { return 640; }
 	virtual int DispSizeH() { return 480; }
 
+	// ターゲットFPSの設定。デフォルトは60FPS
+	virtual int TargetFps() const { return 60; }
+	virtual int UseSync()   const { return false; }
+
 	static	ApplicationBase	*GetInstance() { return _lp_instance; }
 	virtual int GetKey() { return _gKey; }
 	virtual int GetTrg() { return _gTrg; }
