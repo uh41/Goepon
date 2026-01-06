@@ -4,7 +4,8 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
+//				: UI HP追加	鈴木裕稀 2026/01/06
 /*********************************************************************/
 
 #include "modegame.h"
@@ -36,6 +37,12 @@ bool ModeGame::ObjectInitialize()
 	// 敵初期化
 	_enemy.emplace_back(std::make_shared<Enemy>());
 	_chara.emplace_back(_enemy.back());
+
+	// ui初期化
+	_uiHp = std::make_shared<UiHp>();
+	_uiHp->SetPlayer(_player.get());
+	_uiBase.emplace_back(_uiHp);
+
 
 	return true;
 }

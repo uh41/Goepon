@@ -19,6 +19,8 @@
 #include "enemy.h"
 #include "map.h"
 #include "cube.h"
+#include "uibase.h"
+#include "uihp.h"
 
 
 
@@ -100,6 +102,9 @@ protected:
 	std::shared_ptr<Cube> _cube;
 	// 敵
 	std::vector<std::shared_ptr<Enemy>> _enemy;
+	// UI
+	std::vector<std::shared_ptr<UiBase>> _uiBase;
+	std::shared_ptr<UiHp> _uiHp;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -114,6 +119,11 @@ protected:
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+
+	int _iBlocks;	// ブロック数
+	std::vector<float> _vBlockFill; // 表示用現在値(0..1)
+	std::vector<float> _vBlockTarget; // 目標値(0..1)
+	float _fBlockAnimSpeed; // ブロックアニメーション速度
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;

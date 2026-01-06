@@ -36,6 +36,8 @@
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\uibase.h" />
+    <ClInclude Include="source\uihp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\applicationglobal.cpp" />
@@ -58,6 +60,8 @@
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
+    <ClCompile Include="source\uibase.cpp" />
+    <ClCompile Include="source\uihp.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
