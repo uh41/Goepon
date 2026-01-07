@@ -4,7 +4,8 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
+//				: UI HP追加	鈴木裕稀 2026/01/06
 /*********************************************************************/
 
 #include "modegame.h"
@@ -40,9 +41,17 @@ bool ModeGame::Initialize()
 		player_base->Initialize();
 	}
 
+	// UI
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Initialize();
+	}
+
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
+
+	//InitHpBlock();// ブロック初期化
 
 	DebugInitialize();// デバック初期化
 
@@ -82,6 +91,11 @@ bool ModeGame::Terminate()
 		player_base->Terminate();
 	}
 	_playerBase.clear();
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Terminate();
+	}
+	_uiBase.clear();
 	delete _camera;
 
 	// 索敵システムの終了処理
@@ -238,8 +252,14 @@ bool ModeGame::Process()
 		object->Process();
 	}
 
+	// UI処理
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Process();
+	}
+
 	// 敵との当たり判定処理（生存している敵のみ）
-// 	...
+	// 	...
 	// 当たり判定の処理をここに書く
 	
 	CharaToCubeCollision(_player.get(), _cube.get());
@@ -275,7 +295,6 @@ bool ModeGame::Render()
 {
 	base::Render();
 
-	
 	// カメラ設定更新
 	SetCameraPositionAndTarget_UpVecY(_camera->_vPos, _camera->_vTarget);
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
@@ -314,6 +333,13 @@ bool ModeGame::Render()
 		}
 	}
 
+
+	// UIを描画
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Render();
+	}
+
 	DebugRender();// デバック描画処理
 
 	// 敵のHP情報を画面に表示（生存している敵のみ）
@@ -345,6 +371,28 @@ bool ModeGame::Render()
 
 	// 検出UIの描画
 	RenderDetectionUI();
+	//if(_player)
+	//{
+	//	int padding = 16; // フォントサイズ分の余白
+	//	int block_w = 10; // 1ブロック幅
+	//	int block_h = 18;  // 1ブロック高さ
+	//	int gap = 4; // ブロック間の隙間
+
+	//	int bolock = _hud
+
+	//	int screen_w = ApplicationMain::GetInstance()->DispSizeW();
+	//	int screen_h = ApplicationMain::GetInstance()->DispSizeH();
+
+	//	int bar_x = screen_w - bar_w - padding;
+	//	int bar_y = screen_h - bar_h - padding;
+
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192); // 半透明に設定
+	//	DrawBox(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, GetColor(40, 40, 40), TRUE); // 黒い背景
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモード解除
+
+	//	float hp = _player->GetHP();
+
+	//}
 
 	return true;
 }
