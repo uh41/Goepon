@@ -19,7 +19,7 @@
 #include "enemy.h"
 #include "map.h"
 #include "cube.h"
-
+#include "enemysensor.h"
 
 
 class ModeGame : public ModeBase
@@ -118,5 +118,11 @@ protected:
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;
 
+	// 索敵システム
+	std::shared_ptr<EnemySensor> _enemySensor;
+
+	// 索敵関連の処理（簡略化）
+	bool CheckAllDetections();// 全体の索敵チェック
+	void RenderDetectionUI();// 検出UI表示
 };
 

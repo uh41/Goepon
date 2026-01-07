@@ -52,6 +52,13 @@ bool ModeGame::Initialize()
 	_hasSavedCameraState = false;
 
 	_bShowTanuki = false;
+
+	// 索敵システムの初期化
+	_enemySensor = std::make_shared<EnemySensor>();
+	_enemySensor->Initialize();
+	_enemySensor->SetPos(VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
+	_enemySensor->SetDir(VGet(0.0f, 0.0f, -1.0f));
+
 	return true;
 }
 
@@ -76,6 +83,14 @@ bool ModeGame::Terminate()
 	}
 	_playerBase.clear();
 	delete _camera;
+
+	// 索敵システムの終了処理
+	if (_enemySensor)
+	{
+		_enemySensor->Terminate();
+		_enemySensor.reset();
+	}
+
 	return true;
 }
 
@@ -245,6 +260,13 @@ bool ModeGame::Process()
 		PlayerCameraInfo(_player.get());
 	}
 
+	// 索敵システムの処理
+	if (_enemySensor)
+	{
+		_enemySensor->Process();
+		CheckAllDetections();
+	}
+
 	return true;
 }
 
@@ -315,6 +337,15 @@ bool ModeGame::Render()
 	DrawFormatString(10, 50, GetColor(0, 255, 0), 
 		"Player HP: %.1f", _player->GetHP());
 
+	// 索敵システムの描画
+	if (_enemySensor)
+	{
+		_enemySensor->Render();
+	}
+
+	// 検出UIの描画
+	RenderDetectionUI();
+
 	return true;
 }
 
@@ -358,5 +389,59 @@ void ModeGame::EndCameraControlAndRestore()
 		_hasSavedCameraState = false;
 		// カメラ操作モードを無効にする
 		_bCameraControlMode = false;
+	}
+}
+
+bool ModeGame::CheckAllDetections()
+{
+	if (!_enemySensor)
+	{
+		return false;
+	}
+
+	// 現在表示中のプレイヤーをチェック
+	PlayerBase* currentPlayer = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get()) : static_cast<PlayerBase*>(_player.get());
+	return _enemySensor->CheckPlayerDetection(currentPlayer);
+}
+
+void ModeGame::RenderDetectionUI()
+{
+	if (!_enemySensor)
+	{
+		return;
+	}
+
+	const DetectionInfo& info = _enemySensor->GetDetectionInfo();
+
+	if (info.isDetected && info.timer > 0.0f)
+	{
+		// 画面中央に大きく「found」を表示
+		int screenWidth = 1920;  // 画面幅
+		int screenHeight = 1080; // 画面高さ
+
+		// フォントサイズを大きく設定
+		SetFontSize(64);
+
+		// 「found」の文字列の幅を取得して中央揃え
+		const char* foundText = "found";
+		int textWidth = GetDrawStringWidth(foundText, strlen(foundText));
+		int x = (screenWidth - textWidth) / 2;
+		int y = screenHeight / 2 - 32;
+
+		// 背景色で縁取り
+		DrawString(x - 2, y - 2, foundText, GetColor(0, 0, 0));
+		DrawString(x + 2, y - 2, foundText, GetColor(0, 0, 0));
+		DrawString(x - 2, y + 2, foundText, GetColor(0, 0, 0));
+		DrawString(x + 2, y + 2, foundText, GetColor(0, 0, 0));
+
+		// メイン文字（赤色）
+		DrawString(x, y, foundText, GetColor(255, 0, 0));
+
+		// フォントサイズを元に戻す
+		SetFontSize(16);
+
+		// タイマー情報
+		DrawFormatString(x, y + 80, GetColor(255, 255, 0),
+			"Timer: %.1f", info.timer);
 	}
 }
