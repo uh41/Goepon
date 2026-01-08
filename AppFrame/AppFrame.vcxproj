@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Game\Game\res\ResourceServer.h" />
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="source\Sound\soundserver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Game\Game\res\ResourceServer.cpp" />
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
