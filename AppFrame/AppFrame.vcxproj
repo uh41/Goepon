@@ -158,7 +158,6 @@
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
-    <ClInclude Include="source\Manager\imagemanager.h" />
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
@@ -175,7 +174,6 @@
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
-    <ClCompile Include="source\Manager\imagemanager.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />

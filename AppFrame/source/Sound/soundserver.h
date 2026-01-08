@@ -9,7 +9,7 @@
 
 #pragma once
 #include "../container.h"
-#include "sounditembase.h" // include base so TYPE is visible
+#include "sounditembase.h"
 
 // ‘O•ûéŒ¾
 namespace soundserver 
