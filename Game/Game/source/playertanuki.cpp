@@ -56,9 +56,6 @@ bool PlayerTanuki::Process()
 	// 処理前の位置を保存
 	_vOldPos = _vPos;
 
-	// 補間ターン速度（ラジアン／フレーム）
-	const float AXIS_TURN_SPEED = 0.12f;
-
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
 	VECTOR v = { 0,0,0 };
