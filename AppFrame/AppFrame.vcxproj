@@ -153,7 +153,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Game\Game\res\ResourceServer.h" />
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
@@ -163,6 +162,7 @@
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
+    <ClInclude Include="source\resource\ResourceServer.h" />
     <ClInclude Include="source\Sound\sounditembase.h" />
     <ClInclude Include="source\Sound\sounditembgm.h" />
     <ClInclude Include="source\Sound\sounditemoneshot.h" />
@@ -173,13 +173,13 @@
     <ClInclude Include="source\Sound\soundserver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Game\Game\res\ResourceServer.cpp" />
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
     <ClCompile Include="source\Manager\imagemanager.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
   </ItemGroup>

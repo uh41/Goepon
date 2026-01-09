@@ -26,9 +26,9 @@ public:
 	~CFile();
 	std::string	Filename() { return _fileName; }
 	void* Data() { return _data; }
-	std::string DataStr() { return std::string(_data); }
+	std::string DataStr() { return std::string(_data); } 
 	int Size() { return _size; }
-	bool Success() { return _success; }
+	bool Success() { return _success; }	 
 
 private:
 	void Init();
