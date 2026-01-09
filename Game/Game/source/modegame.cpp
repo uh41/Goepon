@@ -68,6 +68,12 @@ bool ModeGame::Initialize()
 	_enemySensor->SetPos(VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
 	_enemySensor->SetDir(VGet(0.0f, 0.0f, -1.0f));
 
+	// エネミーにセンサーを設定
+	for (auto& enemy : _enemy)
+	{
+		enemy->SetEnemySensor(_enemySensor);
+	}
+
 	return true;
 }
 
@@ -237,12 +243,32 @@ bool ModeGame::Process()
 		_player->Process();
 	}
 
+	// 現在のプレイヤーの位置を取得
+	VECTOR currentPlayerPos;
+	if (_bShowTanuki)
+	{
+		currentPlayerPos = _playerTanuki->GetPos();
+	}
+	else
+	{
+		currentPlayerPos = _player->GetPos();
+	}
+
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)
 	{
 		if(chara->IsAlive())
 		{
 			chara->Process();
+		}
+	}
+
+	// エネミーの処理
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive())
+		{
+			enemy->Process();
 		}
 	}
 
@@ -449,7 +475,33 @@ bool ModeGame::CheckAllDetections()
 
 	// 現在表示中のプレイヤーをチェック
 	PlayerBase* currentPlayer = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get()) : static_cast<PlayerBase*>(_player.get());
-	return _enemySensor->CheckPlayerDetection(currentPlayer);
+	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
+
+	// 検出状態に応じてエネミーに通知
+	if (detected)
+	{
+		VECTOR playerPos = currentPlayer->GetPos();
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerDetected(playerPos);
+			}
+		}
+	}
+	else
+	{
+		// プレイヤーが検出範囲外になった場合
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerLost();
+			}
+		}
+	}
+
+	return detected;
 }
 
 void ModeGame::RenderDetectionUI()

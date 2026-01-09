@@ -10,6 +10,10 @@
 #pragma once
 #include "enemybase.h"
 
+// 前方宣言
+class EnemySensor;
+class PlayerBase;
+
 class Enemy : public EnemyBase
 {
 	typedef EnemyBase base;
@@ -20,6 +24,19 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-protected:
-};
+	// EnemySensorとの連携
+	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);
+	void OnPlayerDetected(const VECTOR& playerPos);
+	void OnPlayerLost();
 
+protected:
+	// センサー関連
+	std::shared_ptr<EnemySensor> _enemySensor;
+	bool _detectedPlayer;		// プレイヤーを検出したか
+	VECTOR _playerPos;			// 検出したプレイヤーの位置
+	float _rotationSpeed;		// 回転速度
+
+	// プレイヤーの方向を向く処理
+	void LookAtPlayer();
+	void UpdateRotationToPlayer();
+};
