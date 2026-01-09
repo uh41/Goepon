@@ -134,6 +134,5 @@ protected:
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック
-	void RenderDetectionUI();// 検出UI表示
 };
 

@@ -48,6 +48,9 @@ public:
 	// デバッグ用：索敵範囲の描画
 	void RenderDetectionSector() const;
 
+	// 検出UI表示
+	void RenderDetectionUI() const;
+
 	// センサーの有効/無効状態
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }

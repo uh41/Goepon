@@ -393,10 +393,9 @@ bool ModeGame::Render()
 	if (_enemySensor)
 	{
 		_enemySensor->Render();
+		_enemySensor->RenderDetectionUI();
 	}
 
-	// 検出UIの描画
-	RenderDetectionUI();
 	//if(_player)
 	//{
 	//	int padding = 16; // フォントサイズ分の余白
@@ -504,44 +503,3 @@ bool ModeGame::CheckAllDetections()
 	return detected;
 }
 
-void ModeGame::RenderDetectionUI()
-{
-	if (!_enemySensor)
-	{
-		return;
-	}
-
-	const DetectionInfo& info = _enemySensor->GetDetectionInfo();
-
-	if (info.isDetected && info.timer > 0.0f)
-	{
-		// 画面中央に大きく「found」を表示
-		int screenWidth = 1920;  // 画面幅
-		int screenHeight = 1080; // 画面高さ
-
-		// フォントサイズを大きく設定
-		SetFontSize(64);
-
-		// 「found」の文字列の幅を取得して中央揃え
-		const char* foundText = "found";
-		int textWidth = GetDrawStringWidth(foundText, strlen(foundText));
-		int x = (screenWidth - textWidth) / 2;
-		int y = screenHeight / 2 - 32;
-
-		// 背景色で縁取り
-		DrawString(x - 2, y - 2, foundText, GetColor(0, 0, 0));
-		DrawString(x + 2, y - 2, foundText, GetColor(0, 0, 0));
-		DrawString(x - 2, y + 2, foundText, GetColor(0, 0, 0));
-		DrawString(x + 2, y + 2, foundText, GetColor(0, 0, 0));
-
-		// メイン文字（赤色）
-		DrawString(x, y, foundText, GetColor(255, 0, 0));
-
-		// フォントサイズを元に戻す
-		SetFontSize(16);
-
-		// タイマー情報
-		DrawFormatString(x, y + 80, GetColor(255, 255, 0),
-			"Timer: %.1f", info.timer);
-	}
-}
