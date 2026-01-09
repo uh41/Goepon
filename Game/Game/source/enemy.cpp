@@ -38,6 +38,11 @@ bool Enemy::Initialize()
 	_playerPos = VGet(0.0f, 0.0f, 0.0f);
 	_rotationSpeed = 0.5f; // 回転速度（調整可能）
 
+	// 追加：移動関連の初期化
+	_moveSpeed = 2.0f; // 移動速度（調整可能）
+	_targetPosition = VGet(0.0f, 0.0f, 0.0f);
+	_isMoving = false;
+
 	return true;
 }
 
@@ -88,10 +93,25 @@ void Enemy::LookAtPlayer()
 // プレイヤーの方向に徐々に回転する処理
 void Enemy::UpdateRotationToPlayer()
 {
-	if (!_detectedPlayer) return;
+	VECTOR targetPos;
+
+	if (_enemySensor && _enemySensor->IsChasing())
+	{
+		// 追跡中は最後に確認されたプレイヤーの位置を使用
+		targetPos = _enemySensor->GetLastKnownPlayerPosition();
+	}
+	else if (_detectedPlayer)
+	{
+		// 通常の検出時は現在のプレイヤー位置を使用
+		targetPos = _playerPos;
+	}
+	else
+	{
+		return; // 検出もしていないし追跡もしていない場合は何もしない
+	}
 
 	// プレイヤーへの方向ベクトルを計算
-	VECTOR toPlayer = VSub(_playerPos, _vPos);
+	VECTOR toPlayer = VSub(targetPos, _vPos);
 	toPlayer.y = 0.0f;
 
 	if (VSize(toPlayer) < 0.01f) return;
@@ -137,6 +157,9 @@ bool Enemy::Process()
 	{
 		_enemySensor->SetPos(_vPos);
 		_enemySensor->SetDir(_vDir);
+
+		// 追加：追跡処理
+		UpdateChasing();
 	}
 
 	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
@@ -212,6 +235,57 @@ bool Enemy::Process()
 	}
 
 	return true;
+}
+
+// 追加：追跡処理のメソッド
+void Enemy::UpdateChasing()
+{
+	if (_enemySensor && _enemySensor->IsChasing())
+	{
+		// 追跡中の場合、最後に確認されたプレイヤーの位置に向かって移動
+		VECTOR targetPos = _enemySensor->GetLastKnownPlayerPosition();
+		MoveTowardsTarget(targetPos);
+
+		// プレイヤーの方向に徐々に向く
+		UpdateRotationToPlayer();
+	}
+	else
+	{
+		// 追跡していない場合は停止
+		_isMoving = false;
+	}
+}
+
+// 追加：目標位置に向かって移動するメソッド
+void Enemy::MoveTowardsTarget(const VECTOR& target)
+{
+	// 目標位置への方向ベクトルを計算
+	VECTOR toTarget = VSub(target, _vPos);
+	toTarget.y = 0.0f; // Y軸は無視（水平移動のみ）
+
+	float distance = VSize(toTarget);
+
+	// 十分近い場合は移動しない
+	if (distance < 50.0f)
+	{
+		_isMoving = false;
+		return;
+	}
+
+	_isMoving = true;
+
+	// 正規化して移動方向を取得
+	VECTOR moveDirection = VNorm(toTarget);
+
+	// 移動量を計算
+	VECTOR movement = VScale(moveDirection, _moveSpeed);
+
+	// 新しい位置を計算
+	VECTOR newPos = VAdd(_vPos, movement);
+	_vPos = newPos;
+
+	// 目標位置を更新
+	_targetPosition = target;
 }
 
 // 描画処理

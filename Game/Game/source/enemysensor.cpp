@@ -16,6 +16,11 @@ bool EnemySensor::Initialize()
 	_detectionInfo.detectorIndex = -1;
 	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
 
+	// 追加：追跡情報の初期化
+	_detectionInfo.isChasing = false;
+	_detectionInfo.lastKnownPlayerPos = VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.chaseTimer = 0.0f;
+
 	// デフォルトの索敵範囲設定
 	SetDetectionSector(400.0f, 60.0f);
 
@@ -43,6 +48,9 @@ bool EnemySensor::Process()
 	// 検出タイマーの更新
 	UpdateDetectionTimer();
 
+	//// 追加：追跡タイマーの更新
+	//UpdateChaseTimer();
+
 	return true;
 }
 
@@ -58,6 +66,86 @@ bool EnemySensor::Render()
 	}
 
 	return true;
+}
+
+// プレイヤーの検出チェック
+bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
+{
+	if (!player || !_bSensorEnabled)
+	{
+		return false;
+	}
+
+	VECTOR playerPos = player->GetPos();
+	bool detected = IsPlayerInDetectionRange(playerPos);
+
+	if (detected)
+	{
+		// プレイヤーが範囲内にいる場合
+		if (!_detectionInfo.isDetected)
+		{
+			// 新しく検出された場合
+			_detectionInfo.isDetected = true;
+			_detectionInfo.timer = DETECTION_DISPLAY_TIME;
+			_detectionInfo.detectorPos = _vPos;
+		}
+
+		// 追加：プレイヤーを検出中は常に位置を更新し、追跡タイマーをリセット
+		_detectionInfo.lastKnownPlayerPos = playerPos;
+		_detectionInfo.isChasing = true;
+		_detectionInfo.chaseTimer = CHASE_TIME;
+	}
+	else if (_detectionInfo.isChasing)
+	{
+		// プレイヤーが範囲外だが、まだ追跡中の場合
+		// 最後に確認された位置は更新しない（記憶している位置を維持）
+	}
+
+	return detected;
+}
+
+// 検出状態のリセット
+void EnemySensor::ResetDetection()
+{
+	_detectionInfo.isDetected = false;
+	_detectionInfo.timer = 0.0f;
+	_detectionInfo.detectorIndex = -1;
+	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
+
+	// 追加：追跡状態もリセット
+	_detectionInfo.isChasing = false;
+	_detectionInfo.lastKnownPlayerPos = VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.chaseTimer = 0.0f;
+}
+
+// 検出タイマーの更新
+void EnemySensor::UpdateDetectionTimer()
+{
+	if (_detectionInfo.timer > 0.0f)
+	{
+		_detectionInfo.timer -= 1.0f / 60.0f; // 60FPSとして計算
+
+		if (_detectionInfo.timer <= 0.0f)
+		{
+			_detectionInfo.isDetected = false;
+			_detectionInfo.detectorIndex = -1;
+		}
+	}
+}
+
+// 追加：追跡タイマーの更新
+void EnemySensor::UpdateChaseTimer()
+{
+	if (_detectionInfo.chaseTimer > 0.0f)
+	{
+		_detectionInfo.chaseTimer -= 1.0f / 60.0f; // 60FPSとして計算
+
+		if (_detectionInfo.chaseTimer <= 0.0f)
+		{
+			_detectionInfo.isChasing = false;
+			_detectionInfo.chaseTimer = 0.0f;
+		}
+	}
 }
 
 // 索敵範囲の設定
@@ -121,55 +209,6 @@ bool EnemySensor::IsPlayerInDetectionRange(const VECTOR& playerPos) const
 	float halfAngle = _detectionSector.angle * 0.5f;
 
 	return angleDeg <= halfAngle;
-}
-
-// プレイヤーの検出チェック
-bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
-{
-	if (!player || !_bSensorEnabled)
-	{
-		return false;
-	}
-
-	VECTOR playerPos = player->GetPos();
-	bool detected = IsPlayerInDetectionRange(playerPos);
-
-	if (detected)
-	{
-		// 新しく検出された場合
-		if (!_detectionInfo.isDetected)
-		{
-			_detectionInfo.isDetected = true;
-			_detectionInfo.timer = DETECTION_DISPLAY_TIME;
-			_detectionInfo.detectorPos = _vPos;
-		}
-	}
-
-	return detected;
-}
-
-// 検出状態のリセット
-void EnemySensor::ResetDetection()
-{
-	_detectionInfo.isDetected = false;
-	_detectionInfo.timer = 0.0f;
-	_detectionInfo.detectorIndex = -1;
-	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
-}
-
-// 検出タイマーの更新
-void EnemySensor::UpdateDetectionTimer()
-{
-	if (_detectionInfo.timer > 0.0f)
-	{
-		_detectionInfo.timer -= 1.0f / 60.0f; // 60FPSとして計算
-
-		if (_detectionInfo.timer <= 0.0f)
-		{
-			_detectionInfo.isDetected = false;
-			_detectionInfo.detectorIndex = -1;
-		}
-	}
 }
 
 // デバッグ用：索敵範囲の描画
