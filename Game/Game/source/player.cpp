@@ -31,6 +31,7 @@ bool Player::Initialize()
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
+	// 移動速度設定
 	_fMvSpeed = 6.0f;
 
 	_iAxisHoldCount = 0;		// 十字キー水平入力保持カウント初期化
@@ -50,6 +51,9 @@ bool Player::Initialize()
 	_bLand = true;
 	
 	_fHp = 20.0f; // 初期体力設定
+
+	// CFileで読み込み
+
 	return true;
 }
 
