@@ -36,7 +36,7 @@ protected:
 	VECTOR _playerPos;			// 検出したプレイヤーの位置
 	float _rotationSpeed;		// 回転速度
 
-	// 追加：移動関連
+	// 移動関連
 	float _moveSpeed;			// 移動速度
 	VECTOR _targetPosition;		// 目標位置（追跡時の移動先）
 	bool _isMoving;				// 移動中かどうか
@@ -45,7 +45,7 @@ protected:
 	void LookAtPlayer();
 	void UpdateRotationToPlayer();
 
-	// 追加：移動処理
+	// 移動処理
 	void MoveTowardsTarget(const VECTOR& target);
 	void UpdateChasing();
 };

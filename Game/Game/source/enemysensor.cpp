@@ -16,7 +16,7 @@ bool EnemySensor::Initialize()
 	_detectionInfo.detectorIndex = -1;
 	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
 
-	// 追加：追跡情報の初期化
+	// 追跡情報の初期化
 	_detectionInfo.isChasing = false;
 	_detectionInfo.lastKnownPlayerPos = VGet(0.0f, 0.0f, 0.0f);
 	_detectionInfo.chaseTimer = 0.0f;
@@ -47,9 +47,6 @@ bool EnemySensor::Process()
 
 	// 検出タイマーの更新
 	UpdateDetectionTimer();
-
-	//// 追加：追跡タイマーの更新
-	//UpdateChaseTimer();
 
 	return true;
 }
@@ -90,7 +87,7 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 			_detectionInfo.detectorPos = _vPos;
 		}
 
-		// 追加：プレイヤーを検出中は常に位置を更新し、追跡タイマーをリセット
+		// プレイヤーを検出中は常に位置を更新し、追跡タイマーをリセット
 		_detectionInfo.lastKnownPlayerPos = playerPos;
 		_detectionInfo.isChasing = true;
 		_detectionInfo.chaseTimer = CHASE_TIME;
@@ -112,7 +109,7 @@ void EnemySensor::ResetDetection()
 	_detectionInfo.detectorIndex = -1;
 	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
 
-	// 追加：追跡状態もリセット
+	// 追跡状態リセット
 	_detectionInfo.isChasing = false;
 	_detectionInfo.lastKnownPlayerPos = VGet(0.0f, 0.0f, 0.0f);
 	_detectionInfo.chaseTimer = 0.0f;
@@ -129,21 +126,8 @@ void EnemySensor::UpdateDetectionTimer()
 		{
 			_detectionInfo.isDetected = false;
 			_detectionInfo.detectorIndex = -1;
-		}
-	}
-}
-
-// 追加：追跡タイマーの更新
-void EnemySensor::UpdateChaseTimer()
-{
-	if (_detectionInfo.chaseTimer > 0.0f)
-	{
-		_detectionInfo.chaseTimer -= 1.0f / 60.0f; // 60FPSとして計算
-
-		if (_detectionInfo.chaseTimer <= 0.0f)
-		{
+			// 追跡タイマーが切れたら追跡を停止
 			_detectionInfo.isChasing = false;
-			_detectionInfo.chaseTimer = 0.0f;
 		}
 	}
 }

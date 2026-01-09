@@ -422,7 +422,7 @@ bool ModeGame::Render()
 	return true;
 }
 
-// 追加: ModeGame のカメラ操作ラッパー
+// ModeGame のカメラ操作ラッパー
 void ModeGame::CameraMoveBy(const VECTOR& delta)
 {
 	if(_camera)
@@ -465,6 +465,7 @@ void ModeGame::EndCameraControlAndRestore()
 	}
 }
 
+// 全てのエネミーに対してプレイヤー検出をチェック
 bool ModeGame::CheckAllDetections()
 {
 	if (!_enemySensor)
@@ -472,8 +473,23 @@ bool ModeGame::CheckAllDetections()
 		return false;
 	}
 
-	// 現在表示中のプレイヤーをチェック
-	PlayerBase* currentPlayer = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get()) : static_cast<PlayerBase*>(_player.get());
+	// タヌキ状態の時のみ検知処理を実行
+	if (_bShowTanuki)
+	{
+		// 人間状態では検知されない
+		// 検知状態をリセットして敵に状態変更を通知
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerLost();
+			}
+		}
+		return false;
+	}
+
+	// タヌキ状態のプレイヤーのみをチェック対象にする
+	PlayerBase* currentPlayer = static_cast<PlayerBase*>(_player.get());
 	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
 
 	// 検出状態に応じてエネミーに通知

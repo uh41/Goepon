@@ -50,7 +50,7 @@ public:
 	// 検出状態のリセット
 	void ResetDetection();
 
-	// 追加：追跡機能
+	// 追跡機能
 	bool IsChasing() const { return _detectionInfo.isChasing; }
 	VECTOR GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
@@ -74,12 +74,11 @@ protected:
 
 	static constexpr float DETECTION_DISPLAY_TIME = 3.0f; // 検出表示時間（秒）
 
-	// 追加：追跡関連定数
+	// 追跡関連定数
 	static constexpr float CHASE_TIME = 5.0f; // 追跡継続時間（秒）
 
 	// 内部処理用メソッド
 	void UpdateDetectionTimer();       // 検出タイマーの更新
-	void UpdateChaseTimer();           // 追加：追跡タイマーの更新
 	VECTOR GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 };

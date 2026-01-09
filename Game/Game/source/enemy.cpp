@@ -38,7 +38,7 @@ bool Enemy::Initialize()
 	_playerPos = VGet(0.0f, 0.0f, 0.0f);
 	_rotationSpeed = 0.5f; // 回転速度（調整可能）
 
-	// 追加：移動関連の初期化
+	// 移動関連の初期化
 	_moveSpeed = 2.0f; // 移動速度（調整可能）
 	_targetPosition = VGet(0.0f, 0.0f, 0.0f);
 	_isMoving = false;
@@ -158,8 +158,18 @@ bool Enemy::Process()
 		_enemySensor->SetPos(_vPos);
 		_enemySensor->SetDir(_vDir);
 
-		// 追加：追跡処理
+		// 追跡処理
 		UpdateChasing();
+
+		// プレイヤーを検出している、または追跡中の場合のみWALKに設定
+		if (_detectedPlayer || _enemySensor->IsChasing())
+		{
+			_status = STATUS::WALK;
+		}
+		else
+		{
+			_status = STATUS::WAIT;
+		}
 	}
 
 	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
@@ -209,6 +219,20 @@ bool Enemy::Process()
 			}
 			break;
 		}
+		case STATUS::WALK:
+		{
+			int animIndex = MV1GetAnimIndex(_iHandle, "walk");
+			if (animIndex != -1)
+			{
+				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				if (_iAttachIndex != -1)
+				{
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fPlayTime = (float)(rand() % 30); // 少しずらす
+				}
+			}
+			break;
+		}
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
 		if (_iAttachIndex != -1)
@@ -237,7 +261,7 @@ bool Enemy::Process()
 	return true;
 }
 
-// 追加：追跡処理のメソッド
+// 追跡処理のメソッド
 void Enemy::UpdateChasing()
 {
 	if (_enemySensor && _enemySensor->IsChasing())
@@ -256,7 +280,7 @@ void Enemy::UpdateChasing()
 	}
 }
 
-// 追加：目標位置に向かって移動するメソッド
+// 目標位置に向かって移動するメソッド
 void Enemy::MoveTowardsTarget(const VECTOR& target)
 {
 	// 目標位置への方向ベクトルを計算
