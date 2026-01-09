@@ -15,4 +15,5 @@
 #include "CFile/CFile.h"
 #include "mymath.h"
 #include "container.h"
+#include "aliastemplate.h"
 

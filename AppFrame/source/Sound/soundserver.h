@@ -9,6 +9,7 @@
 
 #pragma once
 #include "../container.h"
+#include "../aliastemplate.h"
 #include "sounditembase.h"
 
 // 前方宣言
@@ -33,7 +34,7 @@ namespace soundserver
 		bool Del(SoundItemBase* sound);
 		SoundItemBase* Get(std::string name);
 
-		std::map<std::string, SoundItemBase*>& GetVector() { return _v; }
+		at::msc<SoundItemBase> GetVector() { return _v; }
 
 		void StopType(SoundItemBase::TYPE type);
 
@@ -41,9 +42,9 @@ namespace soundserver
 
 	protected:
 		bool _bIsUpdate; // 更新中フラグ
-		std::map<std::string, SoundItemBase*> _v;		// サウンドアイテムコンテナ
-		std::map<std::string, SoundItemBase*> _vAdd;	// 追加用コンテナ
-		std::map<std::string, SoundItemBase*> _vDel;	// 削除用コンテナ
+		at::msc<SoundItemBase> _v;		// サウンドアイテムコンテナ
+		at::msc<SoundItemBase> _vAdd;	// 追加用コンテナ
+		at::msc<SoundItemBase> _vDel;	// 削除用コンテナ
 
 		int _iCntOneShot; // OneShot用カウント
 	};
