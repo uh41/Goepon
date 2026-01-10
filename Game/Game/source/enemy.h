@@ -10,14 +10,9 @@
 #pragma once
 #include "enemybase.h"
 
-// 索敵範囲の情報を格納する構造体
-struct DetectionSector
-{
-	VECTOR center;      // 扇形の中心点（敵の位置）
-	VECTOR forward;     // 敵の正面方向
-	float radius;       // 索敵範囲の半径
-	float angle;        // 索敵角度（度）
-};
+// 前方宣言
+class EnemySensor;
+class PlayerBase;
 
 class Enemy : public EnemyBase
 {
@@ -29,17 +24,28 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	// 索敵範囲の設定
-	void SetDetectionSector(float radius, float angle);
-
-	// プレイヤーが索敵範囲内にいるかチェック
-	bool IsPlayerInDetectionRange(const VECTOR& playerPos) const;
-
-	// デバッグ用：索敵範囲の描画
-	void RenderDetectionSector() const;
+	// EnemySensorとの連携
+	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);
+	void OnPlayerDetected(const VECTOR& playerPos);
+	void OnPlayerLost();
 
 protected:
-	DetectionSector _detectionSector;  // 索敵範囲
-	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
-};
+	// センサー関連
+	std::shared_ptr<EnemySensor> _enemySensor;
+	bool _detectedPlayer;		// プレイヤーを検出したか
+	VECTOR _playerPos;			// 検出したプレイヤーの位置
+	float _rotationSpeed;		// 回転速度
 
+	// 移動関連
+	float _moveSpeed;			// 移動速度
+	VECTOR _targetPosition;		// 目標位置（追跡時の移動先）
+	bool _isMoving;				// 移動中かどうか
+
+	// プレイヤーの方向を向く処理
+	void LookAtPlayer();
+	void UpdateRotationToPlayer();
+
+	// 移動処理
+	void MoveTowardsTarget(const VECTOR& target);
+	void UpdateChasing();
+};

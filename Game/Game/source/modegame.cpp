@@ -4,7 +4,8 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
+//				: UI HP追加	鈴木裕稀 2026/01/06
 /*********************************************************************/
 
 #include "modegame.h"
@@ -40,9 +41,17 @@ bool ModeGame::Initialize()
 		player_base->Initialize();
 	}
 
+	// UI
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Initialize();
+	}
+
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
+
+	//InitHpBlock();// ブロック初期化
 
 	DebugInitialize();// デバック初期化
 
@@ -52,6 +61,19 @@ bool ModeGame::Initialize()
 	_hasSavedCameraState = false;
 
 	_bShowTanuki = false;
+
+	// 索敵システムの初期化
+	_enemySensor = std::make_shared<EnemySensor>();
+	_enemySensor->Initialize();
+	_enemySensor->SetPos(VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
+	_enemySensor->SetDir(VGet(0.0f, 0.0f, -1.0f));
+
+	// エネミーにセンサーを設定
+	for (auto& enemy : _enemy)
+	{
+		enemy->SetEnemySensor(_enemySensor);
+	}
+
 	return true;
 }
 
@@ -75,7 +97,20 @@ bool ModeGame::Terminate()
 		player_base->Terminate();
 	}
 	_playerBase.clear();
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Terminate();
+	}
+	_uiBase.clear();
 	delete _camera;
+
+	// 索敵システムの終了処理
+	if (_enemySensor)
+	{
+		_enemySensor->Terminate();
+		_enemySensor.reset();
+	}
+
 	return true;
 }
 
@@ -208,6 +243,17 @@ bool ModeGame::Process()
 		_player->Process();
 	}
 
+	// 現在のプレイヤーの位置を取得
+	VECTOR currentPlayerPos;
+	if (_bShowTanuki)
+	{
+		currentPlayerPos = _playerTanuki->GetPos();
+	}
+	else
+	{
+		currentPlayerPos = _player->GetPos();
+	}
+
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)
 	{
@@ -217,14 +263,29 @@ bool ModeGame::Process()
 		}
 	}
 
+	// エネミーの処理
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive())
+		{
+			enemy->Process();
+		}
+	}
+
 	// オブジェクト処理
 	for(auto& object : _object)
 	{
 		object->Process();
 	}
 
+	// UI処理
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Process();
+	}
+
 	// 敵との当たり判定処理（生存している敵のみ）
-// 	...
+	// 	...
 	// 当たり判定の処理をここに書く
 	
 	CharaToCubeCollision(_player.get(), _cube.get());
@@ -245,6 +306,13 @@ bool ModeGame::Process()
 		PlayerCameraInfo(_player.get());
 	}
 
+	// 索敵システムの処理
+	if (_enemySensor)
+	{
+		_enemySensor->Process();
+		CheckAllDetections();
+	}
+
 	return true;
 }
 
@@ -253,7 +321,6 @@ bool ModeGame::Render()
 {
 	base::Render();
 
-	
 	// カメラ設定更新
 	SetCameraPositionAndTarget_UpVecY(_camera->_vPos, _camera->_vTarget);
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
@@ -292,6 +359,13 @@ bool ModeGame::Render()
 		}
 	}
 
+
+	// UIを描画
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Render();
+	}
+
 	DebugRender();// デバック描画処理
 
 	// 敵のHP情報を画面に表示（生存している敵のみ）
@@ -315,10 +389,40 @@ bool ModeGame::Render()
 	DrawFormatString(10, 50, GetColor(0, 255, 0), 
 		"Player HP: %.1f", _player->GetHP());
 
+	// 索敵システムの描画
+	if (_enemySensor)
+	{
+		_enemySensor->Render();
+		_enemySensor->RenderDetectionUI();
+	}
+
+	//if(_player)
+	//{
+	//	int padding = 16; // フォントサイズ分の余白
+	//	int block_w = 10; // 1ブロック幅
+	//	int block_h = 18;  // 1ブロック高さ
+	//	int gap = 4; // ブロック間の隙間
+
+	//	int bolock = _hud
+
+	//	int screen_w = ApplicationMain::GetInstance()->DispSizeW();
+	//	int screen_h = ApplicationMain::GetInstance()->DispSizeH();
+
+	//	int bar_x = screen_w - bar_w - padding;
+	//	int bar_y = screen_h - bar_h - padding;
+
+	//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192); // 半透明に設定
+	//	DrawBox(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, GetColor(40, 40, 40), TRUE); // 黒い背景
+	//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモード解除
+
+	//	float hp = _player->GetHP();
+
+	//}
+
 	return true;
 }
 
-// 追加: ModeGame のカメラ操作ラッパー
+// ModeGame のカメラ操作ラッパー
 void ModeGame::CameraMoveBy(const VECTOR& delta)
 {
 	if(_camera)
@@ -360,3 +464,58 @@ void ModeGame::EndCameraControlAndRestore()
 		_bCameraControlMode = false;
 	}
 }
+
+// 全てのエネミーに対してプレイヤー検出をチェック
+bool ModeGame::CheckAllDetections()
+{
+	if (!_enemySensor)
+	{
+		return false;
+	}
+
+	// タヌキ状態の時のみ検知処理を実行
+	if (_bShowTanuki)
+	{
+		// 人間状態では検知されない
+		// 検知状態をリセットして敵に状態変更を通知
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerLost();
+			}
+		}
+		return false;
+	}
+
+	// タヌキ状態のプレイヤーのみをチェック対象にする
+	PlayerBase* currentPlayer = static_cast<PlayerBase*>(_player.get());
+	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
+
+	// 検出状態に応じてエネミーに通知
+	if (detected)
+	{
+		VECTOR playerPos = currentPlayer->GetPos();
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerDetected(playerPos);
+			}
+		}
+	}
+	else
+	{
+		// プレイヤーが検出範囲外になった場合
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerLost();
+			}
+		}
+	}
+
+	return detected;
+}
+

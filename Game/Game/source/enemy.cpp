@@ -8,6 +8,7 @@
 /*********************************************************************/
 
 #include "enemy.h"
+#include "enemysensor.h"
 
 // 初期化
 bool Enemy::Initialize()
@@ -32,8 +33,15 @@ bool Enemy::Initialize()
 
 	_fHp = 30.0f;
 
-	// 索敵範囲の初期設定（半径400cm、角度60度）
-	SetDetectionSector(400.0f, 60.0f);
+	// センサー関連の初期化
+	_detectedPlayer = false;
+	_playerPos = VGet(0.0f, 0.0f, 0.0f);
+	_rotationSpeed = 0.5f; // 回転速度（調整可能）
+
+	// 移動関連の初期化
+	_moveSpeed = 2.0f; // 移動速度（調整可能）
+	_targetPosition = VGet(0.0f, 0.0f, 0.0f);
+	_isMoving = false;
 
 	return true;
 }
@@ -45,6 +53,93 @@ bool Enemy::Terminate()
 	return true;
 }
 
+// EnemySensorを設定
+void Enemy::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
+{
+	_enemySensor = sensor;
+}
+
+// プレイヤーが検出された時の処理
+void Enemy::OnPlayerDetected(const VECTOR& playerPos)
+{
+	_detectedPlayer = true;
+	_playerPos = playerPos;
+}
+
+// プレイヤーが検出範囲外になった時の処理
+void Enemy::OnPlayerLost()
+{
+	_detectedPlayer = false;
+}
+
+// プレイヤーの方向を向く処理（即座に向く）
+void Enemy::LookAtPlayer()
+{
+	if (!_detectedPlayer) return;
+
+	// プレイヤーへの方向ベクトルを計算
+	VECTOR toPlayer = VSub(_playerPos, _vPos);
+	// Y成分は無視して水平方向のみ
+	toPlayer.y = 0.0f;
+
+	// 距離が0でないことを確認
+	if (VSize(toPlayer) > 0.01f)
+	{
+		// 正規化して向きを設定
+		_vDir = VNorm(toPlayer);
+	}
+}
+
+// プレイヤーの方向に徐々に回転する処理
+void Enemy::UpdateRotationToPlayer()
+{
+	VECTOR targetPos;
+
+	if (_enemySensor && _enemySensor->IsChasing())
+	{
+		// 追跡中は最後に確認されたプレイヤーの位置を使用
+		targetPos = _enemySensor->GetLastKnownPlayerPosition();
+	}
+	else if (_detectedPlayer)
+	{
+		// 通常の検出時は現在のプレイヤー位置を使用
+		targetPos = _playerPos;
+	}
+	else
+	{
+		return; // 検出もしていないし追跡もしていない場合は何もしない
+	}
+
+	// プレイヤーへの方向ベクトルを計算
+	VECTOR toPlayer = VSub(targetPos, _vPos);
+	toPlayer.y = 0.0f;
+
+	if (VSize(toPlayer) < 0.01f) return;
+
+	// ターゲット方向を正規化
+	VECTOR targetDir = VNorm(toPlayer);
+
+	// 現在の向きとターゲット方向の角度差を計算
+	float currentAngle = atan2f(_vDir.x, _vDir.z);
+	float targetAngle = atan2f(targetDir.x, targetDir.z);
+
+	// 角度差を計算（-π から π の範囲に正規化）
+	float angleDiff = targetAngle - currentAngle;
+	while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+	while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+	// 回転速度を制限
+	if (abs(angleDiff) > _rotationSpeed)
+	{
+		angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
+	}
+
+	// 新しい角度を計算
+	float newAngle = currentAngle + angleDiff;
+	_vDir.x = sin(newAngle);
+	_vDir.z = cos(newAngle);
+}
+
 // 計算処理
 bool Enemy::Process()
 {
@@ -52,72 +147,113 @@ bool Enemy::Process()
 
 	CharaBase::STATUS old_status = _status;
 
-	if(_status == STATUS::NONE)
+	if (_status == STATUS::NONE)
 	{
 		_status = STATUS::WAIT;
 	}
 
+	// EnemySensorがあれば、そのセンサーの位置と向きを自分の位置に同期
+	if (_enemySensor)
+	{
+		_enemySensor->SetPos(_vPos);
+		_enemySensor->SetDir(_vDir);
+
+		// 追跡処理
+		UpdateChasing();
+
+		// プレイヤーを検出している、または追跡中の場合のみWALKに設定
+		if (_detectedPlayer || _enemySensor->IsChasing())
+		{
+			_status = STATUS::WALK;
+		}
+		else
+		{
+			_status = STATUS::WAIT;
+		}
+	}
+
+	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
+	if (_detectedPlayer)
+	{
+		UpdateRotationToPlayer(); // 徐々に回転
+		// または即座に向きたい場合は LookAtPlayer(); を使用
+	}
+
 	// ステータスが変わっていないか？
-	if(old_status == _status)
+	if (old_status == _status)
 	{
 		//再生時間を進める
 		_fPlayTime += 0.5f;
 		// 再生時間をランダムに揺らがせる
-		switch(_status)
+		switch (_status)
 		{
-			case STATUS::WAIT:
-			{
-				_fPlayTime += (float)(rand() % 10) / 100.0f;// 0.00 ～ 0.09 の揺らぎ。積算するとずれが起きる
-				break;
-			}
+		case STATUS::WAIT:
+		{
+			_fPlayTime += (float)(rand() % 10) / 100.0f;// 0.00 ～ 0.09 の揺らぎ。積算するとずれが起きる
+			break;
+		}
 		}
 	}
 	else
 	{
 		// アニメーションがアタッチされていたら、デタッチする
-		if(_iAttachIndex != -1)
+		if (_iAttachIndex != -1)
 		{
 			MV1DetachAnim(_iHandle, _iAttachIndex);
 			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
-		switch(_status)
+		switch (_status)
 		{
-			case STATUS::WAIT:
+		case STATUS::WAIT:
+		{
+			int animIndex = MV1GetAnimIndex(_iHandle, "idle");
+			if (animIndex != -1)
 			{
-				int animIndex = MV1GetAnimIndex(_iHandle, "idle");
-				if(animIndex != -1)
+				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				if (_iAttachIndex != -1)
 				{
-					_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
-					if(_iAttachIndex != -1)
-					{
-						_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
-						_fPlayTime = (float)(rand() % 30); // 少しずらす
-					}
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
-				break;
 			}
+			break;
+		}
+		case STATUS::WALK:
+		{
+			int animIndex = MV1GetAnimIndex(_iHandle, "walk");
+			if (animIndex != -1)
+			{
+				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				if (_iAttachIndex != -1)
+				{
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fPlayTime = (float)(rand() % 30); // 少しずらす
+				}
+			}
+			break;
+		}
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
-		if(_iAttachIndex != -1)
+		if (_iAttachIndex != -1)
 		{
 			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;
 		// 再生時間をランダムにずらす
-		switch(_status)
+		switch (_status)
 		{
-			case STATUS::WAIT:
-			{
-				_fPlayTime += rand() % 30; // 0 ～ 29 の揺らぎ
-				break;
-			}
+		case STATUS::WAIT:
+		{
+			_fPlayTime += rand() % 30; // 0 ～ 29 の揺らぎ
+			break;
+		}
 		}
 	}
 
 	// 再生時間がアニメーションの総再生時間に達したら再生時間を0に戻す
-	if(_fPlayTime >= _fTotalTime)
+	if (_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
 	}
@@ -125,131 +261,55 @@ bool Enemy::Process()
 	return true;
 }
 
-// 索敵範囲の設定
-void Enemy::SetDetectionSector(float radius, float angle)
+// 追跡処理のメソッド
+void Enemy::UpdateChasing()
 {
-	_detectionSector.radius = radius;
-	_detectionSector.angle = angle;
-	_bHasDetectionSector = true;
+	if (_enemySensor && _enemySensor->IsChasing())
+	{
+		// 追跡中の場合、最後に確認されたプレイヤーの位置に向かって移動
+		VECTOR targetPos = _enemySensor->GetLastKnownPlayerPosition();
+		MoveTowardsTarget(targetPos);
+
+		// プレイヤーの方向に徐々に向く
+		UpdateRotationToPlayer();
+	}
+	else
+	{
+		// 追跡していない場合は停止
+		_isMoving = false;
+	}
 }
 
-// プレイヤーが索敵範囲内にいるかチェック
-bool Enemy::IsPlayerInDetectionRange(const VECTOR& playerPos) const
+// 目標位置に向かって移動するメソッド
+void Enemy::MoveTowardsTarget(const VECTOR& target)
 {
-	if (!_bHasDetectionSector)
+	// 目標位置への方向ベクトルを計算
+	VECTOR toTarget = VSub(target, _vPos);
+	toTarget.y = 0.0f; // Y軸は無視（水平移動のみ）
+
+	float distance = VSize(toTarget);
+
+	// 十分近い場合は移動しない
+	if (distance < 50.0f)
 	{
-		return false;
-	}
-
-	// 索敵範囲情報を一時的な変数として作成
-	DetectionSector currentSector;
-	currentSector.center = _vPos;
-	currentSector.forward = _vDir;
-	currentSector.radius = _detectionSector.radius;
-	currentSector.angle = _detectionSector.angle;
-
-	// 敵からプレイヤーへのベクトル
-	VECTOR toPlayer = VSub(playerPos, currentSector.center);
-
-	// 距離チェック
-	float distance = VSize(toPlayer);
-	if (distance > currentSector.radius)
-	{
-		return false; // 範囲外
-	}
-
-	// 距離が0に近い場合（同じ位置）は範囲内とみなす
-	if (distance < 0.001f)
-	{
-		return true;
-	}
-
-	// 角度チェック
-	// プレイヤーへのベクトルを正規化
-	VECTOR toPlayerNorm = VNorm(toPlayer);
-
-	// 正面方向との内積を計算して角度を求める
-	float dot = VDot(currentSector.forward, toPlayerNorm);
-
-	// 内積から角度を計算（ラジアン）
-	float angleBetween = acos(fmaxf(-1.0f, fminf(1.0f, dot)));
-
-	// 度に変換
-	float angleDegrees = angleBetween * 180.0f / DX_PI_F;
-
-	// 扇形の半角と比較
-	float halfAngle = currentSector.angle * 0.5f;
-
-	return angleDegrees <= halfAngle;
-}
-
-// デバッグ用：索敵範囲の描画
-void Enemy::RenderDetectionSector() const
-{
-	if (!_bHasDetectionSector)
-	{
+		_isMoving = false;
 		return;
 	}
 
-	// 索敵範囲の色（より目立つ色に変更）
-	unsigned int color = GetColor(255, 0, 0); // 純粋な赤色
+	_isMoving = true;
 
-	// 扇形を描画するための分割数
-	const int segments = 32;
-	const float halfAngle = _detectionSector.angle * 0.5f;
+	// 正規化して移動方向を取得
+	VECTOR moveDirection = VNorm(toTarget);
 
-	// 現在の敵の位置と向きを使用
-	VECTOR center = _vPos;
-	VECTOR forward = _vDir;
+	// 移動量を計算
+	VECTOR movement = VScale(moveDirection, _moveSpeed);
 
-	// 正面方向からの角度オフセットを計算
-	float forwardAngle = atan2f(-forward.x, -forward.z);
+	// 新しい位置を計算
+	VECTOR newPos = VAdd(_vPos, movement);
+	_vPos = newPos;
 
-	// 扇形の開始角度と終了角度
-	float startAngle = forwardAngle - (halfAngle * DX_PI_F / 180.0f);
-	float endAngle = forwardAngle + (halfAngle * DX_PI_F / 180.0f);
-
-	// 扇形の輪郭線を描画（太い線にする）
-	for (int i = 0; i < segments; i++)
-	{
-		float angle1 = startAngle + (endAngle - startAngle) * i / (float)segments;
-		float angle2 = startAngle + (endAngle - startAngle) * (i + 1) / (float)segments;
-
-		VECTOR pos1 = VAdd(center, VGet(sinf(angle1) * _detectionSector.radius, 0, cosf(angle1) * _detectionSector.radius));
-		VECTOR pos2 = VAdd(center, VGet(sinf(angle2) * _detectionSector.radius, 0, cosf(angle2) * _detectionSector.radius));
-
-		// 3D空間での線描画
-		DrawLine3D(pos1, pos2, color);
-
-		// 少し上の位置にも線を描画して見えやすくする
-		VECTOR pos1_up = VAdd(pos1, VGet(0, 10.0f, 0));
-		VECTOR pos2_up = VAdd(pos2, VGet(0, 10.0f, 0));
-		DrawLine3D(pos1_up, pos2_up, color);
-	}
-
-	// 中心から両端への線を描画
-	VECTOR leftEdge = VAdd(center, VGet(sinf(startAngle) * _detectionSector.radius, 0, cosf(startAngle) * _detectionSector.radius));
-	VECTOR rightEdge = VAdd(center, VGet(sinf(endAngle) * _detectionSector.radius, 0, cosf(endAngle) * _detectionSector.radius));
-
-	DrawLine3D(center, leftEdge, color);
-	DrawLine3D(center, rightEdge, color);
-
-	// 少し上の位置にも線を描画
-	VECTOR center_up = VAdd(center, VGet(0, 10.0f, 0));
-	VECTOR leftEdge_up = VAdd(leftEdge, VGet(0, 10.0f, 0));
-	VECTOR rightEdge_up = VAdd(rightEdge, VGet(0, 10.0f, 0));
-
-	DrawLine3D(center_up, leftEdge_up, color);
-	DrawLine3D(center_up, rightEdge_up, color);
-
-	// 中心点を示すマーカーを描画
-	VECTOR marker1 = VAdd(center, VGet(-10.0f, 5.0f, 0));
-	VECTOR marker2 = VAdd(center, VGet(10.0f, 5.0f, 0));
-	VECTOR marker3 = VAdd(center, VGet(0, 5.0f, -10.0f));
-	VECTOR marker4 = VAdd(center, VGet(0, 5.0f, 10.0f));
-
-	DrawLine3D(marker1, marker2, color);
-	DrawLine3D(marker3, marker4, color);
+	// 目標位置を更新
+	_targetPosition = target;
 }
 
 // 描画処理
@@ -269,7 +329,5 @@ bool Enemy::Render()
 	// 描画
 	MV1DrawModel(_iHandle);
 
-	// 索敵範囲の描画（デバッグ用）
-	RenderDetectionSector();
 	return true;
 }
