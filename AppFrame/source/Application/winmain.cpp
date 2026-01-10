@@ -67,13 +67,9 @@ int WINAPI WinMain(
 			// 厳密な一秒周期にするなら,fpsLastTime += 1s でも良いが、now に合わせてリセットする
 			fpsLastTime = fpsNow;
 		}
-		//	FPS表示
-		bool debugFlag = true;
-		if(debugFlag == true)
-		{
-			DrawFormatString(0, 0, GetColor(255, 255, 255), "FPS: %d", currentFps);
-		}
-		
+		// デバック用　(FPS表示)
+		DrawFormatString(0, 0, GetColor(255, 255, 255), "FPS: %d", currentFps);
+
 		ScreenFlip();			// 裏画面の内容を表画面に反映させる
 
 		// フレームレート制御
