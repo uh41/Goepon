@@ -18,8 +18,10 @@ namespace
 	// 空白文字判定
 	static bool IsSpace(unsigned char character)
 	{
-		return std::isspace(character) != 0;
+		// 
+		return std::isspace(character) != 0 || character == '\r' || character == '\n';
 	}
+
 	// std::stringの前方トリム
 	static void LTrim(std::string& text)
 	{
@@ -31,10 +33,18 @@ namespace
 	// std::stringの後方トリム
 	static void RTrim(std::string& text)
 	{
-		if(text.empty()) return;
+		if (text.empty()) return;
 		size_t i = text.size();
-		while(i > 0 && IsSpace(static_cast<unsigned char>(text[i - 1]))) ++i;
-		if(i > 0) text.erase(0, i);
+		// 後ろから見て、空白である間だけカウントを下げる
+		while (i > 0 && IsSpace(static_cast<unsigned char>(text[i - 1])))
+		{
+			--i; // 正解はマイナスです
+		}
+		// 残った文字数（i）以降をすべて削除する
+		if (i < text.size())
+		{
+			text.erase(i);
+		}
 	}
 	// 前後トリム
 	static void Trim(std::string& str)
@@ -92,15 +102,15 @@ namespace
 	// 文字列-> floatの安全バース
 	static bool TryParseFloat(const std::string& text, float& outValue)
 	{
+		if (text.empty()) return false;
 		try
 		{
-			size_t idx;
-			float value = std::stof(text, &idx);
-			if(idx != text.size()) return false; // 変換しきれなかった部分がある
-			outValue = value;
+			// 第2引数(idx)を使わず、単に数値変換を試みる
+			// これにより、後ろに改行やスペースがあっても数値部分だけを抽出してくれます
+			outValue = std::stof(text);
 			return true;
 		}
-		catch(...)
+		catch (...)
 		{
 			return false;
 		}
@@ -112,24 +122,29 @@ namespace
 		std::unordered_map<std::string, std::string> result;
 		std::istringstream iss(content);
 		std::string line;
-		while(std::getline(iss, line))
+		while (std::getline(iss, line))
 		{
-			// 1行ずつ処理
 			Trim(line);
-			// 空行は無視
-			if(line.empty()) continue;
-			// コメント行は無視
-			if(line[0] == '#' || line[0] == ';') continue;
+			if (line.empty()) continue;
+			if (line[0] == '#' || line[0] == ';') continue;
+
 			size_t pos = line.find('=');
-			// '='が無い行は無視
-			if(pos == std::string::npos) continue;
-			std::string key = line.substr(0, pos); 
+			if (pos == std::string::npos) continue;
+
+			std::string key = line.substr(0, pos);
 			std::string val = line.substr(pos + 1);
-			// 前後トリム
-			Trim(key); Trim(val);
-			// keyかvalueが空なら無視
-			if(key.empty() || val.empty()) continue;
-			result[ToLower(key)] = val; // keyを小文字化して登録
+
+			Trim(key);
+			Trim(val);
+			while (!val.empty() && (val.back() == '\r' || val.back() == '\n')) {
+				val.pop_back();
+			}
+
+			// keyかvalが空ならスキップ
+			if (key.empty() || val.empty()) continue;
+
+			// ここで map に登録されるはずです！
+			result[ToLower(key)] = val;
 		}
 		return result;
 	}
@@ -179,10 +194,10 @@ bool Player::Initialize()
 	CFile cfgFile("res/Player/player_config.txt");
 	if(cfgFile.Success())
 	{
-		auto configMap = ParseKeyValueConfig(cfgFile.DataStr());
+		auto config = ParseKeyValueConfig(cfgFile.DataStr());
 		// 移動速度
-		auto it = configMap.find("speed");
-		if(it != configMap.end())
+		auto it = config.find("speed");
+		if(it != config.end())
 		{
 			float val;
 			if(TryParseFloat(it->second, val))
@@ -191,8 +206,8 @@ bool Player::Initialize()
 			}
 		}
 		// 体力
-		it = configMap.find("hp");
-		if(it != configMap.end())
+		it = config.find("hp");
+		if(it != config.end())
 		{
 			float val;
 			if(TryParseFloat(it->second, val))

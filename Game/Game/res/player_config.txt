@@ -1,0 +1,4 @@
+Plaintext
+
+speed=100.0
+hp=500.0
