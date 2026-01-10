@@ -10,6 +10,7 @@
 #pragma once
 #include "charabase.h"
 #include "camera.h"
+#include "appframe.h"
 
 class PlayerBase : public CharaBase
 {
@@ -33,5 +34,8 @@ protected:
 	bool _bLand;
 	float _fMvSpeed;
 	VECTOR _vInput;
+
+	// メモ読み込み
+	std::string _memoFileName;
 };
 

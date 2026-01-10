@@ -9,6 +9,7 @@
 
 #include "playerbase.h"
 
+
 // 初期化
 bool PlayerBase::Initialize()
 {

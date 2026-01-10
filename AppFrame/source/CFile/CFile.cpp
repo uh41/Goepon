@@ -10,8 +10,9 @@ CFile::CFile(const std::string filename)
 	_fileName = filename;
 
 	// ファイルを開く
+	//std::ifstreamで読み込み
 	std::ifstream ifs(filename, std::ios::in | std::ios::binary);	// 入力をバイナリ形式で
-	if (!ifs)
+	if(!ifs)
 	{
 		// 開くの失敗
 		return;
