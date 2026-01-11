@@ -6,6 +6,9 @@ template <typename T>
 class Vector3
 {
 public:
+	// DxLibのVECTOR構造体のようにするのでpublicのメンバ変数にする
+	T x, y, z;
+
 	Vector3() { x = T(0); y = T(0); z = T(0); }
 	Vector3(T x, T y, T z)
 	{
@@ -24,9 +27,6 @@ public:
 	}
 
 	~Vector3() = default ;						// デストラクタ
-
-	// DxLibのVECTOR構造体のようにするのでpublicのメンバ変数にする
-	T x, y, z;
 
 	// 値の代入
 	const Vector3<T>& operator = (const Vector3<T>& other)
@@ -127,7 +127,7 @@ public:
 
 	// 内積
 	// ２つのベクトルの内積
-	static const T Dot(const Vector3<T>&v1, const Vector3<T>&v2) const
+	static const T Dot(const Vector3<T>&v1, const Vector3<T>&v2)
 	{
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
@@ -139,7 +139,7 @@ public:
 
 	// 外積
 	// ２つのベクトルの外積
-	static const Vector3<T> Cross(const Vector3<T>&v1, const Vector3<T>&v2) const
+	static const Vector3<T> Cross(const Vector3<T>&v1, const Vector3<T>&v2)
 	{
 		Vector3 result;
 		result.x = v1.y * v2.z - v1.z * v2.y;
@@ -160,7 +160,7 @@ public:
 		return sqrt(Dot(*this, *this));
 	}
 	// ２点間の距離
-	static T Length(const Vector3<T>& v1, const Vector3<T>& v2) const
+	static T Length(const Vector3<T>& v1, const Vector3<T>& v2)
 	{
 		return Vector3<T>(v1 - v2).Length();
 	}
@@ -172,7 +172,7 @@ public:
 		return Dot(*this, *this);
 	}
 	// ２点間の距離の二乗
-	static T LengthSquare(const Vector3<T>& v1, const Vector3<T>& v2) const
+	static T LengthSquare(const Vector3<T>& v1, const Vector3<T>& v2)
 	{
 		return Vector3<T>(v1 - v2).LengthSquare();
 	}
@@ -264,3 +264,9 @@ public:
 	}
 };
 
+namespace vec
+{
+	using Vec3 = Vector3<float>;		// Vector3のfloat型
+	using Vec3i = Vector3<int>;			// Vector3のint型
+	using Vec3d = Vector3<double>;		// Vector3のdouble型
+}
