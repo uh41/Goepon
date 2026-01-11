@@ -162,6 +162,7 @@
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
+    <ClInclude Include="source\mymath\vector3.h" />
     <ClInclude Include="source\Sound\sounditembase.h" />
     <ClInclude Include="source\Sound\sounditembgm.h" />
     <ClInclude Include="source\Sound\sounditemoneshot.h" />
