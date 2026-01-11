@@ -10,145 +10,8 @@
 
 #include "player.h"
 #include "appframe.h"
+#include "TextUtil.h"
 
-
-// ヘルパー関数
-namespace
-{
-	// 空白文字判定
-	static bool IsSpace(unsigned char character)
-	{
-		// 
-		return std::isspace(character) != 0 || character == '\r' || character == '\n';
-	}
-
-	// std::stringの前方トリム
-	static void LTrim(std::string& text)
-	{
-		size_t i = 0;
-		const size_t n = text.size();
-		while(i < n && IsSpace(static_cast<unsigned char>(text[i])))++i;
-		if(i > 0) text.erase(0, i);
-	}
-	// std::stringの後方トリム
-	static void RTrim(std::string& text)
-	{
-		if (text.empty()) return;
-		size_t i = text.size();
-		// 後ろから見て、空白である間だけカウントを下げる
-		while (i > 0 && IsSpace(static_cast<unsigned char>(text[i - 1])))
-		{
-			--i; // 正解はマイナスです
-		}
-		// 残った文字数（i）以降をすべて削除する
-		if (i < text.size())
-		{
-			text.erase(i);
-		}
-	}
-	// 前後トリム
-	static void Trim(std::string& str)
-	{
-		LTrim(str);
-		RTrim(str);
-	}
-	// 小文字変換
-	static std::string ToLower(std::string& input)
-	{
-		std::string dst = input;
-		// 1文字ずつ小文字化
-		for(size_t i = 0; i < dst.size(); ++i)
-		{
-			dst[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(dst[i])));
-		}
-		return dst;
-	}
-
-	//// テキストファイルを key=value 形式で読み込む
-	//static std::unordered_map<std::string, std::string> LoadConfigKeyValue(const std::string& path)
-	//{
-	//	// 最終的なデータを詰め込む変数(result)
-	//	std::unordered_map <std::string, std::string> result;
-	//	std::ifstream ifs(path);
-	//	if(!ifs)return result;
-
-	//	std::string line;
-	//	// 1行ずつ読み込み
-	//	while(std::getline(ifs, line))
-	//	{
-	//		Trim(line); // 行の前後にある余計なスペースを消す
-	//		// 空行は無視
-	//		if(line.empty()) continue;
-	//		char first = line[0]; // その行の1番最初の文字を確認
-	//		// コメント行は無視
-	//		if(first == '#' || first == ';') continue;
-
-	//		size_t pos = line.find('=');
-	//		// '='が無い行は無視
-	//		if(pos == std::string::npos) continue;     
-
-	//		std::string key   = line.substr(0, pos);
-	//		std::string value = line.substr(pos + 1);
-	//		Trim(key);
-	//		Trim(value);
-	//		// keyかvalueが空なら無視
-	//		if(key.empty() || value.empty()) continue;
-
-	//		// keyを小文字化して登録
-	//		result[ToLower(key)] = value; 
-	//	}
-	//	return result;
-	//}
-	// 文字列-> floatの安全バース
-	static bool TryParseFloat(const std::string& text, float& outValue)
-	{
-		if (text.empty()) return false;
-		try
-		{
-			// 第2引数(idx)を使わず、単に数値変換を試みる
-			// これにより、後ろに改行やスペースがあっても数値部分だけを抽出してくれます
-			outValue = std::stof(text);
-			return true;
-		}
-		catch (...)
-		{
-			return false;
-		}
-	}
-
-	// 文字列からkey=value をパースして map を返す(CFilと組み合わせて使う){パーサー処理｝
-	static std::unordered_map < std::string, std::string> ParseKeyValueConfig(const std::string& content)
-	{
-		std::unordered_map<std::string, std::string> result;
-		std::istringstream iss(content);
-		std::string line;
-		while (std::getline(iss, line))
-		{
-			Trim(line);
-			if (line.empty()) continue;
-			if (line[0] == '#' || line[0] == ';') continue;
-
-			size_t pos = line.find('=');
-			if (pos == std::string::npos) continue;
-
-			std::string key = line.substr(0, pos);
-			std::string val = line.substr(pos + 1);
-
-			Trim(key);
-			Trim(val);
-			while (!val.empty() && (val.back() == '\r' || val.back() == '\n')) {
-				val.pop_back();
-			}
-
-			// keyかvalが空ならスキップ
-			if (key.empty() || val.empty()) continue;
-
-			// ここで map に登録されるはずです！
-			result[ToLower(key)] = val;
-		}
-		return result;
-	}
-}
 // 初期化
 bool Player::Initialize()
 {
@@ -194,13 +57,14 @@ bool Player::Initialize()
 	CFile cfgFile("res/Player/player_config.txt");
 	if(cfgFile.Success())
 	{
-		auto config = ParseKeyValueConfig(cfgFile.DataStr());
+		auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
 		// 移動速度
 		auto it = config.find("speed");
 		if(it != config.end())
 		{
 			float val;
-			if(TryParseFloat(it->second, val))
+			// 変換成功したら上書き
+			if(TextUtil::TryParseFloat(it->second, val))
 			{
 				_fMvSpeed = val;
 			}
@@ -210,7 +74,7 @@ bool Player::Initialize()
 		if(it != config.end())
 		{
 			float val;
-			if(TryParseFloat(it->second, val))
+			if(TextUtil::TryParseFloat(it->second, val))
 			{
 				_fHp = val;
 			}
