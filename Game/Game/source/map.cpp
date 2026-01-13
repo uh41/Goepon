@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 2;
 
 	if(MAP_SELECT == 0)
 	{
@@ -43,9 +43,9 @@ bool Map::Initialize()
 	}
 	else if(MAP_SELECT == 2)
 	{
-		_sPath = "res/IslandJson/";
-		_sJsonFile = "IsLand.json";
-		_sJsonObjectName = "Island";
+		_sPath = "res/map/";
+		_sJsonFile = "Map_UE0112.json";
+		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
 		nlohmann::json json;
