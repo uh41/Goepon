@@ -15,7 +15,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_iHandle = MV1LoadModel("res/PoorEnemyMelee/PoorEnemy.mv1");
+	_iHandle = MV1LoadModel("res/PoorEnemyMelee/goepon_busi_03.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
