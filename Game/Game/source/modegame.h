@@ -92,20 +92,20 @@ protected:
     bool _hasSavedCameraState;
 
 	// キャラクタ管理
-	std::vector<std::shared_ptr<CharaBase>> _chara;
-	std::vector<std::shared_ptr<ObjectBase>> _object;
-	std::vector<std::shared_ptr<PlayerBase>> _playerBase;
-	std::shared_ptr<Player> _player;
-	std::shared_ptr<PlayerTanuki> _playerTanuki;
+	at::vspc<CharaBase> _chara;
+	at::vspc<ObjectBase> _object;
+	at::vspc<PlayerBase> _playerBase;
+	at::sp<Player> _player;
+	at::sp<PlayerTanuki> _playerTanuki;
 	// マップ
-	std::shared_ptr<Map> _map;
+	at::sp<Map> _map;
 	// キューブ
-	std::shared_ptr<Cube> _cube;
+	at::sp<Cube> _cube;
 	// 敵
-	std::vector<std::shared_ptr<Enemy>> _enemy;
+	at::vspc<Enemy> _enemy;
 	// UI
-	std::vector<std::shared_ptr<UiBase>> _uiBase;
-	std::shared_ptr<UiHp> _uiHp;
+	at::vspc<UiBase> _uiBase;
+	at::sp<UiHp> _uiHp;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -130,7 +130,7 @@ protected:
 	bool _effekseerLaunched = false;
 
 	// 索敵システム
-	std::shared_ptr<EnemySensor> _enemySensor;
+	at::sp<EnemySensor> _enemySensor;
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック

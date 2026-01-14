@@ -33,7 +33,7 @@ public:
 protected:
 	Camera* _cam;
 	// マップ用
-	std::map<std::string, int> _mModelHandle;// std::map<マップ名, ハンドル>
+	at::mst<int> _mModelHandle;// マップ画像
 	int _iHandleMap;// std::map<マップ名, ハンドル>
 	int _iHandleSkySphere;
 	int _iFrameMapCollision;
