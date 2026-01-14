@@ -10,7 +10,7 @@ namespace vec
 	// ベクトルの生成
 	inline Vec3 VGet(T x, T y, T z)
 	{
-		return Vec3<T>(x, y, z);
+		return Vec3(x, y, z);
 	}
 
 	// ベクトルの加算
