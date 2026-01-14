@@ -161,6 +161,7 @@
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
+    <ClInclude Include="source\mymath\vector3operator.h" />
     <ClInclude Include="source\resource\ResourceServer.h" />
     <ClInclude Include="source\mymath\segment.h" />
     <ClInclude Include="source\mymath\vector3.h" />
