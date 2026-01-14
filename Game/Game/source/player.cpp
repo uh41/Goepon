@@ -153,7 +153,7 @@ namespace
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_iHandle = MV1LoadModel("res/Player/goepon_re_Z_UP.mv1");
+	_iHandle = MV1LoadModel("res/Player/tanuponnn_01_fix.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
