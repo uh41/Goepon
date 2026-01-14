@@ -15,7 +15,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_iHandle = MV1LoadModel("res/PoorEnemyMelee/goepon_busi_03.mv1");
+	_iHandle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -207,7 +207,7 @@ bool Enemy::Process()
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_iHandle, "idle");
+			int animIndex = MV1GetAnimIndex(_iHandle, "taiki");
 			if (animIndex != -1)
 			{
 				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
