@@ -30,9 +30,6 @@
     <ClCompile Include="source\CFile\cfile.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\Manager\imagemanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\Sound\soundserver.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -68,9 +65,6 @@
     <ClInclude Include="source\container.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\Manager\imagemanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\Sound\soundserver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -96,9 +90,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\resource\ResourceServer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\aliastemplate.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\mymath\vector3.h">
