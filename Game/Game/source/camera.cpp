@@ -17,6 +17,7 @@ bool Camera::Initialize()
 	_vTarget = VGet(0.0f, 60.0f, 0.0f);
 	_fClipNear = 2.0f;
 	_fClipFar = 10000.0f;
+	_fForvScale = -10.0f;
 
 	return true;
 }

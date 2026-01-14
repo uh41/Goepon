@@ -298,6 +298,9 @@ bool ModeGame::Render()
 	// カメラ設定更新
 	SetCameraPositionAndTarget_UpVecY(_camera->_vPos, _camera->_vTarget);
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
+	float fov_deg = 30.0f;
+	float fov_rad = DEG2RAD(fov_deg);
+	SetupCamera_Perspective(fov_rad);
 
 	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
