@@ -477,7 +477,7 @@ bool ModeGame::CheckAllDetections()
 	}
 
 	// タヌキ状態の時のみ検知処理を実行
-	if (_bShowTanuki)
+	if (!_bShowTanuki)
 	{
 		// 人間状態では検知されない
 		// 検知状態をリセットして敵に状態変更を通知
@@ -492,7 +492,7 @@ bool ModeGame::CheckAllDetections()
 	}
 
 	// タヌキ状態のプレイヤーのみをチェック対象にする
-	PlayerBase* currentPlayer = static_cast<PlayerBase*>(_player.get());
+	PlayerBase* currentPlayer = _playerTanuki.get();
 	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
 
 	// 検出状態に応じてエネミーに通知
