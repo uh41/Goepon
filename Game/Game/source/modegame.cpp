@@ -60,7 +60,7 @@ bool ModeGame::Initialize()
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
 
-	_bShowTanuki = false;
+	_bShowTanuki = true;
 
 	// 索敵システムの初期化
 	_enemySensor = std::make_shared<EnemySensor>();
@@ -244,14 +244,14 @@ bool ModeGame::Process()
 	}
 
 	// 現在のプレイヤーの位置を取得
-	VECTOR currentPlayerPos;
+	VECTOR PlayerPos;
 	if (_bShowTanuki)
 	{
-		currentPlayerPos = _playerTanuki->GetPos();
+		PlayerPos = _playerTanuki->GetPos();
 	}
 	else
 	{
-		currentPlayerPos = _player->GetPos();
+		PlayerPos = _player->GetPos();
 	}
 
 	// キャラ処理（生存しているもののみ）
@@ -488,7 +488,7 @@ bool ModeGame::CheckAllDetections()
 				enemy->OnPlayerLost();
 			}
 		}
-		return false;
+		return true;
 	}
 
 	// タヌキ状態のプレイヤーのみをチェック対象にする

@@ -153,7 +153,7 @@ namespace
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_iHandle = MV1LoadModel("res/Player/tanuponnn_01_fix.mv1");
+	_iHandle = MV1LoadModel("res/SDChar/TanuHuman_Base2.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
