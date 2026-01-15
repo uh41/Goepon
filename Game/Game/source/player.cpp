@@ -153,7 +153,7 @@ namespace
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_iHandle = MV1LoadModel("res/SDChar/TanuHuman_Base2.mv1");
+	_iHandle = MV1LoadModel("res/Tanuhuman/TanuHuman_Base2.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -450,7 +450,7 @@ bool Player::Render()
 
 	MATRIX mRotY = MGetRotY(vorty);
 
-	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
+	//MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
 
 	MATRIX mTrans = MGetTranslate(_vPos);
 
@@ -458,7 +458,7 @@ bool Player::Render()
 
 	MATRIX m = MGetIdent();
 
-	m = MMult(m, mRotZ);
+	//m = MMult(m, mRotZ);
 	m = MMult(m, mRotY);
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);

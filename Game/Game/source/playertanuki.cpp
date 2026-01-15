@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_iHandle = MV1LoadModel("res/Player/tanuponnn_01_fix.mv1");
+	_iHandle = MV1LoadModel("res/Tanuki/tanuponnn_01_fix.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -168,12 +168,25 @@ bool PlayerTanuki::Render()
 	// 再生時間をセットする
 	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
 
-	// 位置
-	MV1SetPosition(_iHandle, _vPos);
-	// 向きからY軸回転を算出
-	VECTOR vrot = { 0,0,0, };
-	vrot.y = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
-	MV1SetRotationXYZ(_iHandle, vrot);
+	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+
+	MATRIX mRotY = MGetRotY(vorty);
+
+	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
+
+	MATRIX mTrans = MGetTranslate(_vPos);
+
+	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
+
+	MATRIX m = MGetIdent();
+
+	m = MMult(m, mRotZ);
+	m = MMult(m, mRotY);
+	m = MMult(m, mScale);
+	m = MMult(m, mTrans);
+
+	MV1SetMatrix(_iHandle, m);
+
 	// 描画
 	MV1DrawModel(_iHandle);
 	
