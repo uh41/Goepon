@@ -2,6 +2,7 @@
 #include "vector3.h"
 #include "mysegment.h"
 
+template <typename T>
 class Polygon3D
 {
 public:
@@ -14,9 +15,9 @@ public:
 	}
 
 	// 法線ベクトル
-	vec::Vec3 NormalVector() const
+	const vec::Vec3 NormalVector()
 	{
-		//return vec::Vec3::Cross((_vVertex2 - _vVertex1), (_vVertex3 - _vVertex1)).Normalized();
+		return vec::Vec3::Cross((_vVertex2 - _vVertex1), (_vVertex3 - _vVertex1)).Normalized();
 	}
 
 	vec::Vec3 _vVertex1;

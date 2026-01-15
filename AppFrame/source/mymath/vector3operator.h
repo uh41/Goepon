@@ -1,7 +1,7 @@
 #pragma once
 #include "vector3.h"
 
-namespace vec
+namespace vec3
 {
 	using Vec3 = vec::Vec3;
 
