@@ -251,12 +251,6 @@ public:
 		return start + (end - start) * t;
 	}
 
-	// 法線ベクトルによる反射ベクトル
-	static Vector3<T> Reflect(Vector3<T> vec, Vector3<T> normal)
-	{
-		return vec - normal * (T(2) * Vector3<T>::Dot(vec, normal));
-	}
-
 	// ベクトルの等値判定
 	static T Equal(const Vector3<T>& left, const Vector3<T>& right, T dist)
 	{
