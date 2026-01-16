@@ -39,10 +39,10 @@
     <ClCompile Include="source\Sound\sounditembase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\resource\ResourceServer.cpp">
+    <ClCompile Include="..\Game\Game\source\TextUtil.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\Game\Game\source\TextUtil.cpp">
+    <ClCompile Include="source\resource\ResourceServer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,10 +98,10 @@
     <ClInclude Include="source\Sound\sounditemoneshot.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\resource\ResourceServer.h">
+    <ClInclude Include="..\Game\Game\source\TextUtil.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\Game\Game\source\TextUtil.h">
+    <ClInclude Include="source\resource\ResourceServer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
