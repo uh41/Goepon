@@ -3,7 +3,6 @@
 #include "mysegment.h"
 #include "../container.h"
 
-template <typename T>
 class Polygon3D
 {
 public:
@@ -16,7 +15,7 @@ public:
 	}
 
 	// 法線ベクトル
-	const vec::Vec3& NormalVector()
+	const vec::Vec3 NormalVector()
 	{
 		return vec::Vec3::Cross((_vVertex2 - _vVertex1), (_vVertex3 - _vVertex1)).Normalized();
 	}
@@ -30,7 +29,7 @@ public:
 	// 拡大縮小
 	void SetScale(const float& scale)
 	{
-		vec::Vec3 emphasis = Emphasis());
+		vec::Vec3 emphasis = Emphasis();
 		// 線形補間で各頂点を重点に近づける
 		_vVertex1 = vec::Vec3::Lerp(_vVertex1, emphasis, scale);
 		_vVertex2 = vec::Vec3::Lerp(_vVertex2, emphasis, scale);

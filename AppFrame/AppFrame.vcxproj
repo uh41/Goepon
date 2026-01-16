@@ -99,6 +99,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -115,6 +116,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -129,6 +131,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,6 +148,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -153,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="source\aliastemplate.h" />
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
@@ -161,8 +166,10 @@
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
+    <ClInclude Include="source\mymath\collision.h" />
     <ClInclude Include="source\mymath\polygon3D.h" />
     <ClInclude Include="source\mymath\vector3operator.h" />
+    <ClInclude Include="source\navi\navigationmesh.h" />
     <ClInclude Include="source\resource\ResourceServer.h" />
     <ClInclude Include="source\mymath\mysegment.h" />
     <ClInclude Include="source\mymath\vector3.h" />
@@ -181,6 +188,7 @@
     <ClCompile Include="source\CFile\cfile.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\navi\navigationmesh.cpp" />
     <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />

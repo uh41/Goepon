@@ -229,7 +229,7 @@ public:
 
 	// ³‹K‰»
 	// ³‹K‰»‚³‚ê‚½ƒxƒNƒgƒ‹‚ğ•Ô‚·
-	Vector3<T> Normalized()
+	Vector3<T> Normalized() const
 	{
 		return *this / Length();
 	}
