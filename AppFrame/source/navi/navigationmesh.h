@@ -43,8 +43,6 @@ protected:
 	//隣接リスト
 	at::vpcc<NavigationMesh*, AdjacentData> _adjacentList;
 
-	at::arc<vec::Vec3, 3> _aVertexA;
-	at::arc<vec::Vec3, 3> _aVertexB;
 
 	//オープンセット
 	bool _bOpenSet;

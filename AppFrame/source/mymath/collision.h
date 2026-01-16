@@ -35,7 +35,7 @@ public:
 	}
 
 	// “_‚Æü•ª‚ÌÅ’Z‹——£‚Ì2æ‚ğ‹‚ß‚é
-	static const float SetPointDistSquare(vec::Vec3 p, Segment s, float* t)
+	static const float SetPointDistSquare(vec::Vec3 p, Segment s, float* t = nullptr)
 	{
 		vec::Vec3 result(SegPointLatestPoint(p, s, t));
 
