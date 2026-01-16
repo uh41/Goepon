@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_iHandle = MV1LoadModel("res/Tanuki/tanuponnn_01_fix.mv1");
+	_iHandle = MV1LoadModel("res/Tanuki/goepon_walkwalk.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -122,10 +122,10 @@ bool PlayerTanuki::Process()
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE);
+			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "walk"), -1, FALSE);
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "run"), -1, FALSE);
+			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "walk"), -1, FALSE);
 			break;
 		}
 		_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
@@ -180,7 +180,7 @@ bool PlayerTanuki::Render()
 
 	MATRIX m = MGetIdent();
 
-	m = MMult(m, mRotZ);
+	//m = MMult(m, mRotZ);
 	m = MMult(m, mRotY);
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);
