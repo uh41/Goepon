@@ -22,6 +22,8 @@ bool ModeGame::Initialize()
 	_camera = new Camera();
 	_camera->Initialize();
 
+	_bShowTanuki = true;
+
 	ObjectInitialize();	// オブジェクト初期化
 
 	// キャラ
@@ -48,6 +50,12 @@ bool ModeGame::Initialize()
 		ui_base->Initialize();
 	}
 
+	// シャドウ
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Initialize();
+	}
+
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
@@ -61,7 +69,7 @@ bool ModeGame::Initialize()
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
 
-	_bShowTanuki = true;
+
 
 	// 索敵システムの初期化
 	_enemySensor = std::make_shared<EnemySensor>();
@@ -103,6 +111,11 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Terminate();
+	}
+	_charaShadow.clear();
 	delete _camera;
 
 	// 索敵システムの終了処理
@@ -232,6 +245,15 @@ bool ModeGame::Process()
 			// 向きも合わせる
 			_player->SetDir(_playerTanuki->GetDir());
 		}
+
+		if(!_charaShadow.empty())
+		{
+			auto& playerShadow = _charaShadow.front();
+			if(playerShadow)
+			{
+				playerShadow->SetTargetChara(_bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get()) : static_cast<PlayerBase*>(_player.get()));
+			}
+		}
 	}
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
@@ -283,6 +305,12 @@ bool ModeGame::Process()
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Process();
+	}
+
+	// シャドウ処理
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Process();
 	}
 
 	// 敵との当たり判定処理（生存している敵のみ）
@@ -363,6 +391,12 @@ bool ModeGame::Render()
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Render();
+	}
+
+	// シャドウを描画
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Render();
 	}
 
 	DebugRender();// デバック描画処理
