@@ -246,12 +246,20 @@ bool ModeGame::Process()
 			_player->SetDir(_playerTanuki->GetDir());
 		}
 
+		// シャドウの追従キャラも切り替え
 		if(!_charaShadow.empty())
 		{
 			auto& playerShadow = _charaShadow.front();
 			if(playerShadow)
 			{
-				playerShadow->SetTargetChara(_bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get()) : static_cast<PlayerBase*>(_player.get()));
+				if(_bShowTanuki)
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
+				}
+				else
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_player.get()));
+				}
 			}
 		}
 	}
