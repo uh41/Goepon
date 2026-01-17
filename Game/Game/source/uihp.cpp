@@ -80,7 +80,7 @@ bool UiHp::Render()
 	// HPƒuƒƒbƒN•`‰æ
 	for(int i = 0; i < _iBlock; i++)
 	{
-		int x = start_x + 70.0f + i * (_iBlock - _iGap);
+		int x = static_cast<int>(start_x + 70.0f + i * (_iBlockW + _iGap));
 		int y = start_y;
 		if(i > filled)
 		{
