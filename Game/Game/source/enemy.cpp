@@ -199,7 +199,7 @@ bool Enemy::Process()
 		// アニメーションがアタッチされていたら、デタッチする
 		if (_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_iHandle, _iAttachIndex);
+			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
@@ -210,10 +210,10 @@ bool Enemy::Process()
 			int animIndex = MV1GetAnimIndex(_iHandle, "taiki");
 			if (animIndex != -1)
 			{
-				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, animIndex, -1, FALSE));
 				if (_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -224,10 +224,10 @@ bool Enemy::Process()
 			int animIndex = MV1GetAnimIndex(_iHandle, "walk");
 			if (animIndex != -1)
 			{
-				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, animIndex, -1, FALSE));
 				if (_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -237,7 +237,7 @@ bool Enemy::Process()
 		// アタッチしたアニメーションの総再生時間を取得する
 		if (_iAttachIndex != -1)
 		{
-			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;
@@ -317,25 +317,14 @@ bool Enemy::Render()
 {
 	base::Render();
 	// 再生時間をセット
-	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), _fPlayTime);
 
-	MATRIX mRotY = MGetRotY(vorty);
-
-	//MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
-
-	MATRIX mTrans = MGetTranslate(_vPos);
-
-	MATRIX mScale = MGetScale(VGet(1.8f, 1.8f, 1.8f));
-
-	MATRIX m = MGetIdent();
-
-	//m = MMult(m, mRotZ);
-	m = MMult(m, mRotY);
-	m = MMult(m, mScale);
-	m = MMult(m, mTrans);
-
-	MV1SetMatrix(_iHandle, m);
+	// 位置
+	MV1SetPosition(_iHandle, _vPos);
+	// 向きからY軸回転を算出
+	VECTOR vrot = { 0,0,0, };
+	vrot.y = atan2f(-_vDir.x, -_vDir.z);
+	MV1SetRotationXYZ(_iHandle, vrot);
 
 	// 描画
 	MV1DrawModel(_iHandle);

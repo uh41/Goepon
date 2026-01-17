@@ -229,7 +229,7 @@ public:
 
 	// 正規化
 	// 正規化されたベクトルを返す
-	Vector3<T> Normalized()
+	Vector3<T> Normalized() const
 	{
 		return *this / Length();
 	}
@@ -249,12 +249,6 @@ public:
 	static Vector3<T> Lerp(const Vector3<T>& start, const Vector3<T>& end, T t)
 	{
 		return start + (end - start) * t;
-	}
-
-	// 法線ベクトルによる反射ベクトル
-	static Vector3<T> Reflect(Vector3<T> vec, Vector3<T> normal)
-	{
-		return vec - normal * (T(2) * Vector3<T>::Dot(vec, normal));
 	}
 
 	// ベクトルの等値判定

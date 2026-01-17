@@ -14,17 +14,29 @@
 namespace at
 {
 	template<typename C>
-	using vspc = std::vector<std::shared_ptr<C>>; // ベクターとスマートポインタとクラス
+	using vspc = std::vector<std::shared_ptr<C>>;	// ベクターとスマートポインタとクラス
 
 	template<typename C>
-	using msc = std::map<std::string, C*>;		// マップとストリングとクラス
+	using msc = std::map<std::string, C*>;			// マップとストリングとクラス
 
 	template<typename C>
-	using sp = std::shared_ptr<C>;				//スマートポインタとクラス
+	using spc = std::shared_ptr<C>;					//スマートポインタとクラス
+
+	//template<typename C>
+	//using upc = std::unipue_ptr<C>;				// ユニークポインタとクラス
+
+	template<typename C, size_t s>
+	using arc = std::array<C, s>;					// アレイとクラス
+
+	template<typename C, typename D>
+	using vpcc = std::vector<std::pair<C, D>>;	// ベクターとペアとクラス
+
+	template<typename C>
+	using vec = std::vector<C>;					// ベクターとクラス
 
 	template<typename T>
 	using mst = std::map<std::string, T>;		// マップとストリングとテンプレート(型)
 
 	template<typename T>
-	using ve = std::vector<T>;					// ベクターとテンプレート(型)
+	using vet = std::vector<T>;					// ベクターとテンプレート(型)
 }

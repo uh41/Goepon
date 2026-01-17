@@ -95,17 +95,17 @@ protected:
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;
 	at::vspc<PlayerBase> _playerBase;
-	at::sp<Player> _player;
-	at::sp<PlayerTanuki> _playerTanuki;
+	at::spc<Player> _player;
+	at::spc<PlayerTanuki> _playerTanuki;
 	// マップ
-	at::sp<Map> _map;
+	at::spc<Map> _map;
 	// キューブ
-	at::sp<Cube> _cube;
+	at::spc<Cube> _cube;
 	// 敵
 	at::vspc<Enemy> _enemy;
 	// UI
 	at::vspc<UiBase> _uiBase;
-	at::sp<UiHp> _uiHp;
+	at::spc<UiHp> _uiHp;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -130,7 +130,7 @@ protected:
 	bool _effekseerLaunched = false;
 
 	// 索敵システム
-	at::sp<EnemySensor> _enemySensor;
+	at::spc<EnemySensor> _enemySensor;
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック

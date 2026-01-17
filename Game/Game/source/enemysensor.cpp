@@ -283,7 +283,7 @@ void EnemySensor::RenderDetectionUI() const
 
 		// 「found」の文字列の幅を取得して中央揃え
 		const char* foundText = "found";
-		int textWidth = GetDrawStringWidth(foundText, strlen(foundText));
+		int textWidth = GetDrawStringWidth(foundText, static_cast<int>(strlen(foundText)));
 		int x = (screenWidth - textWidth) / 2;
 		int y = screenHeight / 2 - 32;
 

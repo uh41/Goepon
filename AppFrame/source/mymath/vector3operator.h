@@ -1,16 +1,15 @@
 #pragma once
 #include "vector3.h"
 
-namespace vec
+namespace vec3
 {
 	using Vec3 = vec::Vec3;
 
-	template <typename T>
-
 	// ベクトルの生成
+	template <typename T>
 	inline Vec3 VGet(T x, T y, T z)
 	{
-		return Vec3(x, y, z);
+		return Vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
 	}
 
 	// ベクトルの加算
@@ -27,31 +26,27 @@ namespace vec
 
 	// ベクトルのスカラー乗算
 	template <typename T>
-	inline Vec3 VScale(const Vec3& v, T scale )
+	inline Vec3 VScale(const Vec3& v, T scale)
 	{
-		return v * scale;
+		return v * static_cast<float>(scale);
 	}
 
 	// ベクトルのスカラー除算
 	template <typename T>
-	inline Vec3 VDiv(const Vec3& v, T div )
+	inline Vec3 VDiv(const Vec3& v, T div)
 	{
-		return v / div;
+		return v / static_cast<float>(div);
 	}
 
 	// ベクトルの長さ
-	template <typename T>
-	inline T VSize(const Vec3& v)
+	inline float VSize(const Vec3& v)
 	{
 		return v.Length();
 	}
 
 	// 正規化
-	template <typename T>
 	inline Vec3 VNorm(const Vec3& v)
 	{
 		return v.Normalized();
 	}
-
-	
 }

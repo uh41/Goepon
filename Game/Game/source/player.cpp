@@ -400,19 +400,19 @@ bool Player::Process()
 	{
 		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_iHandle, _iAttachIndex);
+			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_attack_charge_loop"), -1, FALSE);
+			_iAttachIndex = static_cast<int>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_attack_charge_loop"), -1, FALSE));
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_move_run"), -1, FALSE);
+			_iAttachIndex = static_cast<int>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_move_run"), -1, FALSE));
 			break;
 		}
-		_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex));
 		_fPlayTime = 0.0f;
 		switch(_status)
 		{
@@ -434,17 +434,7 @@ bool Player::Render()
 {
 	base::Render();
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
-
-	//// 位置
-	//MV1SetPosition(_iHandle, _vPos);
-	//// 向きからY軸回転を算出
-	//VECTOR vrot = { 0,0,0, };
-	//vrot.y = atan2(_vDir.z, _vDir.x);
-	
-	//vrot.y = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
-
-	//MV1SetRotationXYZ(_iHandle, vrot);
+	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, static_cast<int>(_fPlayTime));
 	
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
