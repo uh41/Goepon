@@ -62,16 +62,21 @@ bool ModeGame::ObjectInitialize()
 	}
 	for(auto& c : _chara)
 	{
-		if(!c) continue;
+		if(!c)
+		{
+			continue;
+		}
 		// プレイヤー（通常）とタヌキを除外
-		if(c.get() == _player.get() || c.get() == _playerTanuki.get()) continue;
+		if(c.get() == _player.get() || c.get() == _playerTanuki.get())
+		{
+			continue;
+		}
 
 		auto shadow = std::make_shared<CharaShadow>();
 		// Scaleも調整可能
 		shadow->SetTargetChara(c.get());
 		_charaShadow.emplace_back(shadow);
 	}
-	// --- シャドウ生成ここまで ---
-
+	
 	return true;
 }
