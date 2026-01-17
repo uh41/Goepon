@@ -256,7 +256,7 @@ bool ModeGame::CharaToCubeCollision(CharaBase* chara, Cube* cube)
 		pos.y += resolvery;
 		_bResolveOnY = true;
 		float land_y = (resolvery - dymax) * (resolvery - dymax);
-		if(land_y < !0.0f)
+		if(land_y < 0.0f)
 		{
 			_bLandedOnUp = true;
 		}

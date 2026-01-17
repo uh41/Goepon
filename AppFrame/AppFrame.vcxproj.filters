@@ -13,93 +13,240 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\アプリケーション">
+      <UniqueIdentifier>{4920f59d-bd19-4b09-8080-f77df5426b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ファイルの読み込み">
+      <UniqueIdentifier>{26bdde06-ff81-489c-b0cc-4b31e93ff2c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モード">
+      <UniqueIdentifier>{63fb50a4-aed1-4d96-bb71-c7b6a42d4c5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モード\モードベース">
+      <UniqueIdentifier>{3ae06322-1c03-49e6-9c58-44edec07b24a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モード\モードサーバー">
+      <UniqueIdentifier>{d5b2de4d-c8ca-4a17-ad82-39492e225b7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ナビメッシュ">
+      <UniqueIdentifier>{ff75a0d5-43d3-487e-a960-20de75391638}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ナビメッシュ\ナビ">
+      <UniqueIdentifier>{b1c1aee0-20fb-4a16-a049-61bdeb5cd098}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ナビメッシュ\ナビゲーションメッシュ">
+      <UniqueIdentifier>{5292ef52-9311-4905-ba53-f04df5ed92c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\サウンド">
+      <UniqueIdentifier>{4d3a87eb-df74-418f-bce1-ef2672155791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\サウンド\サウンドベース">
+      <UniqueIdentifier>{d4358430-2de7-4623-96d7-4810c008285a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\サウンド\サウンドサーバー">
+      <UniqueIdentifier>{f225f925-1a0b-4ecb-a3cc-f8a66f7d0add}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\あだ名">
+      <UniqueIdentifier>{07ef575a-1d61-4da0-ad51-9a0f068c2f93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\アプリケーション">
+      <UniqueIdentifier>{f00140f9-fa73-495f-8c28-f18076db21b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\アプリケーション\アプリケーションフレーム">
+      <UniqueIdentifier>{ceed7d02-8665-41ea-98d0-0503eade184d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\アプリケーション\アプリケーションベース">
+      <UniqueIdentifier>{534c8c26-1219-454d-80cb-e32f0bd33555}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ファイルの読み込み">
+      <UniqueIdentifier>{1e619d52-62eb-414c-ae66-88cb4729197a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\当たり判定用">
+      <UniqueIdentifier>{e361989e-a3a8-4026-b3fa-32de2a17ef42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\C++コンテナ">
+      <UniqueIdentifier>{eaf85d9e-56cd-4fea-ba22-b648e337ef2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モード">
+      <UniqueIdentifier>{8061827a-617b-4c0f-a7a6-7fb650857510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モード\モードベース">
+      <UniqueIdentifier>{01ccc764-5f4c-4040-b067-2dfd702b0dc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モード\モードサーバー">
+      <UniqueIdentifier>{f903e574-2ee3-41cd-8ad0-e585d3f3a2a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\数学">
+      <UniqueIdentifier>{9b994b43-8639-4665-ab95-7aa6191f9e53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\当たり判定用\線分">
+      <UniqueIdentifier>{aad9ce3f-f433-4efb-b802-b1d27d16de12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ナビメッシュ">
+      <UniqueIdentifier>{c5b2d881-ddd2-4f0b-9841-d2e5eb426758}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ナビメッシュ\ナビ">
+      <UniqueIdentifier>{c8910679-e473-4ab7-a1e7-3872bc9859db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ナビメッシュ\ナビゲーションメッシュ">
+      <UniqueIdentifier>{967d1623-2caa-4aea-b93c-62d1a6b0274e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\当たり判定用\ポリゴン">
+      <UniqueIdentifier>{2fe761fa-ba3d-4a26-995c-0b11156608f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド">
+      <UniqueIdentifier>{fb93dc72-759e-4e75-b4f2-0fd72691857d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ベクトル">
+      <UniqueIdentifier>{117e63c4-4ae6-4cbd-ae8b-44db6ca6d041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\マクロ">
+      <UniqueIdentifier>{a6ee65e1-4a97-4bd3-b699-9fde362db132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ベクトル\ベクトル3D">
+      <UniqueIdentifier>{2d30d854-bd8a-4ad7-b316-f06f109f279b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ベクトル\ベクトル計算">
+      <UniqueIdentifier>{20f17369-0cbc-4af0-bd71-b0fc091d55d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ベクトル\ベクトル変換">
+      <UniqueIdentifier>{deeb6577-3fdf-4195-90ec-3ebc8ec62319}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\サウンドベース">
+      <UniqueIdentifier>{57aed19d-31d2-479e-a173-3cacffb89721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\BGM">
+      <UniqueIdentifier>{350dc392-8636-42ee-8190-d5221348a8ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\OneShot">
+      <UniqueIdentifier>{7891aad7-70bb-4f80-96eb-e7697f5e2553}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\SE">
+      <UniqueIdentifier>{b5f43eb1-24e6-4946-ae9b-87aba76fcce6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\スタティック再生">
+      <UniqueIdentifier>{0be14967-a98c-4f5c-8acf-0e940a4c2a73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\ストリーム再生">
+      <UniqueIdentifier>{df125a3b-6e36-40f4-9736-d5dfe5366b07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\Voice">
+      <UniqueIdentifier>{5cb422dc-ad9c-4c0a-88d4-41b302fc6782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\サウンド\サウンドサーバー">
+      <UniqueIdentifier>{0a71a808-723e-44e8-949e-4e1b178f45b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\Application\applicationbase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\Application\winmain.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Mode\modebase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Mode\modeserver.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\CFile\cfile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Sound\soundserver.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Sound\sounditembase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\resource\ResourceServer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\Application\applicationbase.cpp">
+      <Filter>ソース ファイル\アプリケーション</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CFile\cfile.cpp">
+      <Filter>ソース ファイル\ファイルの読み込み</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Mode\modebase.cpp">
+      <Filter>ソース ファイル\モード\モードベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Mode\modeserver.cpp">
+      <Filter>ソース ファイル\モード\モードサーバー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\navi\navi.cpp">
+      <Filter>ソース ファイル\ナビメッシュ\ナビ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\navi\navigationmesh.cpp">
+      <Filter>ソース ファイル\ナビメッシュ\ナビゲーションメッシュ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Sound\sounditembase.cpp">
+      <Filter>ソース ファイル\サウンド\サウンドベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Sound\soundserver.cpp">
+      <Filter>ソース ファイル\サウンド\サウンドサーバー</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\appframe.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Application\utilmacro.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Application\applicationbase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Mode\modebase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Mode\modeserver.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\CFile\cfile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\mymath.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\container.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\soundserver.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditembase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditemstatic.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditemse.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditemstream.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditembgm.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditemvoice.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Sound\sounditemoneshot.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\resource\ResourceServer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\mymath\vector3.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\aliastemplate.h">
+      <Filter>ヘッダー ファイル\あだ名</Filter>
     </ClInclude>
-    <ClInclude Include="source\mymath\segment.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\appframe.h">
+      <Filter>ヘッダー ファイル\アプリケーション\アプリケーションフレーム</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Application\applicationbase.h">
+      <Filter>ヘッダー ファイル\アプリケーション\アプリケーションベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CFile\cfile.h">
+      <Filter>ヘッダー ファイル\ファイルの読み込み</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mymath\collision.h">
+      <Filter>ヘッダー ファイル\当たり判定用</Filter>
+    </ClInclude>
+    <ClInclude Include="source\container.h">
+      <Filter>ヘッダー ファイル\C++コンテナ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Mode\modebase.h">
+      <Filter>ヘッダー ファイル\モード\モードベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Mode\modeserver.h">
+      <Filter>ヘッダー ファイル\モード\モードサーバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mymath.h">
+      <Filter>ヘッダー ファイル\数学</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mymath\mysegment.h">
+      <Filter>ヘッダー ファイル\当たり判定用\線分</Filter>
+    </ClInclude>
+    <ClInclude Include="source\navi\navi.h">
+      <Filter>ヘッダー ファイル\ナビメッシュ\ナビ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\navi\navigationmesh.h">
+      <Filter>ヘッダー ファイル\ナビメッシュ\ナビゲーションメッシュ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mymath\polygon3D.h">
+      <Filter>ヘッダー ファイル\当たり判定用\ポリゴン</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Application\utilmacro.h">
+      <Filter>ヘッダー ファイル\マクロ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mymath\vector3.h">
+      <Filter>ヘッダー ファイル\ベクトル\ベクトル3D</Filter>
     </ClInclude>
     <ClInclude Include="source\mymath\vector3operator.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\ベクトル\ベクトル計算</Filter>
+    </ClInclude>
+    <ClInclude Include="source\mymath\vectorconverter.h">
+      <Filter>ヘッダー ファイル\ベクトル\ベクトル変換</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditembase.h">
+      <Filter>ヘッダー ファイル\サウンド\サウンドベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditembgm.h">
+      <Filter>ヘッダー ファイル\サウンド\BGM</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditemoneshot.h">
+      <Filter>ヘッダー ファイル\サウンド\OneShot</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditemse.h">
+      <Filter>ヘッダー ファイル\サウンド\SE</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditemstatic.h">
+      <Filter>ヘッダー ファイル\サウンド\スタティック再生</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditemstream.h">
+      <Filter>ヘッダー ファイル\サウンド\ストリーム再生</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\sounditemvoice.h">
+      <Filter>ヘッダー ファイル\サウンド\Voice</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Sound\soundserver.h">
+      <Filter>ヘッダー ファイル\サウンド\サウンドサーバー</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

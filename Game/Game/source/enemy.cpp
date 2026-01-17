@@ -199,7 +199,7 @@ bool Enemy::Process()
 		// アニメーションがアタッチされていたら、デタッチする
 		if (_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_iHandle, _iAttachIndex);
+			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
@@ -210,10 +210,10 @@ bool Enemy::Process()
 			int animIndex = MV1GetAnimIndex(_iHandle, "taiki");
 			if (animIndex != -1)
 			{
-				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, animIndex, -1, FALSE));
 				if (_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -224,10 +224,10 @@ bool Enemy::Process()
 			int animIndex = MV1GetAnimIndex(_iHandle, "walk");
 			if (animIndex != -1)
 			{
-				_iAttachIndex = MV1AttachAnim(_iHandle, animIndex, -1, FALSE);
+				_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, animIndex, -1, FALSE));
 				if (_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -237,7 +237,7 @@ bool Enemy::Process()
 		// アタッチしたアニメーションの総再生時間を取得する
 		if (_iAttachIndex != -1)
 		{
-			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;

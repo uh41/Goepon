@@ -13,138 +13,261 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ソース ファイル\非同期読み込み">
+      <UniqueIdentifier>{8cd1b286-0476-458e-8cb7-4a8e2f471921}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\アプリケーションメイン">
+      <UniqueIdentifier>{0bc63b3c-d9f9-4303-b569-6ea6e94d707a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム">
+      <UniqueIdentifier>{4be29a45-d107-4c8c-a955-8177b2c2e090}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\カメラ">
+      <UniqueIdentifier>{d9359a21-08ba-4299-9816-060aa12f8a3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\キャラベース">
+      <UniqueIdentifier>{a0e6e6b1-0e02-4d67-b71d-0c8715abb1b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\敵ベース">
+      <UniqueIdentifier>{010cebaf-5279-4ff9-b47b-0204af4f1bd9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵1">
+      <UniqueIdentifier>{abd365dd-80c1-4770-9871-e76e373735fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵センサー">
+      <UniqueIdentifier>{637c4c75-64fd-4347-9638-37aaa4cef80f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\コリジョン">
+      <UniqueIdentifier>{4ec6672d-6890-40f3-871b-d45c3edb83a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\デバック">
+      <UniqueIdentifier>{8fd6de2f-9b26-4044-9c36-09b375427ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\テストマップ">
+      <UniqueIdentifier>{002ee8c0-7ab6-4196-9d12-ec0cc544a896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース">
+      <UniqueIdentifier>{f449250c-9324-406f-86c2-5b181227948c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\クラス読み込み">
+      <UniqueIdentifier>{1dfee2eb-8920-4ca1-8a54-af77a7a1020d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース">
+      <UniqueIdentifier>{9c95e54c-f677-4c22-863b-47c869d89e40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\人タヌキ">
+      <UniqueIdentifier>{883fd032-5229-4dad-86fc-2ee74291df3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\タヌキ">
+      <UniqueIdentifier>{4607dab2-f919-4242-97b8-aa98a9d224c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\UIベース">
+      <UniqueIdentifier>{7ffaff04-e163-44da-b255-0df85f4e849e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\UIベース\HPバー">
+      <UniqueIdentifier>{41a9c967-6078-4667-8937-1f28c338aa34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\メニュー">
+      <UniqueIdentifier>{2fb577ae-9966-4c1f-8f1e-71238a630cef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\メニュー\デバックメニュー">
+      <UniqueIdentifier>{9e4010e5-17ee-4fc6-9d53-2920166f56aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\非同期読み込み">
+      <UniqueIdentifier>{4ffa823d-90f9-4294-906e-c1ce34a20f91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\アプリケーションメイン">
+      <UniqueIdentifier>{af88e651-57d3-498c-bf11-43f0dbfcb4ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム">
+      <UniqueIdentifier>{bda3ec8a-59bb-4428-a7b4-e9c0da09f855}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\ライト">
+      <UniqueIdentifier>{9d000a56-2075-423d-abda-97946369dfad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\カメラ">
+      <UniqueIdentifier>{bbed0e45-a453-4e2f-96ba-63bfc941cc8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\キャラベース">
+      <UniqueIdentifier>{82023244-3ce1-41c6-9021-a7ae2220c597}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース">
+      <UniqueIdentifier>{8f4136dc-7aa8-4021-80fb-4bfa4b9405c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵1">
+      <UniqueIdentifier>{bedad2dd-653a-4d80-b497-fc4dd6d2ac92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵センサー">
+      <UniqueIdentifier>{f084c395-a295-472a-9f75-a7a42377c50f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\テストマップ">
+      <UniqueIdentifier>{9b08dc98-2cb3-4560-86f3-96b736e0653f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\オブジェクトベース">
+      <UniqueIdentifier>{5e4e8f3c-c7c5-485e-90ab-9f1a6804b46b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース">
+      <UniqueIdentifier>{865ed622-a685-4b10-86ba-735007679c3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\人タヌキ">
+      <UniqueIdentifier>{678a4484-278d-4df5-998e-fcf86e941952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\タヌキ">
+      <UniqueIdentifier>{c963c52d-193e-461f-bcbe-182377d49912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\UIベース">
+      <UniqueIdentifier>{ca2a028c-0cd9-4747-b4ad-25e7c5db769f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\UIベース\HPバー">
+      <UniqueIdentifier>{a9fdd85b-72ac-4a7d-80ff-45244f9a16cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\ライト">
+      <UniqueIdentifier>{8714bb21-b6fd-4bf9-9ae3-f6dabca6c51b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\メニュー">
+      <UniqueIdentifier>{ec2330e9-5af4-4a94-ba7d-dbad54396543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\メニュー\デバックメニュー">
+      <UniqueIdentifier>{ad51dbff-deb8-46a4-b823-56ec3b2e4497}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\applicationmain.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modegame.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\applicationglobal.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\modeeffekseer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modemenu.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charabase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\menuitembase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\objectbase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\map.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\cube.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\playerbase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemybase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemy.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\playertanuki.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\uibase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\uihp.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemysensor.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\ObjectServer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\applicationglobal.h">
+      <Filter>ヘッダー ファイル\非同期読み込み</Filter>
+    </ClInclude>
+    <ClInclude Include="source\applicationmain.h">
+      <Filter>ヘッダー ファイル\アプリケーションメイン</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegame.h">
+      <Filter>ヘッダー ファイル\モードゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="source\camera.h">
+      <Filter>ヘッダー ファイル\モードゲーム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charabase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\キャラベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemybase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemy.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵1</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemysensor.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\map.h">
+      <Filter>ヘッダー ファイル\モードゲーム\テストマップ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\objectbase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\オブジェクトベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playerbase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\player.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playertanuki.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\uibase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\UIベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\uihp.h">
+      <Filter>ヘッダー ファイル\モードゲーム\UIベース\HPバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Light.h">
+      <Filter>ヘッダー ファイル\モードゲーム\ライト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modemenu.h">
+      <Filter>ヘッダー ファイル\メニュー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\menuitembase.h">
+      <Filter>ヘッダー ファイル\メニュー\デバックメニュー</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\applicationmain.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegame.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\applicationglobal.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\modeeffekseer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modemenu.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\camera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charabase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\menuitembase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\objectbase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\map.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\cube.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\modegamecollision.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegamedebug.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegameobject.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\playerbase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemybase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\playertanuki.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\uibase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\uihp.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemysensor.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\ObjectServer.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\applicationglobal.cpp">
+      <Filter>ソース ファイル\非同期読み込み</Filter>
+    </ClCompile>
+    <ClCompile Include="source\applicationmain.cpp">
+      <Filter>ソース ファイル\アプリケーションメイン</Filter>
+    </ClCompile>
+    <ClCompile Include="source\camera.cpp">
+      <Filter>ソース ファイル\モードゲーム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegame.cpp">
+      <Filter>ソース ファイル\モードゲーム</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charabase.cpp">
+      <Filter>ソース ファイル\モードゲーム\キャラベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemybase.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemy.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵1</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemysensor.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegamecollision.cpp">
+      <Filter>ソース ファイル\モードゲーム\コリジョン</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegamedebug.cpp">
+      <Filter>ソース ファイル\モードゲーム\デバック</Filter>
+    </ClCompile>
+    <ClCompile Include="source\map.cpp">
+      <Filter>ソース ファイル\モードゲーム\テストマップ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegameobject.cpp">
+      <Filter>ソース ファイル\モードゲーム\クラス読み込み</Filter>
+    </ClCompile>
+    <ClCompile Include="source\objectbase.cpp">
+      <Filter>ソース ファイル\モードゲーム\オブジェクトベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\playerbase.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\player.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\playertanuki.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\uibase.cpp">
+      <Filter>ソース ファイル\モードゲーム\UIベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\uihp.cpp">
+      <Filter>ソース ファイル\モードゲーム\UIベース\HPバー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modemenu.cpp">
+      <Filter>ソース ファイル\メニュー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\menuitembase.cpp">
+      <Filter>ソース ファイル\メニュー\デバックメニュー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Light.cpp">
+      <Filter>ソース ファイル\モードゲーム\ライト</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
