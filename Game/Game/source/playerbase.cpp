@@ -28,6 +28,20 @@ bool PlayerBase::Terminate()
 bool PlayerBase::Process()
 {
 	base::Process();
+
+	// アナログスティックの状態取得
+	{
+		DINPUT_JOYSTATE di;
+		GetJoypadDirectInputState(DX_INPUT_PAD1, &di);
+		if (GetJoypadDirectInputState(DX_INPUT_PAD1, &di) == 0)
+		{
+			fLx = (float)di.X / 1000.f;
+			fLy = (float)di.Y / 1000.f;
+			fRx = (float)di.Z / 1000.f;
+			fRy = (float)di.Rz / 1000.f;
+		}
+	}
+
 	return true;
 }
 

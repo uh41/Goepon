@@ -51,7 +51,11 @@ bool Player::Initialize()
 	
 	_bLand = true;
 	
-	_fHp = 20.0f; // 初期体力設定
+	// 初期体力設定
+	_fHp = 20.0f;
+
+	// アナログスティックの設定関係
+	_fAnalogDeadZone = 0.3f;
 
 	// 設定ファイルから上書き読み込み
 	CFile cfgFile("res/Player/player_config.txt");
@@ -93,37 +97,79 @@ bool Player::Terminate()
 // 計算処理
 bool Player::Process()
 {
-	base::Process();
 	int key = ApplicationBase::GetInstance()->GetKey();
 	int trg = ApplicationBase::GetInstance()->GetTrg();
+
+	base::Process();
 
 	// 処理前の位置を保存
 	_vOldPos = _vPos;
 
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
-	VECTOR v = { 0,0,0 };
-	float length = 0.0f;
-
+	// 移動方向を決める
+	VECTOR _v = { 0,0,0 };
+	
 	// カメラの向いている角度を取得
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
 	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
 	float rad = 0.0f;
 
+	//左スティック値
+    lstickX = fLx;
+    lstickY = fLy;
+
+	// ローカル入力ベクトル
+	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
+
 	if((key & (PAD_INPUT_7 | PAD_INPUT_8)) == 0)
 	{
 		// キャラ移動(カメラ設定に合わせて)
 
-        // ローカル入力を取得
-        VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
-        if(key & PAD_INPUT_DOWN) { inputLocal.x = 1; }
-        if(key & PAD_INPUT_UP)   { inputLocal.x = -1; }
-        if(key & PAD_INPUT_LEFT) { inputLocal.z = -1; }
-        if(key & PAD_INPUT_RIGHT){ inputLocal.z = 1; }
+	    // 操作
+		if (CheckHitKey(KEY_INPUT_UP))
+		{
+			lstickY = -1.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_DOWN))
+		{
+			lstickY = 1.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_LEFT))
+		{
+			lstickX = -1.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_RIGHT))
+		{
+			lstickX = 1.0f;
+		}
 
-        // 回転前のローカル入力を保存（斜め判定に使う）
-        _vInput = inputLocal;
+		// ローカル入力ベクトルを計算
+		float length = sqrt(lstickX * lstickX + lstickY * lstickY);
+		float rad = atan2(lstickX, lstickY);
+
+		// アナログ左スティック用
+		if (length < _fAnalogDeadZone)
+		{
+			// 入力が小さかったら動かなかったことにする
+			length = 0.f;
+		}
+		else
+		{
+			length = _fMvSpeed;
+		}
+
+		// vをrad分回転させる
+		if (VSize(_v) > 0.f) { length = _fMvSpeed; }
+		_v.x = cos(rad + camrad) * length;
+		_v.z = sin(rad + camrad) * length;
+
+		// 処理前の位置を保存
+		_vOldPos = _vPos;
+
+		// vの分移動
+		_vPos = VAdd(_vPos, _v);
 
         // 十字キー保持での軸ロック開始判定
 		if(key & PAD_INPUT_6)
@@ -164,16 +210,20 @@ bool Player::Process()
 			VECTOR axis_lock_input = VGet(0.0f, 0.0f, 0.0f);
 
 			// 軸ロック専用の入力を取得
-			if(key & PAD_INPUT_DOWN) {
+			if(key & PAD_INPUT_DOWN) 
+			{
 				axis_lock_input.x = 0.5f;
 			}
-			if(key & PAD_INPUT_UP) {
+			if(key & PAD_INPUT_UP) 
+			{
 				axis_lock_input.x = -0.5f;
 			}
-			if(key & PAD_INPUT_LEFT) {
+			if(key & PAD_INPUT_LEFT) 
+			{
 				axis_lock_input.z = -0.5f;
 			}
-			if(key & PAD_INPUT_RIGHT) {
+			if(key & PAD_INPUT_RIGHT) 
+			{
 				axis_lock_input.z = 0.5f;
 			}
 
@@ -202,8 +252,8 @@ bool Player::Process()
 				if(VSize(moveDir) > 0.0f)
 				{
 					moveDir = VNorm(moveDir);
-					v.x = moveDir.x * _fMvSpeed;
-					v.z = moveDir.z * _fMvSpeed;
+					_v.x = moveDir.x * _fMvSpeed;
+					_v.z = moveDir.z * _fMvSpeed;
 				}
 
 
@@ -220,15 +270,15 @@ bool Player::Process()
             {
                 length = _fMvSpeed;
                 float localRad = atan2(inputLocal.z, inputLocal.x);
-                v.x = cos(localRad + camrad) * length;
-                v.z = sin(localRad + camrad) * length;
+                _v.x = cos(localRad + camrad) * length;
+                _v.z = sin(localRad + camrad) * length;
             }
 
         }
 	}
 
 	// 地上移動
-	if(VSize(v) > 0.0f)
+	if(VSize(_v) > 0.0f)
 	{
 		if(_bAxisUseLock)
 		{
@@ -238,7 +288,7 @@ bool Player::Process()
 		}
 		else
 		{
-			_vDir = v;
+			_vDir = _v;
 		}
 
 		_status = STATUS::WALK;
