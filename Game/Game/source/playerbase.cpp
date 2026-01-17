@@ -14,6 +14,8 @@
 bool PlayerBase::Initialize()
 {
 	base::Initialize();
+	// アナログスティックの設定関係
+	_fAnalogDeadZone = 0.3f;
 	return true;
 }
 
@@ -36,7 +38,7 @@ bool PlayerBase::Process()
 		if (GetJoypadDirectInputState(DX_INPUT_PAD1, &di) == 0)
 		{
 			fLx = (float)di.X / 1000.f;
-			fLy = (float)di.Y / 1000.f;
+			fLz = (float)di.Y / 1000.f;
 			fRx = (float)di.Z / 1000.f;
 			fRy = (float)di.Rz / 1000.f;
 		}

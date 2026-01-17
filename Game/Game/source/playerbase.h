@@ -32,14 +32,16 @@ protected:
 
 	//アナログスティック関係
 	float _fAnalogDeadZone; // アナログスティックの無効範囲
-	float fLx, fLy, fRx, fRy;
+	float fLx, fLz, fRx, fRy;
 	DINPUT_JOYSTATE di;
 	//左スティックの値
-	float lstickX, lstickY;
+	float lStickX, lStickZ;
 	Camera* _cam;
 	bool    _bLand;
 	float   _fMvSpeed;
 	VECTOR  _vInput;
+	// 移動方向を決める
+	VECTOR _v = { 0,0,0 };
 
 	// メモ読み込み
 	std::string _memoFileName;

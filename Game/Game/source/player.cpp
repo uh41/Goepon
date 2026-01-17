@@ -54,9 +54,6 @@ bool Player::Initialize()
 	// 初期体力設定
 	_fHp = 20.0f;
 
-	// アナログスティックの設定関係
-	_fAnalogDeadZone = 0.3f;
-
 	// 設定ファイルから上書き読み込み
 	CFile cfgFile("res/Player/player_config.txt");
 	if(cfgFile.Success())
@@ -108,7 +105,7 @@ bool Player::Process()
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
 	// 移動方向を決める
-	VECTOR _v = { 0,0,0 };
+    _v = { 0,0,0 };
 	
 	// カメラの向いている角度を取得
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
@@ -117,8 +114,8 @@ bool Player::Process()
 	float rad = 0.0f;
 
 	//左スティック値
-    lstickX = fLx;
-    lstickY = fLy;
+    lStickX = fLx;
+    lStickZ = fLz;
 
 	// ローカル入力ベクトル
 	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
@@ -130,24 +127,24 @@ bool Player::Process()
 	    // 操作
 		if (CheckHitKey(KEY_INPUT_UP))
 		{
-			lstickY = -1.0f;
+			lStickZ = -1.0f;
 		}
 		if (CheckHitKey(KEY_INPUT_DOWN))
 		{
-			lstickY = 1.0f;
+			lStickZ = 1.0f;
 		}
 		if (CheckHitKey(KEY_INPUT_LEFT))
 		{
-			lstickX = -1.0f;
+			lStickX = -1.0f;
 		}
 		if (CheckHitKey(KEY_INPUT_RIGHT))
 		{
-			lstickX = 1.0f;
+			lStickX = 1.0f;
 		}
 
 		// ローカル入力ベクトルを計算
-		float length = sqrt(lstickX * lstickX + lstickY * lstickY);
-		float rad = atan2(lstickX, lstickY);
+		float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+		float rad = atan2(lStickX, lStickZ);
 
 		// アナログ左スティック用
 		if (length < _fAnalogDeadZone)

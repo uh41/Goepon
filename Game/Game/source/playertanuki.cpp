@@ -56,50 +56,65 @@ bool PlayerTanuki::Process()
 	// 処理前の位置を保存
 	_vOldPos = _vPos;
 
-	// 補間ターン速度（ラジアン／フレーム）
-	const float AXIS_TURN_SPEED = 0.12f;
-
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
-	VECTOR v = { 0,0,0 };
-	float length = 0.0f;
+	// 移動方向を決める
+	_v = { 0,0,0 };
 
 	// カメラの向いている角度を取得
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
 	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
+	
+
+	//左スティック値
+	lStickX = fLx;
+	lStickZ = fLz;
 
 	// キャラ移動(カメラ設定に合わせて)
 	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
-	if(key & PAD_INPUT_DOWN) {
-		inputLocal.x = 1;
-	}
-	if(key & PAD_INPUT_UP) {
-		inputLocal.x = -1;
-	}
-	if(key & PAD_INPUT_LEFT) {
-		inputLocal.z = -1;
-	}
-	if(key & PAD_INPUT_RIGHT) {
-		inputLocal.z = 1;
-	}
-
-	// 入力ベクトルを保存（EscapeCollisionで使用）
-	_vInput = inputLocal;
-
-	// カメラ方向に合わせて移動量を計算
-	if(VSize(inputLocal) > 0.0f)
+	if (CheckHitKey(KEY_INPUT_UP))
 	{
+		lStickZ = -1.0f;
+	}
+	if (CheckHitKey(KEY_INPUT_DOWN))
+	{
+		lStickZ = 1.0f;
+	}
+	if (CheckHitKey(KEY_INPUT_LEFT))
+	{
+		lStickX = -1.0f;
+	}
+	if (CheckHitKey(KEY_INPUT_RIGHT))
+	{
+		lStickX = 1.0f;
+	}
+
+	// ローカル入力ベクトルを計算
+	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+	float rad = atan2(lStickX, lStickZ);
+
+	// デッドゾーン処理
+	if (length < _fAnalogDeadZone)
+	{
+		length = 0.0f;
+	}
+
+	// アナログ移動ベクトル（カメラ相対）
+	if (length > 0.0f)
+	{
+		// 速度は一定（必要なら length を速度スケールにできる）
 		length = _fMvSpeed;
-		float localRad = atan2(inputLocal.z, inputLocal.x);
-		v.x = cos(localRad + camrad) * length;
-		v.z = sin(localRad + camrad) * length;
-		_vDir = v;
+		_v.x = cosf(rad + camrad) * length;
+		_v.z = sinf(rad + camrad) * length;
+
+		// 向き更新（移動方向）
+		_vDir = _v;
+
 		_status = STATUS::WALK;
 	}
 	else
 	{
-		v = VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
 	}
 
@@ -147,10 +162,10 @@ bool PlayerTanuki::Process()
 	}
 
 	// --- ここで実際に位置とカメラを移動させる ---
-	if(VSize(v) > 0.0f)
+	if(VSize(_v) > 0.0f)
 	{
 		// プレイヤーの位置を移動
-		_vPos = VAdd(_vPos, v);
+		_vPos = VAdd(_vPos, _v);
 
 		// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
 		if(_cam != nullptr)
