@@ -195,6 +195,9 @@
     <ClInclude Include="source\menuitembase.h">
       <Filter>ヘッダー ファイル\メニュー\デバックメニュー</Filter>
     </ClInclude>
+    <ClInclude Include="source\charashadow.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -268,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="source\Light.cpp">
       <Filter>ソース ファイル\モードゲーム\ライト</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charashadow.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

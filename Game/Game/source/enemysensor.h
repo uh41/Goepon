@@ -5,8 +5,8 @@
 // 索敵範囲の情報を格納する構造体
 struct DetectionSector
 {
-	VECTOR center;      // 扇形の中心点（敵の位置）
-	VECTOR forward;     // 敵の正面方向
+	vec::Vec3 center;      // 扇形の中心点（敵の位置）
+	vec::Vec3 forward;     // 敵の正面方向
 	float radius;       // 索敵範囲の半径
 	float angle;        // 索敵角度（度）
 };
@@ -17,11 +17,11 @@ struct DetectionInfo
 	bool isDetected;        // 検出されているか
 	float timer;            // 検出表示タイマー
 	int detectorIndex;      // 検出した敵のインデックス
-	VECTOR detectorPos;     // 検出した敵の位置
+	vec::Vec3 detectorPos;     // 検出した敵の位置
 
 	// 追加：追跡機能用
 	bool isChasing;         // 現在追跡中か
-	VECTOR lastKnownPlayerPos; // 最後に確認されたプレイヤーの位置
+	vec::Vec3 lastKnownPlayerPos; // 最後に確認されたプレイヤーの位置
 	float chaseTimer;       // 追跡継続時間
 };
 
@@ -39,7 +39,7 @@ public:
 	void SetDetectionSector(float radius, float angle);
 
 	// プレイヤーが索敵範囲内にいるかチェック
-	bool IsPlayerInDetectionRange(const VECTOR& playerPos) const;
+	bool IsPlayerInDetectionRange(const vec::Vec3& playerPos) const;
 
 	// プレイヤーの検出チェック（複数のプレイヤーに対応）
 	bool CheckPlayerDetection(PlayerBase* player);
@@ -52,7 +52,7 @@ public:
 
 	// 追跡機能
 	bool IsChasing() const { return _detectionInfo.isChasing; }
-	VECTOR GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
+	vec::Vec3 GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
 
 	// デバッグ用：索敵範囲の描画
@@ -79,6 +79,6 @@ protected:
 
 	// 内部処理用メソッド
 	void UpdateDetectionTimer();       // 検出タイマーの更新
-	VECTOR GetDetectionCenter() const; // 索敵範囲の中心位置を取得
+	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 };

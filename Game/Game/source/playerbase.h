@@ -26,14 +26,14 @@ public:
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
-	const VECTOR& GetInputVector() const { return _vInput; }
+	const vec::Vec3& GetInputVector() const { return _vInput; }
 	float GetMoveSpeed() const { return _fMvSpeed; }
 protected:
 
 	Camera* _cam;
 	bool _bLand;
 	float _fMvSpeed;
-	VECTOR _vInput;
+	vec::Vec3 _vInput;
 
 	// メモ読み込み
 	std::string _memoFileName;

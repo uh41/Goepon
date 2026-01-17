@@ -5,6 +5,7 @@
 // * \author 鈴木裕稀
 // * \date   2025/12/15
 // * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #include "enemy.h"
@@ -23,8 +24,8 @@ bool Enemy::Initialize()
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_vPos = VGet(100.0f, 0.0f, 0.0f);
-	_vDir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
+	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定
@@ -35,12 +36,12 @@ bool Enemy::Initialize()
 
 	// センサー関連の初期化
 	_detectedPlayer = false;
-	_playerPos = VGet(0.0f, 0.0f, 0.0f);
+	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_rotationSpeed = 0.5f; // 回転速度（調整可能）
 
 	// 移動関連の初期化
 	_moveSpeed = 2.0f; // 移動速度（調整可能）
-	_targetPosition = VGet(0.0f, 0.0f, 0.0f);
+	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_isMoving = false;
 
 	return true;
@@ -60,7 +61,7 @@ void Enemy::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 }
 
 // プレイヤーが検出された時の処理
-void Enemy::OnPlayerDetected(const VECTOR& playerPos)
+void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 {
 	_detectedPlayer = true;
 	_playerPos = playerPos;
@@ -78,22 +79,22 @@ void Enemy::LookAtPlayer()
 	if (!_detectedPlayer) return;
 
 	// プレイヤーへの方向ベクトルを計算
-	VECTOR toPlayer = VSub(_playerPos, _vPos);
+	vec::Vec3 toPlayer = vec3::VSub(_playerPos, _vPos);
 	// Y成分は無視して水平方向のみ
 	toPlayer.y = 0.0f;
 
 	// 距離が0でないことを確認
-	if (VSize(toPlayer) > 0.01f)
+	if (vec3::VSize(toPlayer) > 0.01f)
 	{
 		// 正規化して向きを設定
-		_vDir = VNorm(toPlayer);
+		_vDir = vec3::VNorm(toPlayer);
 	}
 }
 
 // プレイヤーの方向に徐々に回転する処理
 void Enemy::UpdateRotationToPlayer()
 {
-	VECTOR targetPos;
+	vec::Vec3 targetPos;
 
 	if (_enemySensor && _enemySensor->IsChasing())
 	{
@@ -111,13 +112,13 @@ void Enemy::UpdateRotationToPlayer()
 	}
 
 	// プレイヤーへの方向ベクトルを計算
-	VECTOR toPlayer = VSub(targetPos, _vPos);
+	vec::Vec3 toPlayer = vec3::VSub(targetPos, _vPos);
 	toPlayer.y = 0.0f;
 
-	if (VSize(toPlayer) < 0.01f) return;
+	if (vec3::VSize(toPlayer) < 0.01f) return;
 
 	// ターゲット方向を正規化
-	VECTOR targetDir = VNorm(toPlayer);
+	vec::Vec3 targetDir = vec3::VNorm(toPlayer);
 
 	// 現在の向きとターゲット方向の角度差を計算
 	float currentAngle = atan2f(_vDir.x, _vDir.z);
@@ -267,7 +268,7 @@ void Enemy::UpdateChasing()
 	if (_enemySensor && _enemySensor->IsChasing())
 	{
 		// 追跡中の場合、最後に確認されたプレイヤーの位置に向かって移動
-		VECTOR targetPos = _enemySensor->GetLastKnownPlayerPosition();
+		vec::Vec3 targetPos = _enemySensor->GetLastKnownPlayerPosition();
 		MoveTowardsTarget(targetPos);
 
 		// プレイヤーの方向に徐々に向く
@@ -281,13 +282,13 @@ void Enemy::UpdateChasing()
 }
 
 // 目標位置に向かって移動するメソッド
-void Enemy::MoveTowardsTarget(const VECTOR& target)
+void Enemy::MoveTowardsTarget(const vec::Vec3& target)
 {
 	// 目標位置への方向ベクトルを計算
-	VECTOR toTarget = VSub(target, _vPos);
+	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
 	toTarget.y = 0.0f; // Y軸は無視（水平移動のみ）
 
-	float distance = VSize(toTarget);
+	float distance = vec3::VSize(toTarget);
 
 	// 十分近い場合は移動しない
 	if (distance < 50.0f)
@@ -299,13 +300,13 @@ void Enemy::MoveTowardsTarget(const VECTOR& target)
 	_isMoving = true;
 
 	// 正規化して移動方向を取得
-	VECTOR moveDirection = VNorm(toTarget);
+	vec::Vec3 moveDirection = vec3::VNorm(toTarget);
 
 	// 移動量を計算
-	VECTOR movement = VScale(moveDirection, _moveSpeed);
+	vec::Vec3 movement = vec3::VScale(moveDirection, _moveSpeed);
 
 	// 新しい位置を計算
-	VECTOR newPos = VAdd(_vPos, movement);
+	vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
 	_vPos = newPos;
 
 	// 目標位置を更新
@@ -320,7 +321,7 @@ bool Enemy::Render()
 	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), _fPlayTime);
 
 	// 位置
-	MV1SetPosition(_iHandle, _vPos);
+	MV1SetPosition(_iHandle, VectorConverter::VecToDxLib(_vPos));
 	// 向きからY軸回転を算出
 	VECTOR vrot = { 0,0,0, };
 	vrot.y = atan2f(-_vDir.x, -_vDir.z);
