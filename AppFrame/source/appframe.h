@@ -13,7 +13,7 @@
 
 #include "Application/ApplicationBase.h"
 #include "CFile/CFile.h"
-#include "mymath/vector3operator.h"
+#include "mymath/vectorconverter.h"
 #include "mymath.h"
 #include "container.h"
 #include "aliastemplate.h"

@@ -169,6 +169,8 @@
     <ClInclude Include="source\mymath\collision.h" />
     <ClInclude Include="source\mymath\polygon3D.h" />
     <ClInclude Include="source\mymath\vector3operator.h" />
+    <ClInclude Include="source\mymath\vectorconverter.h" />
+    <ClInclude Include="source\navi\navi.h" />
     <ClInclude Include="source\navi\navigationmesh.h" />
     <ClInclude Include="source\resource\ResourceServer.h" />
     <ClInclude Include="source\mymath\mysegment.h" />
@@ -188,6 +190,7 @@
     <ClCompile Include="source\CFile\cfile.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\navi\navi.cpp" />
     <ClCompile Include="source\navi\navigationmesh.cpp" />
     <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
