@@ -45,19 +45,19 @@ bool ObjectBase::Render()
 //座標などの読み込み
 void ObjectBase::SetJsonDataUE(nlohmann::json j)
 {
-	SetPos(VECTOR
+	SetPos(vec::Vec3
 	{
 	j.at("translate").at("x").get<float>(),
 	j.at("translate").at("z").get<float>(),
 	-1.0f * j.at("translate").at("y").get<float>()
 	});
-	SetEulerAngleDeg(VECTOR
+	SetEulerAngleDeg(vec::Vec3
 	{
 		j.at("rotate").at("x").get<float>(),
 		j.at("rotate").at("z").get<float>(),
 		j.at("rotate").at("y").get<float>()
 	});
-	SetScale(VECTOR
+	SetScale(vec::Vec3
 	{
 		j.at("scale").at("x").get<float>(),
 		j.at("scale").at("z").get<float>(),
@@ -70,10 +70,10 @@ void ObjectBase::SetJsonDataUE(nlohmann::json j)
 void ObjectBase::ModelMatrixSetUp()
 {
 	MATRIX matrix = MGetIdent();
-	matrix = MMult(matrix, MGetRotX(_eulerAngle.x));
-	matrix = MMult(matrix, MGetRotZ(_eulerAngle.z));
-	matrix = MMult(matrix, MGetRotY(_eulerAngle.y + PI));
-	MV1SetMatrix(_handle, matrix);
+	matrix = MMult(matrix, MGetRotX(_vEulerAngle.x));
+	matrix = MMult(matrix, MGetRotZ(_vEulerAngle.z));
+	matrix = MMult(matrix, MGetRotY(_vEulerAngle.y + PI));
+	MV1SetMatrix(_iHandle, matrix);
 
-	MV1RefreshCollInfo(_handle, _attachIndex);
+	MV1RefreshCollInfo(_iHandle, _attachIndex);
 }

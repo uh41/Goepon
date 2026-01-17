@@ -5,6 +5,7 @@
 // * \author 鈴木裕稀
 // * \date   2025/12/15
 // * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #pragma once
@@ -26,19 +27,19 @@ public:
 
 	// EnemySensorとの連携
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);
-	void OnPlayerDetected(const VECTOR& playerPos);
+	void OnPlayerDetected(const vec::Vec3& playerPos);
 	void OnPlayerLost();
 
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;
 	bool _detectedPlayer;		// プレイヤーを検出したか
-	VECTOR _playerPos;			// 検出したプレイヤーの位置
+	vec::Vec3 _playerPos;			// 検出したプレイヤーの位置
 	float _rotationSpeed;		// 回転速度
 
 	// 移動関連
 	float _moveSpeed;			// 移動速度
-	VECTOR _targetPosition;		// 目標位置（追跡時の移動先）
+	vec::Vec3 _targetPosition;		// 目標位置（追跡時の移動先）
 	bool _isMoving;				// 移動中かどうか
 
 	// プレイヤーの方向を向く処理
@@ -46,6 +47,6 @@ protected:
 	void UpdateRotationToPlayer();
 
 	// 移動処理
-	void MoveTowardsTarget(const VECTOR& target);
+	void MoveTowardsTarget(const vec::Vec3& target);
 	void UpdateChasing();
 };

@@ -14,11 +14,11 @@ bool EnemySensor::Initialize()
 	_detectionInfo.isDetected = false;
 	_detectionInfo.timer = 0.0f;
 	_detectionInfo.detectorIndex = -1;
-	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 	// 追跡情報の初期化
 	_detectionInfo.isChasing = false;
-	_detectionInfo.lastKnownPlayerPos = VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_detectionInfo.chaseTimer = 0.0f;
 
 	// デフォルトの索敵範囲設定
@@ -73,7 +73,7 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 		return false;
 	}
 
-	VECTOR playerPos = player->GetPos();
+	vec::Vec3 playerPos = player->GetPos();
 	bool detected = IsPlayerInDetectionRange(playerPos);
 
 	if (detected)
@@ -107,11 +107,11 @@ void EnemySensor::ResetDetection()
 	_detectionInfo.isDetected = false;
 	_detectionInfo.timer = 0.0f;
 	_detectionInfo.detectorIndex = -1;
-	_detectionInfo.detectorPos = VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 	// 追跡状態リセット
 	_detectionInfo.isChasing = false;
-	_detectionInfo.lastKnownPlayerPos = VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_detectionInfo.chaseTimer = 0.0f;
 }
 
@@ -141,16 +141,16 @@ void EnemySensor::SetDetectionSector(float radius, float angle)
 }
 
 // 索敵範囲の中心位置を取得（敵の正面に配置）
-VECTOR EnemySensor::GetDetectionCenter() const
+vec::Vec3 EnemySensor::GetDetectionCenter() const
 {
 	// 敵の正面方向に一定距離進んだ位置を中心にする
 	const float offsetDistance = _detectionSector.radius * 0.3f; // 半径の30%前方
-	VECTOR forwardNorm = VNorm(_vDir);
-	return VAdd(_vPos, VScale(forwardNorm, offsetDistance));
+	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
+	return vec3::VAdd(_vPos, vec3::VScale(forwardNorm, offsetDistance));
 }
 
 // プレイヤーが索敵範囲内にいるかチェック
-bool EnemySensor::IsPlayerInDetectionRange(const VECTOR& playerPos) const
+bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 {
 	if (!_bHasDetectionSector || !_bSensorEnabled)
 	{
@@ -158,13 +158,13 @@ bool EnemySensor::IsPlayerInDetectionRange(const VECTOR& playerPos) const
 	}
 
 	// 索敵範囲の中心位置を取得
-	VECTOR detectionCenter = GetDetectionCenter();
+	vec::Vec3 detectionCenter = GetDetectionCenter();
 
 	// 索敵範囲の中心からプレイヤーへのベクトル
-	VECTOR toPlayer = VSub(playerPos, detectionCenter);
+	vec::Vec3 toPlayer = vec3::VSub(playerPos, detectionCenter);
 
 	// 距離チェック
-	float distance = VSize(toPlayer);
+	float distance = vec3::VSize(toPlayer);
 	if (distance > _detectionSector.radius)
 	{
 		return false; // 範囲外
@@ -177,11 +177,11 @@ bool EnemySensor::IsPlayerInDetectionRange(const VECTOR& playerPos) const
 	}
 
 	// 角度チェック - 正規化したベクトルで内積計算
-	VECTOR toPlayerNorm = VNorm(toPlayer);
-	VECTOR forwardNorm = VNorm(_vDir);
+	vec::Vec3 toPlayerNorm = vec3::VNorm(toPlayer);
+	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
 
 	// 正面方向との内積を計算
-	float dot = VDot(forwardNorm, toPlayerNorm);
+	float dot = vec::Vec3::Dot(forwardNorm, toPlayerNorm);
 
 	// 内積から角度を計算（ラジアン）
 	float angleRad = acosf(fmaxf(-1.0f, fminf(1.0f, dot)));
@@ -211,8 +211,8 @@ void EnemySensor::RenderDetectionSector() const
 	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
 
 	// 索敵範囲の中心位置を取得
-	VECTOR center = GetDetectionCenter();
-	VECTOR forward = VNorm(_vDir);
+	vec::Vec3 center = GetDetectionCenter();
+	vec::Vec3 forward = vec3::VNorm(_vDir);
 
 	// Y軸回りの回転を使って扇形を描画
 	// 敵の向いている方向を基準角度として計算
@@ -225,48 +225,48 @@ void EnemySensor::RenderDetectionSector() const
 		float angle2 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * (i + 1) / (float)segments));
 
 		// 極座標から直交座標への変換
-		VECTOR pos1 = VAdd(center, VGet(sinf(angle1) * _detectionSector.radius, 0, cosf(angle1) * _detectionSector.radius));
-		VECTOR pos2 = VAdd(center, VGet(sinf(angle2) * _detectionSector.radius, 0, cosf(angle2) * _detectionSector.radius));
+		vec::Vec3 pos1 = vec3::VAdd(center, vec3::VGet(sinf(angle1) * _detectionSector.radius, 0.0f, cosf(angle1) * _detectionSector.radius));
+		vec::Vec3 pos2 = vec3::VAdd(center, vec3::VGet(sinf(angle2) * _detectionSector.radius, 0.0f, cosf(angle2) * _detectionSector.radius));
 
 		// 3D空間での線描画
-		DrawLine3D(pos1, pos2, color);
+		DrawLine3D(VectorConverter::VecToDxLib(pos1), VectorConverter::VecToDxLib(pos2), color);
 
 		// 少し上の位置にも線を描画して見えやすくする
-		VECTOR pos1_up = VAdd(pos1, VGet(0, 10.0f, 0));
-		VECTOR pos2_up = VAdd(pos2, VGet(0, 10.0f, 0));
-		DrawLine3D(pos1_up, pos2_up, color);
+		vec::Vec3 pos1_up = vec3::VAdd(pos1, vec3::VGet(0.0f, 10.0f, 0.0f));
+		vec::Vec3 pos2_up = vec3::VAdd(pos2, vec3::VGet(0.0f, 10.0f, 0.0f));
+		DrawLine3D(VectorConverter::VecToDxLib(pos1_up), VectorConverter::VecToDxLib(pos2_up), color);
 	}
 
 	// 中心から両端への線を描画
 	float leftAngle = baseAngle - halfAngleRad;
 	float rightAngle = baseAngle + halfAngleRad;
 
-	VECTOR leftEdge = VAdd(center, VGet(sinf(leftAngle) * _detectionSector.radius, 0, cosf(leftAngle) * _detectionSector.radius));
-	VECTOR rightEdge = VAdd(center, VGet(sinf(rightAngle) * _detectionSector.radius, 0, cosf(rightAngle) * _detectionSector.radius));
+	vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * _detectionSector.radius, 0.0f, cosf(leftAngle) * _detectionSector.radius));
+	vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * _detectionSector.radius, 0.0f, cosf(rightAngle) * _detectionSector.radius));
 
-	DrawLine3D(center, leftEdge, color);
-	DrawLine3D(center, rightEdge, color);
+	DrawLine3D(VectorConverter::VecToDxLib(center), VectorConverter::VecToDxLib(leftEdge), color);
+	DrawLine3D(VectorConverter::VecToDxLib(center), VectorConverter::VecToDxLib(rightEdge), color);
 
 	// 少し上の位置にも線を描画
-	VECTOR center_up = VAdd(center, VGet(0, 10.0f, 0));
-	VECTOR leftEdge_up = VAdd(leftEdge, VGet(0, 10.0f, 0));
-	VECTOR rightEdge_up = VAdd(rightEdge, VGet(0, 10.0f, 0));
+	vec::Vec3 center_up = vec3::VAdd(center, vec3::VGet(0.0f, 10.0f, 0.0f));
+	vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
+	vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 
-	DrawLine3D(center_up, leftEdge_up, color);
-	DrawLine3D(center_up, rightEdge_up, color);
+	DrawLine3D(VectorConverter::VecToDxLib(center_up), VectorConverter::VecToDxLib(leftEdge_up), color);
+	DrawLine3D(VectorConverter::VecToDxLib(center_up), VectorConverter::VecToDxLib(rightEdge_up), color);
 
 	// 敵の正面方向を示す緑の線を描画（敵の位置から索敵中心まで）
-	VECTOR enemyPos = _vPos;
-	DrawLine3D(VAdd(enemyPos, VGet(0, 5.0f, 0)), VAdd(center, VGet(0, 5.0f, 0)), GetColor(0, 255, 0));
+	vec::Vec3 enemyPos = _vPos;
+	DrawLine3D(VectorConverter::VecToDxLib(vec3::VAdd(enemyPos, vec3::VGet(0.0f, 5.0f, 0.0f))), VectorConverter::VecToDxLib(vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 0.0f))), GetColor(0, 255, 0));
 
 	// 中心点を示すマーカーを描画
-	VECTOR marker1 = VAdd(center, VGet(-10.0f, 5.0f, 0));
-	VECTOR marker2 = VAdd(center, VGet(10.0f, 5.0f, 0));
-	VECTOR marker3 = VAdd(center, VGet(0, 5.0f, -10.0f));
-	VECTOR marker4 = VAdd(center, VGet(0, 5.0f, 10.0f));
+	vec::Vec3 marker1 = vec3::VAdd(center, vec3::VGet(-10.0f, 5.0f, 0.0f));
+	vec::Vec3 marker2 = vec3::VAdd(center, vec3::VGet(10.0f, 5.0f, 0.0f));
+	vec::Vec3 marker3 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, -10.0f));
+	vec::Vec3 marker4 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 10.0f));
 
-	DrawLine3D(marker1, marker2, color);
-	DrawLine3D(marker3, marker4, color);
+	DrawLine3D(VectorConverter::VecToDxLib(marker1), VectorConverter::VecToDxLib(marker2), color);
+	DrawLine3D(VectorConverter::VecToDxLib(marker3), VectorConverter::VecToDxLib(marker4), color);
 }
 
 // 検出UI表示

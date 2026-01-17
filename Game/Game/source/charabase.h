@@ -5,6 +5,7 @@
 // * \author 鈴木裕稀
 // * \date   2025/12/15
 // * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #pragma once
@@ -35,13 +36,13 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	const VECTOR& GetPos() const { return _vPos; }
-	const VECTOR& GetOldPos() const { return _vOldPos; }
+	const vec::Vec3& GetPos() const { return _vPos; }
+	const vec::Vec3& GetOldPos() const { return _vOldPos; }
 	auto GetColSubY() const { return _fColSubY; }
 
-	const VECTOR& SetPos(const VECTOR& pos) { return _vPos = pos; }
-	const VECTOR& GetDir() const { return _vDir; }
-	void SetDir(const VECTOR& dir) { _vDir = dir; }
+	const vec::Vec3& SetPos(const vec::Vec3& pos) { return _vPos = pos; }
+	const vec::Vec3& GetDir() const { return _vDir; }
+	void SetDir(const vec::Vec3& dir) { _vDir = dir; }
 
 	auto GetCollisionR() const { return _fCollisionR; }
 	auto GetCollisionWeight() const { return _fCollisionWeight; }
@@ -55,9 +56,9 @@ protected:
 	float _iAttachIndex;
 	float _fTotalTime;
 	float _fPlayTime;
-	VECTOR _vPos; // キャラの位置
-	VECTOR _vOldPos; // 1フレーム前のキャラの位置
-	VECTOR _vDir; // キャラの向き
+	vec::Vec3 _vPos; // キャラの位置
+	vec::Vec3 _vOldPos; // 1フレーム前のキャラの位置
+	vec::Vec3 _vDir; // キャラの向き
 	float _fColSubY; // コリジョン判定用のYオフセット
 	float _fCollisionR; // 円の半径
 	float _fCollisionWeight; // キャラの重さ

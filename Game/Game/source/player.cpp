@@ -161,8 +161,8 @@ bool Player::Initialize()
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_vPos = VGet(0.0f, 0.0f, 0.0f); // 初期位置が同じだが、押し出され処理のおかげで位置がずれる
-	_vDir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f); // 初期位置が同じだが、押し出され処理のおかげで位置がずれる
+	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定
@@ -176,11 +176,11 @@ bool Player::Initialize()
 	_bAxisUseLock = false;			// 十字キー水平入力ロックフラグ初期化
 	_iAxisThreshold = 15;		// 十字キー水平入力保持閾値設定
 
-	_vAxisLockDir = VGet(0.0f, 0.0f, -1.0f);
+	_vAxisLockDir = vec3::VGet(0.0f, 0.0f, -1.0f);
 
 	// カメラオフセット初期化
-	_camOffset = VGet(0.0f, 0.0f, 0.0f);
-	_camTargetOffset = VGet(0.0f, 0.0f, 0.0f);
+	_camOffset = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_camTargetOffset = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 	// 円形移動用パラメータ初期化
 	_arc_pivot_dist = 50.0f;    // 回転中心までの距離（調整可）
@@ -238,7 +238,7 @@ bool Player::Process()
 
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
-	VECTOR v = { 0,0,0 };
+	vec::Vec3 v = { 0,0,0 };
 	float length = 0.0f;
 
 	// カメラの向いている角度を取得
@@ -252,7 +252,7 @@ bool Player::Process()
 		// キャラ移動(カメラ設定に合わせて)
 
         // ローカル入力を取得
-        VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
+        vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
         if(key & PAD_INPUT_DOWN) { inputLocal.x = 1; }
         if(key & PAD_INPUT_UP)   { inputLocal.x = -1; }
         if(key & PAD_INPUT_LEFT) { inputLocal.z = -1; }
@@ -275,14 +275,14 @@ bool Player::Process()
 					// 現在の向きをロック方向として保存
 					_vAxisLockDir = _vDir;
 					_vAxisLockDir.y = 0.0f;
-					if(VSize(_vAxisLockDir) > 0.0f)
+					if(vec3::VSize(_vAxisLockDir) > 0.0f)
 					{
-						_vAxisLockDir = VNorm(_vAxisLockDir);
+						_vAxisLockDir = vec3::VNorm(_vAxisLockDir);
 					}
 					else
 					{
 						// 向きが不定の場合はデフォルト方向を採用
-						_vAxisLockDir = VGet(0.0f, 0.0f, -1.0f);
+						_vAxisLockDir = vec3::VGet(0.0f, 0.0f, -1.0f);
 					}
 				}
 			}
@@ -297,7 +297,7 @@ bool Player::Process()
 		if(_bAxisUseLock)
 		{
 			// 軸ロック中の移動処理（向き固定で前後左右に移動）
-			VECTOR axis_lock_input = VGet(0.0f, 0.0f, 0.0f);
+			vec::Vec3 axis_lock_input = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 			// 軸ロック専用の入力を取得
 			if(key & PAD_INPUT_DOWN) {
@@ -316,12 +316,14 @@ bool Player::Process()
 			_vInput = axis_lock_input;
 
 			// 入力があれば軸ロック移動を計算
-			if(VSize(axis_lock_input) > 0.0f)
+			if(vec3::VSize(axis_lock_input) > 0.0f)
 			{
-				VECTOR forward = _vAxisLockDir;
+				vec::Vec3 forward = _vAxisLockDir;
 				forward.y = 0.0f;
-				if(VSize(forward) > 0.0f) forward = VNorm(forward);
-
+				if(vec3::VSize(forward) > 0.0f)
+				{
+					forward = vec3::VNorm(forward);
+				}
 				// 右ベクトル（XZ平面で前方の90度回転）
 				VECTOR right = VGet(forward.z, 0.0f, -forward.x);
 
@@ -330,14 +332,14 @@ bool Player::Process()
 				float sideInput = axis_lock_input.z;     // RIGHT = 右移動, LEFT = 左移動
 
 				// 移動ベクトルを計算（前方向 + 横方向）
-				VECTOR moveDir = VGet(0.0f, 0.0f, 0.0f);
+				vec::Vec3 moveDir = vec3::VGet(0.0f, 0.0f, 0.0f);
 				moveDir.x = forward.x * forwardInput + right.x * sideInput;
 				moveDir.z = forward.z * forwardInput + right.z * sideInput;
 
 				// 移動ベクトルを正規化してから速度を掛ける
-				if(VSize(moveDir) > 0.0f)
+				if(vec3::VSize(moveDir) > 0.0f)
 				{
-					moveDir = VNorm(moveDir);
+					moveDir = vec3::VNorm(moveDir);
 					v.x = moveDir.x * _fMvSpeed;
 					v.z = moveDir.z * _fMvSpeed;
 				}
@@ -352,7 +354,7 @@ bool Player::Process()
         {
             // 通常：カメラ方向に合わせて回転して移動（inputLocal はローカル入力）
             // vをrad分回転させる（ローカル入力の角度）
-            if(VSize(inputLocal) > 0.0f)
+            if(vec3::VSize(inputLocal) > 0.0f)
             {
                 length = _fMvSpeed;
                 float localRad = atan2(inputLocal.z, inputLocal.x);
@@ -364,7 +366,7 @@ bool Player::Process()
 	}
 
 	// 地上移動
-	if(VSize(v) > 0.0f)
+	if(vec3::VSize(v) > 0.0f)
 	{
 		if(_bAxisUseLock)
 		{
@@ -406,13 +408,13 @@ bool Player::Process()
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = static_cast<int>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_attack_charge_loop"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_attack_charge_loop"), -1, FALSE));
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = static_cast<int>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_move_run"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "mot_move_run"), -1, FALSE));
 			break;
 		}
-		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex));
+		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex)));
 		_fPlayTime = 0.0f;
 		switch(_status)
 		{
@@ -434,7 +436,7 @@ bool Player::Render()
 {
 	base::Render();
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, static_cast<int>(_fPlayTime));
+	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), _fPlayTime);
 	
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
@@ -442,7 +444,7 @@ bool Player::Render()
 
 	//MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
 
-	MATRIX mTrans = MGetTranslate(_vPos);
+	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
 
 	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
 

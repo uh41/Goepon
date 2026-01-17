@@ -23,6 +23,7 @@
     <ClInclude Include="source\applicationmain.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
+    <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
@@ -46,6 +47,7 @@
     <ClCompile Include="source\applicationmain.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
+    <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
