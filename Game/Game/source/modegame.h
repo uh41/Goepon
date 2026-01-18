@@ -132,6 +132,8 @@ protected:
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
 
+	soundserver::SoundServer* _soundServer;
+
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック
 };

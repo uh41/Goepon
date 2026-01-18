@@ -83,6 +83,8 @@ bool ModeGame::Initialize()
 		enemy->SetEnemySensor(_enemySensor);
 	}
 
+	_soundServer = new soundserver::SoundServer();
+
 	return true;
 }
 
@@ -123,6 +125,12 @@ bool ModeGame::Terminate()
 	{
 		_enemySensor->Terminate();
 		_enemySensor.reset();
+	}
+
+	if(_soundServer)
+	{
+		delete _soundServer;
+		_soundServer = nullptr;
 	}
 
 	return true;
@@ -167,6 +175,11 @@ bool ModeGame::Process()
 	_camera->Process();
 	
 	DebugProcess();// デバック処理
+
+	//if(_soundServer)
+	//{
+	//	_soundServer->Update();
+	//}
 
 	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
 	if(_bCameraControlMode)
@@ -244,6 +257,11 @@ bool ModeGame::Process()
 			_player->SetPos(_playerTanuki->GetPos());
 			// 向きも合わせる
 			_player->SetDir(_playerTanuki->GetDir());
+		}
+
+		if(_soundServer)
+		{
+			_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
 		}
 
 		// シャドウの追従キャラも切り替え
