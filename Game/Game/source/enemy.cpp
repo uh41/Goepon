@@ -321,7 +321,7 @@ bool Enemy::Render()
 	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), _fPlayTime);
 
 	// 位置
-	MV1SetPosition(_iHandle, VectorConverter::VecToDxLib(_vPos));
+	MV1SetPosition(_iHandle, DxlibConverter::VecToDxLib(_vPos));
 	// 向きからY軸回転を算出
 	VECTOR vrot = { 0,0,0, };
 	vrot.y = atan2f(-_vDir.x, -_vDir.z);

@@ -19,7 +19,7 @@ public:
 	void ColorMask(int R, int G, int B, int alpha);
 
 	void FadeIn(int frame);
-	void FadeOut(int R, int G, int B, int frame);
+	void FadeOut(int R, int G, int B, float frame);
 
 	int IsFade();		// フェード中かどうか
 
@@ -42,8 +42,8 @@ protected:
 	int _iFadeEdA;	// フェードアウトの終了アルファ
 
 	// フェードのフレームカウント数
-	int _iFadeFrames;	// フェードのフレーム数
-	int _iFadeCnt;		// フェードのカウント
+	float _iFadeFrames;	// フェードのフレーム数
+	float _iFadeCnt;		// フェードのカウント
 
 };
 

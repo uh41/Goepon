@@ -444,7 +444,7 @@ bool Player::Render()
 
 	//MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
 
-	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
+	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
 

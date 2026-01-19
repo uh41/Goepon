@@ -26,8 +26,8 @@ bool Fade::Initialize()
 	_iFadeEdB = 0;	// フェードアウトの終了青
 	_iFadeEdA = 0;	// フェードアウトの終了アルファ
 
-	_iFadeFrames = 0;	// フェードのフレーム数
-	_iFadeCnt = 0;		// フェードのカウント
+	_iFadeFrames = 0.0f;	// フェードのフレーム数
+	_iFadeCnt = 0.0f;		// フェードのカウント
 	return true;
 }
 
@@ -64,11 +64,11 @@ void Fade::FadeIn(int frame)
 	_iFadeEdA = 0;			// フェードアウトの終了アルファ
 
 	_iFadeFrames = frame;	// フェードのフレーム数
-	_iFadeCnt = 0;			// フェードのカウント
+	_iFadeCnt = 0.0f;			// フェードのカウント
 }
 
 // 指定の色にフェードアウト
-void Fade::FadeOut(int R, int G, int B, int frame)
+void Fade::FadeOut(int R, int G, int B, float frame)
 {
 	_iFadeStR = _iColorR;	// フェードインの開始赤
 	_iFadeStG = _iColorG;	// フェードインの開始緑
@@ -81,7 +81,7 @@ void Fade::FadeOut(int R, int G, int B, int frame)
 	_iFadeEdA = 255;		// フェードアウトの終了アルファ
 
 	_iFadeFrames = frame;	// フェードのフレーム数
-	_iFadeCnt = 0;			// フェードのカウント
+	_iFadeCnt = 0.0f;			// フェードのカウント
 }
 
 // フェードインアウトは終了したか？

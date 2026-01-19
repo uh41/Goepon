@@ -67,7 +67,7 @@ bool CharaShadow::Render()
 
 	pos.y = _Chara->GetColSubY();
 
-	VECTOR vpos = VectorConverter::VecToDxLib(pos);
+	VECTOR vpos = DxlibConverter::VecToDxLib(pos);
 
 	float y_offset = 0.2f; // âeÇè≠ÇµïÇÇ©ÇπÇÈ
 

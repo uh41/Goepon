@@ -27,24 +27,24 @@ bool Navi::FindPath(const vec::Vec3& startpos, const vec::Vec3& goalpos, at::vec
 	for(auto&& navmesh : _nNavigationMesh)
 	{
 		// äJénínì_
-		if(HitCheck_Line_Triangle(
-			VectorConverter::VecToDxLib(startpos + vec::Vec3(0.0f, 1.0f, 0.0f) * navi::VERTICAL_DIS),	// è„Ç©ÇÁ
-			VectorConverter::VecToDxLib(startpos + vec::Vec3(0.0f, -1.0f, 0.0f) * navi::VERTICAL_DIS),	// â∫Ç‹Ç≈
-			VectorConverter::VecToDxLib(navmesh.GetMesh()._vVertex1),									// éOäpå`ÇÃí∏ì_ÇP
-			VectorConverter::VecToDxLib(navmesh.GetMesh()._vVertex2),									// éOäpå`ÇÃí∏ì_ÇQ
-			VectorConverter::VecToDxLib(navmesh.GetMesh()._vVertex3)									// éOäpå`ÇÃí∏ì_ÇR
+		if(DxlibConverter::HitCheckLineToTriangle(
+			startpos + vec::Vec3(0.0f, 1.0f, 0.0f) * navi::VERTICAL_DIS,	// è„Ç©ÇÁ
+			startpos + vec::Vec3(0.0f, -1.0f, 0.0f) * navi::VERTICAL_DIS,	// â∫Ç‹Ç≈
+			navmesh.GetMesh()._vVertex1,									// éOäpå`ÇÃí∏ì_ÇP
+			navmesh.GetMesh()._vVertex2,									// éOäpå`ÇÃí∏ì_ÇQ
+			navmesh.GetMesh()._vVertex3									// éOäpå`ÇÃí∏ì_ÇR
 		).HitFlag == 1)
 		{
 			start = &navmesh;		// å©Ç¬ÇØÇΩ
 		}
 
 		// èIóπínì_
-		if(HitCheck_Line_Triangle(
-			VectorConverter::VecToDxLib(goalpos + vec::Vec3(0.0f, 1.0f, 0.0f) * navi::VERTICAL_DIS),	// è„Ç©ÇÁ
-			VectorConverter::VecToDxLib(goalpos + vec::Vec3(0.0f, -1.0f, 0.0f) * navi::VERTICAL_DIS),	// â∫Ç‹Ç≈
-			VectorConverter::VecToDxLib(navmesh.GetMesh()._vVertex1),									// éOäpå`ÇÃí∏ì_ÇP
-			VectorConverter::VecToDxLib(navmesh.GetMesh()._vVertex2),									// éOäpå`ÇÃí∏ì_ÇQ
-			VectorConverter::VecToDxLib(navmesh.GetMesh()._vVertex3)									// éOäpå`ÇÃí∏ì_ÇR
+		if(DxlibConverter::HitCheckLineToTriangle(
+			goalpos + vec::Vec3(0.0f, 1.0f, 0.0f) * navi::VERTICAL_DIS,	// è„Ç©ÇÁ
+			goalpos + vec::Vec3(0.0f, -1.0f, 0.0f) * navi::VERTICAL_DIS,	// â∫Ç‹Ç≈
+			navmesh.GetMesh()._vVertex1,									// éOäpå`ÇÃí∏ì_ÇP
+			navmesh.GetMesh()._vVertex2,									// éOäpå`ÇÃí∏ì_ÇQ
+			navmesh.GetMesh()._vVertex3									// éOäpå`ÇÃí∏ì_ÇR
 		).HitFlag == 1)
 		{
 			goal = &navmesh;		// å©Ç¬ÇØÇΩ
@@ -109,9 +109,9 @@ void Navi::GetPolygonData(int handle, at::vec<Polygon3D>& polygon)
 	{
 		Polygon3D myPolygon
 		(
-			VectorConverter::DxLibToVec(dxVertex[dxPolygon[i].VIndex[0]].Position),		// í∏ì_ÇP
-			VectorConverter::DxLibToVec(dxVertex[dxPolygon[i].VIndex[1]].Position),		// í∏ì_ÇQ
-			VectorConverter::DxLibToVec(dxVertex[dxPolygon[i].VIndex[2]].Position)		// í∏ì_ÇR
+			DxlibConverter::DxLibToVec(dxVertex[dxPolygon[i].VIndex[0]].Position),		// í∏ì_ÇP
+			DxlibConverter::DxLibToVec(dxVertex[dxPolygon[i].VIndex[1]].Position),		// í∏ì_ÇQ
+			DxlibConverter::DxLibToVec(dxVertex[dxPolygon[i].VIndex[2]].Position)		// í∏ì_ÇR
 		);
 		polygon.emplace_back(myPolygon);
 	}
