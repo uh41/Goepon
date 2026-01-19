@@ -14,7 +14,8 @@ class ModeServer;
 
 namespace fade
 {
-	static constexpr int FADE_FREAME;
+	static constexpr int FADE_FRAME = 60;
+	static constexpr int FADE_WAIT = 60;
 }
 
 

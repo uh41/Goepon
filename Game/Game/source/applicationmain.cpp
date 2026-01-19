@@ -12,6 +12,7 @@
 #include "applicationglobal.h"
 #include "modegame.h"
 #include "modeinit.h"
+#include "modetitle.h"
 
 // 実体
 ApplicationMain g_application_main;
@@ -25,9 +26,9 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 	gGlobal.Init();
 
 	// モードの登録
-	ModeServer::GetInstance()->Add(new ModeInit(), 0, "logo");
+	ModeServer::GetInstance()->Add(new ModeInit(), 2, "logo");
 	ModeServer::GetInstance()->Add(new ModeTitle(), 1, "title");
-	ModeServer::GetInstance()->Add(new ModeGame(), 2, "game");
+	ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
 
 	return true;
 }

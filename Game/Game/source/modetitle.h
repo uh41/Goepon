@@ -1,11 +1,13 @@
 #pragma once
 #include "appframe.h"
-class modetitle : public ModeBase
+class ModeTitle : public ModeBase
 {
-	public:
-	virtual bool Initialize();
-	virtual bool Terminate();
-	virtual bool Process();
-	virtual bool Render();
+public:
+	ModeTitle();
+	virtual ~ModeTitle();
+	virtual bool Initialize() override;
+	virtual bool Terminate() override;
+	virtual bool Process() override;
+	virtual bool Render() override;
 };
 
