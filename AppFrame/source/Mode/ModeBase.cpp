@@ -25,6 +25,10 @@ ModeBase::ModeBase()
 
 	SetCallPerFrame(1);
 	SetCallOfCount(1);
+
+	_iHandle = -1;
+	_state = State::DONE;
+	_iTimer = 0;
 }
 
 ModeBase::~ModeBase()

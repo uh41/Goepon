@@ -136,6 +136,12 @@
     <Filter Include="ヘッダー ファイル\サウンド\サウンドサーバー">
       <UniqueIdentifier>{0a71a808-723e-44e8-949e-4e1b178f45b1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\フェード">
+      <UniqueIdentifier>{87d5450f-4627-4fcf-9730-8dcc5c639683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\フェード">
+      <UniqueIdentifier>{ce897302-3a05-4277-8c32-f14f4ec8748b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\winmain.cpp">
@@ -167,6 +173,12 @@
     </ClCompile>
     <ClCompile Include="source\Sound\soundserver.cpp">
       <Filter>ソース ファイル\サウンド\サウンドサーバー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\fade\fade.cpp">
+      <Filter>ソース ファイル\フェード</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mymath.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +259,9 @@
     </ClInclude>
     <ClInclude Include="source\Sound\soundserver.h">
       <Filter>ヘッダー ファイル\サウンド\サウンドサーバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\fade\fade.h">
+      <Filter>ヘッダー ファイル\フェード</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

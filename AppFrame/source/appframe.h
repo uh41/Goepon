@@ -20,4 +20,4 @@
 #include "aliastemplate.h"
 #include "Sound/soundserver.h"
 #include "sound/sounditemoneshot.h"
-
+#include "fade/fade.h"

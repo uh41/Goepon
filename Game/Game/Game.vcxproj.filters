@@ -130,6 +130,15 @@
     <Filter Include="ヘッダー ファイル\メニュー\デバックメニュー">
       <UniqueIdentifier>{ad51dbff-deb8-46a4-b823-56ec3b2e4497}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ロゴ">
+      <UniqueIdentifier>{5a51b49b-2f3f-4234-8d9a-74dedb675696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ロゴ">
+      <UniqueIdentifier>{461ba56d-9637-4f69-b7c4-39d4d808e2bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\タイトル">
+      <UniqueIdentifier>{733e3e93-8702-4c5b-a889-9e3fe089104a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\modeeffekseer.h">
@@ -196,6 +205,12 @@
       <Filter>ヘッダー ファイル\メニュー\デバックメニュー</Filter>
     </ClInclude>
     <ClInclude Include="source\charashadow.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeinit.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modetitle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -273,6 +288,12 @@
       <Filter>ソース ファイル\モードゲーム\ライト</Filter>
     </ClCompile>
     <ClCompile Include="source\charashadow.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeinit.cpp">
+      <Filter>ソース ファイル\ロゴ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modetitle.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

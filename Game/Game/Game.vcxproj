@@ -28,12 +28,14 @@
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemysensor.h" />
+    <ClInclude Include="source\modeinit.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
     <ClInclude Include="source\menuitembase.h" />
     <ClInclude Include="source\modeeffekseer.h" />
     <ClInclude Include="source\modegame.h" />
     <ClInclude Include="source\modemenu.h" />
+    <ClInclude Include="source\modetitle.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
@@ -52,6 +54,7 @@
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
+    <ClCompile Include="source\modeinit.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
     <ClCompile Include="source\menuitembase.cpp" />
@@ -61,6 +64,7 @@
     <ClCompile Include="source\modegamedebug.cpp" />
     <ClCompile Include="source\modegameobject.cpp" />
     <ClCompile Include="source\modemenu.cpp" />
+    <ClCompile Include="source\modetitle.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />

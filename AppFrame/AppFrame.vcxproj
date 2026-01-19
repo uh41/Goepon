@@ -163,6 +163,7 @@
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
+    <ClInclude Include="source\fade\fade.h" />
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
@@ -188,8 +189,10 @@
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\fade\fade.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\mymath.cpp" />
     <ClCompile Include="source\navi\navi.cpp" />
     <ClCompile Include="source\navi\navigationmesh.cpp" />
     <ClCompile Include="source\resource\ResourceServer.cpp" />

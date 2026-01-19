@@ -12,10 +12,23 @@
 
 class ModeServer;
 
+namespace fade
+{
+	static constexpr int FADE_FREAME;
+}
+
 
 class		ModeBase
 {
 public:
+	enum class State
+	{
+		FADE_IN,
+		WAIT,
+		FADE_OUT,
+		DONE
+	};
+
 	ModeBase();
 	virtual ~ModeBase();
 
@@ -59,6 +72,13 @@ private:
 	int		_callPerFrame;
 	int		_callPerFrameCnt;
 	int		_callOfCount;
+
+protected:
+	int _iHandle;
+
+	State _state;
+
+	int _iTimer;
 
 };
 
