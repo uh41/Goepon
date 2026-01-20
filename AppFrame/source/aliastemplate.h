@@ -28,6 +28,9 @@ namespace at
 	template<typename C, size_t s>
 	using arc = std::array<C, s>;					// アレイとクラス
 
+	template<typename T, size_t s>
+	using art = std::array<T, s>;
+
 	template<typename C, typename D>
 	using vpcc = std::vector<std::pair<C, D>>;	// ベクターとペアとクラス
 

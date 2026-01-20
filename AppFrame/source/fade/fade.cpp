@@ -9,22 +9,12 @@ Fade::Fade()
 
 bool Fade::Initialize()
 {
-	_iColorR = 0;	// 赤
-	_iColorG = 0;	// 緑
-	_iColorB = 0;	// 青
-	_iAlpha = 0;	// アルファ値
 
-	// フェードイン用
-	_iFadeStR = 0;	// フェードインの開始赤
-	_iFadeStG = 0;	// フェードインの開始緑
-	_iFadeStB = 0;	// フェードインの開始青
-	_iFadeStA = 0;	// フェードインの開始アルファ
+	_fadeColor = { 0, 0, 0, 0 }; // フェード用カラー配列(RGBA)
 
-	// フェードアウト用
-	_iFadeEdR = 0;	// フェードアウトの終了赤
-	_iFadeEdG = 0;	// フェードアウトの終了緑
-	_iFadeEdB = 0;	// フェードアウトの終了青
-	_iFadeEdA = 0;	// フェードアウトの終了アルファ
+	_fadeStColor = { 0, 0, 0, 0 }; // フェードイン用開始カラー配列(RGBA)
+
+	_fadeEdColor = { 0, 0, 0, 0 }; // フェードアウト用終了カラー配列(RGBA)
 
 	_iFadeFrames = 0.0f;	// フェードのフレーム数
 	_iFadeCnt = 0.0f;		// フェードのカウント
@@ -44,24 +34,16 @@ Fade* Fade::GetInstance()
 
 void Fade::ColorMask(int R, int G, int B, int alpha)
 {
-	_iColorR = R;
-	_iColorG = G;
-	_iColorB = B;
-	_iAlpha = alpha;
+	_fadeColor = { R, G, B, alpha };
 }
 
 // 現在のカラーマスクからフェードイン
-void Fade::FadeIn(int frame)
+void Fade::FadeIn(float frame)
 {
-	_iFadeStR = _iColorR;	// フェードインの開始赤
-	_iFadeStG = _iColorG;	// フェードインの開始緑
-	_iFadeStB = _iColorB;	// フェードインの開始青
-	_iFadeStA = _iAlpha;	// フェードインの開始アルファ
 
-	_iFadeEdR = _iColorR;	// フェードアウトの終了赤
-	_iFadeEdG = _iColorG;	// フェードアウトの終了緑
-	_iFadeEdB = _iColorB;	// フェードアウトの終了青
-	_iFadeEdA = 0;			// フェードアウトの終了アルファ
+	_fadeStColor = _fadeColor;// フェードイン用開始カラー配列(RGBA)
+
+	_fadeEdColor = { _fadeColor[0], _fadeColor[1], _fadeColor[3], 0 };// フェードアウト用終了カラー配列(RGBA)
 
 	_iFadeFrames = frame;	// フェードのフレーム数
 	_iFadeCnt = 0.0f;			// フェードのカウント
@@ -70,15 +52,10 @@ void Fade::FadeIn(int frame)
 // 指定の色にフェードアウト
 void Fade::FadeOut(int R, int G, int B, float frame)
 {
-	_iFadeStR = _iColorR;	// フェードインの開始赤
-	_iFadeStG = _iColorG;	// フェードインの開始緑
-	_iFadeStB = _iColorB;	// フェードインの開始青
-	_iFadeStA = _iAlpha;	// フェードインの開始アルファ
 
-	_iFadeEdR = R;			// フェードアウトの終了赤
-	_iFadeEdG = G;			// フェードアウトの終了緑
-	_iFadeEdB = B;			// フェードアウトの終了青
-	_iFadeEdA = 255;		// フェードアウトの終了アルファ
+	_fadeStColor = _fadeColor;// フェードイン用開始カラー配列(RGBA)
+
+	_fadeEdColor = { R, G, B, 255 };// フェードアウト用終了カラー配列(RGBA)
 
 	_iFadeFrames = frame;	// フェードのフレーム数
 	_iFadeCnt = 0.0f;			// フェードのカウント
@@ -101,10 +78,15 @@ bool Fade::Process()
 	if(IsFade() != 0)
 	{
 		_iFadeCnt++; // フェードのカウンタを進める
-		_iColorR = static_cast<int>(mymath::EasingLinear(static_cast<float>(_iFadeCnt), static_cast<float>(_iFadeStR), static_cast<float>(_iFadeEdR), static_cast<float>(_iFadeFrames))); // 赤の補間
-		_iColorG = static_cast<int>(mymath::EasingLinear(static_cast<float>(_iFadeCnt), static_cast<float>(_iFadeStG), static_cast<float>(_iFadeEdG), static_cast<float>(_iFadeFrames))); // 緑の補間
-		_iColorB = static_cast<int>(mymath::EasingLinear(static_cast<float>(_iFadeCnt), static_cast<float>(_iFadeStB), static_cast<float>(_iFadeEdB), static_cast<float>(_iFadeFrames))); // 青の補間
-		_iAlpha  = static_cast<int>(mymath::EasingLinear(static_cast<float>(_iFadeCnt), static_cast<float>(_iFadeStA), static_cast<float>(_iFadeEdA), static_cast<float>(_iFadeFrames))); // アルファの補間
+		for(int i = 0; i < 4; i++)
+		{
+			_fadeColor[i] = static_cast<int>(
+				mymath::EasingLinear(
+					static_cast<float>(_iFadeCnt),// カウント
+					static_cast<float>(_fadeStColor[i]),// 開始カラー
+					static_cast<float>(_fadeEdColor[i]),// 終了カラー
+					static_cast<float>(_iFadeFrames))); // カラーの補間
+		}
 	}
 	return true;
 }
@@ -113,11 +95,12 @@ bool Fade::Process()
 bool Fade::Render()
 {
 	ApplicationBase* app = ApplicationBase::GetInstance();
-	if(_iAlpha)
+	int alpha = _fadeColor[3];
+	if(alpha)
 	{
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, _iAlpha);		// 半透明モードに設定
-		DrawBox(0, 0, app->DispSizeW(), app->DispSizeH(), GetColor(_iColorR, _iColorG, _iColorB), TRUE); // カラーマスクの描画
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, _iAlpha);	// ブレンドモードを元に戻す
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);		// 半透明モードに設定
+		DrawBox(0, 0, app->DispSizeW(), app->DispSizeH(), GetColor(_fadeColor[0], _fadeColor[1], _fadeColor[2]), TRUE); // カラーマスクの描画
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, alpha);	// ブレンドモードを元に戻す
 	}
 	return true;
 }
