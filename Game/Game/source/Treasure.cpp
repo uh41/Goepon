@@ -53,7 +53,7 @@ bool Treasure::Render()
 	// 平行移動行列の取得
 	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
 	// 拡大縮小行列
-	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
+	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f));
 	// モデル行列の合成
 	MATRIX m = MGetIdent();
 
