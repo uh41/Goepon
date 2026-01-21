@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_iHandle = MV1LoadModel("res/Tanuki/tanuponnn_01_fix.mv1");
+	_iHandle = MV1LoadModel("res/Tanuki/goepon_walkwalk.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -23,8 +23,8 @@ bool PlayerTanuki::Initialize()
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_vPos = VGet(0.0f, 0.0f, 0.0f);
-	_vDir = VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定
@@ -58,7 +58,7 @@ bool PlayerTanuki::Process()
 
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
-	VECTOR v = { 0,0,0 };
+	vec::Vec3 v = { 0,0,0 };
 	float length = 0.0f;
 
 	// カメラの向いている角度を取得
@@ -67,7 +67,7 @@ bool PlayerTanuki::Process()
 	float camrad = atan2(sz, sx);
 
 	// キャラ移動(カメラ設定に合わせて)
-	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
+	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 	if(key & PAD_INPUT_DOWN) {
 		inputLocal.x = 1;
 	}
@@ -85,7 +85,7 @@ bool PlayerTanuki::Process()
 	_vInput = inputLocal;
 
 	// カメラ方向に合わせて移動量を計算
-	if(VSize(inputLocal) > 0.0f)
+	if(vec3::VSize(inputLocal) > 0.0f)
 	{
 		length = _fMvSpeed;
 		float localRad = atan2(inputLocal.z, inputLocal.x);
@@ -96,7 +96,7 @@ bool PlayerTanuki::Process()
 	}
 	else
 	{
-		v = VGet(0.0f, 0.0f, 0.0f);
+		v = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
 	}
 
@@ -116,24 +116,24 @@ bool PlayerTanuki::Process()
 	{
 		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_iHandle, _iAttachIndex);
+			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE);
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE));
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "run"), -1, FALSE);
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "walk"), -1, FALSE));
 			break;
 		}
-		_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, _iAttachIndex);
+		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex)));
 		_fPlayTime = 0.0f;
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_fPlayTime += rand() % 30;
+			_fPlayTime += static_cast<float>(rand() % 30);
 			break;
 		}
 	}
@@ -144,16 +144,16 @@ bool PlayerTanuki::Process()
 	}
 
 	// --- ここで実際に位置とカメラを移動させる ---
-	if(VSize(v) > 0.0f)
+	if(vec3::VSize(v) > 0.0f)
 	{
 		// プレイヤーの位置を移動
-		_vPos = VAdd(_vPos, v);
+		_vPos = vec3::VAdd(_vPos, v);
 
 		// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
 		if(_cam != nullptr)
 		{
-			_cam->_vPos = VAdd(_vPos, _camOffset);
-			_cam->_vTarget = VAdd(_vPos, _camTargetOffset);
+			_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
+			_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
 		}
 	}
 
@@ -166,7 +166,8 @@ bool PlayerTanuki::Render()
 	base::Render();
 
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(_iHandle, _iAttachIndex, _fPlayTime);
+		// 再生時間をセットする
+	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
@@ -174,13 +175,13 @@ bool PlayerTanuki::Render()
 
 	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
 
-	MATRIX mTrans = MGetTranslate(_vPos);
+	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
 
 	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
 
 	MATRIX m = MGetIdent();
 
-	m = MMult(m, mRotZ);
+	//m = MMult(m, mRotZ);
 	m = MMult(m, mRotY);
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);

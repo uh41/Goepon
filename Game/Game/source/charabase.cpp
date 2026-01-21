@@ -5,6 +5,7 @@
 // * \author 鈴木裕稀
 // * \date   2025/12/15
 // * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #include "charabase.h"
@@ -17,9 +18,9 @@ bool CharaBase::Initialize()
 	_iAttachIndex = -1;
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
-	_vPos = VGet(0.0f, 0.0f, 0.0f);
-	_vOldPos = VGet(0.0f, 0.0f, 0.0f);
-	_vDir = VGet(0.0f, 0.0f, 0.0f);
+	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_vOldPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_vDir = vec3:: VGet(0.0f, 0.0f, 0.0f);
 	_fColSubY = 0.0f;
 	_fCollisionR = 0.0f;
 	_fCollisionWeight = 0.0f;

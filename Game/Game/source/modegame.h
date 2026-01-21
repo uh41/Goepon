@@ -22,6 +22,7 @@
 #include "enemysensor.h"
 #include "uibase.h"
 #include "uihp.h"
+#include "charashadow.h"
 
 
 
@@ -61,10 +62,7 @@ public:
 	// 当たり判定処理
 	bool EscapeCollision(PlayerBase* player);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
-	bool CharaToCubeCollision(CharaBase* chara, Cube* cube);// キャラとキューブの当たり判定処理
-	bool LandCheck();// 着地判定処理
-	bool UpdateCheckAttackCollision();// 攻撃用当たり判定の更新処理
-
+	
 	// デバック関数
 	bool DebugInitialize();
 	bool DebugProcess();
@@ -77,7 +75,7 @@ public:
 	bool ObjectInitialize();
 
 	// カメラ操作公開API（メニューから呼び出すため）
-	void CameraMoveBy(const VECTOR& delta);
+	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
 
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
@@ -87,25 +85,27 @@ public:
 protected:
 	Camera* _camera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
-    VECTOR _savedCamPos;
-    VECTOR _savedCamTarget;
+    vec::Vec3 _savedCamPos;
+    vec::Vec3 _savedCamTarget;
     bool _hasSavedCameraState;
 
 	// キャラクタ管理
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;
 	at::vspc<PlayerBase> _playerBase;
-	at::sp<Player> _player;
-	at::sp<PlayerTanuki> _playerTanuki;
+	at::spc<Player> _player;
+	at::spc<PlayerTanuki> _playerTanuki;
 	// マップ
-	at::sp<Map> _map;
+	at::spc<Map> _map;
 	// キューブ
-	at::sp<Cube> _cube;
+	at::spc<Cube> _cube;
 	// 敵
 	at::vspc<Enemy> _enemy;
 	// UI
 	at::vspc<UiBase> _uiBase;
-	at::sp<UiHp> _uiHp;
+	at::spc<UiHp> _uiHp;
+	// シャドウ
+	at::vspc<CharaShadow> _charaShadow;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -130,7 +130,7 @@ protected:
 	bool _effekseerLaunched = false;
 
 	// 索敵システム
-	at::sp<EnemySensor> _enemySensor;
+	at::spc<EnemySensor> _enemySensor;
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック

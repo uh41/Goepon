@@ -6,6 +6,7 @@
 // * \date   2025/12/15
 // * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
 //				: UI HP追加	鈴木裕稀 2026/01/06
+//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #include "modegame.h"
@@ -65,8 +66,8 @@ bool ModeGame::Initialize()
 	// 索敵システムの初期化
 	_enemySensor = std::make_shared<EnemySensor>();
 	_enemySensor->Initialize();
-	_enemySensor->SetPos(VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
-	_enemySensor->SetDir(VGet(0.0f, 0.0f, -1.0f));
+	_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
+	_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
 
 	// エネミーにセンサーを設定
 	for (auto& enemy : _enemy)
@@ -138,9 +139,9 @@ bool ModeGame::IsHitCircle(CharaBase* c1, CharaBase* c2)
 bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 {
 	// カメラの位置/視点の移動を、プレイヤーの移動量に追従する
-	VECTOR playermove = VSub(player->GetPos(), player->GetOldPos());
-	_camera->_vPos = VAdd(_camera->_vPos, playermove);
-	_camera->_vTarget = VAdd(_camera->_vTarget, playermove);
+	vec::Vec3 playermove = vec3::VSub(player->GetPos(), player->GetOldPos());
+	_camera->_vPos = vec3::VAdd(_camera->_vPos, playermove);
+	_camera->_vTarget = vec3::VAdd(_camera->_vTarget, playermove);
 	return true;
 }
 
@@ -189,19 +190,19 @@ bool ModeGame::Process()
 			// 上下の向きが逆だったので反転
 			if(key & PAD_INPUT_UP)
 			{
-				CameraMoveBy(VGet(0.0f, 0.0f, panSpeed));
+				CameraMoveBy(vec3::VGet(0.0f, 0.0f, panSpeed));
 			}
 			if(key & PAD_INPUT_DOWN)
 			{
-				CameraMoveBy(VGet(0.0f, 0.0f, -panSpeed));
+				CameraMoveBy(vec3::VGet(0.0f, 0.0f, -panSpeed));
 			}
 			if(key & PAD_INPUT_LEFT)
 			{
-				CameraMoveBy(VGet(-panSpeed, 0.0f, 0.0f));
+				CameraMoveBy(vec3::VGet(-panSpeed, 0.0f, 0.0f));
 			}
 			if(key & PAD_INPUT_RIGHT)
 			{
-				CameraMoveBy(VGet(panSpeed, 0.0f, 0.0f));
+				CameraMoveBy(vec3::VGet(panSpeed, 0.0f, 0.0f));
 			}
 		}
 
@@ -244,7 +245,7 @@ bool ModeGame::Process()
 	}
 
 	// 現在のプレイヤーの位置を取得
-	VECTOR PlayerPos;
+	vec::Vec3 PlayerPos;
 	if (_bShowTanuki)
 	{
 		PlayerPos = _playerTanuki->GetPos();
@@ -288,11 +289,6 @@ bool ModeGame::Process()
 	// 	...
 	// 当たり判定の処理をここに書く
 	
-	CharaToCubeCollision(_player.get(), _cube.get());
-	LandCheck();
-
-	// 攻撃判定の更新処理
-	UpdateCheckAttackCollision();
 
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
@@ -322,9 +318,9 @@ bool ModeGame::Render()
 	base::Render();
 
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(_camera->_vPos, _camera->_vTarget);
+	SetCameraPositionAndTarget_UpVecY(VectorConverter::VecToDxLib(_camera->_vPos), VectorConverter::VecToDxLib(_camera->_vTarget));
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
-	float fov_deg = 15.0f;
+	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);
 	SetupCamera_Perspective(fov_rad);
 
@@ -426,7 +422,7 @@ bool ModeGame::Render()
 }
 
 // ModeGame のカメラ操作ラッパー
-void ModeGame::CameraMoveBy(const VECTOR& delta)
+void ModeGame::CameraMoveBy(const vec::Vec3& delta)
 {
 	if(_camera)
 	{
@@ -477,7 +473,7 @@ bool ModeGame::CheckAllDetections()
 	}
 
 	// タヌキ状態の時のみ検知処理を実行
-	if (_bShowTanuki)
+	if (!_bShowTanuki)
 	{
 		// 人間状態では検知されない
 		// 検知状態をリセットして敵に状態変更を通知
@@ -492,13 +488,13 @@ bool ModeGame::CheckAllDetections()
 	}
 
 	// タヌキ状態のプレイヤーのみをチェック対象にする
-	PlayerBase* currentPlayer = static_cast<PlayerBase*>(_player.get());
+	PlayerBase* currentPlayer = _playerTanuki.get();
 	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
 
 	// 検出状態に応じてエネミーに通知
 	if (detected)
 	{
-		VECTOR playerPos = currentPlayer->GetPos();
+		vec::Vec3 playerPos = currentPlayer->GetPos();
 		for (auto& enemy : _enemy)
 		{
 			if (enemy->IsAlive())

@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 2;
+	constexpr int MAP_SELECT = 0;
 
 	if(MAP_SELECT == 0)
 	{
@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "Map_UE0112.json";
+		_sJsonFile = "map10173.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -220,8 +220,11 @@ bool Map::Render()
 	// シャドウマップに描画する範囲を設定
 	// カメラの注視点を中心にする
 	float lenght = 800.f;
-	SetShadowMapDrawArea(_iHandleShadowMap, VAdd(_cam->_vTarget, VGet(-lenght, -1.0f, -lenght)), VAdd(_cam->_vTarget, VGet(lenght, lenght, lenght)));
-
+	SetShadowMapDrawArea(
+		_iHandleShadowMap,
+		VectorConverter::VecToDxLib(vec3::VAdd(_cam->_vTarget, vec3::VGet(-lenght, -1.0f, -lenght))),
+		VectorConverter::VecToDxLib(vec3::VAdd(_cam->_vTarget, vec3::VGet(lenght, lenght, lenght)))
+	);
 	// 2回まわして、path = 0: シャドウマップへの描画、path = 1: モデルの：描画
 	for(int path = 0; path < 2; path++)
 	{

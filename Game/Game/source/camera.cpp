@@ -13,8 +13,8 @@
 bool Camera::Initialize()
 {
 	// カメラの設定(わかりやすい位置に)
-	_vPos = VGet(0.0f, 3000.0f, -1700.0f);
-	_vTarget = VGet(0.0f, 60.0f, 0.0f);
+	_vPos = vec3::VGet(0.0f, 1600.0f, -662.0f);
+	_vTarget = vec3::VGet(0.0f, 60.0f, 0.0f);
 	_fClipNear = 2.0f;
 	_fClipFar = 10000.0f;
 	_fForvScale = -10.0f;
@@ -92,7 +92,7 @@ bool Camera::Process()
 		float camrad = atan2(sz, sx);
 
 		// 移動方向を決める
-		VECTOR v = { 0,0,0 };
+		vec::Vec3 v = { 0,0,0 };
 		float mvSpeed = 2.0f;
 		if(key & PAD_INPUT_DOWN)
 		{
@@ -113,7 +113,7 @@ bool Camera::Process()
 
 		// vをrad分回転させる
 		float length = 0.0f;
-		if(VSize(v) > 0.0f)
+		if(vec3::VSize(v) > 0.0f)
 		{
 			length = mvSpeed;
 		}
@@ -122,8 +122,8 @@ bool Camera::Process()
 		v.z = sin(rad + camrad) * length;
 
 		// vの分移動
-		_vPos = VAdd(_vPos, v);
-		_vTarget = VAdd(_vTarget, v);
+		_vPos = vec3::VAdd(_vPos, v);
+		_vTarget = vec3::VAdd(_vTarget, v);
 	}
 	return true;
 }
@@ -144,16 +144,16 @@ bool Camera::Render()
 	return true;
 }
 
-void Camera::MoveBy(const VECTOR& delta)
+void Camera::MoveBy(const vec::Vec3& delta)
 {
-	_vPos = VAdd(_vPos, delta);
-	_vTarget = VAdd(_vTarget, delta);
+	_vPos = vec3::VAdd(_vPos, delta);
+	_vTarget = vec3::VAdd(_vTarget, delta);
 }
 
 void Camera::ZoomTowardsTarget(float amount)
 {
 	// 方向ベクトル = target - pos
-	VECTOR dir = VSub(_vTarget, _vPos);
+	vec::Vec3 dir = vec3::VSub(_vTarget, _vPos);
 	// 長さ
 	float len = sqrtf(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
 	if(len <= 0.0f) 
@@ -161,8 +161,8 @@ void Camera::ZoomTowardsTarget(float amount)
 		return;
 	} // 近すぎたら無視
 	// 正規化 -> dir * (amount / len)
-	VECTOR step = VScale(dir, amount / len);
-	_vPos = VAdd(_vPos, step);
+	vec::Vec3 step = vec3::VScale(dir, amount / len);
+	_vPos = vec3::VAdd(_vPos, step);
 
 	// オプション: 最短距離や最長距離でクランプしたければここで制限を入れる
 }

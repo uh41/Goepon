@@ -13,6 +13,9 @@
 
 #include "Application/ApplicationBase.h"
 #include "CFile/CFile.h"
+#include "mymath/vectorconverter.h"
 #include "mymath.h"
+#include "navi/navi.h"
 #include "container.h"
+#include "aliastemplate.h"
 
