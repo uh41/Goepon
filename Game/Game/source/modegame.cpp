@@ -288,10 +288,41 @@ bool ModeGame::Process()
 		object->Process();
 	}
 
+	// 宝箱処理
 	for(auto& treasure : _treasure)
 	{
 		treasure->Process();
 	}
+
+	//if(_d_use_collision)
+	//{
+	//	CharaBase* current = nullptr;
+	//	if(_bShowTanuki)
+	//	{
+	//		current = static_cast<CharaBase*>(_playerTanuki.get());
+	//	}
+	//	else
+	//	{
+	//		current = static_cast<CharaBase*>(_player.get());
+	//	}
+
+	//	for(auto& t : _treasure)
+	//	{
+	//		// 1) 関数内で「元座標へ戻す」までやっている実装の場合
+	//		if(CharaToTreasureBoxCollision(current, t.get()))
+	//		{
+	//			// 必要なら追加処理（例：t->SetOpen(false);）
+	//			// break; // 最初のヒットのみ扱う場合
+	//		}
+
+	//		// 2) 呼び出し側で「元座標へ戻す」設計の場合はこう呼ぶ
+	//		// const vec::Vec3 oldPos = current->GetPos();
+	//		// if(CharaToTreasureBoxCollision(current, t.get()))
+	//		// {
+	//		//     current->SetPos(oldPos); // 壁のように元の座標へ戻す
+	//		// }
+	//	}
+	//}
 
 	// UI処理
 	for(auto& ui_base : _uiBase)

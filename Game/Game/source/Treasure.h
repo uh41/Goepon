@@ -22,14 +22,20 @@ public:
 	bool Process()    override; // 計算処理
 	bool Render()     override; // 描画処理
 
+	// 宝箱の当たり判定用フレーム取得
+	auto GetHitCollisionFrame() const { return _hitCollisionFrame; }
+	// モデルハンドルを取得
+	auto GetModelHandle() const { return _handle; }
+
 	// 宝箱が開いているかどうか取得・設定
 	bool IsOpen() const { return _isOpen; }
 	void SetOpen(bool isOpen) { _isOpen = isOpen; }
 
 
 protected:
-	//int _handle;      // モデルハンドル
-	int _attachIndex; // アタッチアニメーションインデックス
-	bool _isOpen;	  // 宝箱が開いているかどうか
+	int _handle;                 // モデルハンドル
+	int _hitCollisionFrame; // 宝箱の当たり判定用フレーム
+	int _attachIndex;            // アタッチアニメーションインデックス
+	bool _isOpen;	             // 宝箱が開いているかどうか
 };
 

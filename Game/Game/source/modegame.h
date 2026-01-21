@@ -61,9 +61,9 @@ public:
 	}
 
 	// 当たり判定処理
-	bool EscapeCollision(PlayerBase* player);// キャラの回避処理
-	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
-	
+	bool EscapeCollision(PlayerBase* player); // キャラの回避処理
+	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2); // キャラ同士の当たり判定処理
+	bool CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure); // キャラと宝箱の当たり判定処理
 	// デバック関数
 	bool DebugInitialize();
 	bool DebugProcess();
@@ -137,5 +137,6 @@ protected:
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック
+	
 };
 

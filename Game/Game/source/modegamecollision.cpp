@@ -157,6 +157,42 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	return true;
 }
 
+bool CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
+{
+	// 判定前の座標
+	const vec::Vec3 oldPos = chara->GetPos();
+
+	// キャラクターのカプセル
+	const vec::Vec3 cPos   = chara->GetPos();
+	const float half       = chara->GetColSubY();
+	const float rad        = static_cast<float>(chara->GetCollisionR());
+	const VECTOR capTop    = VectorConverter::VecToDxLib(vec3::VAdd(cPos, vec3::VGet(0.0f, half, 0.0f)));
+	const VECTOR capBottom = VectorConverter::VecToDxLib(vec3::VAdd(cPos, vec3::VGet(0.0f, -half, 0.0f)));
+
+	//宝の当たり判定フレームに対してカプセル判定
+	MV1_COLL_RESULT_POLY_DIM hit = MV1CollCheck_Capsule
+	(
+		treasure->GetModelHandle(),
+		treasure->GetHitCollisionFrame(),
+		capTop,
+		capBottom,
+		rad
+	);
+
+	if(hit.HitNum == 0)
+	{
+		return false;
+	}
+	//ヒットしたので元の位置に戻す
+	chara->SetPos(oldPos);
+
+	//// 必要ならデバッグ表示
+	//if(_d_view_collision)
+	//{
+	//	DrawSphere3D(hit.HitPosition, 10.0f, 8, GetColor(255, 215, 0), TRUE);
+	//}
+}
+
 // キャラ同士の押し出し処理
 bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 {
