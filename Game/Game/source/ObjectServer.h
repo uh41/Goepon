@@ -10,7 +10,6 @@
 
 #pragma once
 #include "objectbase.h"
-#include<vector>
 #include"appframe.h"
 class ObjectServer 
 {

@@ -185,6 +185,7 @@
     <ClInclude Include="source\Sound\soundserver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Game\Game\source\TextUtil.cpp" />
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />

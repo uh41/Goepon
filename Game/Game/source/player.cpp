@@ -10,145 +10,8 @@
 
 #include "player.h"
 #include "appframe.h"
+#include "TextUtil.h"
 
-
-// ヘルパー関数
-namespace
-{
-	// 空白文字判定
-	static bool IsSpace(unsigned char character)
-	{
-		// 
-		return std::isspace(character) != 0 || character == '\r' || character == '\n';
-	}
-
-	// std::stringの前方トリム
-	static void LTrim(std::string& text)
-	{
-		size_t i = 0;
-		const size_t n = text.size();
-		while(i < n && IsSpace(static_cast<unsigned char>(text[i])))++i;
-		if(i > 0) text.erase(0, i);
-	}
-	// std::stringの後方トリム
-	static void RTrim(std::string& text)
-	{
-		if (text.empty()) return;
-		size_t i = text.size();
-		// 後ろから見て、空白である間だけカウントを下げる
-		while (i > 0 && IsSpace(static_cast<unsigned char>(text[i - 1])))
-		{
-			--i; // 正解はマイナスです
-		}
-		// 残った文字数（i）以降をすべて削除する
-		if (i < text.size())
-		{
-			text.erase(i);
-		}
-	}
-	// 前後トリム
-	static void Trim(std::string& str)
-	{
-		LTrim(str);
-		RTrim(str);
-	}
-	// 小文字変換
-	static std::string ToLower(std::string& input)
-	{
-		std::string dst = input;
-		// 1文字ずつ小文字化
-		for(size_t i = 0; i < dst.size(); ++i)
-		{
-			dst[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(dst[i])));
-		}
-		return dst;
-	}
-
-	//// テキストファイルを key=value 形式で読み込む
-	//static std::unordered_map<std::string, std::string> LoadConfigKeyValue(const std::string& path)
-	//{
-	//	// 最終的なデータを詰め込む変数(result)
-	//	std::unordered_map <std::string, std::string> result;
-	//	std::ifstream ifs(path);
-	//	if(!ifs)return result;
-
-	//	std::string line;
-	//	// 1行ずつ読み込み
-	//	while(std::getline(ifs, line))
-	//	{
-	//		Trim(line); // 行の前後にある余計なスペースを消す
-	//		// 空行は無視
-	//		if(line.empty()) continue;
-	//		char first = line[0]; // その行の1番最初の文字を確認
-	//		// コメント行は無視
-	//		if(first == '#' || first == ';') continue;
-
-	//		size_t pos = line.find('=');
-	//		// '='が無い行は無視
-	//		if(pos == std::string::npos) continue;     
-
-	//		std::string key   = line.substr(0, pos);
-	//		std::string value = line.substr(pos + 1);
-	//		Trim(key);
-	//		Trim(value);
-	//		// keyかvalueが空なら無視
-	//		if(key.empty() || value.empty()) continue;
-
-	//		// keyを小文字化して登録
-	//		result[ToLower(key)] = value; 
-	//	}
-	//	return result;
-	//}
-	// 文字列-> floatの安全バース
-	static bool TryParseFloat(const std::string& text, float& outValue)
-	{
-		if (text.empty()) return false;
-		try
-		{
-			// 第2引数(idx)を使わず、単に数値変換を試みる
-			// これにより、後ろに改行やスペースがあっても数値部分だけを抽出してくれます
-			outValue = std::stof(text);
-			return true;
-		}
-		catch (...)
-		{
-			return false;
-		}
-	}
-
-	// 文字列からkey=value をパースして map を返す(CFilと組み合わせて使う){パーサー処理｝
-	static std::unordered_map < std::string, std::string> ParseKeyValueConfig(const std::string& content)
-	{
-		std::unordered_map<std::string, std::string> result;
-		std::istringstream iss(content);
-		std::string line;
-		while (std::getline(iss, line))
-		{
-			Trim(line);
-			if (line.empty()) continue;
-			if (line[0] == '#' || line[0] == ';') continue;
-
-			size_t pos = line.find('=');
-			if (pos == std::string::npos) continue;
-
-			std::string key = line.substr(0, pos);
-			std::string val = line.substr(pos + 1);
-
-			Trim(key);
-			Trim(val);
-			while (!val.empty() && (val.back() == '\r' || val.back() == '\n')) {
-				val.pop_back();
-			}
-
-			// keyかvalが空ならスキップ
-			if (key.empty() || val.empty()) continue;
-
-			// ここで map に登録されるはずです！
-			result[ToLower(key)] = val;
-		}
-		return result;
-	}
-}
 // 初期化
 bool Player::Initialize()
 {
@@ -188,19 +51,21 @@ bool Player::Initialize()
 	
 	_bLand = true;
 	
-	_fHp = 20.0f; // 初期体力設定
+	// 初期体力設定
+	_fHp = 20.0f;
 
 	// 設定ファイルから上書き読み込み
 	CFile cfgFile("res/Player/player_config.txt");
 	if(cfgFile.Success())
 	{
-		auto config = ParseKeyValueConfig(cfgFile.DataStr());
+		auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
 		// 移動速度
 		auto it = config.find("speed");
 		if(it != config.end())
 		{
 			float val;
-			if(TryParseFloat(it->second, val))
+			// 変換成功したら上書き
+			if(TextUtil::TryParseFloat(it->second, val))
 			{
 				_fMvSpeed = val;
 			}
@@ -210,7 +75,7 @@ bool Player::Initialize()
 		if(it != config.end())
 		{
 			float val;
-			if(TryParseFloat(it->second, val))
+			if(TextUtil::TryParseFloat(it->second, val))
 			{
 				_fHp = val;
 			}
@@ -229,37 +94,79 @@ bool Player::Terminate()
 // 計算処理
 bool Player::Process()
 {
-	base::Process();
 	int key = ApplicationBase::GetInstance()->GetKey();
 	int trg = ApplicationBase::GetInstance()->GetTrg();
+
+	base::Process();
 
 	// 処理前の位置を保存
 	_vOldPos = _vPos;
 
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
-	vec::Vec3 v = { 0,0,0 };
-	float length = 0.0f;
-
+	// 移動方向を決める
+    _v = { 0,0,0 };
+	
 	// カメラの向いている角度を取得
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
 	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
 	float rad = 0.0f;
 
+	//左スティック値
+    lStickX = fLx;
+    lStickZ = fLz;
+
+	// ローカル入力ベクトル
+	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
+
 	if((key & (PAD_INPUT_7 | PAD_INPUT_8)) == 0)
 	{
 		// キャラ移動(カメラ設定に合わせて)
 
-        // ローカル入力を取得
-        vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-        if(key & PAD_INPUT_DOWN) { inputLocal.x = 1; }
-        if(key & PAD_INPUT_UP)   { inputLocal.x = -1; }
-        if(key & PAD_INPUT_LEFT) { inputLocal.z = -1; }
-        if(key & PAD_INPUT_RIGHT){ inputLocal.z = 1; }
+	    // 操作
+		if (CheckHitKey(KEY_INPUT_UP))
+		{
+			lStickZ = -1.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_DOWN))
+		{
+			lStickZ = 1.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_LEFT))
+		{
+			lStickX = -1.0f;
+		}
+		if (CheckHitKey(KEY_INPUT_RIGHT))
+		{
+			lStickX = 1.0f;
+		}
 
-        // 回転前のローカル入力を保存（斜め判定に使う）
-        _vInput = inputLocal;
+		// ローカル入力ベクトルを計算
+		float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+		float rad = atan2(lStickX, lStickZ);
+
+		// アナログ左スティック用
+		if (length < _fAnalogDeadZone)
+		{
+			// 入力が小さかったら動かなかったことにする
+			length = 0.f;
+		}
+		else
+		{
+			length = _fMvSpeed;
+		}
+
+		// vをrad分回転させる
+		if (VSize(_v) > 0.f) { length = _fMvSpeed; }
+		_v.x = cos(rad + camrad) * length;
+		_v.z = sin(rad + camrad) * length;
+
+		// 処理前の位置を保存
+		_vOldPos = _vPos;
+
+		// vの分移動
+		_vPos = VAdd(_vPos, _v);
 
         // 十字キー保持での軸ロック開始判定
 		if(key & PAD_INPUT_6)
@@ -300,16 +207,20 @@ bool Player::Process()
 			vec::Vec3 axis_lock_input = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 			// 軸ロック専用の入力を取得
-			if(key & PAD_INPUT_DOWN) {
+			if(key & PAD_INPUT_DOWN) 
+			{
 				axis_lock_input.x = 0.5f;
 			}
-			if(key & PAD_INPUT_UP) {
+			if(key & PAD_INPUT_UP) 
+			{
 				axis_lock_input.x = -0.5f;
 			}
-			if(key & PAD_INPUT_LEFT) {
+			if(key & PAD_INPUT_LEFT) 
+			{
 				axis_lock_input.z = -0.5f;
 			}
-			if(key & PAD_INPUT_RIGHT) {
+			if(key & PAD_INPUT_RIGHT) 
+			{
 				axis_lock_input.z = 0.5f;
 			}
 
@@ -339,9 +250,9 @@ bool Player::Process()
 				// 移動ベクトルを正規化してから速度を掛ける
 				if(vec3::VSize(moveDir) > 0.0f)
 				{
-					moveDir = vec3::VNorm(moveDir);
-					v.x = moveDir.x * _fMvSpeed;
-					v.z = moveDir.z * _fMvSpeed;
+					moveDir = VNorm(moveDir);
+					_v.x = moveDir.x * _fMvSpeed;
+					_v.z = moveDir.z * _fMvSpeed;
 				}
 
 
@@ -358,15 +269,15 @@ bool Player::Process()
             {
                 length = _fMvSpeed;
                 float localRad = atan2(inputLocal.z, inputLocal.x);
-                v.x = cos(localRad + camrad) * length;
-                v.z = sin(localRad + camrad) * length;
+                _v.x = cos(localRad + camrad) * length;
+                _v.z = sin(localRad + camrad) * length;
             }
 
         }
 	}
 
 	// 地上移動
-	if(vec3::VSize(v) > 0.0f)
+	if(VSize(_v) > 0.0f)
 	{
 		if(_bAxisUseLock)
 		{
@@ -376,7 +287,7 @@ bool Player::Process()
 		}
 		else
 		{
-			_vDir = v;
+			_vDir = _v;
 		}
 
 		_status = STATUS::WALK;
