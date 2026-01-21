@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_iHandle = MV1LoadModel("res/SDChar/SDChar.mv1");
+	_iHandle = MV1LoadModel("res/Tanuki/goepon_walkwalk.mv1");
 	_iAttachIndex = -1;
 	// �X�e�[�^�X��u�����v�ɐݒ�
 	_status = STATUS::NONE;
