@@ -176,6 +176,8 @@ bool ModeGame::Process()
 	
 	DebugProcess();// デバック処理
 
+    AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（仮に60FPS固定で更新）
+
 	//if(_soundServer)
 	//{
 	//	_soundServer->Update();

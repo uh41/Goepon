@@ -114,7 +114,7 @@ bool PlayerTanuki::Process()
 	}
 	else
 	{
-		if(_iAttachIndex != -1)
+		/*if(_iAttachIndex != -1)
 		{
 			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
@@ -135,7 +135,42 @@ bool PlayerTanuki::Process()
 		case STATUS::WAIT:
 			_fPlayTime += static_cast<float>(rand() % 30);
 			break;
-		}
+		}*/
+
+        if(_animId != -1)
+        {
+            AnimationManager::GetInstance()->Stop(_animId);
+            _animId = -1;
+        }
+
+        std::string anim_name;
+        switch(_status)
+        {
+        case STATUS::WAIT:
+            anim_name = "idle";
+            break;
+        case STATUS::WALK:
+            anim_name = "walk";
+            break;
+        default:
+            anim_name.clear();
+        }
+
+        if(!anim_name.empty())
+        {
+            _animId = AnimationManager::GetInstance()->Play(_iHandle, anim_name, true);
+            _fPlayTime = 0.0f;
+            switch(_status)
+            {
+            case STATUS::WAIT:
+                _fPlayTime += rand() % 30;
+                break;
+            }
+            if(_animId != -1)
+            {
+                AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+            }
+        }
 	}
 
 	if(_fPlayTime >= _fTotalTime)
@@ -167,7 +202,7 @@ bool PlayerTanuki::Render()
 
 	// 再生時間をセットする
 		// 再生時間をセットする
-	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
+	//MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 

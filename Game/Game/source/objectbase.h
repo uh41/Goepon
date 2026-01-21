@@ -54,6 +54,8 @@ protected:
 
 	std::string _sName;			//名前
 
+    int _animId;				// アニメーションID
+
 	//DamageData _damageData;		//ダメージデータ
 
 	//STATE _state;				//状態

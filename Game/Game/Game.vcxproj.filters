@@ -207,11 +207,11 @@
     <ClInclude Include="source\charashadow.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\modeinit.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\modetitle.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeinit.h">
+      <Filter>ヘッダー ファイル\ロゴ</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
