@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_iHandle = MV1LoadModel("res/Tanuki/goepon_walkwalk.mv1");
+	_iHandle = MV1LoadModel("res/Tanuki/anime_goepon_walk.mv1");
 	_iAttachIndex = -1;
 	// �X�e�[�^�X��u�����v�ɐݒ�
 	_status = STATUS::NONE;
@@ -140,10 +140,10 @@ bool PlayerTanuki::Process()
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "goepon_walk"), -1, FALSE));
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "walk"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "goepon_walk"), -1, FALSE));
 			break;
 		}
 		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex)));

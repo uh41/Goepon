@@ -320,12 +320,24 @@ bool Enemy::Render()
 	// 再生時間をセット
 	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), _fPlayTime);
 
-	// 位置
-	MV1SetPosition(_iHandle, VectorConverter::VecToDxLib(_vPos));
-	// 向きからY軸回転を算出
-	VECTOR vrot = { 0,0,0, };
-	vrot.y = atan2f(-_vDir.x, -_vDir.z);
-	MV1SetRotationXYZ(_iHandle, vrot);
+	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ���f�����W���łǂ��������Ă��邩�Ŏ����ς��(�����-z������Ă���ꍇ)
+
+	MATRIX mRotY = MGetRotY(vorty);
+
+	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90�x�i�K�v�ɉ����ĕ����𔽓]�j
+
+	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
+
+	MATRIX mScale = MGetScale(VGet(1.7f, 1.7f, 1.7f));
+
+	MATRIX m = MGetIdent();
+
+	//m = MMult(m, mRotZ);
+	m = MMult(m, mRotY);
+	m = MMult(m, mScale);
+	m = MMult(m, mTrans);
+
+	MV1SetMatrix(_iHandle, m);
 
 	// 描画
 	MV1DrawModel(_iHandle);
