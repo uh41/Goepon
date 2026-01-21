@@ -22,7 +22,7 @@ bool EnemySensor::Initialize()
 	_detectionInfo.chaseTimer = 0.0f;
 
 	// デフォルトの索敵範囲設定
-	SetDetectionSector(400.0f, 60.0f);
+	SetDetectionSector(400.0f, 60.0f);//半径、角度
 
 	return true;
 }

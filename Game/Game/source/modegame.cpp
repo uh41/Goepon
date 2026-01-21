@@ -63,6 +63,10 @@ bool ModeGame::Initialize()
 
 	_bShowTanuki = true;
 
+	// YouDiedメッセージ関連の初期化
+	_showYouDiedMessage = false;
+	_youDiedMessageTimer = 0.0f;
+
 	// 索敵システムの初期化
 	_enemySensor = std::make_shared<EnemySensor>();
 	_enemySensor->Initialize();
@@ -115,6 +119,64 @@ bool ModeGame::Terminate()
 	return true;
 }
 
+// YouDiedメッセージを表示開始
+void ModeGame::TriggerYouDiedMessage()
+{
+	_showYouDiedMessage = true;
+	_youDiedMessageTimer = YOU_DIED_DISPLAY_TIME;
+
+	// デバッグ出力
+	OutputDebugStringA("YOU DIED メッセージが表示されました！\n");
+}
+
+// YouDiedメッセージの描画処理
+void ModeGame::RenderYouDiedMessage()
+{
+	if (!_showYouDiedMessage) return;
+
+	// 画面サイズを取得
+	int screenWidth = ApplicationMain::GetInstance()->DispSizeW();
+	int screenHeight = ApplicationMain::GetInstance()->DispSizeH();
+
+	// フォントサイズを大きく設定
+	SetFontSize(72);
+
+	// 表示テキスト
+	const char* youDiedText = "YOU DIED";
+	int textWidth = GetDrawStringWidth(youDiedText, static_cast<int>(strlen(youDiedText)));
+
+	// 画面中央に配置
+	int x = (screenWidth - textWidth) / 2;
+	int y = (screenHeight - 72) / 2; // フォントサイズ分考慮
+
+	// 半透明の黒背景を描画
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	DrawBox(0, 0, screenWidth, screenHeight, GetColor(0, 0, 0), TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	// 文字に影をつけて見やすくする
+	for (int dx = -2; dx <= 2; dx++)
+	{
+		for (int dy = -2; dy <= 2; dy++)
+		{
+			if (dx != 0 || dy != 0)
+			{
+				DrawString(x + dx, y + dy, youDiedText, GetColor(0, 0, 0));
+			}
+		}
+	}
+
+	// メインの文字（赤色）
+	DrawString(x, y, youDiedText, GetColor(255, 0, 0));
+
+	// フォントサイズを元に戻す
+	SetFontSize(16);
+
+	// 残り時間表示（デバッグ用、必要に応じてコメントアウト可能）
+	DrawFormatString(10, 10, GetColor(255, 255, 0),
+		"YOU DIED残り時間: %.1f", _youDiedMessageTimer);
+}
+
 // 円同士の当たり判定
 bool ModeGame::IsHitCircle(CharaBase* c1, CharaBase* c2)
 {
@@ -154,6 +216,16 @@ bool ModeGame::Process()
 	_camera->Process();
 	
 	DebugProcess();// デバック処理
+
+	// YouDiedメッセージのタイマー更新
+	if (_showYouDiedMessage)
+	{
+		_youDiedMessageTimer -= 1.0f / 60.0f; // 60FPSとして計算
+		if (_youDiedMessageTimer <= 0.0f)
+		{
+			_showYouDiedMessage = false;
+		}
+	}
 
 	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
 	if(_bCameraControlMode)
@@ -289,6 +361,37 @@ bool ModeGame::Process()
 	// 	...
 	// 当たり判定の処理をここに書く
 	
+	// エネミーとプレイヤーの当たり判定処理（両方チェック版）
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive())
+		{
+			bool hitDetected = false;
+
+			// 人間プレイヤーとの当たり判定
+			if (_player && _player->IsAlive() && CharaToCharaCollision(_player.get(), enemy.get()))
+			{
+				OutputDebugStringA("エネミーが人間プレイヤーに触れました！\n");
+				hitDetected = true;
+			}
+
+			// タヌキプレイヤーとの当たり判定
+			if (_playerTanuki && _playerTanuki->IsAlive() && CharaToCharaCollision(_playerTanuki.get(), enemy.get()))
+			{
+				OutputDebugStringA("エネミーがタヌキプレイヤーに触れました！\n");
+				hitDetected = true;
+			}
+
+			// 当たり判定が発生した場合の共通処理
+			if (hitDetected)
+			{
+				// 共通の処理をここに書く
+				// YouDiedメッセージを表示
+				TriggerYouDiedMessage();
+			}
+		}
+	}
+
 
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
@@ -394,6 +497,9 @@ bool ModeGame::Render()
 		_enemySensor->Render();
 		_enemySensor->RenderDetectionUI();
 	}
+
+	// YouDiedメッセージの描画（最前面に表示）
+	RenderYouDiedMessage();
 
 	//if(_player)
 	//{
