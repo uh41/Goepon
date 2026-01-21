@@ -130,6 +130,12 @@
     <Filter Include="ヘッダー ファイル\メニュー\デバックメニュー">
       <UniqueIdentifier>{ad51dbff-deb8-46a4-b823-56ec3b2e4497}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\お宝">
+      <UniqueIdentifier>{83a6fa4c-3197-4159-89bc-59c114a82a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\お宝">
+      <UniqueIdentifier>{63385110-a271-4e5a-9227-d38f7b221b9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\modeeffekseer.h">
@@ -197,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="source\charashadow.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Treasure.h">
+      <Filter>ヘッダー ファイル\モードゲーム\お宝</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -274,6 +283,9 @@
     </ClCompile>
     <ClCompile Include="source\charashadow.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Treasure.cpp">
+      <Filter>ソース ファイル\モードゲーム\お宝</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

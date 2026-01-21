@@ -17,6 +17,7 @@
 #include "player.h"
 #include "playertanuki.h"
 #include "enemy.h"
+#include "treasure.h"
 #include "map.h"
 #include "cube.h"
 #include "enemysensor.h"
@@ -95,6 +96,8 @@ protected:
 	at::vspc<PlayerBase> _playerBase;
 	at::spc<Player> _player;
 	at::spc<PlayerTanuki> _playerTanuki;
+	// 宝箱(オブジェクト)
+	at::vspc<Treasure> _treasure;
 	// マップ
 	at::spc<Map> _map;
 	// キューブ

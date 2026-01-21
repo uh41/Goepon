@@ -20,6 +20,7 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
+	_treasure.push_back(std::make_shared<Treasure>());
 	_camera->Initialize();
 
 	ObjectInitialize();	// オブジェクト初期化
@@ -42,14 +43,18 @@ bool ModeGame::Initialize()
 		player_base->Initialize();
 	}
 
+	for(auto& treasure : _treasure)
+	{
+		treasure->Initialize();
+	}
 	// UI
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Initialize();
 	}
 
-	_map->SetCamera(_camera);
-	_player->SetCamera(_camera);
+	_map		 ->SetCamera(_camera);
+	_player		 ->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 
 	//InitHpBlock();// ブロック初期化
@@ -101,6 +106,10 @@ bool ModeGame::Terminate()
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Terminate();
+	}
+	for(auto& treasure : _treasure)
+	{
+		treasure->Terminate();
 	}
 	_uiBase.clear();
 	delete _camera;
@@ -279,6 +288,11 @@ bool ModeGame::Process()
 		object->Process();
 	}
 
+	for(auto& treasure : _treasure)
+	{
+		treasure->Process();
+	}
+
 	// UI処理
 	for(auto& ui_base : _uiBase)
 	{
@@ -337,6 +351,12 @@ bool ModeGame::Render()
 	for(auto& object : _object)
 	{
 		object->Render();
+	}
+
+	// 宝箱を描画
+	for(auto& treasure : _treasure)
+	{
+		treasure->Render();
 	}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）

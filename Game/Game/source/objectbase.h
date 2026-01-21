@@ -52,17 +52,17 @@ protected:
 
 	vec::Vec3 _vScale;				//拡縮
 
-	std::string _sName;			//名前
+	std::string _sName;			    //名前
 
 	//DamageData _damageData;		//ダメージデータ
 
 	//STATE _state;				//状態
 
 	Camera* _cam;
-	int _iHandle;
-	float _half_polygon_size;
-	COLOR_U8 _diffuse;
-	COLOR_U8 _specular;
+	int _iHandle;             // モデルハンドル
+	float _half_polygon_size; // 地面ポリゴンの半分のサイズ
+	COLOR_U8 _diffuse;        // 材質の色
+	COLOR_U8 _specular;       // 材質の鏡面反射色
 	// uvのテーブル
 	std::array<float, 4> _u_list;
 	std::array<float, 4> _v_list;

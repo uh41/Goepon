@@ -16,4 +16,6 @@ public:
 	{
 		return vec3::VGet(v1.x, v1.y, v1.z);
 	}
+
+	
 };

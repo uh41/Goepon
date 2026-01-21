@@ -39,6 +39,7 @@
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
   </ItemGroup>
@@ -66,6 +67,7 @@
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
+    <ClCompile Include="source\Treasure.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
   </ItemGroup>
