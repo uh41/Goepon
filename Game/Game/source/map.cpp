@@ -123,7 +123,7 @@ bool Map::Initialize()
 	// シャドウマップの生成
 	_iHandleShadowMap = MakeShadowMap(2048, 2048);
 
-	// ライト初期設定（例）
+	// ライト初期設定
 	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
 	_mainLight.SetAmbient(VGet(0.0f, 0.0f, 0.0f), 0.0f);
 	_mainLight.SetDiffuse(VGet(1.0f, 1.0f, 1.0f), 1.0f);
@@ -202,8 +202,10 @@ bool Map::Render()
 	SetUseBackCulling(TRUE);
 
 	// ライト設定
-	SetUseLighting(TRUE);
+	const int extent = 800; // シャドウマップの範囲
+	_mainLight.ApplyShadowMap(_iHandleShadowMap, _cam->_vTarget, extent);
 
+	// 2回まわして、path = 0; シャドウマップへの描画、path = 1; モデルの描画(シャドウ適用）	
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);
 #if 1 // 平行ライト
 	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f));
@@ -230,26 +232,46 @@ bool Map::Render()
 	{
 		if(path == 0)
 		{
-			// シャドウマップへの描画の準備
+			// シャドウマップへの描画準備
 			ShadowMap_DrawSetup(_iHandleShadowMap);
+
+			// シャドウキャスターを描画(スカイは通常描かない)
+			if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
+			for(auto & block : _vBlockPos)
+			{
+				MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+				MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+				MV1DrawModel(block.modelHandle);
+			}
 		}
-		else if(path == 1)
+		else // path == 1
 		{
 			// シャドウマップへの描画終了
 			ShadowMap_DrawEnd();
+
 			// 描画に使用するシャドウマップを設定
 			SetUseShadowMap(0, _iHandleShadowMap);
-		}
 
-		// マップモデルを描画
-		{
-			MV1DrawModel(_iHandleMap);
-			MV1DrawModel(_iHandleSkySphere);
+			// ライト設定をレンダラに適用（アンビエント・ライト種別等）
+			_mainLight.ApplyRenderer();
+
+			// 本描画パス：マップ・スカイスフィア・ブロックを描画（シャドウマップが適用される）
+			if (_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
+			if (_iHandleSkySphere >= 0) MV1DrawModel(_iHandleSkySphere);
+			for (auto& block : _vBlockPos)
+			{
+				MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+				MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+				MV1DrawModel(block.modelHandle);
+			}
 		}
 	}
-	SetUseShadowMap(0, -1); // シャドウマップの解除
+	// シャドウマップの解除
+	SetUseShadowMap(0, -1);
 
-	if(_ground_handle == -1)
+	if (_ground_handle == -1)
 	{
 		return false;
 	}
