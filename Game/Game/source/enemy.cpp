@@ -337,7 +337,7 @@ bool Enemy::Render()
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);
 
-	MV1SetMatrix(_iHandle, m);
+	MV1SetMatrix(_handle, m);
 
 	// 描画
 	MV1DrawModel(_handle);
