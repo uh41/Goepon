@@ -39,9 +39,9 @@ protected:
 	Camera* _cam;
 	bool    _bLand;
 	float   _fMvSpeed;
-	VECTOR  _vInput;
+	vec3::Vec3 _vInput;
 	// 移動方向を決める
-	VECTOR _v = { 0,0,0 };
+	vec3::Vec3 _v;
 
 	// メモ読み込み
 	std::string _memoFileName;

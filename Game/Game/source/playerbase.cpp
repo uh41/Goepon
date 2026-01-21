@@ -16,6 +16,10 @@ bool PlayerBase::Initialize()
 	base::Initialize();
 	// アナログスティックの設定関係
 	_fAnalogDeadZone = 0.3f;
+
+	// 移動速度設定
+	_v = { 0,0,0 };
+
 	return true;
 }
 

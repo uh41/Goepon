@@ -118,7 +118,7 @@ bool Player::Process()
     lStickZ = fLz;
 
 	// ローカル入力ベクトル
-	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
+	vec3::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 	if((key & (PAD_INPUT_7 | PAD_INPUT_8)) == 0)
 	{
@@ -158,7 +158,7 @@ bool Player::Process()
 		}
 
 		// vをrad分回転させる
-		if (VSize(_v) > 0.f) { length = _fMvSpeed; }
+		if (vec3::VSize(_v) > 0.f) { length = _fMvSpeed; }
 		_v.x = cos(rad + camrad) * length;
 		_v.z = sin(rad + camrad) * length;
 
@@ -166,7 +166,7 @@ bool Player::Process()
 		_vOldPos = _vPos;
 
 		// vの分移動
-		_vPos = VAdd(_vPos, _v);
+		_vPos = vec3::VAdd(_vPos, _v);
 
         // 十字キー保持での軸ロック開始判定
 		if(key & PAD_INPUT_6)
@@ -250,7 +250,7 @@ bool Player::Process()
 				// 移動ベクトルを正規化してから速度を掛ける
 				if(vec3::VSize(moveDir) > 0.0f)
 				{
-					moveDir = VNorm(moveDir);
+					moveDir = vec3::VNorm(moveDir);
 					_v.x = moveDir.x * _fMvSpeed;
 					_v.z = moveDir.z * _fMvSpeed;
 				}
@@ -277,7 +277,7 @@ bool Player::Process()
 	}
 
 	// 地上移動
-	if(VSize(_v) > 0.0f)
+	if(vec3::VSize(_v) > 0.0f)
 	{
 		if(_bAxisUseLock)
 		{

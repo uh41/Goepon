@@ -162,10 +162,10 @@ bool PlayerTanuki::Process()
 	}
 
 	// --- �����Ŏ��ۂɈʒu�ƃJ������ړ������� ---
-	if(VSize(_v) > 0.0f)
+	if(vec3::VSize(_v) > 0.0f)
 	{
 		// �v���C���[�̈ʒu��ړ�
-		_vPos = VAdd(_vPos, _v);
+		_vPos = vec3::VAdd(_vPos, _v);
 
 		// �J�������ݒ肳��Ă���΃J�����ʒu�̓v���C���[�ʒu + �I�t�Z�b�g�Őݒ�i���Z�͂��Ȃ��j
 		if(_cam != nullptr)
