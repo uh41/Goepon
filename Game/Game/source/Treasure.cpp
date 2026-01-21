@@ -3,14 +3,15 @@
 // 初期化
 bool Treasure::Initialize()
 {
+	base::Initialize();
 	// モデルの読み込み
 	_handle = MV1LoadModel("res/Treasure/tuzura_02.mv1");
 	_attachIndex = -1;
 	// 宝箱の状態を「無し」に設定
-	_status = STATUS::NONE;
+	_objStatus = OBJSTATUS::NONE;
 	// 宝箱の位置、向きの初期化
-	_vPos = vec::Vec3{ 0.0f, 0.0f,  10.0f };
-	_vDir = vec::Vec3{ 0.0f, 0.0f,  -1.0f };
+	_vPos = vec::Vec3{ 0.0f, 0.0f, 10.0f };
+	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 	// 宝箱は最初開いていない
 	_isOpen = true;
 
@@ -26,8 +27,9 @@ bool Treasure::Terminate()
 
 bool Treasure::Process()
 {
+	base::Process();
 	// 宝箱の開閉処理
-	if(!_isOpen && _status != STATUS::OPEN)
+	if(!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
 		// 宝箱を開ける
 		if(_attachIndex != -1)
@@ -37,13 +39,14 @@ bool Treasure::Process()
 		}
 		// アニメーションの切り替え
 		//_attachIndex = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "open"), -1, FALSE);
-		_status = STATUS::OPEN;
+		_objStatus = OBJSTATUS::OPEN;
 	}
 	return true;
 }
 
 bool Treasure::Render()
 {
+	base::Render();
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1); // 再生時間をセットする
 	// モデルの向き設定
 	MATRIX mRotY = MGetRotY(vorty); 
