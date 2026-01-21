@@ -15,7 +15,7 @@
 bool ObjectBase::Initialize()
 {
 	_cam = nullptr;
-	_iHandle = -1;
+	_handle = -1;
 	_half_polygon_size = 0.0f;
 	_diffuse = GetColorU8(255, 255, 255, 255);
 	_specular = GetColorU8(0, 0, 0, 0);
@@ -73,7 +73,7 @@ void ObjectBase::ModelMatrixSetUp()
 	matrix = MMult(matrix, MGetRotX(_vEulerAngle.x));
 	matrix = MMult(matrix, MGetRotZ(_vEulerAngle.z));
 	matrix = MMult(matrix, MGetRotY(_vEulerAngle.y + PI));
-	MV1SetMatrix(_iHandle, matrix);
+	MV1SetMatrix(_handle, matrix);
 
-	MV1RefreshCollInfo(_iHandle, _attachIndex);
+	MV1RefreshCollInfo(_handle, _attachIndex);
 }

@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_iHandle = MV1LoadModel("res/Tanuki/goepon_walkwalk.mv1");
+	_handle = MV1LoadModel("res/Tanuki/goepon_walkwalk.mv1");
 	_iAttachIndex = -1;
 	// �X�e�[�^�X��u�����v�ɐݒ�
 	_status = STATUS::NONE;
@@ -134,19 +134,19 @@ bool PlayerTanuki::Process()
 	{
 		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
+			MV1DetachAnim(_handle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "idle"), -1, FALSE));
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "walk"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "walk"), -1, FALSE));
 			break;
 		}
-		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex)));
+		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex)));
 		_fPlayTime = 0.0f;
 		switch(_status)
 		{
@@ -185,7 +185,7 @@ bool PlayerTanuki::Render()
 
 	// �Đ����Ԃ�Z�b�g����
 		// �Đ����Ԃ�Z�b�g����
-	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
+	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ���f�����W���łǂ��������Ă��邩�Ŏ����ς��(�����-z������Ă���ꍇ)
 
@@ -204,10 +204,10 @@ bool PlayerTanuki::Render()
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);
 
-	MV1SetMatrix(_iHandle, m);
+	MV1SetMatrix(_handle, m);
 
 	// �`��
-	MV1DrawModel(_iHandle);
+	MV1DrawModel(_handle);
 	
 	return true;
 }

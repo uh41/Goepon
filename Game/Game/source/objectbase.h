@@ -48,6 +48,8 @@ protected:
 
 	vec::Vec3 _vPos;				//ワールド座標
 
+	vec::Vec3 _vDir;                //向きベクトル 
+
 	vec::Vec3 _vEulerAngle;			//角度
 
 	vec::Vec3 _vScale;				//拡縮
@@ -59,7 +61,7 @@ protected:
 	//STATE _state;				//状態
 
 	Camera* _cam;
-	int _iHandle;             // モデルハンドル
+	int _handle;             // モデルハンドル
 	float _half_polygon_size; // 地面ポリゴンの半分のサイズ
 	COLOR_U8 _diffuse;        // 材質の色
 	COLOR_U8 _specular;       // 材質の鏡面反射色

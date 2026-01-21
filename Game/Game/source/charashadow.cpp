@@ -3,7 +3,7 @@
 CharaShadow::CharaShadow()
 {
 	_chara = nullptr;
-	_iHandle = -1;
+	_handle = -1;
 	_texturePath = "res/Texture/shadow_.png";
 	_fYOffset = 0.0f;
 	_fAlpha = 0.5f;
@@ -22,7 +22,7 @@ bool CharaShadow::Initialize()
 		return false;
 	}
 
-	_iHandle = LoadGraph(_texturePath.c_str());
+	_handle = LoadGraph(_texturePath.c_str());
 
 	return true;
 }
@@ -30,10 +30,10 @@ bool CharaShadow::Initialize()
 bool CharaShadow::Terminate()
 {
 	base::Terminate();
-	if (_iHandle != -1)
+	if (_handle != -1)
 	{
-		DeleteGraph(_iHandle);
-		_iHandle = -1;
+		DeleteGraph(_handle);
+		_handle = -1;
 	}
 	return true;
 }

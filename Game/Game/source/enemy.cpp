@@ -16,7 +16,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_iHandle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
+	_handle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -200,7 +200,7 @@ bool Enemy::Process()
 		// アニメーションがアタッチされていたら、デタッチする
 		if (_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
+			MV1DetachAnim(_handle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
@@ -208,13 +208,13 @@ bool Enemy::Process()
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_iHandle, "taiki");
+			int animIndex = MV1GetAnimIndex(_handle, "taiki");
 			if (animIndex != -1)
 			{
-				_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, animIndex, -1, FALSE));
+				_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
 				if (_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
+					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -222,13 +222,13 @@ bool Enemy::Process()
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_iHandle, "walk");
+			int animIndex = MV1GetAnimIndex(_handle, "walk");
 			if (animIndex != -1)
 			{
-				_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, animIndex, -1, FALSE));
+				_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
 				if (_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
+					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -238,7 +238,7 @@ bool Enemy::Process()
 		// アタッチしたアニメーションの総再生時間を取得する
 		if (_iAttachIndex != -1)
 		{
-			_fTotalTime = MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex));
+			_fTotalTime = MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex));
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;
@@ -318,17 +318,17 @@ bool Enemy::Render()
 {
 	base::Render();
 	// 再生時間をセット
-	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), _fPlayTime);
+	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
 
 	// 位置
-	MV1SetPosition(_iHandle, VectorConverter::VecToDxLib(_vPos));
+	MV1SetPosition(_handle, VectorConverter::VecToDxLib(_vPos));
 	// 向きからY軸回転を算出
 	VECTOR vrot = { 0,0,0, };
 	vrot.y = atan2f(-_vDir.x, -_vDir.z);
-	MV1SetRotationXYZ(_iHandle, vrot);
+	MV1SetRotationXYZ(_handle, vrot);
 
 	// 描画
-	MV1DrawModel(_iHandle);
+	MV1DrawModel(_handle);
 
 	return true;
 }

@@ -14,7 +14,7 @@
 bool CharaBase::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_iHandle = -1;
+	_handle = -1;
 	_iAttachIndex = -1;
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
