@@ -15,6 +15,4 @@
 #include "CFile/CFile.h"
 #include "mymath.h"
 #include "container.h"
-#include "aliastemplate.h"
-#include "mymath/vector3.h"
-#include "mymath/vector3operator.h"
+
