@@ -23,10 +23,10 @@ bool ModeTitle::Initialize()
 
 	// フェードの初期化（黒→透過でフェードイン）
 	Fade::GetInstance()->ColorMask(0, 0, 0, 255);
-	Fade::GetInstance()->FadeIn(fade::FADE_FRAME);
+	Fade::GetInstance()->FadeIn(FADE_FRAME);
 
 	_state = ModeBase::State::FADE_IN;
-	_iTimer = 0;
+	_fadeTimer = 0;
 
 	return true;
 }
@@ -50,29 +50,25 @@ bool ModeTitle::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	// 必要ならキー入力でフェードアウトへ移行する等の処理をここに追加
-	// 例（スペースキーでフェードアウト開始）:
-	// if (_state == ModeBase::State::WAIT && CheckHitKey(KEY_INPUT_SPACE)) { ... }
-
 	switch(_state)
 	{
 	case ModeBase::State::FADE_IN:
-		if(Fade::GetInstance()->IsFade() == 0)
+		if(Fade::GetInstance()->IsFade() == false)
 		{
 			_state = ModeBase::State::WAIT;
-			_iTimer = fade::FADE_WAIT;
+			_fadeTimer = FADE_WAIT;
 		}
 		break;
 	case ModeBase::State::WAIT:
 		// カウントダウン等の処理
-		_iTimer--;
-		if(_iTimer <= 0)
+		_fadeTimer--;
+		if(_fadeTimer <= 0)
 		{
 			// 何もしないか、自動で次に遷移したければここでフェードアウトを開始
 		}
 		break;
 	case ModeBase::State::FADE_OUT:
-		if(Fade::GetInstance()->IsFade() == 0)
+		if(Fade::GetInstance()->IsFade() == false)
 		{
 			// 終了処理（他モードへ移行する場合は Add を呼ぶ）
 			ModeServer::GetInstance()->Del(this);

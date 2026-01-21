@@ -9,14 +9,16 @@
 
 #pragma once
 #include "../container.h"
+#include "../gameconfig.h"
 
 class ModeServer;
 
-namespace fade
-{
-	static constexpr int FADE_FRAME = 60;
-	static constexpr int FADE_WAIT = 60;
-}
+//namespace fade
+//{
+//	static constexpr auto FADE_FRAME = 60;
+//	static constexpr auto FADE_WAIT = 60;
+//	static constexpr auto FADE_OUT_WAIT = 30;
+//}
 
 
 class		ModeBase
@@ -79,7 +81,10 @@ protected:
 
 	State _state;
 
-	int _iTimer;
+	int _fadeTimer;
+	int _waitTimer;
+
+	bool _isWait;
 
 };
 

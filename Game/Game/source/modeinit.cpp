@@ -6,10 +6,10 @@ ModeInit::ModeInit()
 	Initialize();
 
 	Fade::GetInstance()->ColorMask(0, 0, 0, 255);		// カラーマスクの設定
-	Fade::GetInstance()->FadeIn(fade::FADE_FRAME);	// フェードイン開始
+	Fade::GetInstance()->FadeIn(FADE_FRAME);	// フェードイン開始
 
 	_state = ModeBase::State::FADE_IN;
-	_iTimer = 0;
+	_fadeTimer = 0;
 }
 
 ModeInit::~ModeInit()
@@ -20,6 +20,8 @@ ModeInit::~ModeInit()
 bool ModeInit::Initialize()
 {
 	_iHandle = LoadGraph("res/logo/AMGlogo.png");
+	_isWait = false;
+	
 	return true;
 }
 
@@ -45,28 +47,27 @@ bool ModeInit::Process()
 	{
 		case ModeBase::State::FADE_IN:
 		{
-			if(Fade::GetInstance()->IsFade() == 0)
+			if(Fade::GetInstance()->IsFade() == false)
 			{
 				_state = ModeBase::State::WAIT;
-				_iTimer = fade::FADE_WAIT;
+				_fadeTimer = FADE_WAIT;
 			}
 			break;
 		}
 		case ModeBase::State::WAIT:
 		{
-			_iTimer--;
-			if(_iTimer <= 0)
+			_fadeTimer--;
+			if(_fadeTimer <= 0)
 			{
 				_state = ModeBase::State::FADE_OUT;
-				Fade::GetInstance()->FadeOut(0, 0, 0, fade::FADE_FRAME);
+				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
 			}
 			break;
 		}
 		case ModeBase::State::FADE_OUT:
 		{
-			if(Fade::GetInstance()->IsFade() == 0)
+			if(Fade::GetInstance()->IsFade() == false)
 			{
-				//ModeServer::GetInstance()->Get("title");
 				ModeServer::GetInstance()->Add(new ModeTitle(), ModeServer::GetInstance()->LayerTop(), "title");
 				ModeServer::GetInstance()->Del(this);
 				_state = ModeBase::State::DONE;

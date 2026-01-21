@@ -28,7 +28,7 @@ ModeBase::ModeBase()
 
 	_iHandle = -1;
 	_state = State::DONE;
-	_iTimer = 0;
+	_fadeTimer = 0;
 }
 
 ModeBase::~ModeBase()

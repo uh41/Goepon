@@ -43,7 +43,7 @@ void Fade::FadeIn(float frame)
 
 	_fadeStColor = _fadeColor;// フェードイン用開始カラー配列(RGBA)
 
-	_fadeEdColor = { _fadeColor[0], _fadeColor[1], _fadeColor[3], 0 };// フェードアウト用終了カラー配列(RGBA)
+	_fadeEdColor = { _fadeColor[0], _fadeColor[1], _fadeColor[2], 0 };// フェードアウト用終了カラー配列(RGBA)
 
 	_iFadeFrames = frame;	// フェードのフレーム数
 	_iFadeCnt = 0.0f;			// フェードのカウント
@@ -63,13 +63,13 @@ void Fade::FadeOut(int R, int G, int B, float frame)
 
 // フェードインアウトは終了したか？
 //戻り値: 1 = フェード中, 0 = フェード終了(もしくは開始前)
-int Fade::IsFade()
+bool Fade::IsFade()
 {
 	if (_iFadeCnt < _iFadeFrames)
 	{
-		return 1; // フェード中
+		return true; // フェード中
 	}
-	return 0; // フェード終了
+	return false; // フェード終了
 }
 
 // フレーム処理

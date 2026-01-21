@@ -22,7 +22,7 @@ public:
 	void FadeIn(float frame);
 	void FadeOut(int R, int G, int B, float frame);
 
-	int IsFade();		// フェード中かどうか
+	bool IsFade();		// フェード中かどうか
 
 protected:
 
