@@ -22,3 +22,4 @@
 #include "sound/sounditemoneshot.h"
 #include "fade/fade.h"
 #include "AnimationManager/animationmanager.h"
+#include "Resources.h"

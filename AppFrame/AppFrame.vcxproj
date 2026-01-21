@@ -74,23 +74,23 @@
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
