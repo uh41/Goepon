@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 2;
 
 	if(MAP_SELECT == 0)
 	{
@@ -125,9 +125,16 @@ bool Map::Initialize()
 
 	// ライト初期設定
 	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
-	_mainLight.SetAmbient(VGet(0.0f, 0.0f, 0.0f), 0.0f);
-	_mainLight.SetDiffuse(VGet(1.0f, 1.0f, 1.0f), 1.0f);
-	_mainLight.SetSpecular(VGet(0.0f, 0.0f, 0.0f), 0.0f);
+
+	// 環境光（弱め）
+	_mainLight.SetAmbient(VGet(0.05f, 0.03f, 0.02f), 1.0f);
+
+	// 拡散光（オレンジ寄り）
+	_mainLight.SetDiffuse(VGet(1.0f, 0.75f, 0.45f), 1.0f);
+
+	// 鏡面反射（白寄りに少し）
+	_mainLight.SetSpecular(VGet(0.8f, 0.8f, 0.8f), 1.0f);
+
 	_mainLight.SetCastShadow(true);
 	return true;
 }

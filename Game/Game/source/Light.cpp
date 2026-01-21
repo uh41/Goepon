@@ -22,18 +22,25 @@ void Light::ApplyRenderer()const
 	// グローバルアンビエントライトの設定
 	SetGlobalAmbientLight(GetColorF(ambient.x, ambient.y, ambient.z, ambientA));
 
+	// 標準のライトを対象にする
+	int index = 0;
+
+	// ライトの基準性能を設定
+	
+
 	// ライトの種類ごとに DxLib のラッパーを呼ぶ
 	if(type == LightType::Directional)
 	{
 		ChangeLightTypeDir(dir);
 	}
-	else if (type == LightType::Point)
+	else if(type == LightType::Point)
 	{
 		ChangeLightTypePoint(pos, range, att0, att1, att2);
 	}
-	else // Spot: 最小実装では方向を使う（将来拡張）
+	else if(type == LightType::Spot)
 	{
-		ChangeLightTypeDir(dir);
+		// スポットライトの実装例（将来拡張用）
+		// ChangeLightTypeSpot(pos, dir, outAngle, inAngle, range, att0, att1, att2);
 	}
 }
 
@@ -52,3 +59,4 @@ void Light::ApplyShadowMap(int shadowHandle, const VECTOR& camTarget, float exte
 	VECTOR max = VAdd(camTarget, VGet(extent, 1000.0f, extent)); // 最大点を作成。
 	SetShadowMapDrawArea(shadowHandle, min, max);// 描画範囲を設定(これによりシャドウカメラ(ライト空間)の投影範囲が決まる）
 }
+
