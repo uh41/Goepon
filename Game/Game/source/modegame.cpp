@@ -23,6 +23,7 @@ bool ModeGame::Initialize()
 	_treasure.push_back(std::make_shared<Treasure>());
 	_camera->Initialize();
 
+	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
 	// キャラ
@@ -53,8 +54,14 @@ bool ModeGame::Initialize()
 		ui_base->Initialize();
 	}
 
-	_map		 ->SetCamera(_camera);
-	_player		 ->SetCamera(_camera);
+	// シャドウ
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Initialize();
+	}
+
+	_map->SetCamera(_camera);
+	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 
 	//InitHpBlock();// ブロック初期化
@@ -65,8 +72,6 @@ bool ModeGame::Initialize()
 	_bLandedOnUp = false;
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
-
-	_bShowTanuki = true;
 
 	// 索敵システムの初期化
 	_enemySensor = std::make_shared<EnemySensor>();
@@ -80,6 +85,7 @@ bool ModeGame::Initialize()
 		enemy->SetEnemySensor(_enemySensor);
 	}
 
+	_soundServer = new soundserver::SoundServer();
 	return true;
 }
 
@@ -107,11 +113,18 @@ bool ModeGame::Terminate()
 	{
 		ui_base->Terminate();
 	}
+	_uiBase.clear();
 	for(auto& treasure : _treasure)
 	{
 		treasure->Terminate();
 	}
-	_uiBase.clear();
+	
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Terminate();
+	}
+	_charaShadow.clear();
+
 	delete _camera;
 
 	// 索敵システムの終了処理
@@ -120,7 +133,11 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-
+	if(_soundServer)
+	{
+		delete _soundServer;
+		_soundServer = nullptr;
+	}
 	return true;
 }
 
@@ -164,6 +181,7 @@ bool ModeGame::Process()
 	
 	DebugProcess();// デバック処理
 
+AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（仮に60FPS固定で更新）
 	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
 	if(_bCameraControlMode)
 	{
@@ -240,6 +258,28 @@ bool ModeGame::Process()
 			_player->SetPos(_playerTanuki->GetPos());
 			// 向きも合わせる
 			_player->SetDir(_playerTanuki->GetDir());
+		}
+
+		if(_soundServer)
+		{
+			_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
+		}
+
+		// シャドウの追従キャラも切り替え
+		if(!_charaShadow.empty())
+		{
+			auto& playerShadow = _charaShadow.front();
+			if(playerShadow)
+			{
+				if(_bShowTanuki)
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
+				}
+				else
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_player.get()));
+				}
+			}
 		}
 	}
 
@@ -353,7 +393,7 @@ bool ModeGame::Render()
 	base::Render();
 
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(VectorConverter::VecToDxLib(_camera->_vPos), VectorConverter::VecToDxLib(_camera->_vTarget));
+	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_camera->_vPos), DxlibConverter::VecToDxLib(_camera->_vTarget));
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
 	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);

@@ -28,7 +28,7 @@ bool ModeGame::ObjectInitialize()
 	_player = std::make_shared<Player>();
 	// プレイヤーは描画・処理を_playerBaseで管理するので_charaには追加しない
 	_playerBase.emplace_back(_player);
-	
+
 	// タヌキプレイヤー初期化
 	_playerTanuki = std::make_shared<PlayerTanuki>();
 	// タヌキプレイヤーも_playerBaseで管理
@@ -43,6 +43,40 @@ bool ModeGame::ObjectInitialize()
 	_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
+	// --- ここからシャドウ生成 ---
+	// プレイヤー（通常）用シャドウ
+	{
+		auto charaShadow = std::make_shared<CharaShadow>();
+		// 初期ターゲットはフラグに応じて設定
+		if(_bShowTanuki)
+		{
+			charaShadow->SetTargetChara(_playerTanuki.get());
+		}
+		else
+		{
+			charaShadow->SetTargetChara(_player.get());
+		}
+		_charaShadow.emplace_back(charaShadow);
 
+
+	}
+	for(auto& c : _chara)
+	{
+		if(!c)
+		{
+			continue;
+		}
+		// プレイヤー（通常）とタヌキを除外
+		if(c.get() == _player.get() || c.get() == _playerTanuki.get())
+		{
+			continue;
+		}
+
+		auto shadow = std::make_shared<CharaShadow>();
+		// Scaleも調整可能
+		shadow->SetTargetChara(c.get());
+		_charaShadow.emplace_back(shadow);
+	}
+	
 	return true;
 }

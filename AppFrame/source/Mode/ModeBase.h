@@ -9,13 +9,29 @@
 
 #pragma once
 #include "../container.h"
+#include "../gameconfig.h"
 
 class ModeServer;
+
+//namespace fade
+//{
+//	static constexpr auto FADE_FRAME = 60;
+//	static constexpr auto FADE_WAIT = 60;
+//	static constexpr auto FADE_OUT_WAIT = 30;
+//}
 
 
 class		ModeBase
 {
 public:
+	enum class State
+	{
+		FADE_IN,
+		WAIT,
+		FADE_OUT,
+		DONE
+	};
+
 	ModeBase();
 	virtual ~ModeBase();
 
@@ -59,6 +75,16 @@ private:
 	int		_callPerFrame;
 	int		_callPerFrameCnt;
 	int		_callOfCount;
+
+protected:
+	int _iHandle;
+
+	State _state;
+
+	int _fadeTimer;
+	int _waitTimer;
+
+	bool _isWait;
 
 };
 

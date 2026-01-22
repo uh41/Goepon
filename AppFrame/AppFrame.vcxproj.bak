@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -73,24 +73,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,6 +99,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -115,6 +116,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -129,6 +131,7 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,6 +148,7 @@
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -154,20 +158,25 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\aliastemplate.h" />
+    <ClInclude Include="source\AnimationManager\animationmanager.h" />
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
+    <ClInclude Include="source\fade\fade.h" />
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
-<<<<<<< HEAD
+    <ClInclude Include="source\mymath\collision.h" />
+    <ClInclude Include="source\mymath\polygon3D.h" />
+    <ClInclude Include="source\mymath\vector3operator.h" />
+    <ClInclude Include="source\mymath\vectorconverter.h" />
+    <ClInclude Include="source\navi\navi.h" />
+    <ClInclude Include="source\navi\navigationmesh.h" />
     <ClInclude Include="source\resource\ResourceServer.h" />
-=======
-    <ClInclude Include="source\mymath\segment.h" />
+    <ClInclude Include="source\mymath\mysegment.h" />
     <ClInclude Include="source\mymath\vector3.h" />
->>>>>>> SuzukiYuuki
     <ClInclude Include="source\Sound\sounditembase.h" />
     <ClInclude Include="source\Sound\sounditembgm.h" />
     <ClInclude Include="source\Sound\sounditemoneshot.h" />
@@ -178,14 +187,26 @@
     <ClInclude Include="source\Sound\soundserver.h" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
+    <ClCompile Include="..\Game\Game\source\TextUtil.cpp" />
+=======
+    <ClCompile Include="source\AnimationManager\animationmanager.cpp" />
+>>>>>>> SuzukiYuuki
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\fade\fade.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\mymath.cpp" />
+    <ClCompile Include="source\navi\navi.cpp" />
+    <ClCompile Include="source\navi\navigationmesh.cpp" />
     <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\test.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

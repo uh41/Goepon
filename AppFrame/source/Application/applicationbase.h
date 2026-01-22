@@ -8,7 +8,9 @@
 /*********************************************************************/
 
 #include "../container.h"
-#include "../Mode//ModeServer.h"
+#include "../Mode/ModeServer.h"
+#include "../fade/fade.h"
+
 
 class ApplicationBase
 {
@@ -34,6 +36,7 @@ public:
 
 protected:
 	static	ApplicationBase	*_lp_instance;
+	static  Fade* _fade;
 
 	int		_gKey;
 	int		_gTrg;

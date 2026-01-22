@@ -56,11 +56,11 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		MV1_COLL_RESULT_POLY hitPoly;
 
 		// 主人公の腰位置から下方向への直線
-		hitPoly = MV1CollCheck_Line(
+		hitPoly = DxlibConverter::MV1CollCheckLine(
 			_map->GetHandleMap(),
 			_map->GetFrameMapCollision(),
-			VectorConverter::VecToDxLib(vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, player->GetColSubY(), 0.0f))),
-			VectorConverter::VecToDxLib(vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, -99999.0f, 0.0f)))
+			vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, player->GetColSubY(), 0.0f)),
+			vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, -99999.0f, 0.0f))
 		);
 		if(hitPoly.HitFlag)
 		{
@@ -106,12 +106,12 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	float c2_r = (float)c2->GetCollisionR();
 
 	// カプセル同士が当たっていなければ終了
-	if(!HitCheck_Capsule_Capsule(
-		VectorConverter::VecToDxLib(c1_top),
-		VectorConverter::VecToDxLib(c1_bottom),
+	if(!DxlibConverter::HitCheckCapsuleToCapsule(
+		c1_top,
+		c1_bottom,
 		c1_r,
-		VectorConverter::VecToDxLib(c2_top),
-		VectorConverter::VecToDxLib(c2_bottom),
+		c2_top,
+		c2_bottom,
 		c2_r))
 	{
 		return false;
@@ -227,11 +227,11 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 		MV1_COLL_RESULT_POLY hitpoly;
 
 		// 主人公の腰位置から下方向への直線
-		hitpoly = MV1CollCheck_Line(
+		hitpoly = DxlibConverter::MV1CollCheckLine(
 			_map->GetHandleMap(),
 			_map->GetFrameMapCollision(),
-			VectorConverter::VecToDxLib(vec3::VAdd(move->GetPos(), vec3::VGet(0.0f, move->GetColSubY(), 0.0f))),
-			VectorConverter::VecToDxLib(vec3::VAdd(move->GetPos(), vec3::VGet(0.0f, -9999.f, 0.0f)))
+			vec3::VAdd(move->GetPos(), vec3::VGet(0.0f, move->GetColSubY(), 0.0f)),
+			vec3::VAdd(move->GetPos(), vec3::VGet(0.0f, -9999.f, 0.0f))
 		);
 		if(hitpoly.HitFlag)
 		{

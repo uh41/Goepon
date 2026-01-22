@@ -15,14 +15,14 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTargetChara(CharaBase* chara) { _chara = chara; }
-	void SetTexturPath(const std::string& path) { _texturePath = path; }
+	// 影を追従させるキャラを設定
+	void SetTargetChara(CharaBase* chara) { _Chara = chara; }
+
+	// 影のスケールを調整
+	void SetScale(float scale) { _fScale = scale; }
 
 protected:
-	CharaBase* _chara;
-	std::string _texturePath;
-	float _fYOffset;// シャドウのYオフセット
-	float _fAlpha;// シャドウの透明度
-	float _fSizeFactor;// シャドウのサイズ倍率
+	CharaBase* _Chara;
+	float _fScale;
 };
 

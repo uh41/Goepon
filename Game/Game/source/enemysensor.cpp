@@ -229,12 +229,12 @@ void EnemySensor::RenderDetectionSector() const
 		vec::Vec3 pos2 = vec3::VAdd(center, vec3::VGet(sinf(angle2) * _detectionSector.radius, 0.0f, cosf(angle2) * _detectionSector.radius));
 
 		// 3D空間での線描画
-		DrawLine3D(VectorConverter::VecToDxLib(pos1), VectorConverter::VecToDxLib(pos2), color);
+		DxlibConverter::DrawLine3D(pos1, pos2, color);
 
 		// 少し上の位置にも線を描画して見えやすくする
 		vec::Vec3 pos1_up = vec3::VAdd(pos1, vec3::VGet(0.0f, 10.0f, 0.0f));
 		vec::Vec3 pos2_up = vec3::VAdd(pos2, vec3::VGet(0.0f, 10.0f, 0.0f));
-		DrawLine3D(VectorConverter::VecToDxLib(pos1_up), VectorConverter::VecToDxLib(pos2_up), color);
+		DxlibConverter::DrawLine3D(pos1_up, pos2_up, color);
 	}
 
 	// 中心から両端への線を描画
@@ -244,20 +244,20 @@ void EnemySensor::RenderDetectionSector() const
 	vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * _detectionSector.radius, 0.0f, cosf(leftAngle) * _detectionSector.radius));
 	vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * _detectionSector.radius, 0.0f, cosf(rightAngle) * _detectionSector.radius));
 
-	DrawLine3D(VectorConverter::VecToDxLib(center), VectorConverter::VecToDxLib(leftEdge), color);
-	DrawLine3D(VectorConverter::VecToDxLib(center), VectorConverter::VecToDxLib(rightEdge), color);
+	DxlibConverter::DrawLine3D(center, leftEdge, color);
+	DxlibConverter::DrawLine3D(center, rightEdge, color);
 
 	// 少し上の位置にも線を描画
 	vec::Vec3 center_up = vec3::VAdd(center, vec3::VGet(0.0f, 10.0f, 0.0f));
 	vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 	vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 
-	DrawLine3D(VectorConverter::VecToDxLib(center_up), VectorConverter::VecToDxLib(leftEdge_up), color);
-	DrawLine3D(VectorConverter::VecToDxLib(center_up), VectorConverter::VecToDxLib(rightEdge_up), color);
+	DxlibConverter::DrawLine3D(center_up, leftEdge_up, color);
+	DxlibConverter::DrawLine3D(center_up, rightEdge_up, color);
 
 	// 敵の正面方向を示す緑の線を描画（敵の位置から索敵中心まで）
 	vec::Vec3 enemyPos = _vPos;
-	DrawLine3D(VectorConverter::VecToDxLib(vec3::VAdd(enemyPos, vec3::VGet(0.0f, 5.0f, 0.0f))), VectorConverter::VecToDxLib(vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 0.0f))), GetColor(0, 255, 0));
+	DxlibConverter::DrawLine3D(vec3::VAdd(enemyPos, vec3::VGet(0.0f, 5.0f, 0.0f)), vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 0.0f)), GetColor(0, 255, 0));
 
 	// 中心点を示すマーカーを描画
 	vec::Vec3 marker1 = vec3::VAdd(center, vec3::VGet(-10.0f, 5.0f, 0.0f));
@@ -265,8 +265,8 @@ void EnemySensor::RenderDetectionSector() const
 	vec::Vec3 marker3 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, -10.0f));
 	vec::Vec3 marker4 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 10.0f));
 
-	DrawLine3D(VectorConverter::VecToDxLib(marker1), VectorConverter::VecToDxLib(marker2), color);
-	DrawLine3D(VectorConverter::VecToDxLib(marker3), VectorConverter::VecToDxLib(marker4), color);
+	DxlibConverter::DrawLine3D(marker1, marker2, color);
+	DxlibConverter::DrawLine3D(marker3, marker4, color);
 }
 
 // 検出UI表示
