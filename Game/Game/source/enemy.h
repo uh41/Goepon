@@ -32,6 +32,11 @@ public:
 	// 敵が初期位置に戻り中かどうかの判定（検知停止用）
 	bool IsReturningToInitialPosition() const { return _isReturningToInitialPos; }
 
+	// YouDiedメッセージ表示関連
+	void TriggerYouDiedMessage();
+	void RenderYouDiedMessage();
+	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
+
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
@@ -62,4 +67,9 @@ protected:
 	void UpdateReturningToInitialPosition();	// 初期位置に戻る更新処理
 	void StartReturningToInitialPosition();		// 初期位置に戻る処理を開始
 	bool IsAtInitialPosition() const;			// 初期位置にいるかどうかをチェック
+
+	// YouDiedメッセージ表示関連
+	bool _showYouDiedMessage;
+	float _youDiedMessageTimer;
+	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間（秒）
 };

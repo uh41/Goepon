@@ -51,11 +51,6 @@ public:
 	bool GetEffekseerLaunched() const { return _effekseerLaunched; }
 	void SetEffekseerLaunched(bool b) { _effekseerLaunched = b; }
 
-	// YouDiedメッセージ表示関連
-	void TriggerYouDiedMessage();
-	void RenderYouDiedMessage();
-	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
-
 	bool PushChara(CharaBase* move, CharaBase* stop);
 	
 	bool IsHitCircle(CharaBase* c1, CharaBase* c2);
@@ -122,11 +117,6 @@ protected:
 	// メニューから切り替える「カメラ操作モード」フラグ
 	bool _bCameraControlMode;
 	
-	// YouDiedメッセージ表示関連
-	bool _showYouDiedMessage;
-	float _youDiedMessageTimer;
-	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間（秒）
-
 	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
