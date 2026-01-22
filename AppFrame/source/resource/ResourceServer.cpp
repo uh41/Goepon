@@ -116,6 +116,8 @@ int ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
 		}
 		return err;
 	}
+
+	return 0;
 }
 
 int ResourceServer::MV1LoadModel(const TCHAR* FileName)

@@ -51,7 +51,7 @@ bool Treasure::Render()
 	// モデルの向き設定
 	MATRIX mRotY = MGetRotY(vorty); 
 	// 平行移動行列の取得
-	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
+	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 	// 拡大縮小行列
 	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f));
 	// モデル行列の合成

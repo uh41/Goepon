@@ -3,7 +3,7 @@
 CharaShadow::CharaShadow()
 {
 	_Chara = nullptr;
-	_iHandle = -1;
+	_handle = -1;
 	_fScale = 1.0f;
 }
 
@@ -17,7 +17,7 @@ bool CharaShadow::Initialize()
 	if(!base::Initialize()) { return false; }
 
 	// 影モデルの読み込み
-	_iHandle = LoadGraph("res/Texture/shadow_.png");
+	_handle = LoadGraph("res/Texture/shadow_.png");
 
 	_fScale = 1.0f;
 
@@ -27,10 +27,10 @@ bool CharaShadow::Initialize()
 bool CharaShadow::Terminate()
 {
 	base::Terminate();
-	if (_iHandle != -1)
+	if (_handle != -1)
 	{
-		DeleteGraph(_iHandle);
-		_iHandle = -1;
+		DeleteGraph(_handle);
+		_handle = -1;
 	}
 	return true;
 }
@@ -43,14 +43,14 @@ bool CharaShadow::Process()
 	}
 
 	// キャラがいなければ何もしない
-	if(!_chara)
+	if(!_Chara)
 	{
 		return true;
 	}
 
 	// シャドウの位置をキャラの位置に合わせる
-	vec::Vec3 pos = _chara->GetPos();
-	pos.y += _fYOffset;
+	vec::Vec3 pos = _Chara->GetPos();
+	pos.y += _fColSubY;
 	_vPos = pos;
 
 	return true;
@@ -63,7 +63,7 @@ bool CharaShadow::Render()
 		return false;
 	}
 	// キャラがいなければ何もしない
-	if(!_chara)
+	if(!_Chara)
 	{
 		return true;
 	}
@@ -74,7 +74,7 @@ bool CharaShadow::Render()
 		return false;
 	}
 
-	if(_iHandle == -1)
+	if(_handle == -1)
 	{
 		return false;
 	}
@@ -87,7 +87,7 @@ bool CharaShadow::Render()
 
 	float y_offset = 0.2f; // 影を少し浮かせる
 
-	DrawGraph3D(vpos.x, vpos.y + y_offset, vpos.z, _iHandle, TRUE);
+	DrawGraph3D(vpos.x, vpos.y + y_offset, vpos.z, _handle, TRUE);
 
 	return true;
 }

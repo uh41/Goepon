@@ -210,7 +210,7 @@ bool Map::Render()
 
 	// ライト設定
 	const int extent = 800; // シャドウマップの範囲
-	_mainLight.ApplyShadowMap(_iHandleShadowMap, VectorConverter::VecToDxLib(_cam->_vTarget), extent);
+	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->_vTarget), extent);
 
 	// 2回まわして、path = 0; シャドウマップへの描画、path = 1; モデルの描画(シャドウ適用）	
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);

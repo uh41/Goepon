@@ -356,7 +356,7 @@ bool Player::Process()
 
         if(!anim_name.empty())
         {
-            _animId = AnimationManager::GetInstance()->Play(_iHandle, anim_name, true);
+            _animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
             _fPlayTime = 0.0f;
             switch(_status)
             {
