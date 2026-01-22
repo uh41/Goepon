@@ -7,19 +7,19 @@ bool EnemySensor::Initialize()
 	base::Initialize();
 
 	// 索敵システムの初期化
-	_bHasDetectionSector = false;
-	_bSensorEnabled = true;
+	_bHasDetectionSector = false;	// 索敵範囲未設定
+	_bSensorEnabled = true;			// センサー有効
 
 	// 検出情報の初期化
-	_detectionInfo.isDetected = false;
-	_detectionInfo.timer = 0.0f;
-	_detectionInfo.detectorIndex = -1;
-	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.isDetected = false;	// 未検出
+	_detectionInfo.timer = 0.0f;		// タイマー初期化
+	_detectionInfo.detectorIndex = -1;	// 検出者インデックス初期化
+	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 検出者位置初期化
 
 	// 追跡情報の初期化
-	_detectionInfo.isChasing = false;
-	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);
-	_detectionInfo.chaseTimer = 0.0f;
+	_detectionInfo.isChasing = false;	// 追跡中フラグ初期化
+	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置初期化
+	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマー初期化
 
 	// デフォルトの索敵範囲設定
 	SetDetectionSector(400.0f, 60.0f);//半径、角度
@@ -68,29 +68,31 @@ bool EnemySensor::Render()
 // プレイヤーの検出チェック
 bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 {
+	// センサーが無効またはプレイヤーが存在しない場合は検出しない
 	if (!player || !_bSensorEnabled)
 	{
 		return false;
 	}
 
-	vec::Vec3 playerPos = player->GetPos();
-	bool detected = IsPlayerInDetectionRange(playerPos);
+	vec::Vec3 playerPos = player->GetPos();	// プレイヤーの位置取得
+	bool detected = IsPlayerInDetectionRange(playerPos);	// 索敵範囲内かチェック
 
+	// 検出状態の更新
 	if (detected)
 	{
 		// プレイヤーが範囲内にいる場合
 		if (!_detectionInfo.isDetected)
 		{
 			// 新しく検出された場合
-			_detectionInfo.isDetected = true;
-			_detectionInfo.timer = DETECTION_DISPLAY_TIME;
-			_detectionInfo.detectorPos = _vPos;
+			_detectionInfo.isDetected = true;				// 検出フラグセット
+			_detectionInfo.timer = DETECTION_DISPLAY_TIME;	// タイマーリセット
+			_detectionInfo.detectorPos = _vPos;				// 検出者位置更新
 		}
 
 		// プレイヤーを検出中は常に位置を更新し、追跡タイマーをリセット
-		_detectionInfo.lastKnownPlayerPos = playerPos;
-		_detectionInfo.isChasing = true;
-		_detectionInfo.chaseTimer = CHASE_TIME;
+		_detectionInfo.lastKnownPlayerPos = playerPos;	// 最後に確認された位置更新
+		_detectionInfo.isChasing = true;				// 追跡中フラグセット
+		_detectionInfo.chaseTimer = CHASE_TIME;			// 追跡タイマーリセット
 	}
 	else if (_detectionInfo.isChasing)
 	{
@@ -104,20 +106,33 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 // 検出状態のリセット
 void EnemySensor::ResetDetection()
 {
-	_detectionInfo.isDetected = false;
-	_detectionInfo.timer = 0.0f;
-	_detectionInfo.detectorIndex = -1;
-	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_detectionInfo.isDetected = false;	// 未検出
+	_detectionInfo.timer = 0.0f;		// タイマーリセット
+	_detectionInfo.detectorIndex = -1;	// 検出者インデックスリセット
+	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 検出者位置リセット
 
 	// 追跡状態リセット
-	_detectionInfo.isChasing = false;
-	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);
-	_detectionInfo.chaseTimer = 0.0f;
+	_detectionInfo.isChasing = false;	// 追跡中フラグリセット
+	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置リセット
+	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマーリセット
 }
 
 // 検出タイマーの更新
 void EnemySensor::UpdateDetectionTimer()
 {
+	// 追跡タイマーの更新
+	if (_detectionInfo.isChasing)
+	{
+		_detectionInfo.chaseTimer -= 1.0f / 60.0f; // 60FPSとして計算
+
+		if (_detectionInfo.chaseTimer <= 0.0f)
+		{
+			_detectionInfo.isChasing = false;
+			_detectionInfo.chaseTimer = 0.0f;
+		}
+	}
+
+	// 検出表示タイマーの更新
 	if (_detectionInfo.timer > 0.0f)
 	{
 		_detectionInfo.timer -= 1.0f / 60.0f; // 60FPSとして計算
@@ -126,8 +141,6 @@ void EnemySensor::UpdateDetectionTimer()
 		{
 			_detectionInfo.isDetected = false;
 			_detectionInfo.detectorIndex = -1;
-			// 追跡タイマーが切れたら追跡を停止
-			_detectionInfo.isChasing = false;
 		}
 	}
 }
@@ -144,7 +157,7 @@ void EnemySensor::SetDetectionSector(float radius, float angle)
 vec::Vec3 EnemySensor::GetDetectionCenter() const
 {
 	// 敵の正面方向に一定距離進んだ位置を中心にする
-	const float offsetDistance = _detectionSector.radius * 0.3f; // 半径の30%前方
+	const float offsetDistance = _detectionSector.radius * 0.1f; // 半径の10%前方
 	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
 	return vec3::VAdd(_vPos, vec3::VScale(forwardNorm, offsetDistance));
 }
@@ -198,6 +211,7 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 // デバッグ用：索敵範囲の描画
 void EnemySensor::RenderDetectionSector() const
 {
+	// 索敵範囲が設定されていない場合は描画しない
 	if (!_bHasDetectionSector)
 	{
 		return;

@@ -593,19 +593,26 @@ bool ModeGame::CheckAllDetections()
 		return true;
 	}
 
+	// 各敵個別に初期位置に戻り中かをチェック
 	// タヌキ状態のプレイヤーのみをチェック対象にする
 	PlayerBase* currentPlayer = _playerTanuki.get();
 	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
 
-	// 検出状態に応じてエネミーに通知
+	// 検出状態に応じてエネミーに通知（ただし、戻り中の敵は除く）
 	if (detected)
 	{
-		vec::Vec3 playerPos = currentPlayer->GetPos();
+		vec::Vec3 playerPos = currentPlayer->GetPos();// 検出したプレイヤーの位置を取得
+
+		// プレイヤーが検出範囲内に入った場合
 		for (auto& enemy : _enemy)
 		{
 			if (enemy->IsAlive())
 			{
-				enemy->OnPlayerDetected(playerPos);
+				// 個別に初期位置に戻り中でない敵のみに通知
+				if (!enemy->IsReturningToInitialPosition())
+				{
+					enemy->OnPlayerDetected(playerPos);
+				}
 			}
 		}
 	}

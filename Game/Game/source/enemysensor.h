@@ -17,12 +17,12 @@ struct DetectionInfo
 	bool isDetected;        // 検出されているか
 	float timer;            // 検出表示タイマー
 	int detectorIndex;      // 検出した敵のインデックス
-	vec::Vec3 detectorPos;     // 検出した敵の位置
+	vec::Vec3 detectorPos;  // 検出した敵の位置
 
-	// 追加：追跡機能用
-	bool isChasing;         // 現在追跡中か
-	vec::Vec3 lastKnownPlayerPos; // 最後に確認されたプレイヤーの位置
-	float chaseTimer;       // 追跡継続時間
+	// 追跡機能用
+	bool isChasing;					// 現在追跡中か
+	vec::Vec3 lastKnownPlayerPos;	// 最後に確認されたプレイヤーの位置
+	float chaseTimer;				// 追跡継続時間
 };
 
 class EnemySensor : public EnemyBase
@@ -61,10 +61,6 @@ public:
 	// 検出UI表示
 	void RenderDetectionUI() const;
 
-	// センサーの有効/無効状態
-	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
-	bool IsSensorEnabled() const { return _bSensorEnabled; }
-
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
 	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
@@ -72,13 +68,14 @@ protected:
 
 	DetectionInfo _detectionInfo;      // 検出状態の情報
 
+	// 検出関連定数
 	static constexpr float DETECTION_DISPLAY_TIME = 3.0f; // 検出表示時間（秒）
 
 	// 追跡関連定数
 	static constexpr float CHASE_TIME = 5.0f; // 追跡継続時間（秒）
 
 	// 内部処理用メソッド
-	void UpdateDetectionTimer();       // 検出タイマーの更新
+	void UpdateDetectionTimer();		  // 検出タイマーの更新
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 };

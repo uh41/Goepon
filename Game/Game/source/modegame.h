@@ -122,7 +122,7 @@ protected:
 	// YouDiedメッセージ表示関連
 	bool _showYouDiedMessage;
 	float _youDiedMessageTimer;
-	static constexpr float YOU_DIED_DISPLAY_TIME = 5.0f; // 表示時間（秒）
+	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間（秒）
 
 	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
 	bool _bLandedOnUp;// 上方向に着地したかどうか
