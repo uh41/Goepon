@@ -20,8 +20,10 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
+	_treasure.push_back(std::make_shared<Treasure>());
 	_camera->Initialize();
 
+	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
 	// キャラ
@@ -42,10 +44,20 @@ bool ModeGame::Initialize()
 		player_base->Initialize();
 	}
 
+	for(auto& treasure : _treasure)
+	{
+		treasure->Initialize();
+	}
 	// UI
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Initialize();
+	}
+
+	// シャドウ
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Initialize();
 	}
 
 	_map->SetCamera(_camera);
@@ -79,6 +91,7 @@ bool ModeGame::Initialize()
 		enemy->SetEnemySensor(_enemySensor);
 	}
 
+	_soundServer = new soundserver::SoundServer();
 	return true;
 }
 
@@ -107,6 +120,17 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
+	for(auto& treasure : _treasure)
+	{
+		treasure->Terminate();
+	}
+	
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Terminate();
+	}
+	_charaShadow.clear();
+
 	delete _camera;
 
 	// 索敵システムの終了処理
@@ -115,7 +139,11 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-
+	if(_soundServer)
+	{
+		delete _soundServer;
+		_soundServer = nullptr;
+	}
 	return true;
 }
 
@@ -304,6 +332,28 @@ bool ModeGame::Process()
 			// 向きも合わせる
 			_player->SetDir(_playerTanuki->GetDir());
 		}
+
+		if(_soundServer)
+		{
+			_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
+		}
+
+		// シャドウの追従キャラも切り替え
+		if(!_charaShadow.empty())
+		{
+			auto& playerShadow = _charaShadow.front();
+			if(playerShadow)
+			{
+				if(_bShowTanuki)
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
+				}
+				else
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_player.get()));
+				}
+			}
+		}
 	}
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
@@ -349,6 +399,11 @@ bool ModeGame::Process()
 	for(auto& object : _object)
 	{
 		object->Process();
+	}
+
+	for(auto& treasure : _treasure)
+	{
+		treasure->Process();
 	}
 
 	// UI処理
@@ -421,7 +476,7 @@ bool ModeGame::Render()
 	base::Render();
 
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(VectorConverter::VecToDxLib(_camera->_vPos), VectorConverter::VecToDxLib(_camera->_vTarget));
+	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_camera->_vPos), DxlibConverter::VecToDxLib(_camera->_vTarget));
 	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
 	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);
@@ -440,6 +495,12 @@ bool ModeGame::Render()
 	for(auto& object : _object)
 	{
 		object->Render();
+	}
+
+	// 宝箱を描画
+	for(auto& treasure : _treasure)
+	{
+		treasure->Render();
 	}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）

@@ -73,24 +73,24 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\DxLib;$(SolutionDir)\game\include;C:\Users\amg\AppData\Local\Programs\Python\Python314\libs;C:\Users\amg\AppData\Local\Programs\Python\Python314\include;$(PythonDir)include;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,11 +158,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\aliastemplate.h" />
+    <ClInclude Include="source\AnimationManager\animationmanager.h" />
     <ClInclude Include="source\appframe.h" />
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
+    <ClInclude Include="source\fade\fade.h" />
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
@@ -185,16 +187,23 @@
     <ClInclude Include="source\Sound\soundserver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\AnimationManager\animationmanager.cpp" />
+    <ClCompile Include="..\Game\Game\source\TextUtil.cpp" />
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\fade\fade.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
+    <ClCompile Include="source\mymath.cpp" />
     <ClCompile Include="source\navi\navi.cpp" />
     <ClCompile Include="source\navi\navigationmesh.cpp" />
     <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="source\test.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

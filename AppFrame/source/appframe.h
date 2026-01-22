@@ -18,4 +18,8 @@
 #include "navi/navi.h"
 #include "container.h"
 #include "aliastemplate.h"
-
+#include "Sound/soundserver.h"
+#include "sound/sounditemoneshot.h"
+#include "fade/fade.h"
+#include "AnimationManager/animationmanager.h"
+#include "Resources.h"

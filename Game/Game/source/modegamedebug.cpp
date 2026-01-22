@@ -110,17 +110,17 @@ bool ModeGame::DebugRender()
 		float linelength = 10.f;
 		if(_camera)
 		{
-			DrawLine3D(
-				VectorConverter::VecToDxLib(vec3::VAdd(_camera->_vTarget, vec3::VGet(-linelength, 0.0f, 0.0f))),
-				VectorConverter::VecToDxLib(vec3::VAdd(_camera->_vTarget, vec3::VGet(linelength, 0.0f, 0.0f))),
+			DxlibConverter::DrawLine3D(
+				vec3::VAdd(_camera->_vTarget, vec3::VGet(-linelength, 0.0f, 0.0f)),
+				vec3::VAdd(_camera->_vTarget, vec3::VGet(linelength, 0.0f, 0.0f)),
 				GetColor(255, 255, 0));
-			DrawLine3D(
-				VectorConverter::VecToDxLib(vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, -linelength, 0.0f))),
-				VectorConverter::VecToDxLib(vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, linelength, 0.0f))),
+			DxlibConverter::DrawLine3D(
+				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, -linelength, 0.0f)),
+				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, linelength, 0.0f)),
 				GetColor(255, 255, 0));
-			DrawLine3D(
-				VectorConverter::VecToDxLib(vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, 0.0f, -linelength))),
-				VectorConverter::VecToDxLib(vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, 0.0f, linelength))),
+			DxlibConverter::DrawLine3D(
+				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, 0.0f, -linelength)),
+				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, 0.0f, linelength)),
 				GetColor(255, 255, 0));
 		}
 	}

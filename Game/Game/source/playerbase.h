@@ -30,10 +30,18 @@ public:
 	float GetMoveSpeed() const { return _fMvSpeed; }
 protected:
 
+	//アナログスティック関係
+	float _fAnalogDeadZone; // アナログスティックの無効範囲
+	float fLx, fLz, fRx, fRy;
+	DINPUT_JOYSTATE di;
+	//左スティックの値
+	float lStickX, lStickZ;
 	Camera* _cam;
-	bool _bLand;
-	float _fMvSpeed;
-	vec::Vec3 _vInput;
+	bool    _bLand;
+	float   _fMvSpeed;
+	vec3::Vec3 _vInput;
+	// 移動方向を決める
+	vec3::Vec3 _v;
 
 	// メモ読み込み
 	std::string _memoFileName;

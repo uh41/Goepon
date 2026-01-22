@@ -10,11 +10,13 @@
 #include "ApplicationBase.h"
 
 ApplicationBase	*ApplicationBase::_lp_instance = nullptr;
+Fade* ApplicationBase::_fade = nullptr;
 
 
 ApplicationBase::ApplicationBase()
 {
 	_lp_instance = this;
+	_fade = Fade::GetInstance();
 	_gKey = 0;
 	_gTrg = 0;
 	_serverMode = nullptr;
@@ -99,6 +101,8 @@ bool ApplicationBase::Input()
 
 bool ApplicationBase::Process()
 {
+	_fade->Process();
+
 	_serverMode->ProcessInit();
 	_serverMode->Process();
 	_serverMode->ProcessFinish();
@@ -107,6 +111,7 @@ bool ApplicationBase::Process()
 
 bool ApplicationBase::Render()
 {
+	_fade->Render();
 	_serverMode->RenderInit();
 	_serverMode->Render();
 	_serverMode->RenderFinish();

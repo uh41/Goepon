@@ -10,6 +10,7 @@
 
 #pragma once
 #include "DxLib.h"
+#include "appframe.h"
 enum class LightType
 {
 	Directional, // 平行光源
@@ -34,9 +35,9 @@ public:
 	VECTOR GetPos() const { return pos; }
 	
 	// 色設定
-	void SetAmbient (const VECTOR& a, float aA = 1.0f) { ambient = a; ambientA = aA  ; }
-	void SetDiffuse (const VECTOR& d, float dA = 1.0f) { diffuse = d; diffuseA = dA  ; }
-	void SetSpecular(const VECTOR& s, float sA = 1.0f) { specular = s; specularA = sA; }
+	void SetAmbient(const VECTOR& a, float aA = 1.0f) { ambient = a; ambientA = aA; } // 環境光
+	void SetDiffuse(const VECTOR& d, float dA = 1.0f) { diffuse = d; diffuseA = dA; } // 拡散反射光
+	void SetSpecular(const VECTOR& s, float sA = 1.0f) { specular = s; specularA = sA; } //	鏡面反射光
 
 	// 点光源用
 	void  SetRange(float r) { range = r   ; } 

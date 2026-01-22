@@ -1,0 +1,95 @@
+#include "charashadow.h"
+
+CharaShadow::CharaShadow()
+{
+<<<<<<< HEAD
+	_chara = nullptr;
+	_handle = -1;
+	_texturePath = "res/Texture/shadow_.png";
+	_fYOffset = 0.0f;
+	_fAlpha = 0.5f;
+	_fSizeFactor = 1.0f;
+=======
+	_Chara = nullptr;
+	_iHandle = -1;
+	_fScale = 1.0f;
+>>>>>>> SuzukiYuuki
+}
+
+CharaShadow::~CharaShadow()
+{
+	Terminate();
+}
+
+bool CharaShadow::Initialize()
+{
+	if(!base::Initialize()) { return false; }
+
+<<<<<<< HEAD
+	_handle = LoadGraph(_texturePath.c_str());
+=======
+	// âeÉÇÉfÉãÇÃì«Ç›çûÇ›
+	_iHandle = LoadGraph("res/Texture/shadow_.png");
+
+	_fScale = 1.0f;
+>>>>>>> SuzukiYuuki
+
+	return true;
+}
+
+bool CharaShadow::Terminate()
+{
+<<<<<<< HEAD
+	base::Terminate();
+	if (_handle != -1)
+=======
+	if(_iHandle != -1)
+>>>>>>> SuzukiYuuki
+	{
+		DeleteGraph(_handle);
+		_handle = -1;
+	}
+	base::Terminate();
+	return true;
+}
+
+bool CharaShadow::Process()
+{
+	if(!base::Process()) { return false; }
+
+	return true;
+}
+
+bool CharaShadow::Render()
+{
+	if(!base::Render()) { return false; }
+
+	if(!_Chara)
+	{
+		return false;
+	}
+
+	// ÉLÉÉÉâÇ™ë∂ç›ÇµÇ»Ç¢èÍçáÇÕï`âÊÇµÇ»Ç¢
+	if(!_Chara->IsAlive())
+	{
+		return false;
+	}
+
+	if(_iHandle == -1)
+	{
+		return false;
+	}
+
+	// ÉLÉÉÉâÇÃë´å≥à íuÇåvéZ
+	vec::Vec3 pos = _Chara->GetPos();
+
+	pos.y = _Chara->GetColSubY();
+
+	VECTOR vpos = DxlibConverter::VecToDxLib(pos);
+
+	float y_offset = 0.2f; // âeÇè≠ÇµïÇÇ©ÇπÇÈ
+
+	DrawGraph3D(vpos.x, vpos.y + y_offset, vpos.z, _iHandle, TRUE);
+
+	return true;
+}

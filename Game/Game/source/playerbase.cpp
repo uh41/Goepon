@@ -14,6 +14,12 @@
 bool PlayerBase::Initialize()
 {
 	base::Initialize();
+	// アナログスティックの設定関係
+	_fAnalogDeadZone = 0.3f;
+
+	// 移動速度設定
+	_v = { 0,0,0 };
+
 	return true;
 }
 
@@ -28,6 +34,20 @@ bool PlayerBase::Terminate()
 bool PlayerBase::Process()
 {
 	base::Process();
+
+	// アナログスティックの状態取得
+	{
+		DINPUT_JOYSTATE di;
+		GetJoypadDirectInputState(DX_INPUT_PAD1, &di);
+		if (GetJoypadDirectInputState(DX_INPUT_PAD1, &di) == 0)
+		{
+			fLx = (float)di.X / 1000.f;
+			fLz = (float)di.Y / 1000.f;
+			fRx = (float)di.Z / 1000.f;
+			fRy = (float)di.Rz / 1000.f;
+		}
+	}
+
 	return true;
 }
 
