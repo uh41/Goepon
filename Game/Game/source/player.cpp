@@ -18,6 +18,7 @@ bool Player::Initialize()
 	if(!base::Initialize()) { return false; }
 	_handle = MV1LoadModel("res/Tanuhuman/TanuHuman_Base2.mv1");
 	_iAttachIndex = -1;
+    _animId = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
 	// 再生時間の初期化
@@ -333,6 +334,41 @@ bool Player::Process()
 			_fPlayTime += rand() % 30;
 			break;
 		}
+
+        if(_animId != -1)
+        {
+            AnimationManager::GetInstance()->Stop(_animId);
+            _animId = -1;
+        }
+
+        std::string anim_name;
+        switch(_status)
+        {
+        case STATUS::WAIT:
+            anim_name = "mot_attack_charge_loop";
+            break;
+        case STATUS::WALK:
+            anim_name = "mot_move_run";
+            break;
+        default:
+            anim_name.clear();
+        }
+
+        if(!anim_name.empty())
+        {
+            _animId = AnimationManager::GetInstance()->Play(_iHandle, anim_name, true);
+            _fPlayTime = 0.0f;
+            switch(_status)
+            {
+                case STATUS::WAIT:
+                    _fPlayTime += rand() % 30;
+                    break;
+            }
+            if(_animId != -1)
+            {
+                AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+            }
+        }
 	}
 	if(_fPlayTime >= _fTotalTime)
 	{
@@ -355,7 +391,7 @@ bool Player::Render()
 
 	//MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90度（必要に応じて符号を反転）
 
-	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
+	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
 

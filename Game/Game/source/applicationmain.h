@@ -22,5 +22,5 @@ public:
 
 	virtual bool AppWindowed() { return true; }
 	virtual int DispSizeW() { return 1280; }
-	virtual int DispSizeH() { return 768; }
+	virtual int DispSizeH() { return 720; }
 };

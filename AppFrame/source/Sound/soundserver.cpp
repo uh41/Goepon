@@ -109,10 +109,15 @@ void soundserver::SoundServer::StopType(SoundItemBase::TYPE type)
 
 void soundserver::SoundServer::Update()
 {
-	// 追加リストのものを追加
-	for(auto&& e : _v)
+	// 追加リストのものを安全に追加する（元コードは _v を走査して Add() しており、
+	// 走査中にコンテナを変更してイテレータ破壊を引き起こしていた）
+	for(auto&& e : _vAdd)
 	{
-		Add(e.first, e.second); // 追加用コンテナにコピー
+		_v[e.first] = e.second;
+		if(_v[e.first])
+		{
+			_v[e.first]->SetSoundServer(this);
+		}
 	}
 	_vAdd.clear();
 
@@ -130,5 +135,4 @@ void soundserver::SoundServer::Update()
 		Del(e.second);
 	}
 	_vDel.clear();
-
 }

@@ -1,33 +1,33 @@
 /*********************************************************************/
 // * \file   playertanuki.cpp
-// * \brief  ï¿½Kï¿½ï¿½ÔƒNï¿½ï¿½ï¿½X
+// * \brief  ’Kó‘ÔƒNƒ‰ƒX
 // *
-// * \author ï¿½ï¿½Ø—Tï¿½H
+// * \author —é–Ø—T‹H
 // * \date   2025/12/15
-// * \ï¿½ï¿½Æ“ï¿½e: ï¿½Vï¿½Kï¿½ì¬ ï¿½ï¿½Ø—Tï¿½Hï¿½@2025/12/15
+// * \ì‹Æ“à—e: V‹Kì¬ —é–Ø—T‹H@2025/12/15
 /*********************************************************************/
 
 #include "playertanuki.h"
 #include "appframe.h"
 
-// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+// ‰Šú‰»
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
 	_handle = MV1LoadModel("res/Tanuki/anime_goepon_walk.mv1");
 	_iAttachIndex = -1;
-	// ï¿½Xï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½uï¿½ï¿½ï¿½ï¿½ï¿½vï¿½Éİ’ï¿½
+	// ƒXƒe[ƒ^ƒX‚ğu–³‚µv‚Éİ’è
 	_status = STATUS::NONE;
-	// ï¿½Äï¿½ï¿½ï¿½ï¿½Ô‚Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	// Ä¶ŠÔ‚Ì‰Šú‰»
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
-	// ï¿½Ê’uï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
+	// ˆÊ’uAŒü‚«‚Ì‰Šú‰»
 	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
-	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Íƒfï¿½tï¿½Hï¿½ï¿½ï¿½gï¿½ï¿½-Zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
-	// ï¿½ï¿½ï¿½Ê’uï¿½Ìİ’ï¿½
+	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// ƒLƒƒƒ‰ƒ‚ƒfƒ‹‚ÍƒfƒtƒHƒ‹ƒg‚Å-Z•ûŒü‚ğŒü‚¢‚Ä‚¢‚é
+	// ˜ˆÊ’u‚Ìİ’è
 	_fColSubY = 40.0f;
-	// ï¿½Rï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Ìİ’ï¿½
+	// ƒRƒŠƒWƒ‡ƒ“”¼Œa‚Ìİ’è
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
@@ -38,7 +38,7 @@ bool PlayerTanuki::Initialize()
 	return true;
 }
 
-// ï¿½Iï¿½ï¿½
+// I—¹
 bool PlayerTanuki::Terminate()
 {
 	base::Terminate();
@@ -46,32 +46,30 @@ bool PlayerTanuki::Terminate()
 	return true;
 }
 
-// ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+// ŒvZˆ—
 bool PlayerTanuki::Process()
 {
 	base::Process();
 
 	int key = ApplicationBase::GetInstance()->GetKey();
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ÌˆÊ’uï¿½ï¿½Û‘ï¿½
+	// ˆ—‘O‚ÌˆÊ’u‚ğ•Û‘¶
 	_vOldPos = _vPos;
 
-	// ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ÌƒXï¿½eï¿½[ï¿½^ï¿½Xï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+	// ˆ—‘O‚ÌƒXƒe[ƒ^ƒX‚ğ•Û‘¶‚µ‚Ä‚¨‚­
 	CharaBase::STATUS old_status = _status;
-	// ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß‚ï¿½
-	_v = { 0,0,0 };
+	vec::Vec3 v = { 0,0,0 };
+	float length = 0.0f;
 
-	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ÌŒï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½pï¿½xï¿½ï¿½æ“¾
+	// ƒJƒƒ‰‚ÌŒü‚¢‚Ä‚¢‚éŠp“x‚ğæ“¾
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
 	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
-	
 
-	//ï¿½ï¿½ï¿½Xï¿½eï¿½Bï¿½bï¿½Nï¿½l
+	// ƒLƒƒƒ‰ˆÚ“®(ƒJƒƒ‰İ’è‚É‡‚í‚¹‚Ä)
 	lStickX = fLx;
 	lStickZ = fLz;
 
-	// ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Ú“ï¿½(ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½Éï¿½ï¿½í‚¹ï¿½ï¿½)
 	VECTOR inputLocal = VGet(0.0f, 0.0f, 0.0f);
 	if (CheckHitKey(KEY_INPUT_UP))
 	{
@@ -89,36 +87,35 @@ bool PlayerTanuki::Process()
 	{
 		lStickX = 1.0f;
 	}
-
-	// ï¿½ï¿½ï¿½[ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Íƒxï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½vï¿½Z
 	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
 	float rad = atan2(lStickX, lStickZ);
-
-	// ï¿½fï¿½bï¿½hï¿½]ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	}
 	if (length < _fAnalogDeadZone)
 	{
 		length = 0.0f;
 	}
 
-	// ï¿½Aï¿½iï¿½ï¿½ï¿½Oï¿½Ú“ï¿½ï¿½xï¿½Nï¿½gï¿½ï¿½ï¿½iï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îj
+	// “ü—ÍƒxƒNƒgƒ‹‚ğ•Û‘¶iEscapeCollision‚Åg—pj
+	_vInput = inputLocal;
+
+	// ƒJƒƒ‰•ûŒü‚É‡‚í‚¹‚ÄˆÚ“®—Ê‚ğŒvZ
 	if (length > 0.0f)
 	{
-		// ï¿½ï¿½ï¿½xï¿½Íˆï¿½ï¿½iï¿½Kï¿½vï¿½È‚ï¿½ length ï¿½ğ‘¬“xï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½É‚Å‚ï¿½ï¿½ï¿½j
+		// ???x????i?K?v??? length ???x?X?P?[????????j
 		length = _fMvSpeed;
 		_v.x = cosf(rad + camrad) * length;
 		_v.z = sinf(rad + camrad) * length;
 
-		// ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½Vï¿½iï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
 		_vDir = _v;
-
 		_status = STATUS::WALK;
 	}
 	else
 	{
+		v = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
 	}
 
-	// ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ç—ï¿½
+	// ƒAƒjƒ[ƒVƒ‡ƒ“ŠÇ—
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
@@ -134,25 +131,60 @@ bool PlayerTanuki::Process()
 	{
 		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_handle, static_cast<int>(_iAttachIndex));
+			MV1DetachAnim(_iHandle, static_cast<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "goepon_walk"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "idle"), -1, FALSE));
 			break;
 		case STATUS::WALK:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "goepon_walk"), -1, FALSE));
+			_iAttachIndex = static_cast<float>(MV1AttachAnim(_iHandle, MV1GetAnimIndex(_iHandle, "walk"), -1, FALSE));
 			break;
 		}
-		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex)));
+		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_iHandle, static_cast<int>(_iAttachIndex)));
 		_fPlayTime = 0.0f;
 		switch(_status)
 		{
 		case STATUS::WAIT:
 			_fPlayTime += static_cast<float>(rand() % 30);
 			break;
+		}*/
+
+        if(_animId != -1)
+        {
+            AnimationManager::GetInstance()->Stop(_animId);
+            _animId = -1;
+        }
+
+        std::string anim_name;
+        switch(_status)
+        {
+        case STATUS::WAIT:
+            anim_name = "idle";
+            break;
+        case STATUS::WALK:
+            anim_name = "walk";
+            break;
+        default:
+            anim_name.clear();
+        }
+
+        if(!anim_name.empty())
+        {
+            _animId = AnimationManager::GetInstance()->Play(_iHandle, anim_name, true);
+            _fPlayTime = 0.0f;
+            switch(_status)
+            {
+            case STATUS::WAIT:
+                _fPlayTime += rand() % 30;
+                break;
+            }
+            if(_animId != -1)
+            {
+                AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+            }
 		}
 	}
 
@@ -161,13 +193,13 @@ bool PlayerTanuki::Process()
 		_fPlayTime = 0.0f;
 	}
 
-	// --- ï¿½ï¿½ï¿½ï¿½ï¿½Åï¿½ï¿½Û‚ÉˆÊ’uï¿½ÆƒJï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ---
+	// --- ‚±‚±‚ÅÀÛ‚ÉˆÊ’u‚ÆƒJƒƒ‰‚ğˆÚ“®‚³‚¹‚é ---
 	if(vec3::VSize(_v) > 0.0f)
 	{
-		// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌˆÊ’uï¿½ï¿½Ú“ï¿½
+		// ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğˆÚ“®
 		_vPos = vec3::VAdd(_vPos, _v);
 
-		// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ’è‚³ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ÎƒJï¿½ï¿½ï¿½ï¿½ï¿½Ê’uï¿½Íƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ê’u + ï¿½Iï¿½tï¿½Zï¿½bï¿½gï¿½Åİ’ï¿½iï¿½ï¿½ï¿½Zï¿½Í‚ï¿½ï¿½È‚ï¿½ï¿½j
+		// ƒJƒƒ‰‚ªİ’è‚³‚ê‚Ä‚¢‚ê‚ÎƒJƒƒ‰ˆÊ’u‚ÍƒvƒŒƒCƒ„[ˆÊ’u + ƒIƒtƒZƒbƒg‚Åİ’èi‰ÁZ‚Í‚µ‚È‚¢j
 		if(_cam != nullptr)
 		{
 			_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
@@ -178,20 +210,20 @@ bool PlayerTanuki::Process()
 	return true;
 }
 
-// ï¿½`ï¿½æˆï¿½ï¿½
+// •`‰æˆ—
 bool PlayerTanuki::Render()
 {
 	base::Render();
 
-	// ï¿½Äï¿½ï¿½ï¿½ï¿½Ô‚ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
-		// ï¿½Äï¿½ï¿½ï¿½ï¿½Ô‚ï¿½Zï¿½bï¿½gï¿½ï¿½ï¿½ï¿½
-	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
+	// Ä¶ŠÔ‚ğƒZƒbƒg‚·‚é
+		// Ä¶ŠÔ‚ğƒZƒbƒg‚·‚é
+	MV1SetAttachAnimTime(_iHandle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
 
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Å‚Ç‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Åï¿½ï¿½ï¿½ï¿½Ï‚ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½-zï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ê‡)
+	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ƒ‚ƒfƒ‹‚ª•W€‚Å‚Ç‚¿‚ç‚ğŒü‚¢‚Ä‚¢‚é‚©‚Å®‚ª•Ï‚í‚é(‚±‚ê‚Í-z‚ğŒü‚¢‚Ä‚¢‚éê‡)
 
 	MATRIX mRotY = MGetRotY(vorty);
 
-	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90ï¿½xï¿½iï¿½Kï¿½vï¿½É‰ï¿½ï¿½ï¿½ï¿½Ä•ï¿½ï¿½ï¿½ï¿½ğ”½“]ï¿½j
+	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90“xi•K—v‚É‰‚¶‚Ä•„†‚ğ”½“]j
 
 	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
 
@@ -204,10 +236,10 @@ bool PlayerTanuki::Render()
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);
 
-	MV1SetMatrix(_handle, m);
+	MV1SetMatrix(_iHandle, m);
 
-	// ï¿½`ï¿½ï¿½
-	MV1DrawModel(_handle);
+	// •`‰æ
+	MV1DrawModel(_iHandle);
 	
 	return true;
 }
