@@ -140,7 +140,7 @@ bool PlayerTanuki::Process()
             anim_name = "idle";
             break;
         case STATUS::WALK:
-            anim_name = "walk";
+            anim_name = "goepon_walk";
             break;
         default:
             anim_name.clear();
@@ -191,7 +191,7 @@ bool PlayerTanuki::Render()
 
 	// 再生時間をセットする
 		// 再生時間をセットする
-	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
+	//MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), static_cast<float>(_fPlayTime));
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 

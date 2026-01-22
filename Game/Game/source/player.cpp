@@ -360,7 +360,7 @@ bool Player::Render()
 {
 	base::Render();
 	// 再生時間をセットする
-	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
+	//MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
 	
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
