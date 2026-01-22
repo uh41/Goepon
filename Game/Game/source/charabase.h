@@ -36,9 +36,10 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	const vec::Vec3& GetPos() const { return _vPos; }
-	const vec::Vec3& GetOldPos() const { return _vOldPos; }
-	auto GetColSubY() const { return _fColSubY; }
+	const vec::Vec3& GetPos() const      { return _vPos;     }
+	const vec::Vec3& GetOldPos() const   { return _vOldPos;  }
+	void SetOldPos(const vec::Vec3& pos) { _vOldPos = pos;   }
+	auto GetColSubY() const              { return _fColSubY; }
 
 	const vec::Vec3& SetPos(const vec::Vec3& pos) { return _vPos = pos; }
 	const vec::Vec3& GetDir() const { return _vDir; }

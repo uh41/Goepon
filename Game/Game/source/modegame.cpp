@@ -286,10 +286,13 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
 	if(_bShowTanuki)
 	{
+		// 判定のために現在位置を「1フレーム前の位置」として保存しておく
+		_playerTanuki->SetOldPos(_playerTanuki->GetPos());
 		_playerTanuki->Process();
 	}
 	else
 	{
+		_player->SetOldPos(_player->GetPos());
 		_player->Process();
 	}
 
@@ -334,23 +337,27 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 		treasure->Process();
 	}
 
-	if(_d_use_collision)
+	
 	{
-		CharaBase* current = nullptr;
+		PlayerBase* current = nullptr;
 		if(_bShowTanuki)
 		{
-			current = static_cast<CharaBase*>(_playerTanuki.get());
+			current = static_cast<PlayerBase*>(_playerTanuki.get());
 		}
 		else
 		{
-			current = static_cast<CharaBase*>(_player.get());
+			current = static_cast<PlayerBase*>(_player.get());
 		}
-
-		// 判定前の座標退避は関数内で実施済み
-		for(auto& t : _treasure)
+		if(current && current->IsAlive())
 		{
-			// Treasure のハンドル取得は GetHandle() を使うよう、衝突関数側も修正してください
-			CharaToTreasureBoxCollision(current, t.get());
+			for(auto& t : _treasure)
+			{
+				Treasure* treasure = t.get();
+				if(!treasure) continue;
+				if(treasure->IsOpen()) continue; // 開いているならスキップ
+
+				CharaToTreasureBoxCollision(current, treasure);
+			}
 		}
 	}
 

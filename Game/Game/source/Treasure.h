@@ -22,6 +22,7 @@ public:
 	bool Process()    override; // 計算処理
 	bool Render()     override; // 描画処理
 
+	auto GetPos() const { return _vPos; }
 	// 宝箱の当たり判定用フレーム取得
 	auto GetHitCollisionFrame() const { return _hitCollisionFrame; }
 	// モデルハンドルを取得

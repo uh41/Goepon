@@ -26,8 +26,8 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 	gGlobal.Init();
 
 	// モードの登録
-	ModeServer::GetInstance()->Add(new ModeInit(), 2, "logo");
-	ModeServer::GetInstance()->Add(new ModeTitle(), 1, "title");
+	//ModeServer::GetInstance()->Add(new ModeInit(), 2, "logo");
+	//ModeServer::GetInstance()->Add(new ModeTitle(), 1, "title");
 	ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
 
 	return true;
