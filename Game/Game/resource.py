@@ -12,7 +12,7 @@ def generate_header():
 
         for file in files:
             if(file.endswith(".png")):
-                name_base = os.path.splitext(file)[0].lower()
+                name_base = os.path.splitext(file)[0]
                 var_name = f"{name_base}"
 
                 full_path = os.path.join(IMG_DIR, file)

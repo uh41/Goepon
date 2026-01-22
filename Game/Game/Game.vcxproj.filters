@@ -145,6 +145,9 @@
     <Filter Include="ヘッダー ファイル\タイトル">
       <UniqueIdentifier>{733e3e93-8702-4c5b-a889-9e3fe089104a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Python">
+      <UniqueIdentifier>{c292204e-bbf2-4b9d-ab91-4cf0aad432a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\modeeffekseer.h">
@@ -311,7 +314,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py">
-      <Filter>リソース ファイル</Filter>
+      <Filter>Python</Filter>
     </None>
   </ItemGroup>
 </Project>

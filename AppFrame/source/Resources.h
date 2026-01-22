@@ -2,7 +2,7 @@
 
 namespace img
 {
- inline constexpr const char* amglogo = "res/AMGlogo.png";
+ inline constexpr const char* AMGlogo = "res/AMGlogo.png";
  inline constexpr const char* cursor = "res/cursor.png";
  inline constexpr const char* shadow_ = "res/shadow_.png";
 }
