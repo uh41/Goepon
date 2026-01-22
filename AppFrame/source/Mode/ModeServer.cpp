@@ -217,19 +217,24 @@ const char *ModeServer::GetName(int uid)
 
 
 // プロセスを回すための初期化
-int ModeServer::ProcessInit() {
+int ModeServer::ProcessInit()
+{
 	// 削除予約されていたものを削除
-	if (_vModeDel.size() > 0) {
+	if (_vModeDel.size() > 0) 
+	{
 		lstModeBase::iterator ite = _vModeDel.begin();
-		for (; ite != _vModeDel.end(); ++ite) {
+		for (; ite != _vModeDel.end(); ++ite)
+		{
 			Release((*ite));
 		}
 		_vModeDel.clear();
 	}
 	// Add()されたものを有効にし、必要であればソートを行う
-	if (_vModeAdd.size() > 0) {
+	if (_vModeAdd.size() > 0)
+	{
 		lstModeBase::iterator ite = _vModeAdd.begin();
-		for (; ite != _vModeAdd.end(); ++ite) {
+		for (; ite != _vModeAdd.end(); ++ite)
+		{
 			(*ite)->Initialize();
 			_vMode.push_back((*ite));
 		}

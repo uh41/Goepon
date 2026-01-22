@@ -294,35 +294,25 @@ bool ModeGame::Process()
 		treasure->Process();
 	}
 
-	//if(_d_use_collision)
-	//{
-	//	CharaBase* current = nullptr;
-	//	if(_bShowTanuki)
-	//	{
-	//		current = static_cast<CharaBase*>(_playerTanuki.get());
-	//	}
-	//	else
-	//	{
-	//		current = static_cast<CharaBase*>(_player.get());
-	//	}
+	if(_d_use_collision)
+	{
+		CharaBase* current = nullptr;
+		if(_bShowTanuki)
+		{
+			current = static_cast<CharaBase*>(_playerTanuki.get());
+		}
+		else
+		{
+			current = static_cast<CharaBase*>(_player.get());
+		}
 
-	//	for(auto& t : _treasure)
-	//	{
-	//		// 1) 関数内で「元座標へ戻す」までやっている実装の場合
-	//		if(CharaToTreasureBoxCollision(current, t.get()))
-	//		{
-	//			// 必要なら追加処理（例：t->SetOpen(false);）
-	//			// break; // 最初のヒットのみ扱う場合
-	//		}
-
-	//		// 2) 呼び出し側で「元座標へ戻す」設計の場合はこう呼ぶ
-	//		// const vec::Vec3 oldPos = current->GetPos();
-	//		// if(CharaToTreasureBoxCollision(current, t.get()))
-	//		// {
-	//		//     current->SetPos(oldPos); // 壁のように元の座標へ戻す
-	//		// }
-	//	}
-	//}
+		// 判定前の座標退避は関数内で実施済み
+		for(auto& t : _treasure)
+		{
+			// Treasure のハンドル取得は GetHandle() を使うよう、衝突関数側も修正してください
+			CharaToTreasureBoxCollision(current, t.get());
+		}
+	}
 
 	// UI処理
 	for(auto& ui_base : _uiBase)
@@ -408,8 +398,7 @@ bool ModeGame::Render()
 			}
 		}
 	}
-
-
+	
 	// UIを描画
 	for(auto& ui_base : _uiBase)
 	{

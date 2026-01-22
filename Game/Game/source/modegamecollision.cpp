@@ -157,8 +157,19 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	return true;
 }
 
-bool CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
+bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 {
+	// 引数チェック
+	if(!chara || !treasure) { return false; }
+
+	// 宝箱のモデル/フレーム有効チェック
+	int modelHandle = treasure->GetModelHandle();
+	int frameIndex = treasure->GetHitCollisionFrame();
+	if(modelHandle < 0 || frameIndex < 0)
+	{
+		return false;
+	}
+
 	// 判定前の座標
 	const vec::Vec3 oldPos = chara->GetPos();
 
@@ -172,8 +183,8 @@ bool CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 	//宝の当たり判定フレームに対してカプセル判定
 	MV1_COLL_RESULT_POLY_DIM hit = MV1CollCheck_Capsule
 	(
-		treasure->GetModelHandle(),
-		treasure->GetHitCollisionFrame(),
+		modelHandle,
+		frameIndex,
 		capTop,
 		capBottom,
 		rad
@@ -186,11 +197,7 @@ bool CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 	//ヒットしたので元の位置に戻す
 	chara->SetPos(oldPos);
 
-	//// 必要ならデバッグ表示
-	//if(_d_view_collision)
-	//{
-	//	DrawSphere3D(hit.HitPosition, 10.0f, 8, GetColor(255, 215, 0), TRUE);
-	//}
+	return true;
 }
 
 // キャラ同士の押し出し処理
