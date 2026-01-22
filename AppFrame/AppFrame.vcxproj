@@ -174,6 +174,7 @@
     <ClInclude Include="source\mymath\vectorconverter.h" />
     <ClInclude Include="source\navi\navi.h" />
     <ClInclude Include="source\navi\navigationmesh.h" />
+    <ClInclude Include="source\Resources.h" />
     <ClInclude Include="source\resource\ResourceServer.h" />
     <ClInclude Include="source\mymath\mysegment.h" />
     <ClInclude Include="source\mymath\vector3.h" />
@@ -201,9 +202,6 @@
     <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="source\test.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

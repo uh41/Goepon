@@ -312,29 +312,6 @@ bool Player::Process()
 	}
 	else
 	{
-		if(_iAttachIndex != -1)
-		{
-			MV1DetachAnim(_handle, static_cast<int>(_iAttachIndex));
-			_iAttachIndex = -1;
-		}
-		switch(_status)
-		{
-		case STATUS::WAIT:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "mot_attack_charge_loop"), -1, FALSE));
-			break;
-		case STATUS::WALK:
-			_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "mot_move_run"), -1, FALSE));
-			break;
-		}
-		_fTotalTime = static_cast<float>(MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex)));
-		_fPlayTime = 0.0f;
-		switch(_status)
-		{
-		case STATUS::WAIT:
-			_fPlayTime += rand() % 30;
-			break;
-		}
-
         if(_animId != -1)
         {
             AnimationManager::GetInstance()->Stop(_animId);
