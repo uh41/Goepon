@@ -58,7 +58,7 @@ bool PlayerTanuki::Process()
 
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
-	vec::Vec3 v = { 0,0,0 };
+	//vec::Vec3 v = { 0,0,0 };
 
 	// カメラの向いている角度を取得
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
@@ -108,7 +108,7 @@ bool PlayerTanuki::Process()
 	}
 	else
 	{
-		v = vec3::VGet(0.0f, 0.0f, 0.0f);
+		_v = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
 	}
 
