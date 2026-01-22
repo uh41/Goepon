@@ -344,31 +344,41 @@ bool ModeGame::Process()
 	// 	...
 	// 当たり判定の処理をここに書く
 	
-	// エネミーとプレイヤーの当たり判定処理（両方チェック版）
+	// エネミーとプレイヤーの当たり判定処理（現在表示中のプレイヤーのみ）
 	for (auto& enemy : _enemy)
 	{
 		if (enemy->IsAlive())
 		{
 			bool hitDetected = false;
+			PlayerBase* currentPlayer = nullptr;
 
-			// 人間プレイヤーとの当たり判定
-			if (_player && _player->IsAlive() && CharaToCharaCollision(_player.get(), enemy.get()))
+			// 現在表示中のプレイヤーを取得
+			if (_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
 			{
-				OutputDebugStringA("エネミーが人間プレイヤーに触れました！\n");
-				hitDetected = true;
+				currentPlayer = _playerTanuki.get();
+			}
+			else if (!_bShowTanuki && _player && _player->IsAlive())
+			{
+				currentPlayer = _player.get();
 			}
 
-			// タヌキプレイヤーとの当たり判定
-			if (_playerTanuki && _playerTanuki->IsAlive() && CharaToCharaCollision(_playerTanuki.get(), enemy.get()))
+			// 現在のプレイヤーとの当たり判定チェック
+			if (currentPlayer && CharaToCharaCollision(currentPlayer, enemy.get()))
 			{
-				OutputDebugStringA("エネミーがタヌキプレイヤーに触れました！\n");
+				if (_bShowTanuki)
+				{
+					OutputDebugStringA("エネミーがタヌキプレイヤーに触れました！\n");
+				}
+				else
+				{
+					OutputDebugStringA("エネミーが人間プレイヤーに触れました！\n");
+				}
 				hitDetected = true;
 			}
 
 			// 当たり判定が発生した場合の共通処理
 			if (hitDetected)
 			{
-				// 共通の処理をここに書く
 				// YouDiedメッセージを表示
 				enemy->TriggerYouDiedMessage();
 			}
