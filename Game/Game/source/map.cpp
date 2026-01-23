@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 4;
 
 	if(MAP_SELECT == 0)
 	{
@@ -115,6 +115,17 @@ bool Map::Initialize()
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
+	else if (MAP_SELECT == 4)
+	{
+		// フィールド
+		_iHandleMap = MV1LoadModel("res/Dungeon/Dungeon.mv1");
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "dungeon_collision");
+
+		// コリジョン情報の生成
+		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
+		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
+	}
+
 	// コリジョン情報の生成
 	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
 	// コリジョンのフレームを描画しない設定

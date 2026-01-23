@@ -211,16 +211,62 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 		return false; // 角度範囲外
 	}
 
-	// 床の存在チェック - プレイヤーの足元に床があるかを確認
+	// プレイヤー位置の床存在チェック
 	if (!CheckFloorExistence(playerPos))
 	{
-		return false; // 床がない位置は検出対象外
+		return false; // プレイヤー位置に床がない場合は検出対象外
+	}
+
+	// 敵からプレイヤーまでの経路上の床存在チェック
+	if (!CheckPathFloorExistence(_vPos, playerPos))
+	{
+		return false; // 経路上に床がない部分がある場合は検出対象外
 	}
 
 	return true;
-	//return angleDeg <= halfAngle;
 }
 
+// 敵からプレイヤーまでの経路上の床存在をチェックする関数
+bool EnemySensor::CheckPathFloorExistence(const vec::Vec3& startPos, const vec::Vec3& endPos) const
+{
+	// マップが設定されていない場合は床があるものとして処理
+	if (!_map)
+	{
+		return true;
+	}
+
+	// 経路上をサンプリングしてチェックする間隔
+	const float checkInterval = 50.0f; // 50単位間隔でチェック
+
+	// 開始位置から終了位置への方向ベクトル
+	vec::Vec3 direction = vec3::VSub(endPos, startPos);
+	float totalDistance = vec3::VSize(direction);
+
+	// 距離が短い場合は単一点チェックで十分
+	if (totalDistance < checkInterval)
+	{
+		return CheckFloorExistence(startPos) && CheckFloorExistence(endPos);
+	}
+
+	// 正規化された方向ベクトル
+	vec::Vec3 normalizedDir = vec3::VNorm(direction);
+
+	// 経路上の各点で床の存在をチェック
+	for (float currentDistance = 0.0f; currentDistance <= totalDistance; currentDistance += checkInterval)
+	{
+		// チェック位置を計算
+		vec::Vec3 checkPos = vec3::VAdd(startPos, vec3::VScale(normalizedDir, currentDistance));
+
+		// この位置で床の存在をチェック
+		if (!CheckFloorExistence(checkPos))
+		{
+			return false; // 床がない位置を発見
+		}
+	}
+
+	// 最終位置もチェック（間隔の関係で最終位置がチェックされていない可能性があるため）
+	return CheckFloorExistence(endPos);
+}
 // 床の存在を確認する関数
 bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 {

@@ -86,5 +86,8 @@ protected:
 	// 床の存在を確認する関数
 	bool CheckFloorExistence(const vec::Vec3& position) const;
 
+	// 敵からプレイヤーまでの経路上の床存在をチェックする関数
+	bool CheckPathFloorExistence(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
+
 	Map* _map;
 };
