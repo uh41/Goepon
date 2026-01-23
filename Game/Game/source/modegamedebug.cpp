@@ -125,6 +125,37 @@ bool ModeGame::DebugRender()
 		}
 	}
 
+	if(_bShowTanuki && _d_view_collision)
+	{
+		// タヌキプレイヤーの参照を取得
+		if(_playerTanuki)
+		{
+			PlayerBase* p = _playerTanuki.get();
+			if(p && p->IsAlive())
+			{
+				// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
+				vec::Vec3 currentPos = p->GetPos();
+				float rad = static_cast<float>(p->GetCollisionR());
+				float half = p->GetColSubY();
+
+				// カプセルの上下端を計算
+				vec::Vec3 capTop    = vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f));
+				vec::Vec3 capBottom = vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f));
+
+				// DxLib の描画用に変換
+				VECTOR top = DxlibConverter::VecToDxLib(capTop);
+				VECTOR bottom = DxlibConverter::VecToDxLib(capBottom);
+
+				int color = GetColor(0, 255, 255); // シアン
+
+				// カプセルの描画
+				const int divNum = 16; // 分割数（見た目の滑らかさ）
+				DrawCapsule3D(top, bottom, rad, divNum, color, color, TRUE);
+			}
+		}
+	}
+
+
 	// シャドウマップの表示
 	if(_d_view_shadow_map)
 	{
@@ -135,6 +166,8 @@ bool ModeGame::DebugRender()
 	{
 		_camera->Render();
 	}
+
+	
 	return true;
 }
 
