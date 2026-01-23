@@ -157,6 +157,72 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	return true;
 }
 
+bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
+{
+	// 無効チェック
+	//if(!chara || !treasure || treasure->IsOpen() || !_d_use_collision)
+	if(!chara || !treasure || treasure->IsOpen())
+	{
+		return false;
+	}
+
+	// 宝箱のモデル/フレーム有効チェック
+	int modelHandle = treasure->GetModelHandle();
+	int frameIndex  = treasure->GetHitCollisionFrame();
+
+	// 無効なら終了
+	if(modelHandle < 0 || frameIndex < 0)
+	{
+		return false;
+	}
+	
+	// キャラクターの現在位置と半径
+	const vec::Vec3 currentPos = chara->GetPos();
+	float rad = static_cast<float>(chara->GetCollisionR());
+	float half = chara->GetColSubY();
+
+	// カプセルの上下端を計算
+	VECTOR capTop = DxlibConverter::VecToDxLib(vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f)));
+	VECTOR capBottom = DxlibConverter::VecToDxLib(vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f)));
+
+	//宝の当たり判定フレームに対してカプセル判定
+	MV1_COLL_RESULT_POLY_DIM hit = MV1CollCheck_Capsule
+	(
+		modelHandle,
+		frameIndex,
+		capTop,
+		capBottom,
+		rad
+	);
+
+	// ヒットしなかった
+	if(hit.HitNum == 0)
+	{
+		MV1CollResultPolyDimTerminate(hit); // メモリ開放
+		return false;
+	}
+
+	// ヒットしたので元の位置に戻す
+	// まず現在位置を取得（カメラ補正用）
+	vec::Vec3 oldPos  = chara->GetPos();
+	vec::Vec3 moveVec = vec3::VSub(currentPos, oldPos);
+
+	// ヒットしたポリゴンの法線ベクトルを取得
+	chara->SetPos(oldPos);
+
+	// カメラの補正
+	if(_camera)
+	{
+		vec::Vec3 canDelta = vec3::VSub(oldPos, currentPos);
+		_camera->_vPos = vec3::VAdd(_camera->_vPos, canDelta);
+		_camera->_vTarget = vec3::VAdd(_camera->_vTarget, canDelta);
+	}
+
+	// メモリ開放
+	MV1CollResultPolyDimTerminate(hit);
+	return true;
+}
+
 // キャラ同士の押し出し処理
 bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 {

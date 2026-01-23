@@ -286,10 +286,13 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
 	if(_bShowTanuki)
 	{
+		// 判定のために現在位置を「1フレーム前の位置」として保存しておく
+		_playerTanuki->SetOldPos(_playerTanuki->GetPos());
 		_playerTanuki->Process();
 	}
 	else
 	{
+		_player->SetOldPos(_player->GetPos());
 		_player->Process();
 	}
 
@@ -328,9 +331,34 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 		object->Process();
 	}
 
+	// 宝箱処理
 	for(auto& treasure : _treasure)
 	{
 		treasure->Process();
+	}
+
+	
+	{
+		PlayerBase* current = nullptr;
+		if(_bShowTanuki)
+		{
+			current = static_cast<PlayerBase*>(_playerTanuki.get());
+		}
+		else
+		{
+			current = static_cast<PlayerBase*>(_player.get());
+		}
+		if(current && current->IsAlive())
+		{
+			for(auto& t : _treasure)
+			{
+				Treasure* treasure = t.get();
+				if(!treasure) continue;
+				if(treasure->IsOpen()) continue; // 開いているならスキップ
+
+				CharaToTreasureBoxCollision(current, treasure);
+			}
+		}
 	}
 
 	// UI処理
@@ -437,8 +465,7 @@ bool ModeGame::Render()
 			}
 		}
 	}
-
-
+	
 	// UIを描画
 	for(auto& ui_base : _uiBase)
 	{
