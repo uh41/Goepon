@@ -12,7 +12,7 @@ def generate_header():
 
         for file in files:
             if(file.endswith(".png")):
-                name_base = os.path.splitext(file)[0].lower()
+                name_base = os.path.splitext(file)[0]
                 var_name = f"{name_base}"
 
                 full_path = os.path.join(IMG_DIR, file)
@@ -25,12 +25,11 @@ def generate_header():
         for root, dirs, files in os.walk(IMG_DIR):
             for file in files:
                 if(file.endswith(".mv1")):
-                    name_base = os.path.splitext(file)[0].lower()
-                    var_name = f"{name_base}"
-
+                    name_base = os.path.splitext(file)[0]
                     full_path = os.path.join(root, file)
                     rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
-                    f.write(f' inline constexpr const char* {var_name} = "{rel_path}";\n')
+                    
+                    f.write(f' inline constexpr const char* {name_base} = "res/{rel_path}";\n')
         f.write("}\n")
 
 generate_header()
