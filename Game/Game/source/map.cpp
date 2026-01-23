@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 2;
 
 	if(MAP_SELECT == 0)
 	{

@@ -54,11 +54,21 @@ bool ModeGame::DebugProcess()
 	if(_d_view_collision)
 	{
 			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), TRUE);
-		
 	}
 	else
 	{
 			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), FALSE);
+	}
+
+	for(auto& t : _treasure)
+	{
+		if(!t) continue;
+		int h = t->GetModelHandle();
+		int hf = t->GetHitCollisionFrame();
+		if(h >= 0 && hf >= 0)
+		{
+			MV1SetFrameVisible(h, hf, _d_view_collision ? TRUE : FALSE);
+		}
 	}
 
 	return true;
@@ -125,6 +135,7 @@ bool ModeGame::DebugRender()
 		}
 	}
 
+	// タヌキプレイヤーのカプセル当たり判定を表示
 	if(_bShowTanuki && _d_view_collision)
 	{
 		// タヌキプレイヤーの参照を取得
@@ -135,15 +146,15 @@ bool ModeGame::DebugRender()
 			{
 				// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
 				vec::Vec3 currentPos = p->GetPos();
-				float rad = static_cast<float>(p->GetCollisionR());
-				float half = p->GetColSubY();
+				float rad            = static_cast<float>(p->GetCollisionR());
+				float half           = p->GetColSubY();
 
 				// カプセルの上下端を計算
 				vec::Vec3 capTop    = vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f));
 				vec::Vec3 capBottom = vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f));
 
 				// DxLib の描画用に変換
-				VECTOR top = DxlibConverter::VecToDxLib(capTop);
+				VECTOR top    = DxlibConverter::VecToDxLib(capTop);
 				VECTOR bottom = DxlibConverter::VecToDxLib(capBottom);
 
 				int color = GetColor(0, 255, 255); // シアン
