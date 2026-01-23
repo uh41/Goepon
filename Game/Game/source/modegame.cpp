@@ -337,7 +337,7 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 		treasure->Process();
 	}
 
-	
+	// 宝箱との当たり判定処理
 	{
 		PlayerBase* current = nullptr;
 		if(_bShowTanuki)
@@ -356,10 +356,36 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 				if(!treasure) continue;
 				if(treasure->IsOpen()) continue; // 開いているならスキップ
 
-				CharaToTreasureBoxCollision(current, treasure);
+				CharaToTreasureHitCollision(current, treasure);
 			}
 		}
 	}
+
+	// 宝箱を開ける
+	//{
+	//	PlayerBase* current = nullptr;
+	//	if (_bShowTanuki)
+	//	{
+	//		current = static_cast<PlayerBase*>(_playerTanuki.get());
+	//	}
+	//	else
+	//	{
+	//		current = static_cast<PlayerBase*>(_player.get());
+	//	}
+
+	//	if (current && current->IsAlive())
+	//	{
+	//		for (auto& t : _treasure)
+	//		{
+	//			Treasure* treasure = t.get();
+	//			if (!treasure) continue;
+	//			if (treasure->IsOpen()) continue;
+
+	//			// 当たり判定＋Aボタンで開ける処理（内部でキー入力をチェックする）
+	//			CharaToTreasureOpenCollision(current, treasure);
+	//		}
+	//	}
+	//}
 
 	// UI処理
 	for(auto& ui_base : _uiBase)

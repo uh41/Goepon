@@ -5,9 +5,11 @@ bool Treasure::Initialize()
 {
 	base::Initialize();
 	// モデル, コリジョンの読み込み
-	_handle            = MV1LoadModel("res/Treasure/tuzura_02.mv1");
-	_hitCollisionFrame = MV1SearchFrame(_handle, "Collision_04");
-	_attachIndex	   = -1;
+	_handle             = MV1LoadModel("res/Treasure/tuzura_02.mv1");
+	_hitCollisionFrame  = MV1SearchFrame(_handle, "Collision_04");
+	_openCollisionFrame = MV1SearchFrame(_handle, "Collision_05");
+
+	_attachIndex	    = -1;
 	// 宝箱の状態を「無し」に設定
 	_objStatus = OBJSTATUS::NONE;
 	// 宝箱の位置、向きの初期化
@@ -17,6 +19,10 @@ bool Treasure::Initialize()
 	// 当たり判定の生成と当たり判定フレームの非表示
 	MV1SetupCollInfo  (_handle, _hitCollisionFrame, 16, 16, 16);
 	MV1SetFrameVisible(_handle, _hitCollisionFrame, FALSE     );
+
+	// 開く判定の生成と当たり判定のフレームの非表示
+	MV1SetupCollInfo  (_handle, _openCollisionFrame, 16, 16, 16);
+	MV1SetFrameVisible(_handle, _openCollisionFrame, FALSE     );
 
 	// 宝箱は最初開いていない
 	_isOpen = false;

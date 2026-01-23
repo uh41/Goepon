@@ -150,14 +150,15 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 			(stop->GetPos().z + move->GetPos().z) / 2);
 		float halfSize = 8.0f;
 		VECTOR aBox = VAdd(mid, VGet(-halfSize, -halfSize, -halfSize));
-		VECTOR bBox = VAdd(mid, VGet(halfSize, halfSize, halfSize));
+		VECTOR bBox = VAdd(mid, VGet( halfSize,  halfSize,  halfSize));
 		DrawCube3D(aBox, bBox, GetColor(255, 0, 255), TRUE, FALSE);
 	}
 
 	return true;
 }
 
-bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
+// キャラと宝箱の当たり判定処理
+bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
 {
 	// 無効チェック
 	//if(!chara || !treasure || treasure->IsOpen() || !_d_use_collision)
@@ -178,15 +179,16 @@ bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 	
 	// キャラクターの現在位置と半径
 	const vec::Vec3 currentPos = chara->GetPos();
-	float rad = static_cast<float>(chara->GetCollisionR());
+	float rad  = static_cast<float>(chara->GetCollisionR());
 	float half = chara->GetColSubY();
 
 	// カプセルの上下端を計算
-	VECTOR capTop = DxlibConverter::VecToDxLib(vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f)));
-	VECTOR capBottom = DxlibConverter::VecToDxLib(vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f)));
+	vec::Vec3 capTop    = vec3::VAdd(currentPos, vec3::VGet(0.0f,  half, 0.0f));
+	vec::Vec3 capBottom = vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f));
 
 	//宝の当たり判定フレームに対してカプセル判定
-	MV1_COLL_RESULT_POLY_DIM hit = MV1CollCheck_Capsule
+	MV1_COLL_RESULT_POLY_DIM hit;
+	hit = DxlibConverter::HitCapsuleToCollision
 	(
 		modelHandle,
 		frameIndex,
@@ -198,6 +200,15 @@ bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 	// ヒットしなかった
 	if(hit.HitNum == 0)
 	{
+		if(_d_view_collision)
+		{
+			VECTOR center = DxlibConverter::VecToDxLib(currentPos);
+			float halfSize = max(rad, half); 
+			VECTOR aBox = VAdd(center, VGet(-halfSize, -halfSize, -halfSize));
+			VECTOR bBox = VAdd(center, VGet( halfSize,  halfSize,  halfSize));
+			DrawCube3D(aBox, bBox, GetColor(255, 0, 0), TRUE, TRUE);
+		}
+		
 		MV1CollResultPolyDimTerminate(hit); // メモリ開放
 		return false;
 	}
@@ -207,8 +218,17 @@ bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 	vec::Vec3 oldPos  = chara->GetPos();
 	vec::Vec3 moveVec = vec3::VSub(currentPos, oldPos);
 
-	// ヒットしたポリゴンの法線ベクトルを取得
+	// ヒットした
 	chara->SetPos(oldPos);
+
+	if (_d_view_collision)
+	{
+		VECTOR center = DxlibConverter::VecToDxLib(currentPos);
+		float halfSize = max(rad, half);
+		VECTOR aBox = VAdd(center, VGet(-halfSize, -halfSize, -halfSize));
+		VECTOR bBox = VAdd(center, VGet(halfSize, halfSize, halfSize));
+		DrawCube3D(aBox, bBox, GetColor(0, 255, 0), TRUE, TRUE);
+	}
 
 	// カメラの補正
 	if(_camera)
@@ -219,6 +239,60 @@ bool ModeGame::CharaToTreasureBoxCollision(CharaBase* chara, Treasure* treasure)
 	}
 
 	// メモリ開放
+	MV1CollResultPolyDimTerminate(hit);
+	return true;
+}
+
+bool ModeGame::CharaToTreasureOpenCollision(CharaBase* chara, Treasure* treasure)
+{
+	// 無効チェック
+	if (!chara || !treasure || treasure->IsOpen())
+	{
+		return false;
+	}
+
+	// 宝箱のモデルとフレーム有効チェック	
+	int modelHandle = treasure->GetModelHandle();
+	int frameIndex  = treasure->GetHitCollisionFrame();
+
+	// 無効なら終了
+	if (modelHandle < 0 || frameIndex < 0)
+	{
+		return false;
+	}
+	// キャラクターの現在位置と半径
+	const vec::Vec3 currentPos = chara->GetPos();
+	float rad = static_cast<float>(chara->GetCollisionR());
+	float half = chara->GetColSubY();
+
+	// カプセルの上下端を計算
+	vec::Vec3 capTop    = vec3::VAdd(currentPos, vec::Vec3(0.0f, half, 0.0f));
+	vec::Vec3 capBottom = vec3::VAdd(currentPos, vec::Vec3(0.0f, -half, 0.0f));
+
+	//宝の当たり判定フレームに対してカプセル判定
+	MV1_COLL_RESULT_POLY_DIM hit;
+	hit = DxlibConverter::HitCapsuleToCollision
+	(
+		modelHandle,
+		frameIndex,
+		capTop,
+		capBottom,
+		rad
+	);
+
+	// ヒットしなかった
+	if(hit.HitNum = 0)
+	{
+		MV1CollResultPolyDimTerminate(hit);
+		return false;
+	}
+
+	// ヒットしたのでAボタンで宝箱を開ける
+	if(CheckHitKey(KEY_INPUT_A))
+	{
+		treasure->SetOpen(true);
+	}
+	
 	MV1CollResultPolyDimTerminate(hit);
 	return true;
 }

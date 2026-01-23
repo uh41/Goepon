@@ -64,8 +64,11 @@ public:
 	bool EscapeCollision(PlayerBase* player);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
 
-	// 索敵範囲の当たり判定
+	// 宝箱とキャラクターの当たり判定と開ける判定の処理
+	bool CharaToTreasureHitCollision (CharaBase* chara, Treasure* treasure);
+	bool CharaToTreasureOpenCollision(CharaBase* chara, Treasure* treasure);
 
+	// 索敵範囲の当たり判定
 	bool IsPlayerInBackSector(CharaBase* c1, PlayerBase* c2, float halfAngle, float rad);
 	
 	// デバック関数

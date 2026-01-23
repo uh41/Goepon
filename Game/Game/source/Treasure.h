@@ -35,7 +35,8 @@ public:
 
 protected:
 	int _handle;                 // モデルハンドル
-	int _hitCollisionFrame; // 宝箱の当たり判定用フレーム
+	int _hitCollisionFrame;      // 宝箱の当たり判定用フレーム
+	int _openCollisionFrame;     // 宝箱開閉用フレーム
 	int _attachIndex;            // アタッチアニメーションインデックス
 	bool _isOpen;	             // 宝箱が開いているかどうか
 };
