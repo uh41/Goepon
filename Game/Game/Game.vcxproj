@@ -173,7 +173,7 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>py "$(ProjectDir)resource.py"</Command>
+      <Command>"$(ProjectDir)include\Python314\python.exe" "$(ProjectDir)resource.py"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -197,7 +197,7 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>py "$(ProjectDir)resource.py"</Command>
+      <Command>"$(ProjectDir)include\Python314\python.exe" "$(ProjectDir)resource.py"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -219,7 +219,7 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>py "$(ProjectDir)resource.py"</Command>
+      <Command>"$(ProjectDir)include\Python314\python.exe" "$(ProjectDir)resource.py"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -243,7 +243,7 @@
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>py "$(ProjectDir)resource.py"</Command>
+      <Command>"$(ProjectDir)include\Python314\python.exe" "$(ProjectDir)resource.py"</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
