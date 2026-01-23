@@ -80,6 +80,7 @@ bool ModeGame::Initialize()
 	_enemySensor->Initialize();
 	_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
 	_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
+	_enemySensor->SetMap(_map.get()); // マップへの参照を設定
 
 	// エネミーにセンサーを設定
 	for (auto& enemy : _enemy)

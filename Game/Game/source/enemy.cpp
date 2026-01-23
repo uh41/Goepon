@@ -24,8 +24,8 @@ bool Enemy::Initialize()
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
-	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	_vPos = vec3::VGet(-700.0f, 0.0f, -500.0f);
+	_vDir = vec3::VGet(1.0f, 0.0f, 0.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定

@@ -2,6 +2,8 @@
 #include "enemybase.h"
 #include "playerbase.h"
 
+class Map; // 前方宣言
+
 // 索敵範囲の情報を格納する構造体
 struct DetectionSector
 {
@@ -61,6 +63,9 @@ public:
 	// 検出UI表示
 	void RenderDetectionUI() const;
 
+	// Mapクラスへの参照を設定
+	void SetMap(Map* map) { _map = map; }
+
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
 	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
@@ -78,4 +83,8 @@ protected:
 	void UpdateDetectionTimer();		  // 検出タイマーの更新
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
+	// 床の存在を確認する関数
+	bool CheckFloorExistence(const vec::Vec3& position) const;
+
+	Map* _map;
 };

@@ -19,13 +19,13 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 2;
+	constexpr int MAP_SELECT = 0;
 
 	if(MAP_SELECT == 0)
 	{
 		// ダンジョン
-		_iHandleMap = MV1LoadModel("res/Dungeon/Dungeon.mv1");
-		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "dungeon_collision");
+		_iHandleMap = MV1LoadModel("res/map/SM_map.mv1");
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "pPlane1");
 
 		// コリジョン情報の生成
 		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
