@@ -36,6 +36,35 @@ bool CharaBase::Terminate()
 	return true;
 }
 
+void CharaBase::PlayAnimation(std::string name, bool loop)
+{
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->Stop(_animId);
+		_animId = -1;
+	}
+
+	if(_handle == -1 || name.empty())
+	{
+		return;
+	}
+
+	_animId = AnimationManager::GetInstance()->Play(_handle, name, loop);
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->SetTime(_animId, 0.0f);
+	}
+}
+
+void CharaBase::StopAnimation()
+{
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->Stop(_animId);
+		_animId = -1;
+	}
+}
+
 // 計算処理
 bool CharaBase::Process()
 {

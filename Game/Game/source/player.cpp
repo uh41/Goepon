@@ -128,19 +128,19 @@ bool Player::Process()
 	    // 操作
 		if (CheckHitKey(KEY_INPUT_UP))
 		{
-			lStickZ = -1.0f;
+			inputLocal.z = -1.0f;
 		}
 		if (CheckHitKey(KEY_INPUT_DOWN))
 		{
-			lStickZ = 1.0f;
+			inputLocal.z = 1.0f;
 		}
 		if (CheckHitKey(KEY_INPUT_LEFT))
 		{
-			lStickX = -1.0f;
+			inputLocal.x = -1.0f;
 		}
 		if (CheckHitKey(KEY_INPUT_RIGHT))
 		{
-			lStickX = 1.0f;
+			inputLocal.x = 1.0f;
 		}
 
 		// ローカル入力ベクトルを計算

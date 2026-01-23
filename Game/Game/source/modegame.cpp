@@ -343,6 +343,26 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 	// 	...
 	// 当たり判定の処理をここに書く
 	
+	if(trg & PAD_INPUT_2)
+	{
+		PlayerBase* player = _playerTanuki.get();
+
+		float halfAngle = DEG2RAD(60.0f); // 60度
+		float rad = 120.0f; // 半径100
+
+		for(auto& enemy : _enemy)
+		{
+			if(!enemy->IsAlive()) { continue; }
+
+			if(IsPlayerInBackSector(enemy.get(), player, halfAngle, rad))
+			{
+				player->PlayAnimation("goepon_walk", true);
+				enemy->PlayAnimation("taiki", true);
+
+				break;
+			}
+		}
+	}
 
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
