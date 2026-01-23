@@ -113,4 +113,20 @@ void CollisionManager::RenderDebug(unsigned int r, unsigned int g, unsigned int 
 		sector.pos.y,
 		sector.pos.z + sinf(a1) * sector.rad
 	);
+
+	// îŒ`‚Ì‰~ŒÊ‚ğ•`‰æ
+	for(int i = 0; i <= segment; ++i)
+	{
+		float angle = a1 + (a2 - a1) * (static_cast<float>(i) / static_cast<float>(segment));
+		// ‰~ŒÊã‚ÌŒ»İ‚Ì“_
+		vec::Vec3 curPos = vec3::VGet(
+			sector.pos.x + cosf(angle) * sector.rad,
+			sector.pos.y,
+			sector.pos.z + sinf(angle) * sector.rad
+		);
+		DxlibConverter::DrawLine3D(pos, curPos, secColor);
+		pos = curPos;
+	}
+
+	// 
 }
