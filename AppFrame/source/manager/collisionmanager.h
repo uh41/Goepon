@@ -95,16 +95,29 @@ public:
 		const vec::Vec3& targetpos
 	);
 
-	// ‰~‚ÆˆÊ’u‚Ì“–‚½‚è”»’è
-	// \param circlepos ‰~‚Ì’†SˆÊ’u
-	// \param circlerad ‰~‚Ì”¼Œa
-	// \param targetpos ‘ÎÛ‚ÌˆÊ’u
-	// \return “–‚½‚Á‚Ä‚¢‚éê‡true
-	bool CheckCircleToPosition(
-		const vec::Vec3& cirpos,
-		float cirrad,
-		const vec::Vec3& targetpos
-	);
+	//// ‰~‚ÆˆÊ’u‚Ì“–‚½‚è”»’è
+	//// \param circlepos ‰~‚Ì’†SˆÊ’u
+	//// \param circlerad ‰~‚Ì”¼Œa
+	//// \param targetpos ‘ÎÛ‚ÌˆÊ’u
+	//// \return “–‚½‚Á‚Ä‚¢‚éê‡true
+	//bool CheckCircleToPosition(
+	//	const vec::Vec3& cirpos,
+	//	float cirrad,
+	//	const vec::Vec3& targetpos
+	//);
+
+	//// ‰~‚Æ‰~‚Ì“–‚½‚è”»’è
+	//// \param cir1pos ‰~1‚Ì’†SˆÊ’u
+	//// \param cir1rad ‰~1‚Ì”¼Œa
+	//// \param cir2pos ‰~2‚Ì’†SˆÊ’u
+	//// \param cir2rad ‰~2‚Ì”¼Œa
+	//// \return “–‚½‚Á‚Ä‚¢‚éê‡true
+	//bool CheckCircleToCircle(
+	//	const vec::Vec3& cir1pos,
+	//	float cir1rad,
+	//	const vec::Vec3& cir2pos,
+	//	float cir2rad
+	//);
 
 	void SetDebugDraw(bool enable) { _debugDraw = enable; }
 	bool GetDebugDraw() const { return _debugDraw; }

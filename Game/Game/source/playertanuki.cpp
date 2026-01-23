@@ -31,7 +31,7 @@ bool PlayerTanuki::Initialize()
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
-	_fMvSpeed = 6.0f;
+	_fMvSpeed = 10.0f;
 
 	_bLand = true;
 
@@ -72,20 +72,24 @@ bool PlayerTanuki::Process()
 	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 	if (CheckHitKey(KEY_INPUT_UP))
 	{
-		lStickZ = -1.0f;
+		inputLocal.x = -1.0f;
 	}
 	if (CheckHitKey(KEY_INPUT_DOWN))
 	{
-		lStickZ = 1.0f;
+		inputLocal.x = 1.0f;
 	}
 	if (CheckHitKey(KEY_INPUT_LEFT))
 	{
-		lStickX = -1.0f;
+		inputLocal.z = -1.0f;
 	}
 	if (CheckHitKey(KEY_INPUT_RIGHT))
 	{
-		lStickX = 1.0f;
+		inputLocal.z = 1.0f;
 	}
+
+	// スティックの傾きから移動量を計算
+	_vInput = inputLocal;
+
 	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
 	float rad = atan2(lStickX, lStickZ);
 	if (length < _fAnalogDeadZone)
@@ -93,8 +97,8 @@ bool PlayerTanuki::Process()
 		length = 0.0f;
 	}
 
-	// 入力ベクトルを保存（EscapeCollisionで使用）
-	_vInput = inputLocal;
+	//// 入力ベクトルを保存（EscapeCollisionで使用）
+	//_vInput = inputLocal;
 
 	// カメラ方向に合わせて移動量を計算
 	if (length > 0.0f)

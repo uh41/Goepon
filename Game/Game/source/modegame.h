@@ -61,7 +61,7 @@ public:
 	}
 
 	// 当たり判定処理
-	bool EscapeCollision(PlayerBase* player);// キャラの回避処理
+	bool EscapeCollision(CharaBase* chara);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
 
 	// 索敵範囲の当たり判定

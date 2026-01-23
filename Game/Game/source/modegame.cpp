@@ -376,6 +376,11 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 		PlayerCameraInfo(_player.get());
 	}
 
+	for(auto enemy : _enemy)
+	{
+		EscapeCollision(enemy.get());
+	}
+
 	// 索敵システムの処理
 	if (_enemySensor)
 	{

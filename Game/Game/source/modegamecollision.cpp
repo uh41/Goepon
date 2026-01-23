@@ -12,10 +12,10 @@
 #include "appframe.h"
 
 // コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
-bool ModeGame::EscapeCollision(PlayerBase* player)
+bool ModeGame::EscapeCollision(CharaBase* chara)
 {
 	// プレイヤーが空中なら処理しない
-	if(!player->GetLand())
+	if(!chara->GetLand())
 	{
 		return false;
 	}
@@ -28,11 +28,11 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		// 移動前の位置を保存
-		vec::Vec3 oldvPos = player->GetPos();
-		vec::Vec3 v = player->GetInputVector();
+		vec::Vec3 oldvPos = chara->GetPos();
+		vec::Vec3 v = chara->GetInputVector();
 		vec::Vec3 oldv = v;
 		float rad = atan2((float)v.z, (float)v.x);
-		float length = player->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
+		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
 		float sx = _camera->_vPos.x - _camera->_vTarget.x;
 		float sz = _camera->_vPos.z - _camera->_vTarget.z;
 		float camrad = atan2(sz, sx);
@@ -43,7 +43,7 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		v.z = sin(rad + camrad + escape_rad) * length;
 
 		// vの分移動
-		player->SetPos(vec3::VAdd(player->GetPos(), v));
+		chara->SetPos(vec3::VAdd(chara->GetPos(), v));
 
 		// コリジョン処理しないならループから抜ける
 		if(!_d_use_collision)
@@ -59,19 +59,19 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		hitPoly = DxlibConverter::MV1CollCheckLine(
 			_map->GetHandleMap(),
 			_map->GetFrameMapCollision(),
-			vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, player->GetColSubY(), 0.0f)),
-			vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, -99999.0f, 0.0f))
+			vec3::VAdd(chara->GetPos(), vec3::VGet(0.0f, chara->GetColSubY(), 0.0f)),
+			vec3::VAdd(chara->GetPos(), vec3::VGet(0.0f, -99999.0f, 0.0f))
 		);
 		if(hitPoly.HitFlag)
 		{
 			// 当たった
 			// 当たったY位置をキャラ座標にする
-			vec::Vec3 tmpPos = player->GetPos();
+			vec::Vec3 tmpPos = chara->GetPos();
 			tmpPos.y = hitPoly.HitPosition.y;
-			player->SetPos(tmpPos);
+			chara->SetPos(tmpPos);
 
 			// キャラが上下に移動した量だけ、移動量を修正
-			v.y += player->GetPos().y - oldvPos.y;
+			v.y += chara->GetPos().y - oldvPos.y;
 
 			// ループiから抜ける
 			break;
@@ -79,7 +79,7 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		else
 		{
 			// 当たらなかった。元の座標に戻す
-			player->SetPos(oldvPos);
+			chara->SetPos(oldvPos);
 			v = oldv;
 		}
 	}

@@ -55,6 +55,12 @@ public:
 	void PlayAnimation(std::string name, bool loop = false);
 	void StopAnimation();
 
+	const vec::Vec3& GetInputVector() const { return _vInput; }
+	float GetMoveSpeed() const { return _fMvSpeed; }
+
+	auto GetLand() const { return _bLand; }
+	void SetLand(bool land) { _bLand = land; }
+
 protected:
 	float _iAttachIndex;
 	float _fTotalTime;
@@ -68,5 +74,10 @@ protected:
 
 	float _fHp;// キャラの体力
 	bool _bIsAlive;// 生存フラグ
+
+	float   _fMvSpeed;
+	vec3::Vec3 _vInput;
+
+	bool    _bLand; // 着地フラグ
 };
 
