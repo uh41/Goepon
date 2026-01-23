@@ -4,11 +4,10 @@ import sys
 
 def generate_header():
     try:
-        HERE = os.path.dirname(os.path.abspath(__file__))   # スクリプトのディレクトリを取得
-        IMG_DIR = os.path.join(HERE, "res")                  # 画像ディレクトリのパス
-        HEADER_PATH = os.path.join(HERE, "../../AppFrame/source/Resources.h") # ヘッダーファイルのパス
+        HERE = os.path.dirname(os.path.abspath(__file__))
+        IMG_DIR = os.path.join(HERE, "res")
+        HEADER_PATH = os.path.join(HERE, "../../AppFrame/source/Resources.h")
 
-        # resディレクトリの存在確認
         if not os.path.exists(IMG_DIR):
             print(f"Error: {IMG_DIR} not found", file=sys.stderr)
             return
@@ -23,7 +22,6 @@ def generate_header():
         
         lines.append("}\n\nnamespace mv1\n{\n")
         
-        # 再帰的に.mv1ファイルを探索
         for root, dirs, files in os.walk(IMG_DIR):
             for file in files:
                 if file.endswith(".mv1"):
@@ -35,17 +33,16 @@ def generate_header():
         lines.append("}\n")
         new_content = "".join(lines)
 
-        # 既存のヘッダーファイルと比較
+
         if os.path.exists(HEADER_PATH):
             with open(HEADER_PATH, "r", encoding="utf-8-sig") as f:
                 if f.read() == new_content:
                     return
 
-        # ヘッダーファイルの書き込み
+
         with open(HEADER_PATH, "w", encoding="utf-8-sig") as f:
             f.write(new_content)
 
-    # エラー処理
     except Exception as e:
         print(f"Python Error: {e}", file=sys.stderr)
         sys.exit(1)
