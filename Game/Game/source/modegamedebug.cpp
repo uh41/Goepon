@@ -19,6 +19,8 @@ bool ModeGame::DebugInitialize()
 	_d_view_camera_info = true;
 	_d_view_shadow_map = false;
 
+	CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
+
 	return true;
 }
 
@@ -50,6 +52,7 @@ bool ModeGame::DebugProcess()
 	if(trg & PAD_INPUT_7)
 	{
 		_d_view_collision = !_d_view_collision;
+		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
 	}
 	if(_d_view_collision)
 	{
@@ -135,6 +138,13 @@ bool ModeGame::DebugRender()
 	{
 		_camera->Render();
 	}
+
+	if(_d_view_collision)
+	{
+		// 好みの色に変更可（R,G,B）
+		CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
+	}
+
 	return true;
 }
 
