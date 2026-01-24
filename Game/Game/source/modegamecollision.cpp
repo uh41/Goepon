@@ -177,6 +177,9 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
 		return false;
 	}
 	
+	const vec::Vec3 tpos = treasure->GetPos();
+	MV1SetPosition(modelHandle, DxlibConverter::VecToDxLib(tpos));
+
 	// キャラクターの現在位置と半径
 	const vec::Vec3 currentPos = chara->GetPos();
 	float rad  = static_cast<float>(chara->GetCollisionR());
@@ -215,10 +218,9 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
 
 	// ヒットしたので元の位置に戻す
 	// まず現在位置を取得（カメラ補正用）
-	vec::Vec3 oldPos  = chara->GetPos();
-	vec::Vec3 moveVec = vec3::VSub(currentPos, oldPos);
-
-	// ヒットした
+	
+	// 衝突時は旧位置へ戻す
+	const vec::Vec3 oldPos = chara->GetOldPos();
 	chara->SetPos(oldPos);
 
 	if (_d_view_collision)
@@ -254,6 +256,7 @@ bool ModeGame::CharaToTreasureOpenCollision(CharaBase* chara, Treasure* treasure
 	// 宝箱のモデルとフレーム有効チェック	
 	int modelHandle = treasure->GetModelHandle();
 	int frameIndex  = treasure->GetHitCollisionFrame();
+
 
 	// 無効なら終了
 	if (modelHandle < 0 || frameIndex < 0)
