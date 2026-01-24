@@ -62,7 +62,8 @@ public:
 	struct DebugInfo
 	{
 		SectorCollison sector;	// 扇形の当たり判定情報
-		CircleCollison circle;	// 円の当たり判定情報
+		CircleCollison circle1;	// 円の当たり判定情報
+		CircleCollison circle2;	// 円の当たり判定情報
 		bool isResult;		// 当たり判定結果
 		bool hasData;	// デバック情報が存在するかどうか
 		vec::Vec3 pos;// ターゲットの位置
@@ -95,29 +96,48 @@ public:
 		const vec::Vec3& targetpos
 	);
 
-	//// 円と位置の当たり判定
-	//// \param circlepos 円の中心位置
-	//// \param circlerad 円の半径
-	//// \param targetpos 対象の位置
-	//// \return 当たっている場合true
-	//bool CheckCircleToPosition(
-	//	const vec::Vec3& cirpos,
-	//	float cirrad,
-	//	const vec::Vec3& targetpos
-	//);
+	// 円と位置の当たり判定
+	// \param circlepos 円の中心位置
+	// \param circlerad 円の半径
+	// \param targetpos 対象の位置
+	// \return 当たっている場合true
+	bool CheckCircleToPosition(
+		const vec::Vec3& cirpos,
+		float cirrad,
+		const vec::Vec3& targetpos
+	);
 
-	//// 円と円の当たり判定
-	//// \param cir1pos 円1の中心位置
-	//// \param cir1rad 円1の半径
-	//// \param cir2pos 円2の中心位置
-	//// \param cir2rad 円2の半径
-	//// \return 当たっている場合true
-	//bool CheckCircleToCircle(
-	//	const vec::Vec3& cir1pos,
-	//	float cir1rad,
-	//	const vec::Vec3& cir2pos,
-	//	float cir2rad
-	//);
+	// 円と円の当たり判定
+	// \param cir1pos 円1の中心位置
+	// \param cir1rad 円1の半径
+	// \param cir2pos 円2の中心位置
+	// \param cir2rad 円2の半径
+	// \return 当たっている場合true
+	bool CheckCircleToCircle(
+		const vec::Vec3& cir1pos,
+		float cir1rad,
+		const vec::Vec3& cir2pos,
+		float cir2rad
+	);
+
+	// 扇形とカプセルの当たり判定
+	// \param secpos 扇形の中心位置
+	// \param secdir 扇形の向き
+	// \param secrad 扇形の半径
+	// \param sechalfangle 扇形の半角(ラジアン)
+	// \param captop カプセルの上端位置
+	// \param capbottom カプセルの下端位置
+	// \param caprad カプセルの半径
+	// \return 当たっている場合true
+	bool CheckSectorToCapsule(
+		const vec::Vec3& secpos,
+		const vec::Vec3& secdir,
+		float secrad,
+		float sechalfangle,
+		const vec::Vec3& captop,
+		const vec::Vec3& capbottom,
+		float caprad
+	);
 
 	void SetDebugDraw(bool enable) { _debugDraw = enable; }
 	bool GetDebugDraw() const { return _debugDraw; }

@@ -23,3 +23,4 @@
 #include "fade/fade.h"
 #include "AnimationManager/animationmanager.h"
 #include "Resources.h"
+#include "manager/collisionmanager.h"

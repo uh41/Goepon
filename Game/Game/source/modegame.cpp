@@ -354,12 +354,17 @@ AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（
 		{
 			if(!enemy->IsAlive()) { continue; }
 
-			if(IsPlayerInBackSector(enemy.get(), player, halfAngle, rad))
+			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
+				enemy->GetPos(),
+				vec3::VScale(enemy->GetDir(), -1.0f),
+				rad,
+				halfAngle,
+				player->GetPos()
+			);
+			if(hit)
 			{
-				player->PlayAnimation("goepon_walk", true);
-				enemy->PlayAnimation("taiki", true);
-
-				break;
+				player->PlayAnimation("goepon_walk", false);
+				enemy->PlayAnimation("walk", false);
 			}
 		}
 	}
@@ -479,6 +484,8 @@ bool ModeGame::Render()
 		_enemySensor->Render();
 		_enemySensor->RenderDetectionUI();
 	}
+
+	CollisionManager::GetInstance()->SetDebugDraw(true);
 
 	//if(_player)
 	//{

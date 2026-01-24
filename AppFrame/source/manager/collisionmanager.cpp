@@ -1,5 +1,6 @@
 #include "collisionmanager.h"
 #include "../aliastemplate.h"
+#include "../mymath.h"
 
 CollisionManager* CollisionManager::GetInstance()
 {
@@ -74,13 +75,118 @@ bool CollisionManager::CheckSectorToPosition(
     vec::Vec3 targetDir = vec3::VNorm(target);
 
     // 内積を計算
+    //float halfangleclamp = std::clamp(sechalfangle, 0.0f, PI);
+    float halfangleclamp = mymath::Clamp(0.0f, PI, sechalfangle);
     float cosTheta = cosf(sechalfangle);// 扇形の半角のcos値
     float dot = vec::Vec3::Dot(sectorDir, targetDir);// 内積
+	dot = mymath::Clamp(-1.0f, 1.0f, dot);// 内積を-1～1にクランプ
 
     bool hit = (dot >= cosTheta);// 内積がcos値以上なら当たり
     _debugInfo.isResult = hit;// 当たり判定結果をデバック情報に記録
 
     return hit;
+}
+
+// 円と位置の当たり判定
+bool CollisionManager::CheckCircleToPosition(
+    const vec::Vec3& cirpos,
+    float cirrad,
+    const vec::Vec3& targetpos
+)
+{
+	vec::Vec3 target = vec3::VSub(targetpos, cirpos);// 円の中心から対象位置へのベクトル
+	target.y = 0.0f; // Y軸を無視
+	float distSq = target.LengthSquare();
+	bool hit = (distSq <= (cirrad * cirrad));       // 半径以内なら当たり
+
+	_debugInfo.circle1.pos = cirpos;
+	_debugInfo.circle1.rad = cirrad;
+	_debugInfo.pos = targetpos;
+	_debugInfo.isResult = hit;
+	_debugInfo.hasData = true;
+
+	return hit;
+}
+
+bool CollisionManager::CheckCircleToCircle(
+    const vec::Vec3& cir1pos,
+    float cir1rad,
+    const vec::Vec3& cir2pos,
+    float cir2rad
+)
+{
+	vec::Vec3 cirtocirpos = vec3::VSub(cir2pos, cir1pos);// 円1の中心から円2の中心へのベクトル
+	cirtocirpos.y = 0.0f; // Y軸を無視
+	float distSq = cirtocirpos.LengthSquare();
+	float radd = cir1rad + cir2rad;     // 半径の和
+	bool hit = (distSq <= (radd * radd)); // 半径の和以内なら当たり
+
+	_debugInfo.circle1.pos = cir1pos;
+	_debugInfo.circle1.rad = cir1rad;
+	_debugInfo.circle2.pos = cir2pos;
+	_debugInfo.circle2.rad = cir2rad;
+	_debugInfo.isResult = hit;
+	_debugInfo.hasData = true;
+
+	return hit;
+}
+
+bool CollisionManager::CheckSectorToCapsule(
+    const vec::Vec3& secpos,
+    const vec::Vec3& secdir,
+    float secrad,
+    float sechalfangle,
+    const vec::Vec3& captop,
+    const vec::Vec3& capbottom,
+    float caprad
+)
+{
+    vec::Vec3 sec = secpos;
+	vec::Vec3 top = captop;
+	vec::Vec3 bottom = capbottom;
+	sec.y = 0.0f;    // Y軸を無視
+	top.y = 0.0f;    // Y軸を無視
+	bottom.y = 0.0f; // Y軸を無視
+
+	vec::Vec3 toptobottom = vec3::VSub(bottom, top);
+	float tbcLenSq = toptobottom.LengthSquare();
+
+    vec::Vec3 capcenter = top;
+	// カプセルの中心位置を計算
+	float numerator = vec::Vec3::Dot(vec3::VSub(sec, top), toptobottom);// 分子
+    float t;
+	// tbcLenSqが0の場合、カプセルの上端と下端が同じ位置にあるのでtを0にする
+    if(tbcLenSq > 0.0f)
+    {
+		t = numerator / tbcLenSq;
+    }
+    else
+    {
+        t = 0.0f;
+	}
+
+	t = mymath::Clamp(0.0f, 1.0f, t);// 0～1にクランプ
+
+	vec::Vec3 closest = top + toptobottom * t;// カプセルの中心に最も近い点
+
+	// 扇形とカプセル中心の当たり判定を行う
+    bool hit = CheckSectorToPosition(
+        sec,
+        secdir,
+        secrad + caprad, // カプセルの半径分を加算
+        sechalfangle,
+        closest
+	);
+    // デバック情報を記録
+    _debugInfo.sector.pos = secpos;
+    _debugInfo.sector.dir = secdir;
+    _debugInfo.sector.rad = secrad;
+    _debugInfo.sector.halfAngle = sechalfangle;
+    _debugInfo.circle1.pos = closest;
+    _debugInfo.circle1.rad = caprad;
+    _debugInfo.isResult = hit;
+    _debugInfo.hasData = true;
+	return hit;
 }
 
 void CollisionManager::RenderDebug(unsigned int r, unsigned int g, unsigned int b)
@@ -92,7 +198,7 @@ void CollisionManager::RenderDebug(unsigned int r, unsigned int g, unsigned int 
     }
 
     SectorCollison& sector = _debugInfo.sector;
-    CircleCollison& circle = _debugInfo.circle;
+    CircleCollison& circle = _debugInfo.circle1;
     bool hit = _debugInfo.isResult;
 
     circle.pos = _debugInfo.pos;
