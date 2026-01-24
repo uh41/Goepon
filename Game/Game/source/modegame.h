@@ -141,7 +141,10 @@ protected:
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
 
-	soundserver::SoundServer* _soundServer;
+	at::spc<soundserver::SoundServer> _soundServer;
+	at::spc<soundserver::SoundItemBase> _bgmInitialize;
+	at::spc<soundserver::SoundItemBase> _bgmChenge;
+	bool _isChengeBgm;
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック

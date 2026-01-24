@@ -26,6 +26,26 @@ def generate_header():
                 full_path = os.path.join(root, file)
                 rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
                 lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
+    lines.append("}\n\n")
+
+    lines.append("namespace mp3\n{\n")
+    for root, _, files in os.walk(IMG_DIR):
+        for file in sorted(files):
+            if file.endswith(".mp3"):
+                name_base = os.path.splitext(file)[0]
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
+                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
+    lines.append("}\n\n")
+
+    lines.append("namespace wav\n{\n")
+    for root, _, files in os.walk(IMG_DIR):
+        for file in sorted(files):
+            if file.endswith(".wav"):
+                name_base = os.path.splitext(file)[0]
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
+                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
     lines.append("}\n")
 
     new_content = "".join(lines)

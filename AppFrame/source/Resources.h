@@ -56,3 +56,14 @@ namespace mv1
   inline constexpr const char* goepon_walkwalk = "res/Tanuki/goepon_walkwalk.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
 }
+
+namespace mp3
+{
+  inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
+  inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+}
+
+namespace wav
+{
+  inline constexpr const char* ks010 = "res/BGM/ks010.wav";
+}

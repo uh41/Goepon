@@ -85,7 +85,17 @@ bool ModeGame::Initialize()
 		enemy->SetEnemySensor(_enemySensor);
 	}
 
-	_soundServer = new soundserver::SoundServer();
+	_soundServer = std::make_shared<soundserver::SoundServer>();
+	
+	_bgmInitialize = std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi);
+	_bgmChenge = std::make_shared<soundserver::SoundItemBGM>(wav::ks010);
+
+	_soundServer->Add("bgminitialize", _bgmInitialize.get());
+	_soundServer->Add("bgmChenge", _bgmChenge.get());
+
+	_isChengeBgm = false;
+	_bgmInitialize->Play();
+
 	return true;
 }
 
@@ -135,8 +145,21 @@ bool ModeGame::Terminate()
 	}
 	if(_soundServer)
 	{
-		delete _soundServer;
+		// 全サウンド停止
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+
+		// SoundServer::Clear() は内部で delete してくれるので安全に呼ぶ
+		_soundServer->Clear();
+
 		_soundServer = nullptr;
+
+		// 既に SoundServer::Clear() で delete 済なら二重 delete にならないよう null チェック
+		_bgmInitialize = nullptr;
+		_bgmChenge = nullptr;
+		_isChengeBgm = false;
 	}
 	return true;
 }
@@ -180,6 +203,11 @@ bool ModeGame::Process()
 	_camera->Process();
 	
 	DebugProcess();// デバック処理
+
+	if(_soundServer)
+	{
+		_soundServer->Update();
+	}
 
 	AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（仮に60FPS固定で更新）
 	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
@@ -391,6 +419,26 @@ bool ModeGame::Process()
 	{
 		_enemySensor->Process();
 		CheckAllDetections();
+	}
+
+	bool isChase = false;
+	if(_enemySensor)
+	{
+		isChase = _enemySensor->IsChasing();
+	}
+
+	// BGMチェンジ処理
+	if(!_isChengeBgm && isChase)
+	{
+		_bgmInitialize->Stop();
+		_bgmChenge->Play();
+		_isChengeBgm = true;
+	}
+	else if(_isChengeBgm && !isChase)
+	{
+		_bgmChenge->Stop();
+		_bgmInitialize->Play();
+		_isChengeBgm = false;
 	}
 
 	return true;
