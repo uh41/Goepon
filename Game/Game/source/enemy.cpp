@@ -34,6 +34,8 @@ bool Enemy::Initialize()
 
 	_fHp = 30.0f;
 
+	_bLand = true;
+
 	// センサー関連の初期化
 	_detectedPlayer = false;
 	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);

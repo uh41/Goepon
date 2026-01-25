@@ -165,6 +165,7 @@
     <ClInclude Include="source\CFile\cfile.h" />
     <ClInclude Include="source\container.h" />
     <ClInclude Include="source\fade\fade.h" />
+    <ClInclude Include="source\manager\collisionmanager.h" />
     <ClInclude Include="source\Mode\modebase.h" />
     <ClInclude Include="source\Mode\modeserver.h" />
     <ClInclude Include="source\mymath.h" />
@@ -194,6 +195,7 @@
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
     <ClCompile Include="source\fade\fade.cpp" />
+    <ClCompile Include="source\manager\collisionmanager.cpp" />
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
     <ClCompile Include="source\mymath.cpp" />

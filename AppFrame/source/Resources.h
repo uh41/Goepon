@@ -29,7 +29,6 @@ namespace mv1
  inline constexpr const char* fusama = "res/map/fusama.mv1";
  inline constexpr const char* SM_map = "res/map/SM_map.mv1";
  inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
- inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
  inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
  inline constexpr const char* bil1 = "res/Object/bil1/bil1.mv1";
  inline constexpr const char* Board = "res/Object/Board/Board.mv1";
@@ -39,7 +38,11 @@ namespace mv1
  inline constexpr const char* LargeScreen = "res/Object/LargeScreen/LargeScreen.mv1";
  inline constexpr const char* Pillar = "res/Object/Pillar/Pillar.mv1";
  inline constexpr const char* SignBoard = "res/Object/SignBoard/SignBoard.mv1";
+ inline constexpr const char* goepon = "res/Player/goepon.mv1";
+ inline constexpr const char* goepon_re_Z_UP = "res/Player/goepon_re_Z_UP.mv1";
  inline constexpr const char* Player = "res/Player/Player.mv1";
+ inline constexpr const char* SK_goepon_multimotion = "res/Player/SK_goepon_multimotion.mv1";
+ inline constexpr const char* tanuponnn_01_fix = "res/Player/tanuponnn_01_fix.mv1";
  inline constexpr const char* bushi_0114taiki = "res/PoorEnemyMelee/bushi_0114taiki.mv1";
  inline constexpr const char* bushi_karitaiki = "res/PoorEnemyMelee/bushi_karitaiki.mv1";
  inline constexpr const char* busi_tesuto = "res/PoorEnemyMelee/busi_tesuto.mv1";
@@ -50,6 +53,17 @@ namespace mv1
  inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
  inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
  inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
- inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
+ inline constexpr const char* goepon_walkwalk = "res/Tanuki/goepon_walkwalk.mv1";
  inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
+}
+
+namespace mp3
+{
+  inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
+  inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+}
+
+namespace wav
+{
+  inline constexpr const char* ks010 = "res/BGM/ks010.wav";
 }

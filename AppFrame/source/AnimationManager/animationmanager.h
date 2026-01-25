@@ -27,7 +27,6 @@ public:
 	// アニメーションの再生
 	int Play(int handle, std::string& name, bool loop = true, float speed = 1.0f);
 
-	
 	// アニメーションを停止
 	void Stop(int id);
 
@@ -44,7 +43,7 @@ public:
 	bool SetTime(int id, float time);
 
 	// 一時停止/再開
-	bool SetPlaying(int id, bool play);
+	bool SetPlaying(int id, bool play);// play=true:再生、play=false:一時停止
 
 	// 再生中かどうか
 	bool IsPlaying(int id) const;
