@@ -97,6 +97,7 @@ public:
 	// BGMチェンジ
 	bool ChangeBGM();
 
+	bool LoadStageData();
 
 
 protected:

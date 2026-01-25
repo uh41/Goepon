@@ -33,17 +33,19 @@ bool ModeGame::Initialize()
 		chara->Initialize();
 	}
 
+	// プレイヤー
+	for(auto& player_base : _playerBase)
+	{
+		player_base->Initialize();
+	}
+
 	// オブジェクトの初期化
 	for(auto& object : _object)
 	{
 		object->Initialize();
 	}
 
-	// プレイヤー
-	for(auto& player_base : _playerBase)
-	{
-		player_base->Initialize();
-	}
+	LoadStageData();// ステージデータ読み込み
 
 	for(auto& treasure : _treasure)
 	{
@@ -59,6 +61,32 @@ bool ModeGame::Initialize()
 	for(auto& charaShadow : _charaShadow)
 	{
 		charaShadow->Initialize();
+	}
+
+	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
+	if(_camera != nullptr)
+	{
+		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
+		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+
+		// 初期表示プレイヤー（タヌキ／人間）に合わせる
+		PlayerBase* startPlayer = nullptr;
+		if(_bShowTanuki)
+		{
+			startPlayer = _playerTanuki.get();
+		}
+		else
+		{
+			startPlayer = _player.get();
+		}
+
+		if(startPlayer != nullptr)
+		{
+			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
+			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			_camera->_vTarget = target;
+			_camera->_vPos = vec3::VAdd(target, camDelta);
+		}
 	}
 
 	_map->SetCamera(_camera);
@@ -86,6 +114,8 @@ bool ModeGame::Initialize()
 	{
 		enemy->SetEnemySensor(_enemySensor);
 	}
+
+
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -163,6 +193,32 @@ bool ModeGame::Terminate()
 		_bgmChenge = nullptr;
 		_isChengeBgm = false;
 	}
+	return true;
+}
+
+bool ModeGame::LoadStageData()
+{
+	std::string path = "res/map/";
+	std::string jsonFile = "maptry.json";
+	std::string jsonObjectName = "stage";
+
+	std::ifstream ifs(path + jsonFile);
+
+	nlohmann::json jsonData;
+
+	ifs >> jsonData;
+
+	nlohmann::json stage = jsonData.at(jsonObjectName);
+
+	for(auto& object : stage)
+	{
+		std::string name = object.at("objectName");
+		if(name == "S_MarkerA")
+		{
+			_playerTanuki->SetJsonDataUE(object);
+		}
+	}
+
 	return true;
 }
 
