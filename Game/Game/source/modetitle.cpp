@@ -14,8 +14,8 @@ ModeTitle::~ModeTitle()
 bool ModeTitle::Initialize()
 {
 	// 背景画像を読み込む（パスはプロジェクトのリソース配置に合わせて変更）
-	_iHandle = LoadGraph("res/logo/AMGlogo.png");
-	if(_iHandle == -1)
+	_handle = LoadGraph("res/logo/AMGlogo.png");
+	if(_handle == -1)
 	{
 		// 読み込み失敗時は false を返して呼び出し元で判定できるようにする
 		return false;
@@ -33,10 +33,10 @@ bool ModeTitle::Initialize()
 
 bool ModeTitle::Terminate()
 {
-	if(_iHandle != -1)
+	if(_handle != -1)
 	{
-		DeleteGraph(_iHandle);
-		_iHandle = -1;
+		DeleteGraph(_handle);
+		_handle = -1;
 	}
 	return true;
 }
@@ -85,9 +85,9 @@ bool ModeTitle::Process()
 
 bool ModeTitle::Render()
 {
-	if(_iHandle != -1)
+	if(_handle != -1)
 	{
-		DrawGraph(0, 0, _iHandle, TRUE);
+		DrawGraph(0, 0, _handle, TRUE);
 	}
 
 	// フェード描画（上書き）

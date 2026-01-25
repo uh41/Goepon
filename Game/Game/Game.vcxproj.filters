@@ -225,6 +225,9 @@
     <ClInclude Include="source\Treasure.h">
       <Filter>ヘッダー ファイル\モードゲーム\お宝</Filter>
     </ClInclude>
+    <ClInclude Include="source\modeteamlogo.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -310,6 +313,9 @@
     </ClCompile>
     <ClCompile Include="source\Treasure.cpp">
       <Filter>ソース ファイル\モードゲーム\お宝</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeteamlogo.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
