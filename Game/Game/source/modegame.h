@@ -99,6 +99,10 @@ public:
 
 	bool LoadStageData();
 
+	// 宝箱とキャラクターの当たり判定
+	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
+	bool CharaToTreasureOpenCollision(CharaBase* chara, Treasure* treasure);
+
 
 protected:
 	Camera* _camera;
