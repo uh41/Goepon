@@ -15,13 +15,20 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_handle = MV1LoadModel("res/Tanuki/anime_goepon_walk.mv1");
+	_handle = MV1LoadModel("res/Tanuki/goepon.mv1");
 	_iAttachIndex = -1;
 	// �X�e�[�^�X��u�����v�ɐݒ�
 	_status = STATUS::NONE;
 	// �Đ����Ԃ̏�����
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
+	// �ʒu�A�����̏�����
+	//if(vec3::VSize(_vPos) == 0.0f)
+	//{
+	//	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f); // �����ʒu�����������A�����o���ꏈ���̂������ňʒu�������
+	//}
+	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// �L�������f���̓f�t�H���g��-Z����������Ă���
+	// ���ʒu�̐ݒ�
 	// �ʒu�A�����̏�����
 	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// �L�������f���̓f�t�H���g��-Z����������Ă���
@@ -31,7 +38,7 @@ bool PlayerTanuki::Initialize()
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
-	_fMvSpeed = 6.0f;
+	_fMvSpeed = 10.0f;
 
 	_bLand = true;
 
@@ -72,20 +79,24 @@ bool PlayerTanuki::Process()
 	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 	if (CheckHitKey(KEY_INPUT_UP))
 	{
-		lStickZ = -1.0f;
+		inputLocal.x = -1.0f;
 	}
 	if (CheckHitKey(KEY_INPUT_DOWN))
 	{
-		lStickZ = 1.0f;
+		inputLocal.x = 1.0f;
 	}
 	if (CheckHitKey(KEY_INPUT_LEFT))
 	{
-		lStickX = -1.0f;
+		inputLocal.z = -1.0f;
 	}
 	if (CheckHitKey(KEY_INPUT_RIGHT))
 	{
-		lStickX = 1.0f;
+		inputLocal.z = 1.0f;
 	}
+
+	// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
+	_vInput = inputLocal;
+
 	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
 	float rad = atan2(lStickX, lStickZ);
 	if (length < _fAnalogDeadZone)
@@ -93,6 +104,8 @@ bool PlayerTanuki::Process()
 		length = 0.0f;
 	}
 
+	//// ���̓x�N�g����ۑ��iEscapeCollision�Ŏg�p�j
+	//_vInput = inputLocal;
 	// ���̓x�N�g����ۑ��iEscapeCollision�Ŏg�p�j
 	_vInput = inputLocal;
 
@@ -137,10 +150,10 @@ bool PlayerTanuki::Process()
         switch(_status)
         {
         case STATUS::WAIT:
-            anim_name = "idle";
+            anim_name = "hensin";
             break;
         case STATUS::WALK:
-            anim_name = "goepon_walk";
+            anim_name = "walk";
             break;
         default:
             anim_name.clear();

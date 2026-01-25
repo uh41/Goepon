@@ -61,15 +61,11 @@ public:
 	}
 
 	// 当たり判定処理
-	bool EscapeCollision(PlayerBase* player);// キャラの回避処理
+	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
 
-	// 宝箱とキャラクターの当たり判定と開ける判定の処理
-	bool CharaToTreasureHitCollision (CharaBase* chara, Treasure* treasure);
-	bool CharaToTreasureOpenCollision(CharaBase* chara, Treasure* treasure);
-
 	// 索敵範囲の当たり判定
-	bool IsPlayerInBackSector(CharaBase* c1, PlayerBase* c2, float halfAngle, float rad);
+	bool IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy);
 	
 	// デバック関数
 	bool DebugInitialize();
@@ -81,15 +77,27 @@ public:
 
 	// オブジェクト関数
 	bool ObjectInitialize();
+	bool ObjectProcess();
+
+	// プレイヤー変身関数
+	bool PlayerTransform();
+
+	// 影関数
+	bool ShadowInitialize();
 
 	// カメラ操作公開API（メニューから呼び出すため）
 	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
+	bool DebugCameraControl();
 
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();
 	void EndCameraControlAndRestore();
 
+	// BGMチェンジ
+	bool ChangeBGM();
+
+	bool LoadStageData();
 
 
 protected:
@@ -144,7 +152,10 @@ protected:
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
 
-	soundserver::SoundServer* _soundServer;
+	at::spc<soundserver::SoundServer> _soundServer;
+	at::spc<soundserver::SoundItemBase> _bgmInitialize;
+	at::spc<soundserver::SoundItemBase> _bgmChenge;
+	bool _isChengeBgm;
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック
