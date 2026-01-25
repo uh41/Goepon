@@ -15,7 +15,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	
-	_handle = MV1LoadModel("res/Tanuki/anime_goepon_walk.mv1");
+	_handle = MV1LoadModel("res/Tanuki/goepon.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -136,10 +136,10 @@ bool PlayerTanuki::Process()
         switch(_status)
         {
         case STATUS::WAIT:
-            anim_name = "idle";
+            anim_name = "hensin";
             break;
         case STATUS::WALK:
-            anim_name = "goepon_walk";
+            anim_name = "walk";
             break;
         default:
             anim_name.clear();
