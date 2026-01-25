@@ -24,6 +24,66 @@ bool ModeGame::DebugInitialize()
 	return true;
 }
 
+bool ModeGame::DebugCameraControl()
+{
+	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
+	if(_bCameraControlMode)
+	{
+		int key = ApplicationMain::GetInstance()->GetKey();
+		int trg = ApplicationMain::GetInstance()->GetTrg();
+		const float panSpeed = 2.0f;
+		const float zoomStep = 10.0f;
+
+		// PAD_INPUT_3 を押している間は上下でズーム、左右で回転
+		if(key & PAD_INPUT_3)
+		{
+			if(key & PAD_INPUT_UP)
+			{
+				CameraZoomTowardsTarget(zoomStep); // 上でズームイン（近づく）
+			}
+			if(key & PAD_INPUT_DOWN)
+			{
+				CameraZoomTowardsTarget(-zoomStep); // 下でズームアウト（離れる）
+			}
+			if(key & PAD_INPUT_LEFT)
+			{
+				// 左でターゲット回転（反時計回り）
+				if(_camera) _camera->RotateAroundTarget(-0.05f);
+			}
+			if(key & PAD_INPUT_RIGHT)
+			{
+				// 右でターゲット回転（時計回り）
+				if(_camera) _camera->RotateAroundTarget(0.05f);
+			}
+		}
+		else
+		{
+			// 上下の向きが逆だったので反転
+			if(key & PAD_INPUT_UP)
+			{
+				CameraMoveBy(vec3::VGet(0.0f, 0.0f, panSpeed));
+			}
+			if(key & PAD_INPUT_DOWN)
+			{
+				CameraMoveBy(vec3::VGet(0.0f, 0.0f, -panSpeed));
+			}
+			if(key & PAD_INPUT_LEFT)
+			{
+				CameraMoveBy(vec3::VGet(-panSpeed, 0.0f, 0.0f));
+			}
+			if(key & PAD_INPUT_RIGHT)
+			{
+				CameraMoveBy(vec3::VGet(panSpeed, 0.0f, 0.0f));
+			}
+		}
+
+		// カメラ編集モード中は他の処理を行わず戻る
+		return true;
+	}
+
+	return false;
+}
+
 bool ModeGame::DebugProcess()
 {
 	int key = ApplicationMain::GetInstance()->GetKey();
@@ -65,6 +125,49 @@ bool ModeGame::DebugProcess()
 	}
 
 	return true;
+}
+
+// ModeGame のカメラ操作ラッパー
+void ModeGame::CameraMoveBy(const vec::Vec3& delta)
+{
+	if(_camera)
+	{
+		_camera->MoveBy(delta);
+	}
+}
+
+void ModeGame::CameraZoomTowardsTarget(float amount)
+{
+	if(_camera)
+	{
+		_camera->ZoomTowardsTarget(amount);
+	}
+}
+
+// メニューからカメラ操作を開始する際に現在のカメラ位置を保存する
+void ModeGame::StartCameraControlAndSave()
+{
+	if(_camera && !_hasSavedCameraState)
+	{
+		_savedCamPos = _camera->_vPos;
+		_savedCamTarget = _camera->_vTarget;
+		_hasSavedCameraState = true;
+		// カメラ操作モードを有効にする
+		_bCameraControlMode = true;
+	}
+}
+
+// メニューからカメラ操作を終了する際に保存しておいたカメラ位置に戻す
+void ModeGame::EndCameraControlAndRestore()
+{
+	if(_camera && _hasSavedCameraState)
+	{
+		_camera->_vPos = _savedCamPos;
+		_camera->_vTarget = _savedCamTarget;
+		_hasSavedCameraState = false;
+		// カメラ操作モードを無効にする
+		_bCameraControlMode = false;
+	}
 }
 
 // デバック用の描画

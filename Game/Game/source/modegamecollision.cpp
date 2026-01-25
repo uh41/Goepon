@@ -201,113 +201,37 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 	return true;
 }
 
-bool ModeGame::IsPlayerInBackSector(CharaBase* c1, PlayerBase* c2, float halfAngle, float rad)
+bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 {
-	if(!c1 || !c2)
+	int trg = ApplicationMain::GetInstance()->GetTrg();
+
+	if(trg & PAD_INPUT_2)
 	{
-		return false;
-	}
+		player = _playerTanuki.get();
 
-	vec::Vec3 dir = c1->GetDir();// 敵の向き
-	dir.y = 0.0f; // Y軸を無視
+		float halfAngle = DEG2RAD(60.0f); // 60度
+		float rad = 120.0f; // 半径100
 
-	vec::Vec3 pos = vec3::VSub(c2->GetPos(), c1->GetPos());		// 敵からプレイヤーへのベクトル
-	pos.y = 0.0f; // Y軸を無視
-
-	// 距離をチェック
-	float distanceSq = pos.LengthSquare();
-
-	if(distanceSq > rad * rad || distanceSq < 0.01f)
-	{
-		if(_d_view_collision)
+		for(auto& enemy : enemy)
 		{
-			vec::Vec3 c1pos = c1->GetPos();
-			vec::Vec3 c2pos = c2->GetPos();
-			DxlibConverter::DrawLine3D(
-				c1pos,
-				c2pos,
-				GetColor(128, 128, 128)
+			if(!enemy->IsAlive()) {
+				continue;
+			}
+
+			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
+				enemy->GetPos(),
+				vec3::VScale(enemy->GetDir(), -1.0f),
+				rad,
+				halfAngle,
+				player->GetPos()
 			);
-			return false;
+			if(hit)
+			{
+				player->PlayAnimation("goepon_walk", false);
+				enemy->PlayAnimation("walk", false);
+			}
 		}
 	}
 
-	// 角度をチェック
-	if(vec3::VSize(dir) < 0.01f)
-	{
-		return false;
-	}
-
-	// 背後方向とプレイヤー方向の正規化
-	vec::Vec3 back = vec3::VScale(vec3::VNorm(dir), -1.0f);		// 敵の背後方向
-	vec::Vec3 player = vec3::VNorm(pos);						// 敵からプレイヤーへの方向
-
-	float cosTh = cosf(DEG2RAD(halfAngle));						// cos(半角)
-	float dot = vec::Vec3::Dot(back, player);					// 内積計算
-	bool hit = (dot > cosTh);
-
-	if(_d_view_collision)
-	{
-		vec::Vec3 c1pos = c1->GetPos();// 敵の位置
-		vec::Vec3 c2pos = c2->GetPos();// プレイヤーの位置
-
-		bool hit = (dot > cosTh);
-
-		DxlibConverter::DrawLine3D(
-			c1pos,
-			c2pos,
-			hit ? GetColor(255, 255, 0) : GetColor(128, 128, 128)
-		);
-
-		// デバッグ用に扇形を描画
-		int segment = 20;
-		float centerang = atan2f(back.z, back.x); // 背後方向の角度
-		float a1 = centerang - DEG2RAD(halfAngle);// 扇形の始点角度
-		float a2 = centerang + DEG2RAD(halfAngle);// 扇形の終点角度
-
-		vec::Vec3 prevpos = vec3::VGet(
-			c1pos.x + cosf(a1) * rad,
-			c1pos.y,
-			c1pos.z + sinf(a1) * rad
-		);
-
-		for(int i = 1; i <= segment; i++)
-		{
-			float tang = a1 + (a2 - a1) * ((float)i / (float)segment);
-			vec::Vec3 curpos = vec3::VGet(
-				c1pos.x + cosf(tang) * rad,
-				c1pos.y,
-				c1pos.z + sinf(tang) * rad
-			);
-			DxlibConverter::DrawLine3D(
-				prevpos,
-				curpos,
-				GetColor(0, 255, 0)
-			);
-			prevpos = curpos;
-		}
-
-		vec::Vec3 endpos = vec3::VGet(
-			c1pos.x + cosf(a2) * rad,
-			c1pos.y,
-			c1pos.z + sinf(a2) * rad
-		);
-		vec::Vec3 centerpos = vec3::VGet(
-			c1pos.x + cosf(a2) * rad,
-			c1pos.y,
-			c1pos.z + sinf(a2) * rad
-		);
-		DxlibConverter::DrawLine3D(
-			prevpos,
-			endpos,
-			GetColor(0, 255, 0)
-		);
-		DxlibConverter::DrawLine3D(
-			c1pos,
-			centerpos,
-			GetColor(0, 255, 0)
-		);
-	}
-
-	return hit;
+	return true;
 }

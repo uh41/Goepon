@@ -43,23 +43,25 @@ bool ModeGame::ObjectInitialize()
 	_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
-	// --- ここからシャドウ生成 ---
-	// プレイヤー（通常）用シャドウ
+	
+	
+	return true;
+}
+
+bool ModeGame::ShadowInitialize()
+{
+	auto charaShadow = std::make_shared<CharaShadow>();
+	// 初期ターゲットはフラグに応じて設定
+	if(_bShowTanuki)
 	{
-		auto charaShadow = std::make_shared<CharaShadow>();
-		// 初期ターゲットはフラグに応じて設定
-		if(_bShowTanuki)
-		{
-			charaShadow->SetTargetChara(_playerTanuki.get());
-		}
-		else
-		{
-			charaShadow->SetTargetChara(_player.get());
-		}
-		_charaShadow.emplace_back(charaShadow);
-
-
+		charaShadow->SetTargetChara(_playerTanuki.get());
 	}
+	else
+	{
+		charaShadow->SetTargetChara(_player.get());
+	}
+	_charaShadow.emplace_back(charaShadow);
+
 	for(auto& c : _chara)
 	{
 		if(!c)
@@ -77,6 +79,141 @@ bool ModeGame::ObjectInitialize()
 		shadow->SetTargetChara(c.get());
 		_charaShadow.emplace_back(shadow);
 	}
-	
+
+	return true;
+}
+
+bool ModeGame::PlayerTransform()
+{
+	int trg = ApplicationMain::GetInstance()->GetTrg();
+	// タヌキプレイヤー表示切替
+	if(trg & PAD_INPUT_4)
+	{
+		_bShowTanuki = !_bShowTanuki;
+		// 切り替え時に同じ場所で表示されるよう座標を同期する
+		if(_bShowTanuki)
+		{
+			// プレイヤー→タヌキに切替：タヌキをプレイヤー位置へ
+			_playerTanuki->SetPos(_player->GetPos());
+			// 向きも合わせる
+			_playerTanuki->SetDir(_player->GetDir());
+		}
+		else
+		{
+			// タヌキ→プレイヤーに切替：プレイヤーをタヌキ位置へ
+			_player->SetPos(_playerTanuki->GetPos());
+			// 向きも合わせる
+			_player->SetDir(_playerTanuki->GetDir());
+		}
+
+		if(_soundServer)
+		{
+			_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
+		}
+
+		// シャドウの追従キャラも切り替え
+		if(!_charaShadow.empty())
+		{
+			auto& playerShadow = _charaShadow.front();
+			if(playerShadow)
+			{
+				if(_bShowTanuki)
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
+				}
+				else
+				{
+					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_player.get()));
+				}
+			}
+		}
+	}
+
+	// プレイヤーの処理（現在表示中のプレイヤーのみ）
+	if(_bShowTanuki)
+	{
+		_playerTanuki->Process();
+	}
+	else
+	{
+		_player->Process();
+	}
+
+	// 現在のプレイヤーの位置を取得
+	vec::Vec3 PlayerPos;
+	if(_bShowTanuki)
+	{
+		PlayerPos = _playerTanuki->GetPos();
+	}
+	else
+	{
+		PlayerPos = _player->GetPos();
+	}
+
+	return true;
+}
+
+bool ModeGame::ObjectProcess()
+{
+
+	// キャラ処理（生存しているもののみ）
+	for(auto& chara : _chara)
+	{
+		if(chara->IsAlive())
+		{
+			chara->Process();
+		}
+	}
+
+	// エネミーの処理
+	for(auto& enemy : _enemy)
+	{
+		if(enemy->IsAlive())
+		{
+			enemy->Process();
+		}
+	}
+
+	// オブジェクト処理
+	for(auto& object : _object)
+	{
+		object->Process();
+	}
+
+	for(auto& treasure : _treasure)
+	{
+		treasure->Process();
+	}
+
+	// UI処理
+	for(auto& ui_base : _uiBase)
+	{
+		ui_base->Process();
+	}
+	return true;
+}
+
+bool ModeGame::ChangeBGM()
+{
+	bool isChase = false;
+	if(_enemySensor)
+	{
+		isChase = _enemySensor->IsChasing();
+	}
+
+	// BGMチェンジ処理
+	if(!_isChengeBgm && isChase)
+	{
+		_bgmInitialize->Stop();
+		_bgmChenge->Play();
+		_isChengeBgm = true;
+	}
+	else if(_isChengeBgm && !isChase)
+	{
+		_bgmChenge->Stop();
+		_bgmInitialize->Play();
+		_isChengeBgm = false;
+	}
+
 	return true;
 }
