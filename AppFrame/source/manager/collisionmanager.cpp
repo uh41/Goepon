@@ -189,6 +189,41 @@ bool CollisionManager::CheckSectorToCapsule(
 	return hit;
 }
 
+bool CollisionManager::CheckPositionToMV1Collision(
+    const vec::Vec3& pos,
+    int handle,
+    int frameindex,
+    float colsuby,
+    vec::Vec3& hitpos
+)
+{
+	// 開始位置を設定
+	vec::Vec3 start = vec3::VAdd(pos, vec3::VGet(0.0f, colsuby, 0.0f));
+
+    vec::Vec3 end = vec3::VAdd(pos, vec3::VGet(0.0f, -9999.0f, 0.0f));
+
+    MV1_COLL_RESULT_POLY hitpoly = DxlibConverter::MV1CollCheckLine(
+        handle,
+        frameindex,
+        start,
+        end
+	);
+
+    if(hitpoly.HitFlag)
+    {
+		hitpos = vec3::VGet(pos.x, hitpoly.HitPosition.y, pos.z);
+
+		_debugInfo.pos = hitpos;
+        _debugInfo.hasData = true;
+		_debugInfo.isResult = true;
+        return true;
+    }
+
+	_debugInfo.hasData = true;
+    _debugInfo.isResult = false;
+	return false;
+}
+
 void CollisionManager::RenderDebug(unsigned int r, unsigned int g, unsigned int b)
 {
     // デバック描画が無効、またはデバック情報が無い場合は何もしない

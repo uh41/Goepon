@@ -12,7 +12,7 @@
 #include "appframe.h"
 
 // コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
-bool ModeGame::EscapeCollision(CharaBase* chara)
+bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 {
 	// プレイヤーが空中なら処理しない
 	if(!chara->GetLand())
@@ -53,25 +53,31 @@ bool ModeGame::EscapeCollision(CharaBase* chara)
 		}
 
 		// 移動した先でコリジョン判定
-		MV1_COLL_RESULT_POLY hitPoly;
+		// 移動した先でコリジョン判定
+		//MV1_COLL_RESULT_POLY hitPoly;
 
 		// 主人公の腰位置から下方向への直線
-		hitPoly = DxlibConverter::MV1CollCheckLine(
-			_map->GetHandleMap(),
-			_map->GetFrameMapCollision(),
-			vec3::VAdd(chara->GetPos(), vec3::VGet(0.0f, chara->GetColSubY(), 0.0f)),
-			vec3::VAdd(chara->GetPos(), vec3::VGet(0.0f, -99999.0f, 0.0f))
+		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
+		vec::Vec3 hitPos;
+		bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			chara->GetPos(),
+			obj->GetModelHandleMap().begin()->second,
+			obj->GetFrameMapCollision(),
+			chara->GetColSubY(),
+			hitPos
 		);
-		if(hitPoly.HitFlag)
+		if(hit)
 		{
 			// 当たった
 			// 当たったY位置をキャラ座標にする
 			vec::Vec3 tmpPos = chara->GetPos();
-			tmpPos.y = hitPoly.HitPosition.y;
+			tmpPos.y = hitPos.y;
 			chara->SetPos(tmpPos);
 
 			// キャラが上下に移動した量だけ、移動量を修正
 			v.y += chara->GetPos().y - oldvPos.y;
+
+
 
 			// ループiから抜ける
 			break;

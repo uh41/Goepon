@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 2;
 
 	if(MAP_SELECT == 0)
 	{
@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "map10173.json";
+		_sJsonFile = "maptry.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -86,12 +86,20 @@ bool Map::Initialize()
 				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
 			}
 
+			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "pPlane1");
+
+			// コリジョン情報の生成
+			MV1SetupCollInfo(_mModelHandle[pos.name], _iFrameMapCollision, 16, 16, 16);
+			MV1SetFrameVisible(_mModelHandle[pos.name], _iFrameMapCollision, FALSE);
+
 			// データをコンテナに追加（モデル番号があれば）
 			if(pos.modelHandle != -1)
 			{
 				_vBlockPos.push_back(pos);
 			}
 		}
+
+
 	}
 	else if(MAP_SELECT == 3)
 	{

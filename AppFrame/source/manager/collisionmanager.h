@@ -139,6 +139,22 @@ public:
 		float caprad
 	);
 
+
+	// 位置（腰高さから下方向）とコリジョン判定
+	// \param pos 判定するX,Z位置（Yは基準）
+	// \param handle MV1モデルハンドル
+	// \param frameIndex コリジョン用フレームインデックス
+	// \param colSubY 腰位置オフセット（上からのスタート高さ）
+	// \param outHitPos ヒットしたワールド座標（YがヒットYにセットされる）
+	// \return 当たったら true
+	bool CheckPositionToMV1Collision(
+		const vec::Vec3& pos,
+		int handle,
+		int frameindex,
+		float colsuby,
+		vec::Vec3& hitpos
+	);
+
 	void SetDebugDraw(bool enable) { _debugDraw = enable; }
 	bool GetDebugDraw() const { return _debugDraw; }
 

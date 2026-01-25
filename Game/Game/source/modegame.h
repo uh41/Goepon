@@ -61,12 +61,10 @@ public:
 	}
 
 	// 当たり判定処理
-	bool EscapeCollision(CharaBase* chara);// キャラの回避処理
+	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
 
 	// 索敵範囲の当たり判定
-
-	bool IsPlayerInBackSector(CharaBase* c1, PlayerBase* c2, float halfAngle, float rad);
 	bool IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy);
 	
 	// デバック関数

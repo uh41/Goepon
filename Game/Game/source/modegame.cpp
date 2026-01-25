@@ -21,6 +21,7 @@ bool ModeGame::Initialize()
 	// カメラ初期化
 	_camera = new Camera();
 	_treasure.push_back(std::make_shared<Treasure>());
+	_object.emplace_back(_treasure.back());
 	_camera->Initialize();
 
 	_bShowTanuki = true;
@@ -222,6 +223,7 @@ bool ModeGame::Process()
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
+
 	for(auto enemy : _enemy)
 	{
 		IsPlayerAttack(_player.get(), { enemy.get() });
@@ -231,18 +233,18 @@ bool ModeGame::Process()
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
 	{
-		EscapeCollision(_playerTanuki.get());
+		EscapeCollision(_playerTanuki.get(), _map.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
-		EscapeCollision(_player.get());
+		EscapeCollision(_player.get(),_map.get());
 		PlayerCameraInfo(_player.get());
 	}
 
 	for(auto enemy : _enemy)
 	{
-		EscapeCollision(enemy.get());
+		EscapeCollision(enemy.get(), _map.get());
 	}
 
 	// 索敵システムの処理
