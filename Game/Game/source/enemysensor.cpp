@@ -1,5 +1,6 @@
 ﻿#include "enemysensor.h"
 #include "appframe.h"
+#include "map.h"
 
 // 初期化
 bool EnemySensor::Initialize()
@@ -205,7 +206,44 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 	// 扇形の半角と比較
 	float halfAngle = _detectionSector.angle * 0.5f;
 
-	return angleDeg <= halfAngle;
+	if (angleDeg > halfAngle)
+	{
+		return false; // 角度範囲外
+	}
+
+	// 床の存在チェック - プレイヤーの足元に床があるかを確認
+	if (!CheckFloorExistence(playerPos))
+	{
+		return false; // 床がない位置は検出対象外
+	}
+
+	return true;
+	//return angleDeg <= halfAngle;
+}
+
+// 床の存在を確認する関数
+bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
+{
+	// マップが設定されていない場合は床があるものとして処理
+	if (!_map)
+	{
+		return true;
+	}
+
+	// 足元から下方向への直線でコリジョン判定
+	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 50.0f, 0.0f));  // 少し上から開始
+	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -50.0f, 0.0f)); // 下方向に長い距離
+
+	// DXライブラリのコリジョン判定を使用
+	MV1_COLL_RESULT_POLY hitPoly = DxlibConverter::MV1CollCheckLine(
+		_map->GetHandleMap(),
+		_map->GetFrameMapCollision(),
+		startPos,
+		endPos
+	);
+
+	// 当たり判定があれば床が存在
+	return hitPoly.HitFlag == TRUE;
 }
 
 // デバッグ用：索敵範囲の描画

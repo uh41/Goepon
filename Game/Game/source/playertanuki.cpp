@@ -146,7 +146,7 @@ bool PlayerTanuki::Process()
             anim_name = "hensin";
             break;
         case STATUS::WALK:
-            anim_name = "walk";
+            anim_name = "goepon_walk";
             break;
         default:
             anim_name.clear();
