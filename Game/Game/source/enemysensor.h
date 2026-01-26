@@ -69,6 +69,10 @@ public:
 	// ï¿½ï¿½ï¿½Ì‘ï¿½ï¿½İ‚ï¿½mï¿½Fï¿½ï¿½ï¿½ï¿½Öï¿½
 	bool CheckFloorExistence(const vec::Vec3& position) const;
 
+	// ‹üƒ`ƒFƒbƒN - w’è‚µ‚½2“_ŠÔ‚Å°‚È‚µ‚Ì’n“_‚ª‚ ‚é‚©ƒ`ƒFƒbƒN
+	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
+
+	
 protected:
 	DetectionSector _detectionSector;  // ï¿½ï¿½ï¿½Gï¿½Íˆï¿½
 	bool _bHasDetectionSector;         // ï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚ï¿½ï¿½İ’è‚³ï¿½ï¿½Ä‚ï¿½ï¿½é‚©

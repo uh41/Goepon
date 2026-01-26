@@ -292,6 +292,8 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 	return hitPoly.HitFlag == TRUE;
 }
 
+
+
 // デバッグ用：索敵範囲の描画
 void EnemySensor::RenderDetectionSector() const
 {
