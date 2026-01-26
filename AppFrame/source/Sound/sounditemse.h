@@ -22,7 +22,7 @@ namespace soundserver
 		virtual TYPE GetType()override { return TYPE::SE; }
 		virtual void Play()override
 		{
-			Stop;
+			this->Stop();
 			PlayMem(DX_PLAYTYPE_BACK);
 		}
 	};

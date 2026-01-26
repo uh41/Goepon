@@ -21,13 +21,11 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	auto GetLand() const { return _bLand; }
-	void SetLand(bool land) { _bLand = land; }
+
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
-	const vec::Vec3& GetInputVector() const { return _vInput; }
-	float GetMoveSpeed() const { return _fMvSpeed; }
+
 protected:
 
 	//アナログスティック関係
@@ -37,9 +35,7 @@ protected:
 	//左スティックの値
 	float lStickX, lStickZ;
 	Camera* _cam;
-	bool    _bLand;
-	float   _fMvSpeed;
-	vec3::Vec3 _vInput;
+
 	// 移動方向を決める
 	vec3::Vec3 _v;
 

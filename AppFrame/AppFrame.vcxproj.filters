@@ -183,6 +183,12 @@
     <ClCompile Include="source\AnimationManager\animationmanager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\Game\Game\source\TextUtil.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\manager\collisionmanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\resource\ResourceServer.h">
@@ -269,10 +275,11 @@
     <ClInclude Include="source\AnimationManager\animationmanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="source\test.py">
+    <ClInclude Include="source\Resources.h">
       <Filter>リソース ファイル</Filter>
-    </None>
+    </ClInclude>
+    <ClInclude Include="source\manager\collisionmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

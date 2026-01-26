@@ -21,6 +21,7 @@ bool ModeGame::Initialize()
 	// カメラ初期化
 	_camera = new Camera();
 	_treasure.push_back(std::make_shared<Treasure>());
+	_object.emplace_back(_treasure.back());
 	_camera->Initialize();
 
 	_bShowTanuki = true;
@@ -32,17 +33,19 @@ bool ModeGame::Initialize()
 		chara->Initialize();
 	}
 
+	// プレイヤー
+	for(auto& player_base : _playerBase)
+	{
+		player_base->Initialize();
+	}
+
 	// オブジェクトの初期化
 	for(auto& object : _object)
 	{
 		object->Initialize();
 	}
 
-	// プレイヤー
-	for(auto& player_base : _playerBase)
-	{
-		player_base->Initialize();
-	}
+	LoadStageData();// ステージデータ読み込み
 
 	for(auto& treasure : _treasure)
 	{
@@ -60,6 +63,32 @@ bool ModeGame::Initialize()
 		charaShadow->Initialize();
 	}
 
+	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
+	if(_camera != nullptr)
+	{
+		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
+		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+
+		// 初期表示プレイヤー（タヌキ／人間）に合わせる
+		PlayerBase* startPlayer = nullptr;
+		if(_bShowTanuki)
+		{
+			startPlayer = _playerTanuki.get();
+		}
+		else
+		{
+			startPlayer = _player.get();
+		}
+
+		if(startPlayer != nullptr)
+		{
+			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
+			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			_camera->_vTarget = target;
+			_camera->_vPos = vec3::VAdd(target, camDelta);
+		}
+	}
+
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
@@ -67,6 +96,7 @@ bool ModeGame::Initialize()
 	//InitHpBlock();// ブロック初期化
 
 	DebugInitialize();// デバック初期化
+	ShadowInitialize();// シャドウ初期化
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
@@ -87,7 +117,19 @@ bool ModeGame::Initialize()
 		enemy->SetEnemySensor(_enemySensor);
 	}
 
-	_soundServer = new soundserver::SoundServer();
+
+
+	_soundServer = std::make_shared<soundserver::SoundServer>();
+	
+	_bgmInitialize = std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi);
+	_bgmChenge = std::make_shared<soundserver::SoundItemBGM>(wav::ks010);
+
+	_soundServer->Add("bgminitialize", _bgmInitialize.get());
+	_soundServer->Add("bgmChenge", _bgmChenge.get());
+
+	_isChengeBgm = false;
+	_bgmInitialize->Play();
+
 	return true;
 }
 
@@ -137,9 +179,48 @@ bool ModeGame::Terminate()
 	}
 	if(_soundServer)
 	{
-		delete _soundServer;
+		// 全サウンド停止
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+
+		// SoundServer::Clear() は内部で delete してくれるので安全に呼ぶ
+		_soundServer->Clear();
+
 		_soundServer = nullptr;
+
+		// 既に SoundServer::Clear() で delete 済なら二重 delete にならないよう null チェック
+		_bgmInitialize = nullptr;
+		_bgmChenge = nullptr;
+		_isChengeBgm = false;
 	}
+	return true;
+}
+
+bool ModeGame::LoadStageData()
+{
+	std::string path = "res/map/";
+	std::string jsonFile = "maptry.json";
+	std::string jsonObjectName = "stage";
+
+	std::ifstream ifs(path + jsonFile);
+
+	nlohmann::json jsonData;
+
+	ifs >> jsonData;
+
+	nlohmann::json stage = jsonData.at(jsonObjectName);
+
+	for(auto& object : stage)
+	{
+		std::string name = object.at("objectName");
+		if(name == "S_MarkerA")
+		{
+			_playerTanuki->SetJsonDataUE(object);
+		}
+	}
+
 	return true;
 }
 
@@ -182,164 +263,22 @@ bool ModeGame::Process()
 	_camera->Process();
 	
 	DebugProcess();// デバック処理
+	DebugCameraControl();// デバックカメラ処理
 
 	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
 	if(_bCameraControlMode)
 	{
-		int key = ApplicationMain::GetInstance()->GetKey();
-		int trg = ApplicationMain::GetInstance()->GetTrg();
-		const float panSpeed = 2.0f;
-		const float zoomStep = 10.0f;
-
-		// PAD_INPUT_3 を押している間は上下でズーム、左右で回転
-		if(key & PAD_INPUT_3)
-		{
-			if(key & PAD_INPUT_UP)
-			{
-				CameraZoomTowardsTarget(zoomStep); // 上でズームイン（近づく）
-			}
-			if(key & PAD_INPUT_DOWN)
-			{
-				CameraZoomTowardsTarget(-zoomStep); // 下でズームアウト（離れる）
-			}
-			if(key & PAD_INPUT_LEFT)
-			{
-				// 左でターゲット回転（反時計回り）
-				if(_camera) _camera->RotateAroundTarget(-0.05f);
-			}
-			if(key & PAD_INPUT_RIGHT)
-			{
-				// 右でターゲット回転（時計回り）
-				if(_camera) _camera->RotateAroundTarget(0.05f);
-			}
-		}
-		else
-		{
-			// 上下の向きが逆だったので反転
-			if(key & PAD_INPUT_UP)
-			{
-				CameraMoveBy(vec3::VGet(0.0f, 0.0f, panSpeed));
-			}
-			if(key & PAD_INPUT_DOWN)
-			{
-				CameraMoveBy(vec3::VGet(0.0f, 0.0f, -panSpeed));
-			}
-			if(key & PAD_INPUT_LEFT)
-			{
-				CameraMoveBy(vec3::VGet(-panSpeed, 0.0f, 0.0f));
-			}
-			if(key & PAD_INPUT_RIGHT)
-			{
-				CameraMoveBy(vec3::VGet(panSpeed, 0.0f, 0.0f));
-			}
-		}
-
-		// カメラ編集モード中は他の処理を行わず戻る
-		return true;
+		_soundServer->Update();
 	}
 
-	// ここから通常のゲーム処理
+	AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（仮に60FPS固定で更新）
 	
-	int trg = ApplicationMain::GetInstance()->GetTrg();
-	// タヌキプレイヤー表示切替
-	if(trg & PAD_INPUT_4)
-	{
-		_bShowTanuki = !_bShowTanuki;
-		// 切り替え時に同じ場所で表示されるよう座標を同期する
-		if(_bShowTanuki)
-		{
-			// プレイヤー→タヌキに切替：タヌキをプレイヤー位置へ
-			_playerTanuki->SetPos(_player->GetPos());
-			// 向きも合わせる
-			_playerTanuki->SetDir(_player->GetDir());
-		}
-		else
-		{
-			// タヌキ→プレイヤーに切替：プレイヤーをタヌキ位置へ
-			_player->SetPos(_playerTanuki->GetPos());
-			// 向きも合わせる
-			_player->SetDir(_playerTanuki->GetDir());
-		}
+	// ここから通常のゲーム処理
 
-		if(_soundServer)
-		{
-			_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
-		}
-
-		// シャドウの追従キャラも切り替え
-		if(!_charaShadow.empty())
-		{
-			auto& playerShadow = _charaShadow.front();
-			if(playerShadow)
-			{
-				if(_bShowTanuki)
-				{
-					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
-				}
-				else
-				{
-					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_player.get()));
-				}
-			}
-		}
-	}
-
-	// プレイヤーの処理（現在表示中のプレイヤーのみ）
-	if(_bShowTanuki)
-	{
-		_playerTanuki->Process();
-	}
-	else
-	{
-		_player->Process();
-	}
-
-	// 現在のプレイヤーの位置を取得
-	vec::Vec3 PlayerPos;
-	if (_bShowTanuki)
-	{
-		PlayerPos = _playerTanuki->GetPos();
-	}
-	else
-	{
-		PlayerPos = _player->GetPos();
-	}
-
-	// キャラ処理（生存しているもののみ）
-	for(auto& chara : _chara)
-	{
-		if(chara->IsAlive())
-		{
-			chara->Process();
-		}
-	}
-
-	// エネミーの処理
-	for (auto& enemy : _enemy)
-	{
-		if (enemy->IsAlive())
-		{
-			enemy->Process();
-		}
-	}
-
-	// オブジェクト処理
-	for(auto& object : _object)
-	{
-		object->Process();
-	}
-
-	for(auto& treasure : _treasure)
-	{
-		treasure->Process();
-	}
-
-	// UI処理
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Process();
-	}
-
+	PlayerTransform(); // プレイヤー変身処理
+	ObjectProcess();	// オブジェクト処理
+	
+	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
@@ -389,13 +328,18 @@ bool ModeGame::Process()
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
 	{
-		EscapeCollision(_playerTanuki.get());
+		EscapeCollision(_playerTanuki.get(), _map.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
-		EscapeCollision(_player.get());
+		EscapeCollision(_player.get(),_map.get());
 		PlayerCameraInfo(_player.get());
+	}
+
+	for(auto enemy : _enemy)
+	{
+		EscapeCollision(enemy.get(), _map.get());
 	}
 
 	// 索敵システムの処理
@@ -404,6 +348,9 @@ bool ModeGame::Process()
 		_enemySensor->Process();
 		CheckAllDetections();
 	}
+
+	// BGMチェンジ処理
+	ChangeBGM();
 
 	return true;
 }
@@ -530,49 +477,6 @@ bool ModeGame::Render()
 	//}
 
 	return true;
-}
-
-// ModeGame のカメラ操作ラッパー
-void ModeGame::CameraMoveBy(const vec::Vec3& delta)
-{
-	if(_camera)
-	{
-		_camera->MoveBy(delta);
-	}
-}
-
-void ModeGame::CameraZoomTowardsTarget(float amount)
-{
-	if(_camera)
-	{
-		_camera->ZoomTowardsTarget(amount);
-	}
-}
-
-// メニューからカメラ操作を開始する際に現在のカメラ位置を保存する
-void ModeGame::StartCameraControlAndSave()
-{
-	if(_camera && !_hasSavedCameraState)
-	{
-		_savedCamPos = _camera->_vPos;
-		_savedCamTarget = _camera->_vTarget;
-		_hasSavedCameraState = true;
-		// カメラ操作モードを有効にする
-		_bCameraControlMode = true;
-	}
-}
-
-// メニューからカメラ操作を終了する際に保存しておいたカメラ位置に戻す
-void ModeGame::EndCameraControlAndRestore()
-{
-	if(_camera && _hasSavedCameraState)
-	{
-		_camera->_vPos = _savedCamPos;
-		_camera->_vTarget = _savedCamTarget;
-		_hasSavedCameraState = false;
-		// カメラ操作モードを無効にする
-		_bCameraControlMode = false;
-	}
 }
 
 // 全てのエネミーに対してプレイヤー検出をチェック
