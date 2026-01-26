@@ -80,6 +80,9 @@ protected:
 	// 床の存在を確認する関数
 	bool CheckFloorExistence(const vec::Vec3& position);
 
+	// テレポート状態のリセット
+	void ResetTeleport(); 
+
 	// テレポート関連
 	bool _waitingForTeleport;		// テレポート待機中フラグ
 	float _teleportTimer;			// テレポートまでの待機時間

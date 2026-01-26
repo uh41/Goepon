@@ -106,19 +106,17 @@ bool ModeGame::Initialize()
 	_bShowTanuki = true;
 
 	// 索敵システムの初期化
-	_enemySensor = std::make_shared<EnemySensor>();
-	_enemySensor->Initialize();
-	_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
-	_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
-	_enemySensor->SetMap(_map.get()); // マップへの参照を設定
+	_enemySensor = std::make_shared<EnemySensor>();			// センサーオブジェクトを生成
+	_enemySensor->Initialize();								// センサーの初期化
+	_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置	
+	_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));	// 適当な向きに設定
+	_enemySensor->SetMap(_map.get());						// マップへの参照を設定
 
 	// エネミーにセンサーを設定
 	for (auto& enemy : _enemy)
 	{
 		enemy->SetEnemySensor(_enemySensor);
 	}
-
-
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -178,6 +176,8 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
+
+	// サウンドサーバー終了処理
 	if(_soundServer)
 	{
 		// 全サウンド停止
@@ -346,8 +346,8 @@ bool ModeGame::Process()
 	// 索敵システムの処理
 	if (_enemySensor)
 	{
-		_enemySensor->Process();
-		CheckAllDetections();
+		_enemySensor->Process();	// センサー自体の処理
+		CheckAllDetections();		// 全敵に対してプレイヤー検出をチェック
 	}
 
 	// BGMチェンジ処理
