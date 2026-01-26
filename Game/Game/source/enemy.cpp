@@ -389,6 +389,7 @@ bool Enemy::Process()
 		}
 	}
 
+	// 定期的に方向を90度変える処理
 	DirChangeTimer -= 1.0f / 60.0f;
 	if(DirChangeTimer <= 0.0f)
 	{
