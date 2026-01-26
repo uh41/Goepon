@@ -62,6 +62,8 @@ public:
 	auto GetLand() const { return _bLand; }
 	void SetLand(bool land) { _bLand = land; }
 
+	// 移動ベクトル取得
+	vec::Vec3 GetMoveV() const { return _v; }
 protected:
 	float _iAttachIndex;
 	float _fTotalTime;
@@ -80,6 +82,8 @@ protected:
 	// 入力ベクトル
 	vec3::Vec3 _vInput;
 
+	// 移動ベクトル
+	vec3::Vec3 _v;
 	bool    _bLand; // 着地フラグ
 };
 

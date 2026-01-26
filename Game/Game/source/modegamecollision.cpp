@@ -14,11 +14,24 @@
 // コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
 bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 {
+	// 無効チェック
+	if(!chara || !obj) { return false; }
+
 	// プレイヤーが空中なら処理しない
 	if(!chara->GetLand())
 	{
 		return false;
 	}
+
+	auto handleMap = obj->GetModelHandleMap();
+	if(handleMap.empty()) { return false; }
+
+	// モデルハンドル取得
+	const int modelHandle    = handleMap.begin()->second;
+	const int frameIndex     = obj->GetFrameMapCollision();
+	if(modelHandle < 0 || frameIndex < 0) { return false; }
+
+	vec::Vec3 oldPos = chara->GetPos();
 
 	// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
 	float escapeTbl[] =
@@ -27,68 +40,68 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	};
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
-		// 移動前の位置を保存
-		vec::Vec3 oldvPos = chara->GetPos();
-		vec::Vec3 v = chara->GetInputVector();
-		vec::Vec3 oldv = v;
-		float rad = atan2((float)v.z, (float)v.x);
-		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
-		float sx = _camera->_vPos.x - _camera->_vTarget.x;
-		float sz = _camera->_vPos.z - _camera->_vTarget.z;
-		float camrad = atan2(sz, sx);
+		// 現在フレームの移動量
+		vec::Vec3 v = chara->GetMoveV();
 
-		// escapeTbl[i]の分だけ移動量v回転
-		float escape_rad = DEG2RAD(escapeTbl[i]);
+		// カメラ角補正（元コード踏襲）
+		const float rad = atan2(static_cast<float>(v.z), static_cast<float>(v.x));
+		const float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
+
+		float camrad = 0.0f;
+		if(_camera)
+		{
+			const float sx = _camera->_vPos.x - _camera->_vTarget.x;
+			const float sz = _camera->_vPos.z - _camera->_vTarget.z;
+			camrad = atan2(sz, sx);
+		}
+
+		const float escape_rad = DEG2RAD(escapeTbl[i]);
 		v.x = cos(rad + camrad + escape_rad) * length;
 		v.z = sin(rad + camrad + escape_rad) * length;
 
-		// vの分移動
-		chara->SetPos(vec3::VAdd(chara->GetPos(), v));
+		// 候補位置へ移動
+		vec::Vec3 candidate = vec3::VAdd(oldPos, v);
+		chara->SetPos(candidate);
 
-		// コリジョン処理しないならループから抜ける
+		// コリジョン無効ならこの時点で終わり
 		if(!_d_use_collision)
 		{
-			//カメラも移動する
-			break;
+			return true;
 		}
 
-		// 移動した先でコリジョン判定
-		// 移動した先でコリジョン判定
-		//MV1_COLL_RESULT_POLY hitPoly;
+		// ---- ここが「貼ってくれた真下レイ判定」と同等 ----
+		const float colSubY = chara->GetColSubY();
 
-		// 主人公の腰位置から下方向への直線
-		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
-		vec::Vec3 hitPos;
-		bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
-			chara->GetPos(),
-			obj->GetModelHandleMap().begin()->second,
-			obj->GetFrameMapCollision(),
-			chara->GetColSubY(),
-			hitPos
+		const vec::Vec3 start = vec3::VAdd(candidate, vec3::VGet(0.0f, colSubY, 0.0f));
+		const vec::Vec3 end = vec3::VAdd(candidate, vec3::VGet(0.0f, -99999.0f, 0.0f));
+
+		MV1_COLL_RESULT_POLY hitPoly = DxlibConverter::MV1CollCheckLine(
+			modelHandle,
+			frameIndex,
+			start,
+			end
 		);
-		if(hit)
+
+		if(hitPoly.HitFlag)
 		{
-			// 当たった
-			// 当たったY位置をキャラ座標にする
-			vec::Vec3 tmpPos = chara->GetPos();
-			tmpPos.y = hitPos.y;
-			chara->SetPos(tmpPos);
+			// 床に吸着（Y確定）
+			candidate.y = hitPoly.HitPosition.y;
+			chara->SetPos(candidate);
 
-			// キャラが上下に移動した量だけ、移動量を修正
-			v.y += chara->GetPos().y - oldvPos.y;
+			// 必要なら v.y 更新（既存踏襲：旧posとの差分を足す）
+			// ※ oldPos からの差分にするなら candidate.y - oldPos.y
+			v.y += (candidate.y - oldPos.y);
 
-
-
-			// ループiから抜ける
-			break;
+			return true;
 		}
-		else
-		{
-			// 当たらなかった。元の座標に戻す
-			chara->SetPos(oldvPos);
-			v = oldv;
-		}
+
+		// 床が無い＝不採用 → 元に戻して次候補へ
+		chara->SetPos(oldPos);
 	}
+
+	// 全候補失敗
+	chara->SetPos(oldPos);
+	return false;
 	return true;
 }
 

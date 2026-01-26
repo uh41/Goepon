@@ -38,20 +38,25 @@ public:
 	void SetEulerAngleDeg(const vec::Vec3& set) { _vEulerAngle = { DEG2RAD(set.x), DEG2RAD(set.y), DEG2RAD(set.z) }; }
 	void SetScale(const vec::Vec3& set) { _vScale = set; }
 
-	auto& GetHandleMap() {
+	auto& GetHandleMap() 
+	{
 		return _iHandleMap;
 	}
-	auto GetHandleSkySphere() const {
+	auto GetHandleSkySphere() const
+	{
 		return _iHandleSkySphere;
 	}
-	auto GetFrameMapCollision() const {
+	auto GetFrameMapCollision() const
+	{
 		return _iFrameMapCollision;
 	}
-	auto GetHandleShadowMap() const {
+	auto GetHandleShadowMap() const
+	{
 		return _iHandleShadowMap;
 	}
 
-	auto GetModelHandleMap() {
+	auto GetModelHandleMap()
+	{
 		return _mModelHandle;
 	}
 

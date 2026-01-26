@@ -21,7 +21,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-
+	vec::Vec3 GetMoveV() const { return _v; }
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
 
