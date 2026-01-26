@@ -77,6 +77,7 @@ protected:
 	bool _bIsAlive;// 生存フラグ
 
 	float   _fMvSpeed;
+	// 入力ベクトル
 	vec3::Vec3 _vInput;
 
 	bool    _bLand; // 着地フラグ

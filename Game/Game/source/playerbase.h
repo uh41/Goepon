@@ -22,7 +22,6 @@ public:
 	virtual bool Render();
 
 
-
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
 

@@ -56,217 +56,95 @@ bool PlayerTanuki::Terminate()
 // �v�Z����
 bool PlayerTanuki::Process()
 {
-	//base::Process();
 
-	//int key = ApplicationBase::GetInstance()->GetKey();
+    base::Process();
 
-	//// �����O�̈ʒu��ۑ�
-	//_vOldPos = _vPos;
+    int key = ApplicationBase::GetInstance()->GetKey();
 
-	//// �����O�̃X�e�[�^�X��ۑ����Ă���
-	//CharaBase::STATUS old_status = _status;
-	////vec::Vec3 v = { 0,0,0 };
+    // 前フレーム位置を保存（マップ当たり判定などで使用）
+    _vOldPos = _vPos;
 
-	//// �J�����̌����Ă���p�x��擾
-	//float sx = _cam->_vPos.x - _cam->_vTarget.x;
-	//float sz = _cam->_vPos.z - _cam->_vTarget.z;
-	//float camrad = atan2(sz, sx);
+    // 前フレームのステータス保存
+    CharaBase::STATUS old_status = _status;
 
-	//// �L�����ړ�(�J�����ݒ�ɍ��킹��)
-	//lStickX = fLx;
-	//lStickZ = fLz;
+    // カメラの向き（ターゲットから見た位置ベクトル）
+    float sx = _cam->_vPos.x - _cam->_vTarget.x;
+    float sz = _cam->_vPos.z - _cam->_vTarget.z;
+    float camrad = atan2(sz, sx);   // カメラの「後ろ」方向
 
-	//vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-	//if (CheckHitKey(KEY_INPUT_UP))
-	//{
-	//	inputLocal.x = -1.0f;
-	//}
-	//if (CheckHitKey(KEY_INPUT_DOWN))
-	//{
-	//	inputLocal.x = 1.0f;
-	//}
-	//if (CheckHitKey(KEY_INPUT_LEFT))
-	//{
-	//	inputLocal.z = -1.0f;
-	//}
-	//if (CheckHitKey(KEY_INPUT_RIGHT))
-	//{
-	//	inputLocal.z = 1.0f;
-	//}
+    // 左スティック値（どこかで fLx / fLz を更新している前提）
+    lStickX = fLx;
+    lStickZ = fLz;
 
-	//// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
-	//_vInput = inputLocal;
+    // --- 1. ローカル空間（カメラ基準の前後左右）で入力を作る ---
+    vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 
-	//float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-	//float rad = atan2(lStickX, lStickZ);
-	//if (length < _fAnalogDeadZone)
-	//{
-	//	length = 0.0f;
-	//}
+    // キーボード入力（WASD/カーソルキー的な前後左右）
+    if(CheckHitKey(KEY_INPUT_UP))
+    {
+        inputLocal.z -= 1.0f;   // 前
+    }
+    if(CheckHitKey(KEY_INPUT_DOWN))
+    {
+        inputLocal.z += 1.0f;   // 後
+    }
+    if(CheckHitKey(KEY_INPUT_LEFT))
+    {
+        inputLocal.x -= 1.0f;   // 左
+    }
+    if(CheckHitKey(KEY_INPUT_RIGHT))
+    {
+        inputLocal.x += 1.0f;   // 右
+    }
 
-	////// ���̓x�N�g����ۑ��iEscapeCollision�Ŏg�p�j
-	////_vInput = inputLocal;
-	//// ���̓x�N�g����ۑ��iEscapeCollision�Ŏg�p�j
-	//_vInput = inputLocal;
+    // 左スティック入力
+    float stickLen = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+    if(stickLen >= _fAnalogDeadZone)
+    {
+        // スティック方向を単位ベクトルにして足し込む（キーボードと合成）
+        inputLocal.x += lStickX / stickLen;
+        inputLocal.z += lStickZ / stickLen;
+    }
 
-	//// �J���������ɍ��킹�Ĉړ��ʂ�v�Z
-	//if (length > 0.0f)
-	//{
-	//	length = _fMvSpeed;
-	//	_v.x = cosf(rad + camrad) * length;
-	//	_v.z = sinf(rad + camrad) * length;
+    // --- 2. ローカル入力ベクトルを元にワールド移動ベクトル _vInput を計算 ---
+    _vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+    _v = vec3::VGet(0.0f, 0.0f, 0.0f);  // 最後の移動処理用
 
-	//	_vDir = _v;
-	//	_status = STATUS::WALK;
-	//}
-	//else
-	//{
-	//	_v = vec3::VGet(0.0f, 0.0f, 0.0f);
-	//	_status = STATUS::WAIT;
-	//}
+    float inputLen = vec3::VSize(inputLocal);
+    if(inputLen > 0.0f)
+    {
+        // ローカル入力方向（正規化）
+        vec::Vec3 dirLocal = vec3::VScale(inputLocal, 1.0f / inputLen);
 
-	//// �A�j���[�V�����Ǘ�
-	//if (old_status == _status)
-	//{
-	//	float anim_speed = 0.5f;
-	//	_fPlayTime += anim_speed;
-	//	switch (_status)
-	//	{
-	//	case STATUS::WAIT:
-	//		_fPlayTime += (float)(rand() % 10) / 100.0f;
-	//		break;
-	//	}
-	//}
-	//else
-	//{
+        // ローカルX,Z を角度に変換（右が0度、手前が+90度のDX準拠）
+        float rad = atan2f(dirLocal.z, dirLocal.x);
 
-	//	if (_animId != -1)
-	//	{
-	//		AnimationManager::GetInstance()->Stop(_animId);
-	//		_animId = -1;
-	//	}
+        float speed = _fMvSpeed;
 
-	//	std::string anim_name;
-	//	switch (_status)
-	//	{
-	//	case STATUS::WAIT:
-	//		anim_name = "hensin";
-	//		break;
-	//	case STATUS::WALK:
-	//		anim_name = "walk";
-	//		break;
-	//	default:
-	//		anim_name.clear();
-	//	}
+        // カメラ角度を加味してワールド移動量にする
+        // camrad は「カメラの後ろ向きベクトル」の角度なので
+        // ここで +camrad してキャラの移動方向をカメラに追従させる
+        _vInput.x = cosf(rad + camrad) * speed;
+        _vInput.z = sinf(rad + camrad) * speed;
 
-	//	if (!anim_name.empty())
-	//	{
-	//		_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-	//		_fPlayTime = 0.0f;
-	//		switch (_status)
-	//		{
-	//		case STATUS::WAIT:
-	//			_fPlayTime += rand() % 30;
-	//			break;
-	//		}
-	//		if (_animId != -1)
-	//		{
-	//			AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
-	//		}
-	//	}
-	//}
+        // 実際に使う速度ベクトル
+        _v = _vInput;
 
-	//if (_fPlayTime >= _fTotalTime)
-	//{
-	//	_fPlayTime = 0.0f;
-	//}
+        // キャラの向きは速度ベクトルを正規化して使う
+        if(vec3::VSize(_vInput) > 0.0f)
+        {
+            _vDir = vec3::VNorm(_vInput);
+        }
 
-	//// --- �����Ŏ��ۂɈʒu�ƃJ������ړ������� ---
-	//if (vec3::VSize(_v) > 0.0f)
-	//{
-	//	// �v���C���[�̈ʒu��ړ�
-	//	_vPos = vec3::VAdd(_vPos, _v);
-
-	//	// �J�������ݒ肳��Ă���΃J�����ʒu�̓v���C���[�ʒu + �I�t�Z�b�g�Őݒ�i���Z�͂��Ȃ��j
-	//	if (_cam != nullptr)
-	//	{
-	//		_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
-	//		_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
-	//	}
-	//}
-
-	base::Process();
-
-	int key = ApplicationBase::GetInstance()->GetKey();
-
-	// �����O�̈ʒu��ۑ�
-	_vOldPos = _vPos;
-
-	// �����O�̃X�e�[�^�X��ۑ����Ă���
-	CharaBase::STATUS old_status = _status;
-	//vec::Vec3 v = { 0,0,0 };
-
-	// �J�����̌����Ă���p�x��擾
-	float sx = _cam->_vPos.x - _cam->_vTarget.x;
-	float sz = _cam->_vPos.z - _cam->_vTarget.z;
-	float camrad = atan2(sz, sx);
-
-	// �L�����ړ�(�J�����ݒ�ɍ��킹��)
-	lStickX = fLx;
-	lStickZ = fLz;
-
-	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-	if (CheckHitKey(KEY_INPUT_UP))
-	{
-		inputLocal.x = -1.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_DOWN))
-	{
-		inputLocal.x = 1.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_LEFT))
-	{
-		inputLocal.z = -1.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_RIGHT))
-	{
-		inputLocal.z = 1.0f;
-	}
-
-	float stickLen = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
-	if (stickLen >= _fAnalogDeadZone)
-	{
-		// 方向だけを加算する（強さは無視して一定速度）
-		inputLocal.x += lStickX / stickLen;
-		inputLocal.z += lStickZ / stickLen;
-	}
-
-	// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
-	_vInput = inputLocal;
-
-	float length = stickLen;
-	float rad = atan2f(lStickX, lStickZ);   // ← (x,z) なら atan2(z, x) の方が自然
-
-	if (length < _fAnalogDeadZone)
-	{
-		length = 0.0f;
-	}
-
-	// �J���������ɍ��킹�Ĉړ��ʂ�v�Z
-	if (length > 0.0f)
-	{
-		length = _fMvSpeed;
-		_v.x = cosf(rad + camrad) * length;
-		_v.z = sinf(rad + camrad) * length;
-
-		_vDir = _v;
-		_status = STATUS::WALK;
-	}
-	else
-	{
-		_v = vec3::VGet(0.0f, 0.0f, 0.0f);
-		_status = STATUS::WAIT;
-	}
+        _status = STATUS::WALK;
+    }
+    else
+    {
+        _vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+        _v = _vInput;
+        // 向きはそのまま維持でもよいので _vDir は更新しない方が自然
+        _status = STATUS::WAIT;
+    }
 
 	// �A�j���[�V�����Ǘ�
 	if(old_status == _status)
