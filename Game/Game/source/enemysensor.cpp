@@ -211,13 +211,58 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 		return false; // 角度範囲外
 	}
 
-	// 床の存在チェック - プレイヤーの足元に床があるかを確認
-	if (!CheckFloorExistence(playerPos))
+	// 視線チェック - 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
+	if (!CheckLineOfSight(detectionCenter, playerPos))
 	{
-		return false; // 床がない位置は検出対象外
+		return false; // 視線が遮断されている
 	}
 
 	return true;
+}
+
+// 視線チェック - 指定した2点間で床なしの地点があるかチェック
+bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const
+{
+	// マップが設定されていない場合は視線が通るものとして処理
+	if (!_map)
+	{
+		return true;
+	}
+
+	// チェック間隔（単位：ワールド座標）
+	const float checkInterval = 30.0f;
+
+	// 開始点から終了点へのベクトル
+	vec::Vec3 direction = vec3::VSub(endPos, startPos);
+	float totalDistance = vec3::VSize(direction);
+
+	// 距離が短すぎる場合は視線が通るとみなす
+	if (totalDistance < checkInterval)
+	{
+		return CheckFloorExistence(endPos);
+	}
+
+	// 正規化された方向ベクトル
+	vec::Vec3 dirNorm = vec3::VNorm(direction);
+
+	// チェック回数を計算
+	int checkCount = static_cast<int>(totalDistance / checkInterval);
+
+	// 一定間隔で床の存在をチェック
+	for (int i = 1; i <= checkCount; i++)
+	{
+		float currentDistance = checkInterval * i;
+		vec::Vec3 checkPos = vec3::VAdd(startPos, vec3::VScale(dirNorm, currentDistance));
+
+		// この地点で床がない場合は視線が遮断される
+		if (!CheckFloorExistence(checkPos))
+		{
+			return false;
+		}
+	}
+
+	// 最終的に終了点の床もチェック
+	return CheckFloorExistence(endPos);
 }
 
 // 床の存在を確認する関数
@@ -244,6 +289,8 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 	// 当たり判定があれば床が存在
 	return hitPoly.HitFlag == TRUE;
 }
+
+
 
 // デバッグ用：索敵範囲の描画
 void EnemySensor::RenderDetectionSector() const

@@ -69,6 +69,10 @@ public:
 	// 床の存在を確認する関数
 	bool CheckFloorExistence(const vec::Vec3& position) const;
 
+	// 視線チェック - 指定した2点間で床なしの地点があるかチェック
+	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
+
+	
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
 	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
