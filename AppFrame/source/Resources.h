@@ -39,6 +39,7 @@ namespace mv1
   inline constexpr const char* S_TreasureBox = "res/IslandJson/S_TreasureBox.mv1";
   inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
+  inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
