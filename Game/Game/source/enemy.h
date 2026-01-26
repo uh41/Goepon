@@ -76,4 +76,12 @@ protected:
 	// 敵の向き変更タイマー
 	float DirChangeTimer;
 	static constexpr float DirChangeInterval = 15.0f; // 向き変更の間隔（秒）
+
+	// 床の存在を確認する関数
+	bool CheckFloorExistence(const vec::Vec3& position);
+
+	// テレポート関連
+	bool _waitingForTeleport;		// テレポート待機中フラグ
+	float _teleportTimer;			// テレポートまでの待機時間
+	static constexpr float TELEPORT_WAIT_TIME = 3.0f; // テレポートまでの待機時間（秒）
 };

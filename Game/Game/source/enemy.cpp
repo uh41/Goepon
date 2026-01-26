@@ -52,10 +52,15 @@ bool Enemy::Initialize()
 	_isReturningToInitialPos = false;	// 初期位置に戻り中フラグの初期化
 	_returnSpeed = 1.5f;				// 初期位置に戻る速度（追跡より少し遅め）
 
+	// テレポート関連の初期化
+	_waitingForTeleport = false;		// テレポート待機中フラグの初期化
+	_teleportTimer = 0.0f;				// テレポートタイマーの初期化
+
 	// YouDiedメッセージ関連の初期化
 	_showYouDiedMessage = false;
 	_youDiedMessageTimer = 0.0f;
 
+	// 敵の向き変更タイマーの初期化
 	DirChangeTimer = DirChangeInterval;
 
 	return true;
@@ -88,6 +93,10 @@ void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 
 	// プレイヤーを検出したら初期位置に戻るのを中断
 	_isReturningToInitialPos = false;
+
+	// テレポート待機もキャンセル
+	_waitingForTeleport = false;
+	_teleportTimer = 0.0f;
 }
 
 // プレイヤーが検出範囲外になった時の処理
@@ -113,6 +122,19 @@ void Enemy::LookAtPlayer()
 		// 正規化して向きを設定
 		_vDir = vec3::VNorm(toPlayer);
 	}
+}
+
+// 床の存在を確認する関数
+bool Enemy::CheckFloorExistence(const vec::Vec3& position)
+{
+	// EnemySensorが設定されている場合はそれを使用
+	if (_enemySensor)
+	{
+		return _enemySensor->CheckFloorExistence(position);
+	}
+
+	// EnemySensorがない場合は常にtrue（元の動作を維持）
+	return true;
 }
 
 // プレイヤーの方向に徐々に回転する処理
@@ -176,6 +198,10 @@ void Enemy::StartReturningToInitialPosition()
 		_isReturningToInitialPos = true; // 初期位置に戻り始める
 		_isMoving = false;				 // 他の移動を停止
 
+		// テレポート関連をリセット
+		_waitingForTeleport = false;
+		_teleportTimer = 0.0f;
+
 		// 初期位置に戻り始める際に検出状態をリセット
 		_detectedPlayer = false;
 
@@ -200,6 +226,26 @@ void Enemy::UpdateReturningToInitialPosition()
 {
 	if (!_isReturningToInitialPos) return;
 
+	// テレポート待機中の場合
+	if (_waitingForTeleport)
+	{
+		_teleportTimer -= 1.0f / 60.0f; // 60FPSとして計算
+
+		if (_teleportTimer <= 0.0f)
+		{
+			// 3秒経過したので初期位置にテレポート
+			_vPos = _initialPosition;
+			_vDir = _initialDirection;
+			_isReturningToInitialPos = false;
+			_waitingForTeleport = false;
+			_teleportTimer = 0.0f;
+
+			// デバッグ出力
+			OutputDebugStringA("敵が初期位置にテレポートしました\n");
+		}
+		return;
+	}
+
 	// 初期位置への方向ベクトルを計算
 	vec::Vec3 toInitialPos = vec3::VSub(_initialPosition, _vPos);
 	toInitialPos.y = 0.0f; // Y軸は無視
@@ -222,7 +268,28 @@ void Enemy::UpdateReturningToInitialPosition()
 	vec::Vec3 movement = vec3::VScale(moveDirection, _returnSpeed);
 
 	// 新しい位置を計算
-	_vPos = vec3::VAdd(_vPos, movement);
+	vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
+
+	// 床の存在を確認してから移動
+	if (CheckFloorExistence(newPos))
+	{
+		_vPos = newPos;
+	}
+	else
+	{
+		//// 床がない場合は移動を停止し、初期位置への復帰を中断
+		//_isReturningToInitialPos = false;
+		//return;
+		// 床がない場合はテレポート待機開始
+		if (!_waitingForTeleport)
+		{
+			_waitingForTeleport = true;
+			_teleportTimer = TELEPORT_WAIT_TIME;
+
+			// デバッグ出力
+			OutputDebugStringA("床がないため、3秒後にテレポートします\n");
+		}
+	}
 
 	// 移動方向に向きを徐々に変更
 	float currentAngle = atan2f(_vDir.x, _vDir.z);
@@ -273,11 +340,14 @@ bool Enemy::Process()
 			_status = STATUS::WALK;
 			// プレイヤーを検出中は初期位置に戻るのを停止
 			_isReturningToInitialPos = false;
+			// テレポート待機もキャンセル
+			_waitingForTeleport = false;
+			_teleportTimer = 0.0f;
 		}
 		else if (_isReturningToInitialPos)
 		{
 			// 初期位置に戻り中
-			_status = STATUS::WALK;
+			_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
 			UpdateReturningToInitialPosition();
 		}
 		else
@@ -391,23 +461,32 @@ bool Enemy::Process()
 
 	// 定期的に方向を90度変える処理
 	DirChangeTimer -= 1.0f / 60.0f;
-	if(DirChangeTimer <= 0.0f)
+	if (DirChangeTimer <= 0.0f)
 	{
-		DirChangeTimer =15.0f;
+		DirChangeTimer = 15.0f;
 		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
 		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
 		{
-			// 現在の向きの角度を取得
+			// 回転先の方向を計算
 			float currentAngle = atan2f(_vDir.x, _vDir.z);
-
-			// 90度（π/2ラジアン）を加算
 			float newAngle = currentAngle + DX_PI_F / 2.0f;
 
-			// 新しい向きを設定
-			_vDir.x = sin(newAngle);
-			_vDir.z = cos(newAngle);
+			// 新しい向きベクトルを計算
+			vec::Vec3 newDir;
+			newDir.x = sin(newAngle);
+			newDir.y = 0.0f;
+			newDir.z = cos(newAngle);
+
+			// 新しい方向に少し移動した位置で床の存在を確認
+			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
+
+			// 床がある場合のみ回転を実行
+			if (CheckFloorExistence(testPos))
+			{
+				_vDir = newDir;
+			}
 		}
-		
+
 	}
 	return true;
 }
@@ -461,7 +540,18 @@ void Enemy::MoveTowardsTarget(const vec::Vec3& target)
 
 	// 新しい位置を計算
 	vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
-	_vPos = newPos;
+	
+	// 床の存在を確認してから移動
+	if (CheckFloorExistence(newPos))
+	{
+		_vPos = newPos;
+	}
+	else
+	{
+		// 床がない場合は移動を停止
+		_isMoving = false;
+		return;
+	}
 
 	// 目標位置を更新
 	_targetPosition = target;

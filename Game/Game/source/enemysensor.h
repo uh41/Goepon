@@ -66,6 +66,9 @@ public:
 	// Mapクラスへの参照を設定
 	void SetMap(Map* map) { _map = map; }
 
+	// 床の存在を確認する関数
+	bool CheckFloorExistence(const vec::Vec3& position) const;
+
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
 	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
@@ -83,8 +86,5 @@ protected:
 	void UpdateDetectionTimer();		  // 検出タイマーの更新
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
-	// 床の存在を確認する関数
-	bool CheckFloorExistence(const vec::Vec3& position) const;
-
-	Map* _map;
+	Map* _map;	// マップへの参照
 };
