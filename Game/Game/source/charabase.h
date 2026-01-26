@@ -42,7 +42,7 @@ public:
 
 	const vec::Vec3& SetPos(const vec::Vec3& pos) { return _vPos = pos; }
 	const vec::Vec3& GetDir() const { return _vDir; }
-	void SetDir(const vec::Vec3& dir) { _vDir = dir; }
+
 
 	auto GetCollisionR() const { return _fCollisionR; }
 	auto GetCollisionWeight() const { return _fCollisionWeight; }
@@ -67,7 +67,7 @@ protected:
 	float _fPlayTime;
 	vec::Vec3 _vPos; // キャラの位置
 	vec::Vec3 _vOldPos; // 1フレーム前のキャラの位置
-	vec::Vec3 _vDir; // キャラの向き
+
 	float _fColSubY; // コリジョン判定用のYオフセット
 	float _fCollisionR; // 円の半径
 	float _fCollisionWeight; // キャラの重さ

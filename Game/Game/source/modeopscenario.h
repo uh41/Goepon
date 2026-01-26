@@ -1,12 +1,11 @@
 #pragma once
-#include "appframe.h"
+#include "modescenariobase.h"
 
-class ModeInit : public ModeBase
+class ModeOpScenario : public ModeScenarioBase
 {
-public:
-
-	ModeInit();
-	virtual ~ModeInit();
+	public:
+	ModeOpScenario();
+	virtual ~ModeOpScenario();
 	virtual bool Initialize()override;
 	virtual bool Terminate()override;
 	virtual bool Process()override;

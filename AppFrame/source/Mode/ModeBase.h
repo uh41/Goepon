@@ -51,7 +51,6 @@ public:
 	int GetCallPerFrame() { return _callPerFrame; }
 	int GetCallOfCount() { return _callOfCount; }
 
-
 private:
 	friend	ModeServer;
 	// ModeServer用
@@ -77,7 +76,7 @@ private:
 	int		_callOfCount;
 
 protected:
-	int _iHandle;
+	int _handle;
 
 	State _state;
 
