@@ -19,7 +19,7 @@ ModeInit::~ModeInit()
 
 bool ModeInit::Initialize()
 {
-	_iHandle = LoadGraph(img::amglogo);
+	_iHandle = LoadGraph(img::AMGlogo);
 	_isWait = false;
 	
 	return true;

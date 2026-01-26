@@ -38,6 +38,23 @@ public:
 	void SetEulerAngleDeg(const vec::Vec3& set) { _vEulerAngle = { DEG2RAD(set.x), DEG2RAD(set.y), DEG2RAD(set.z) }; }
 	void SetScale(const vec::Vec3& set) { _vScale = set; }
 
+	auto& GetHandleMap() {
+		return _iHandleMap;
+	}
+	auto GetHandleSkySphere() const {
+		return _iHandleSkySphere;
+	}
+	auto GetFrameMapCollision() const {
+		return _iFrameMapCollision;
+	}
+	auto GetHandleShadowMap() const {
+		return _iHandleShadowMap;
+	}
+
+	auto GetModelHandleMap() {
+		return _mModelHandle;
+	}
+
 	//回転縮小平行移動を計算し、モデルに適用する
 	void ModelMatrixSetUp();
 
@@ -57,6 +74,12 @@ protected:
 	std::string _sName;			    //名前
 
     int _animId;				// アニメーションID
+
+	int _iFrameMapCollision;
+	int _iHandleMap;// std::map<マップ名, ハンドル>
+	int _iHandleSkySphere;
+	int _iHandleShadowMap;
+	at::mst<int> _mModelHandle;// マップ画像
 
 	//DamageData _damageData;		//ダメージデータ
 

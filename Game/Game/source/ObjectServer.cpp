@@ -179,4 +179,5 @@ bool ObjectServer::LoadDate(std::string stageName)
 		}
 	}
 	
+	return true;
 }

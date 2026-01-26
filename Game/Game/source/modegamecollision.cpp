@@ -12,10 +12,10 @@
 #include "appframe.h"
 
 // コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
-bool ModeGame::EscapeCollision(PlayerBase* player)
+bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 {
 	// プレイヤーが空中なら処理しない
-	if(!player->GetLand())
+	if(!chara->GetLand())
 	{
 		return false;
 	}
@@ -28,11 +28,11 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		// 移動前の位置を保存
-		vec::Vec3 oldvPos = player->GetPos();
-		vec::Vec3 v = player->GetInputVector();
+		vec::Vec3 oldvPos = chara->GetPos();
+		vec::Vec3 v = chara->GetInputVector();
 		vec::Vec3 oldv = v;
 		float rad = atan2((float)v.z, (float)v.x);
-		float length = player->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
+		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
 		float sx = _camera->_vPos.x - _camera->_vTarget.x;
 		float sz = _camera->_vPos.z - _camera->_vTarget.z;
 		float camrad = atan2(sz, sx);
@@ -43,7 +43,7 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		v.z = sin(rad + camrad + escape_rad) * length;
 
 		// vの分移動
-		player->SetPos(vec3::VAdd(player->GetPos(), v));
+		chara->SetPos(vec3::VAdd(chara->GetPos(), v));
 
 		// コリジョン処理しないならループから抜ける
 		if(!_d_use_collision)
@@ -53,25 +53,31 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		}
 
 		// 移動した先でコリジョン判定
-		MV1_COLL_RESULT_POLY hitPoly;
+		// 移動した先でコリジョン判定
+		//MV1_COLL_RESULT_POLY hitPoly;
 
 		// 主人公の腰位置から下方向への直線
-		hitPoly = DxlibConverter::MV1CollCheckLine(
-			_map->GetHandleMap(),
-			_map->GetFrameMapCollision(),
-			vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, player->GetColSubY(), 0.0f)),
-			vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, -99999.0f, 0.0f))
+		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
+		vec::Vec3 hitPos;
+		bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			chara->GetPos(),
+			obj->GetModelHandleMap().begin()->second,
+			obj->GetFrameMapCollision(),
+			chara->GetColSubY(),
+			hitPos
 		);
-		if(hitPoly.HitFlag)
+		if(hit)
 		{
 			// 当たった
 			// 当たったY位置をキャラ座標にする
-			vec::Vec3 tmpPos = player->GetPos();
-			tmpPos.y = hitPoly.HitPosition.y;
-			player->SetPos(tmpPos);
+			vec::Vec3 tmpPos = chara->GetPos();
+			tmpPos.y = hitPos.y;
+			chara->SetPos(tmpPos);
 
 			// キャラが上下に移動した量だけ、移動量を修正
-			v.y += player->GetPos().y - oldvPos.y;
+			v.y += chara->GetPos().y - oldvPos.y;
+
+
 
 			// ループiから抜ける
 			break;
@@ -79,7 +85,7 @@ bool ModeGame::EscapeCollision(PlayerBase* player)
 		else
 		{
 			// 当たらなかった。元の座標に戻す
-			player->SetPos(oldvPos);
+			chara->SetPos(oldvPos);
 			v = oldv;
 		}
 	}
@@ -198,5 +204,40 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 			move->SetPos(tmpPos);
 		}
 	}
+	return true;
+}
+
+bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
+{
+	int trg = ApplicationMain::GetInstance()->GetTrg();
+
+	if(trg & PAD_INPUT_2)
+	{
+		player = _playerTanuki.get();
+
+		float halfAngle = DEG2RAD(60.0f); // 60度
+		float rad = 120.0f; // 半径100
+
+		for(auto& enemy : enemy)
+		{
+			if(!enemy->IsAlive()) {
+				continue;
+			}
+
+			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
+				enemy->GetPos(),
+				vec3::VScale(enemy->GetDir(), -1.0f),
+				rad,
+				halfAngle,
+				player->GetPos()
+			);
+			if(hit)
+			{
+				player->PlayAnimation("goepon_walk", false);
+				enemy->PlayAnimation("walk", false);
+			}
+		}
+	}
+
 	return true;
 }

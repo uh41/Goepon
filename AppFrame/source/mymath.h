@@ -143,4 +143,18 @@ namespace mymath
 	float EasingOutCirc(float cnt, float start, float end, float frames);
 	float EasingInOutCirc(float cnt, float start, float end, float frames);
 
+	template<typename T>
+	static float Clamp(T min, T max, T n)
+	{
+		if(n <= min)
+		{
+			return min;
+		}
+		if(n >= max)
+		{
+			return max;
+		}
+
+		return n;
+	}
 }

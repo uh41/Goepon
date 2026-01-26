@@ -9,6 +9,7 @@
 
 #include "objectbase.h"
 #include"DxLib.h"
+#include "charaBase.h"
 
 
 // 初期化
@@ -45,12 +46,22 @@ bool ObjectBase::Render()
 //座標などの読み込み
 void ObjectBase::SetJsonDataUE(nlohmann::json j)
 {
-	SetPos(vec::Vec3
+	// JSONから計算した位置を一度変数に保持
+	vec::Vec3 newPos = vec::Vec3
 	{
-	j.at("translate").at("x").get<float>(),
-	j.at("translate").at("z").get<float>(),
-	-1.0f * j.at("translate").at("y").get<float>()
-	});
+		j.at("translate").at("x").get<float>(),
+		j.at("translate").at("z").get<float>(),
+		-1.0f * j.at("translate").at("y").get<float>()
+	};
+
+	// ObjectBase の位置も更新
+	SetPos(newPos);
+
+	// CharaBase を継承している派生クラスなら、そちらの位置も更新する
+	if(auto ch = dynamic_cast<CharaBase*>(this))
+	{
+		ch->SetPos(newPos);
+	}
 	SetEulerAngleDeg(vec::Vec3
 	{
 		j.at("rotate").at("x").get<float>(),
