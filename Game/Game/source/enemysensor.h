@@ -2,29 +2,29 @@
 #include "enemybase.h"
 #include "playerbase.h"
 
-class Map; // ‘O•ûéŒ¾
+class Map; // ï¿½Oï¿½ï¿½ï¿½éŒ¾
 
-// õ“G”ÍˆÍ‚Ìî•ñ‚ğŠi”[‚·‚é\‘¢‘Ì
+// ï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚Ìï¿½ï¿½ï¿½iï¿½[ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½
 struct DetectionSector
 {
-	vec::Vec3 center;      // îŒ`‚Ì’†S“_i“G‚ÌˆÊ’uj
-	vec::Vec3 forward;     // “G‚Ì³–Ê•ûŒü
-	float radius;       // õ“G”ÍˆÍ‚Ì”¼Œa
-	float angle;        // õ“GŠp“xi“xj
+	vec::Vec3 center;      // ï¿½ï¿½`ï¿½Ì’ï¿½ï¿½Sï¿½_ï¿½iï¿½Gï¿½ÌˆÊ’uï¿½j
+	vec::Vec3 forward;     // ï¿½Gï¿½Ìï¿½ï¿½Ê•ï¿½ï¿½ï¿½
+	float radius;       // ï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚Ì”ï¿½ï¿½a
+	float angle;        // ï¿½ï¿½ï¿½Gï¿½pï¿½xï¿½iï¿½xï¿½j
 };
 
-// ŒŸoó‘Ô‚Ìî•ñ
+// ï¿½ï¿½ï¿½oï¿½ï¿½Ô‚Ìï¿½ï¿½
 struct DetectionInfo
 {
-	bool isDetected;        // ŒŸo‚³‚ê‚Ä‚¢‚é‚©
-	float timer;            // ŒŸo•\¦ƒ^ƒCƒ}[
-	int detectorIndex;      // ŒŸo‚µ‚½“G‚ÌƒCƒ“ƒfƒbƒNƒX
-	vec::Vec3 detectorPos;  // ŒŸo‚µ‚½“G‚ÌˆÊ’u
+	bool isDetected;        // ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©
+	float timer;            // ï¿½ï¿½ï¿½oï¿½\ï¿½ï¿½ï¿½^ï¿½Cï¿½}ï¿½[
+	int detectorIndex;      // ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+	vec::Vec3 detectorPos;  // ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ÌˆÊ’u
 
-	// ’ÇÕ‹@”\—p
-	bool isChasing;					// Œ»İ’ÇÕ’†‚©
-	vec::Vec3 lastKnownPlayerPos;	// ÅŒã‚ÉŠm”F‚³‚ê‚½ƒvƒŒƒCƒ„[‚ÌˆÊ’u
-	float chaseTimer;				// ’ÇÕŒp‘±ŠÔ
+	// ï¿½ÇÕ‹@ï¿½\ï¿½p
+	bool isChasing;					// ï¿½ï¿½ï¿½İ’ÇÕ’ï¿½ï¿½ï¿½
+	vec::Vec3 lastKnownPlayerPos;	// ï¿½ÅŒï¿½ÉŠmï¿½Fï¿½ï¿½ï¿½ê‚½ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌˆÊ’u
+	float chaseTimer;				// ï¿½ÇÕŒpï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 };
 
 class EnemySensor : public EnemyBase
@@ -37,57 +37,54 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	// õ“G”ÍˆÍ‚Ìİ’è
-	void SetDetectionSector(float radius, float angle);	// ”¼ŒaAŠp“x
+	// ï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚Ìİ’ï¿½
+	void SetDetectionSector(float radius, float angle);	// ï¿½ï¿½ï¿½aï¿½Aï¿½pï¿½x
 
-	// ƒvƒŒƒCƒ„[‚ªõ“G”ÍˆÍ“à‚É‚¢‚é‚©ƒ`ƒFƒbƒN
+	// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½Gï¿½ÍˆÍ“ï¿½É‚ï¿½ï¿½é‚©ï¿½`ï¿½Fï¿½bï¿½N
 	bool IsPlayerInDetectionRange(const vec::Vec3& playerPos) const;
 
-	// ƒvƒŒƒCƒ„[‚ÌŒŸoƒ`ƒFƒbƒNi•¡”‚ÌƒvƒŒƒCƒ„[‚É‘Î‰j
+	// ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½ÌŒï¿½ï¿½oï¿½`ï¿½Fï¿½bï¿½Nï¿½iï¿½ï¿½ï¿½ï¿½ï¿½Ìƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½É‘Î‰ï¿½ï¿½j
 	bool CheckPlayerDetection(PlayerBase* player);
 
-	// ŒŸoî•ñ‚Ìæ“¾
+	// ï¿½ï¿½ï¿½oï¿½ï¿½ï¿½Ìæ“¾
 	const DetectionInfo& GetDetectionInfo() const { return _detectionInfo; }
 
-	// ŒŸoó‘Ô‚ÌƒŠƒZƒbƒg
+	// ï¿½ï¿½ï¿½oï¿½ï¿½Ô‚Ìƒï¿½ï¿½Zï¿½bï¿½g
 	void ResetDetection();
 
-	// ’ÇÕ‹@”\
+	// ï¿½ÇÕ‹@ï¿½\
 	bool IsChasing() const { return _detectionInfo.isChasing; }
 	vec::Vec3 GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
 
-	// ƒfƒoƒbƒO—pFõ“G”ÍˆÍ‚Ì•`‰æ
+	// ï¿½fï¿½oï¿½bï¿½Oï¿½pï¿½Fï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚Ì•`ï¿½ï¿½
 	void RenderDetectionSector() const;
 
-	// ŒŸoUI•\¦
+	// ï¿½ï¿½ï¿½oUIï¿½\ï¿½ï¿½
 	void RenderDetectionUI() const;
 
-	// MapƒNƒ‰ƒX‚Ö‚ÌQÆ‚ğİ’è
+	// Mapï¿½Nï¿½ï¿½ï¿½Xï¿½Ö‚ÌQï¿½Æ‚ï¿½İ’ï¿½
 	void SetMap(Map* map) { _map = map; }
 
-protected:
-	DetectionSector _detectionSector;  // õ“G”ÍˆÍ
-	bool _bHasDetectionSector;         // õ“G”ÍˆÍ‚ªİ’è‚³‚ê‚Ä‚¢‚é‚©
-	bool _bSensorEnabled;              // ƒZƒ“ƒT[‚ª—LŒø‚©‚Ç‚¤‚©
-
-	DetectionInfo _detectionInfo;      // ŒŸoó‘Ô‚Ìî•ñ
-
-	// ŒŸoŠÖ˜A’è”
-	static constexpr float DETECTION_DISPLAY_TIME = 3.0f; // ŒŸo•\¦ŠÔi•bj
-
-	// ’ÇÕŠÖ˜A’è”
-	static constexpr float CHASE_TIME = 5.0f; // ’ÇÕŒp‘±ŠÔi•bj
-
-	// “à•”ˆ——pƒƒ\ƒbƒh
-	void UpdateDetectionTimer();		  // ŒŸoƒ^ƒCƒ}[‚ÌXV
-	vec::Vec3 GetDetectionCenter() const; // õ“G”ÍˆÍ‚Ì’†SˆÊ’u‚ğæ“¾
-
-	// °‚Ì‘¶İ‚ğŠm”F‚·‚éŠÖ”
+	// ï¿½ï¿½ï¿½Ì‘ï¿½ï¿½İ‚ï¿½mï¿½Fï¿½ï¿½ï¿½ï¿½Öï¿½
 	bool CheckFloorExistence(const vec::Vec3& position) const;
 
-	// “G‚©‚çƒvƒŒƒCƒ„[‚Ü‚Å‚ÌŒo˜Hã‚Ì°‘¶İ‚ğƒ`ƒFƒbƒN‚·‚éŠÖ”
-	bool CheckPathFloorExistence(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
+protected:
+	DetectionSector _detectionSector;  // ï¿½ï¿½ï¿½Gï¿½Íˆï¿½
+	bool _bHasDetectionSector;         // ï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚ï¿½ï¿½İ’è‚³ï¿½ï¿½Ä‚ï¿½ï¿½é‚©
+	bool _bSensorEnabled;              // ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½ï¿½ï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½
 
-	Map* _map;
+	DetectionInfo _detectionInfo;      // ï¿½ï¿½ï¿½oï¿½ï¿½Ô‚Ìï¿½ï¿½
+
+	// ï¿½ï¿½ï¿½oï¿½Ö˜Aï¿½è”
+	static constexpr float DETECTION_DISPLAY_TIME = 3.0f; // ï¿½ï¿½ï¿½oï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½Ôiï¿½bï¿½j
+
+	// ï¿½ÇÕŠÖ˜Aï¿½è”
+	static constexpr float CHASE_TIME = 5.0f; // ï¿½ÇÕŒpï¿½ï¿½ï¿½ï¿½ï¿½Ôiï¿½bï¿½j
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½pï¿½ï¿½ï¿½\ï¿½bï¿½h
+	void UpdateDetectionTimer();		  // ï¿½ï¿½ï¿½oï¿½^ï¿½Cï¿½}ï¿½[ï¿½ÌXï¿½V
+	vec::Vec3 GetDetectionCenter() const; // ï¿½ï¿½ï¿½Gï¿½ÍˆÍ‚Ì’ï¿½ï¿½Sï¿½Ê’uï¿½ï¿½æ“¾
+
+	Map* _map;	// ï¿½}ï¿½bï¿½vï¿½Ö‚ÌQï¿½ï¿½
 };

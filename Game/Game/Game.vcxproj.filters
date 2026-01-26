@@ -130,13 +130,13 @@
     <Filter Include="ヘッダー ファイル\メニュー\デバックメニュー">
       <UniqueIdentifier>{ad51dbff-deb8-46a4-b823-56ec3b2e4497}</UniqueIdentifier>
     </Filter>
-<Filter Include="ソース ファイル\モードゲーム\お宝">
+    <Filter Include="ソース ファイル\モードゲーム\お宝">
       <UniqueIdentifier>{83a6fa4c-3197-4159-89bc-59c114a82a30}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\モードゲーム\お宝">
       <UniqueIdentifier>{63385110-a271-4e5a-9227-d38f7b221b9e}</UniqueIdentifier>
     </Filter>
-<Filter Include="ソース ファイル\ロゴ">
+    <Filter Include="ソース ファイル\ロゴ">
       <UniqueIdentifier>{5a51b49b-2f3f-4234-8d9a-74dedb675696}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\ロゴ">
@@ -144,6 +144,9 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\タイトル">
       <UniqueIdentifier>{733e3e93-8702-4c5b-a889-9e3fe089104a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Python">
+      <UniqueIdentifier>{c292204e-bbf2-4b9d-ab91-4cf0aad432a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -219,7 +222,7 @@
     <ClInclude Include="source\modeinit.h">
       <Filter>ヘッダー ファイル\ロゴ</Filter>
     </ClInclude>
-     <ClInclude Include="source\Treasure.h">
+    <ClInclude Include="source\Treasure.h">
       <Filter>ヘッダー ファイル\モードゲーム\お宝</Filter>
     </ClInclude>
   </ItemGroup>
@@ -304,9 +307,14 @@
     </ClCompile>
     <ClCompile Include="source\modetitle.cpp">
       <Filter>ソース ファイル</Filter>
- </ClCompile>
+    </ClCompile>
     <ClCompile Include="source\Treasure.cpp">
       <Filter>ソース ファイル\モードゲーム\お宝</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource.py">
+      <Filter>Python</Filter>
+    </None>
   </ItemGroup>
 </Project>

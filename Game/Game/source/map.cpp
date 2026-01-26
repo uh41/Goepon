@@ -14,14 +14,14 @@
 // 初期化
 bool Map::Initialize()
 {
-	if(!base::Initialize()) { return false; }
+	if (!base::Initialize()) { return false; }
 
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
 	constexpr int MAP_SELECT = 4;
 
-	if(MAP_SELECT == 0)
+	if (MAP_SELECT == 0)
 	{
 		// ダンジョン
 		_iHandleMap = MV1LoadModel("res/map/SM_map.mv1");
@@ -31,7 +31,7 @@ bool Map::Initialize()
 		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
 		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
-	else if(MAP_SELECT == 1)
+	else if (MAP_SELECT == 1)
 	{
 		// フィールド
 		_iHandleMap = MV1LoadModel("res/Ground/Ground.mv1");
@@ -41,10 +41,10 @@ bool Map::Initialize()
 		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
 		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
-	else if(MAP_SELECT == 2)
+	else if (MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "map10173.json";
+		_sJsonFile = "maptry.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -53,7 +53,7 @@ bool Map::Initialize()
 		_iFile >> json;
 
 		nlohmann::json stage = json.at(_sJsonObjectName);
-		for(auto& data : stage)
+		for (auto& data : stage)
 		{
 			mymath::BLOCKPOS pos;
 			data.at("objectName").get_to(pos.name);
@@ -73,27 +73,35 @@ bool Map::Initialize()
 			data.at("scale").at("y").get_to(pos.sz);
 
 			// 名前のモデルがすでに読み込み済か？
-			if(_mModelHandle.count(pos.name) == 0)
+			if (_mModelHandle.count(pos.name) == 0)
 			{
 				// まだ読み込まれていない。読み込みを行う
 				std::string filename = _sPath + pos.name + ".mv1";
 				_mModelHandle[pos.name] = MV1LoadModel(filename.c_str());
 			}
 			// 名前から使うモデルハンドル＆表示フレームを決める
-			if(_mModelHandle.count(pos.name) > 0)
+			if (_mModelHandle.count(pos.name) > 0)
 			{
 				pos.modelHandle = _mModelHandle[pos.name];
 				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
 			}
 
+			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "pPlane1");
+
+			// コリジョン情報の生成
+			MV1SetupCollInfo(_mModelHandle[pos.name], _iFrameMapCollision, 16, 16, 16);
+			MV1SetFrameVisible(_mModelHandle[pos.name], _iFrameMapCollision, FALSE);
+
 			// データをコンテナに追加（モデル番号があれば）
-			if(pos.modelHandle != -1)
+			if (pos.modelHandle != -1)
 			{
 				_vBlockPos.push_back(pos);
 			}
 		}
+
+
 	}
-	else if(MAP_SELECT == 3)
+	else if (MAP_SELECT == 3)
 	{
 		// 地面を使うパターン（モデルは読み込まない）
 		_iHandleMap = -1;

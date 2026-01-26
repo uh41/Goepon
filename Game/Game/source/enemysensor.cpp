@@ -23,7 +23,7 @@ bool EnemySensor::Initialize()
 	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマー初期化
 
 	// デフォルトの索敵範囲設定
-	SetDetectionSector(400.0f, 60.0f);//半径、角度
+	SetDetectionSector(400.0f, 90.0f);//半径、角度
 
 	return true;
 }
@@ -339,9 +339,11 @@ void EnemySensor::RenderDetectionSector() const
 	float leftAngle = baseAngle - halfAngleRad;
 	float rightAngle = baseAngle + halfAngleRad;
 
+	// 極座標から直交座標への変換
 	vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * _detectionSector.radius, 0.0f, cosf(leftAngle) * _detectionSector.radius));
 	vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * _detectionSector.radius, 0.0f, cosf(rightAngle) * _detectionSector.radius));
 
+	// 3D空間での線描画
 	DxlibConverter::DrawLine3D(center, leftEdge, color);
 	DxlibConverter::DrawLine3D(center, rightEdge, color);
 
@@ -350,6 +352,7 @@ void EnemySensor::RenderDetectionSector() const
 	vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 	vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 
+	// 3D空間での線描画
 	DxlibConverter::DrawLine3D(center_up, leftEdge_up, color);
 	DxlibConverter::DrawLine3D(center_up, rightEdge_up, color);
 
@@ -363,6 +366,7 @@ void EnemySensor::RenderDetectionSector() const
 	vec::Vec3 marker3 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, -10.0f));
 	vec::Vec3 marker4 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 10.0f));
 
+	// 十字マーカーの描画
 	DxlibConverter::DrawLine3D(marker1, marker2, color);
 	DxlibConverter::DrawLine3D(marker3, marker4, color);
 }
