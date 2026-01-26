@@ -27,7 +27,7 @@ bool PlayerTanuki::Initialize()
 	//{
 	//	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f); // 初期位置が同じだが、押し出され処理のおかげで位置がずれる
 	//}
-	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定
@@ -143,7 +143,7 @@ bool PlayerTanuki::Process()
         switch(_status)
         {
         case STATUS::WAIT:
-            anim_name = "hensin";
+            anim_name = "taiki";
             break;
         case STATUS::WALK:
             anim_name = "walk";

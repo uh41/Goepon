@@ -228,6 +228,12 @@
     <ClInclude Include="source\modeteamlogo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\modeopscenario.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modescenariobase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -315,6 +321,12 @@
       <Filter>ソース ファイル\モードゲーム\お宝</Filter>
     </ClCompile>
     <ClCompile Include="source\modeteamlogo.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeopscenario.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modescenariobase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

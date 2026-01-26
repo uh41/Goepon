@@ -40,6 +40,7 @@ bool ModeTeamLogo::Process()
 	Fade::GetInstance()->Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
 	switch(_state)
 	{
 		case ModeBase::State::FADE_IN:
@@ -72,7 +73,7 @@ bool ModeTeamLogo::Process()
 		case ModeBase::State::DONE:
 		{
 			// Ÿ‚Ìƒ‚[ƒh‚ÖˆÚs
-			ModeServer::GetInstance()->Get("title");
+			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "game");
 			ModeServer::GetInstance()->Del(this);
 
 			break;
@@ -84,10 +85,8 @@ bool ModeTeamLogo::Process()
 bool ModeTeamLogo::Render()
 {
 	// ‰æ–Ê’†‰›‚ÉƒƒS‚ğ•`‰æ
-	if(_handle != -1)
-	{
-		DrawGraph(0, 0, _handle, TRUE);
-	}
+
+	DrawGraph(0, 0, _handle, TRUE);
 	// ƒtƒF[ƒh•`‰æ
 	Fade::GetInstance()->Render();
 	return true;

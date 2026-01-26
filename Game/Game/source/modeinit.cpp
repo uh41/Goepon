@@ -68,15 +68,15 @@ bool ModeInit::Process()
 		{
 			if(Fade::GetInstance()->IsFade() == false)
 			{
-				ModeBase* teamlogo = ModeServer::GetInstance()->Get("teamlogo");
-				ModeServer::GetInstance()->Del(this);
 				_state = ModeBase::State::DONE;
 			}
 			break;
 		}
 		case ModeBase::State::DONE:
 		{
-		default:
+			ModeServer::GetInstance()->Del(this);
+			ModeServer::GetInstance()->Add(new ModeTeamLogo(), 2, "teamlogo");
+
 			break;
 		}
 	}

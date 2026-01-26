@@ -1,4 +1,5 @@
 #include "modetitle.h"
+#include "modeopscenario.h"
 
 // ModeBase / Fade は appframe.h 経由で参照可能な前提
 ModeTitle::ModeTitle()
@@ -14,7 +15,7 @@ ModeTitle::~ModeTitle()
 bool ModeTitle::Initialize()
 {
 	// 背景画像を読み込む（パスはプロジェクトのリソース配置に合わせて変更）
-	_handle = LoadGraph("res/logo/AMGlogo.png");
+	_handle = LoadGraph(img::title);
 	if(_handle == -1)
 	{
 		// 読み込み失敗時は false を返して呼び出し元で判定できるようにする
@@ -50,33 +51,34 @@ bool ModeTitle::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
+	int trg = ApplicationBase::GetInstance()->GetTrg();
+
 	switch(_state)
 	{
 	case ModeBase::State::FADE_IN:
 		if(Fade::GetInstance()->IsFade() == false)
 		{
 			_state = ModeBase::State::WAIT;
-			_fadeTimer = FADE_WAIT;
 		}
 		break;
 	case ModeBase::State::WAIT:
-		// カウントダウン等の処理
-		_fadeTimer--;
-		if(_fadeTimer <= 0)
+		if(trg & PAD_INPUT_2)
 		{
-			// 何もしないか、自動で次に遷移したければここでフェードアウトを開始
+			_state = ModeBase::State::FADE_OUT;
+			Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
 		}
 		break;
 	case ModeBase::State::FADE_OUT:
 		if(Fade::GetInstance()->IsFade() == false)
 		{
-			// 終了処理（他モードへ移行する場合は Add を呼ぶ）
-			ModeServer::GetInstance()->Del(this);
 			_state = ModeBase::State::DONE;
 		}
 		break;
 	case ModeBase::State::DONE:
-	default:
+		
+		// 次のモードへ移行
+		ModeServer::GetInstance()->Add(new ModeOpScenario(), 1, "opscenario");
+		ModeServer::GetInstance()->Del(this);
 		break;
 	}
 
