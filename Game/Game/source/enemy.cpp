@@ -56,6 +56,8 @@ bool Enemy::Initialize()
 	_showYouDiedMessage = false;
 	_youDiedMessageTimer = 0.0f;
 
+	DirChangeTimer = DirChangeInterval;
+
 	return true;
 }
 
@@ -387,6 +389,25 @@ bool Enemy::Process()
 		}
 	}
 
+	DirChangeTimer -= 1.0f / 60.0f;
+	if(DirChangeTimer <= 0.0f)
+	{
+		DirChangeTimer =15.0f;
+		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
+		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+		{
+			// 現在の向きの角度を取得
+			float currentAngle = atan2f(_vDir.x, _vDir.z);
+
+			// 90度（π/2ラジアン）を加算
+			float newAngle = currentAngle + DX_PI_F / 2.0f;
+
+			// 新しい向きを設定
+			_vDir.x = sin(newAngle);
+			_vDir.z = cos(newAngle);
+		}
+		
+	}
 	return true;
 }
 

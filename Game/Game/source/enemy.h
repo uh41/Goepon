@@ -72,4 +72,8 @@ protected:
 	bool _showYouDiedMessage;
 	float _youDiedMessageTimer;
 	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間（秒）
+
+	// 敵の向き変更タイマー
+	float DirChangeTimer;
+	static constexpr float DirChangeInterval = 15.0f; // 向き変更の間隔（秒）
 };
