@@ -31,6 +31,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	const int frameIndex     = obj->GetFrameMapCollision();
 	if(modelHandle < 0 || frameIndex < 0) { return false; }
 
+	// 移動前の座標を保存
 	vec::Vec3 oldPos = chara->GetPos();
 
 	// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
@@ -75,7 +76,9 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		const vec::Vec3 start = vec3::VAdd(candidate, vec3::VGet(0.0f, colSubY, 0.0f));
 		const vec::Vec3 end = vec3::VAdd(candidate, vec3::VGet(0.0f, -99999.0f, 0.0f));
 
-		MV1_COLL_RESULT_POLY hitPoly = DxlibConverter::MV1CollCheckLine(
+		MV1_COLL_RESULT_POLY hitPoly;
+		hitPoly = DxlibConverter::MV1CollCheckLine
+		(
 			modelHandle,
 			frameIndex,
 			start,
@@ -94,15 +97,16 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 
 			return true;
 		}
-
-		// 床が無い＝不採用 → 元に戻して次候補へ
-		chara->SetPos(oldPos);
+		else
+		{
+			// 床が無い
+			chara->SetPos(oldPos);
+		}
 	}
-
 	// 全候補失敗
 	chara->SetPos(oldPos);
+	
 	return false;
-	return true;
 }
 
 bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)

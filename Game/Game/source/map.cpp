@@ -123,6 +123,7 @@ bool Map::Initialize()
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
+
 	// コリジョン情報の生成
 	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
 	// コリジョンのフレームを描画しない設定
@@ -279,7 +280,8 @@ bool Map::Render()
 				MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 				MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-				MV1DrawModel(block.modelHandle);
+				//MV1DrawModel(block.modelHandle);
+				MV1DrawFrame(block.modelHandle, _iFrameMapCollision);
 			}
 		}
 	}
@@ -309,7 +311,7 @@ bool Map::Render()
 		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-		MV1DrawModel(block.modelHandle);
+		//MV1DrawModel(block.modelHandle);
 	}
 
 	return true;
