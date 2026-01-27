@@ -27,86 +27,121 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	if(handleMap.empty()) { return false; }
 
 	// モデルハンドル取得
-	const int modelHandle    = handleMap.begin()->second;
-	const int frameIndex     = obj->GetFrameMapCollision();
+	const int modelHandle = handleMap.begin()->second;
+	const int frameIndex = obj->GetFrameMapCollision();
 	if(modelHandle < 0 || frameIndex < 0) { return false; }
 
-	// 移動前の座標を保存
-	vec::Vec3 oldPos = chara->GetPos();
+	// 移動前/移動量
+	const vec::Vec3 oldPos = chara->GetPos();
+	vec::Vec3 v = chara->GetMoveV();
+	const float colSubY = chara->GetColSubY();
+	const float rad = static_cast<float>(chara->GetCollisionR());
 
-	// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
-	float escapeTbl[] =
+	// 移動がほぼ無い場合は床吸着だけ
+	const float moveLenSq = v.x * v.x + v.z * v.z + v.y * v.y;
+	const float eps = 0.000001f;
+
+	vec::Vec3 candidate = vec3::VAdd(oldPos, v);
+
+	// コリジョン無効なら移動だけ反映
+	if(!_d_use_collision)
 	{
-		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
-	};
-	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
-	{
-		// 現在フレームの移動量
-		vec::Vec3 v = chara->GetMoveV();
-
-		// カメラ角補正（元コード踏襲）
-		const float rad = atan2(static_cast<float>(v.z), static_cast<float>(v.x));
-		const float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
-
-		float camrad = 0.0f;
-		if(_camera)
-		{
-			const float sx = _camera->_vPos.x - _camera->_vTarget.x;
-			const float sz = _camera->_vPos.z - _camera->_vTarget.z;
-			camrad = atan2(sz, sx);
-		}
-
-		const float escape_rad = DEG2RAD(escapeTbl[i]);
-		v.x = cos(rad + camrad + escape_rad) * length;
-		v.z = sin(rad + camrad + escape_rad) * length;
-
-		// 候補位置へ移動
-		vec::Vec3 candidate = vec3::VAdd(oldPos, v);
 		chara->SetPos(candidate);
+		return true;
+	}
 
-		// コリジョン無効ならこの時点で終わり
-		if(!_d_use_collision)
+	// 進行方向（XZ）を作る（壁押し出しは主にXZ）
+	vec::Vec3 dir = v;
+	dir.y = 0.0f;
+	const float dirLenSq = dir.x * dir.x + dir.z * dir.z;
+
+	// skin: 壁にめり込まないための余裕
+	const float skin = 1.0f;
+
+	// 方向が取れないなら中心線のみ
+	vec::Vec3 dirN = vec3::VGet(0.0f, 0.0f, 0.0f);
+	vec::Vec3 rightN = vec3::VGet(1.0f, 0.0f, 0.0f);
+
+	if(dirLenSq > eps)
+	{
+		const float invLen = 1.0f / sqrtf(dirLenSq);
+		dirN = vec3::VScale(dir, invLen);
+
+		// right = (dir.z, 0, -dir.x)  ※右手系/左手系で左右が逆でも結果には大差なし
+		rightN = vec3::VGet(dirN.z, 0.0f, -dirN.x);
+	}
+
+	// 壁チェック用：腰高さ（中心線）と少し上の2段で線分を飛ばす（段差/斜面で抜けにくく）
+	const float y0 = colSubY * 0.25f;
+	const float y1 = colSubY * 0.85f;
+
+	auto checkLineAndClamp = [&](const vec::Vec3& from, const vec::Vec3& to, vec::Vec3& ioCandidate) -> bool
 		{
+			MV1_COLL_RESULT_POLY hit = DxlibConverter::MV1CollCheckLine(modelHandle, frameIndex, from, to);
+			if(!hit.HitFlag) { return false; }
+
+			// 衝突点の少し手前へ戻す（押し出し）
+			vec::Vec3 hitPos = vec::Vec3(hit.HitPosition.x, hit.HitPosition.y, hit.HitPosition.z);
+
+			// 進行方向が取れるなら、その逆へ skin 分戻す
+			if(dirLenSq > eps)
+			{
+				ioCandidate = vec3::VAdd(hitPos, vec3::VScale(dirN, -skin));
+			}
+			else
+			{
+				// 方向不明ならとりあえず元に戻す
+				ioCandidate = oldPos;
+			}
 			return true;
+		};
+
+	// 移動線分（中心/左右/前後）を複数発射して、当たったら candidate を押し戻す
+	// ※offset は「カプセル半径」を線分の束で近似するため
+	const float side = (rad > 0.0f) ? rad : 0.0f;
+
+	const vec::Vec3 offsets[] =
+	{
+		vec3::VGet(0.0f, 0.0f, 0.0f),                    // center
+		vec3::VScale(rightN,  side),                     // right
+		vec3::VScale(rightN, -side),                     // left
+		vec3::VScale(dirN,    side),                     // forward
+		vec3::VScale(dirN,   -side),                     // back
+	};
+
+	bool hitWall = false;
+
+	// 2段の高さで判定
+	for(float yy : { y0, y1 })
+	{
+		for(const auto& off : offsets)
+		{
+			const vec::Vec3 from = vec3::VAdd(vec3::VAdd(oldPos, off), vec3::VGet(0.0f, yy, 0.0f));
+			const vec::Vec3 to = vec3::VAdd(vec3::VAdd(candidate, off), vec3::VGet(0.0f, yy, 0.0f));
+			hitWall |= checkLineAndClamp(from, to, candidate);
 		}
+	}
 
-		// ---- ここが「貼ってくれた真下レイ判定」と同等 ----
-		const float colSubY = chara->GetColSubY();
+	// 壁押し出し後の座標を反映
+	chara->SetPos(candidate);
 
+	// --- 床吸着（既存処理の踏襲）---
+	{
 		const vec::Vec3 start = vec3::VAdd(candidate, vec3::VGet(0.0f, colSubY, 0.0f));
 		const vec::Vec3 end = vec3::VAdd(candidate, vec3::VGet(0.0f, -99999.0f, 0.0f));
 
-		MV1_COLL_RESULT_POLY hitPoly;
-		hitPoly = DxlibConverter::MV1CollCheckLine
-		(
-			modelHandle,
-			frameIndex,
-			start,
-			end
-		);
-
+		MV1_COLL_RESULT_POLY hitPoly = DxlibConverter::MV1CollCheckLine(modelHandle, frameIndex, start, end);
 		if(hitPoly.HitFlag)
 		{
-			// 床に吸着（Y確定）
 			candidate.y = hitPoly.HitPosition.y;
 			chara->SetPos(candidate);
-
-			// 必要なら v.y 更新（既存踏襲：旧posとの差分を足す）
-			// ※ oldPos からの差分にするなら candidate.y - oldPos.y
-			v.y += (candidate.y - oldPos.y);
-
 			return true;
 		}
-		else
-		{
-			// 床が無い
-			chara->SetPos(oldPos);
-		}
+
+		// 床が無いなら元に戻す（従来挙動）
+		chara->SetPos(oldPos);
+		return false;
 	}
-	// 全候補失敗
-	chara->SetPos(oldPos);
-	
-	return false;
 }
 
 bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
@@ -307,7 +342,7 @@ bool ModeGame::CharaToTreasureOpenCollision(CharaBase* chara, Treasure* treasure
 	);
 
 	// ヒットしなかった
-	if(hit.HitNum = 0)
+	if(hit.HitNum == 0)
 	{
 		MV1CollResultPolyDimTerminate(hit);
 		return false;

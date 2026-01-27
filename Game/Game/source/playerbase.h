@@ -21,7 +21,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	vec::Vec3 GetMoveV() const { return _v; }
+	/*vec::Vec3 GetMoveV() const { return _v; }*/
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
 
@@ -35,8 +35,8 @@ protected:
 	float lStickX, lStickZ;
 	Camera* _cam;
 
-	// 移動方向を決める
-	vec3::Vec3 _v;
+	//// 移動方向を決める
+	//vec3::Vec3 _v;
 
 	// メモ読み込み
 	std::string _memoFileName;

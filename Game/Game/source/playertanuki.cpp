@@ -56,7 +56,7 @@ bool PlayerTanuki::Terminate()
 // �v�Z����
 bool PlayerTanuki::Process()
 {
-
+	if(!_cam) return false;
 	base::Process();
 
 	int key = ApplicationBase::GetInstance()->GetKey();
@@ -78,6 +78,8 @@ bool PlayerTanuki::Process()
 	lStickZ = fLz;
 
 	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
+
+	_vInput = inputLocal;
 	if(CheckHitKey(KEY_INPUT_UP))
 	{
 		lStickZ = -1.0f;

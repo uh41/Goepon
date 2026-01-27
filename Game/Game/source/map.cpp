@@ -280,7 +280,7 @@ bool Map::Render()
 				MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 				MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-				//MV1DrawModel(block.modelHandle);
+				MV1DrawModel(block.modelHandle);
 				MV1DrawFrame(block.modelHandle, _iFrameMapCollision);
 			}
 		}
@@ -311,7 +311,7 @@ bool Map::Render()
 		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-		//MV1DrawModel(block.modelHandle);
+		MV1DrawModel(block.modelHandle);
 	}
 
 	return true;
