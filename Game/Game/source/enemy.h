@@ -37,8 +37,7 @@ public:
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 
-	// 初期位置を設定するメソッドを追加
-	void SetInitialPosition(const vec::Vec3& position, const vec::Vec3& direction);
+	
 
 public:
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }

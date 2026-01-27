@@ -221,14 +221,10 @@ bool ModeGame::LoadStageData()
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 
-			// JSONから読み込んだ位置を初期位置として設定
-			enemy->SetInitialPosition(enemy->GetPos(), enemy->GetDir());
-
-			// 各敵に個別のEnemySensorを作成
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
-			sensor->SetMap(_map.get());  // マップ参照を設定
 			enemy->SetEnemySensor(sensor);
+
 
 			_enemy.emplace_back(enemy);
 			_chara.emplace_back(enemy);
