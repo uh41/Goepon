@@ -1,5 +1,6 @@
 ﻿#include "enemysensor.h"
 #include "appframe.h"
+#include "map.h"
 
 // 初期化
 bool EnemySensor::Initialize()
@@ -22,7 +23,7 @@ bool EnemySensor::Initialize()
 	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマー初期化
 
 	// デフォルトの索敵範囲設定
-	SetDetectionSector(400.0f, 60.0f);//半径、角度
+	SetDetectionSector(400.0f, 90.0f);//半径、角度
 
 	return true;
 }
@@ -205,8 +206,93 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 	// 扇形の半角と比較
 	float halfAngle = _detectionSector.angle * 0.5f;
 
-	return angleDeg <= halfAngle;
+	if (angleDeg > halfAngle)
+	{
+		return false; // 角度範囲外
+	}
+
+	// プレイヤー位置の床存在チェック
+	if (!CheckFloorExistence(playerPos))
+	{
+		return false; // プレイヤー位置に床がない場合は検出対象外
+	}
+
+	// 敵からプレイヤーまでの経路上の床存在チェック
+	if (!CheckPathFloorExistence(_vPos, playerPos))
+	{
+		return false; // 経路上に床がない部分がある場合は検出対象外
+	}
+
+	return true;
 }
+
+// 敵からプレイヤーまでの経路上の床存在をチェックする関数
+bool EnemySensor::CheckPathFloorExistence(const vec::Vec3& startPos, const vec::Vec3& endPos) const
+{
+	// マップが設定されていない場合は床があるものとして処理
+	if (!_map)
+	{
+		return true;
+	}
+
+	// 経路上をサンプリングしてチェックする間隔
+	const float checkInterval = 50.0f; // 50単位間隔でチェック
+
+	// 開始位置から終了位置への方向ベクトル
+	vec::Vec3 direction = vec3::VSub(endPos, startPos);
+	float totalDistance = vec3::VSize(direction);
+
+	// 距離が短い場合は単一点チェックで十分
+	if (totalDistance < checkInterval)
+	{
+		return CheckFloorExistence(startPos) && CheckFloorExistence(endPos);
+	}
+
+	// 正規化された方向ベクトル
+	vec::Vec3 normalizedDir = vec3::VNorm(direction);
+
+	// 経路上の各点で床の存在をチェック
+	for (float currentDistance = 0.0f; currentDistance <= totalDistance; currentDistance += checkInterval)
+	{
+		// チェック位置を計算
+		vec::Vec3 checkPos = vec3::VAdd(startPos, vec3::VScale(normalizedDir, currentDistance));
+
+		// この位置で床の存在をチェック
+		if (!CheckFloorExistence(checkPos))
+		{
+			return false; // 床がない位置を発見
+		}
+	}
+
+	// 最終位置もチェック（間隔の関係で最終位置がチェックされていない可能性があるため）
+	return CheckFloorExistence(endPos);
+}
+// 床の存在を確認する関数
+bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
+{
+	// マップが設定されていない場合は床があるものとして処理
+	if (!_map)
+	{
+		return true;
+	}
+
+	// 足元から下方向への直線でコリジョン判定
+	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 50.0f, 0.0f));  // 少し上から開始
+	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -50.0f, 0.0f)); // 下方向に長い距離
+
+	// DXライブラリのコリジョン判定を使用
+	MV1_COLL_RESULT_POLY hitPoly = DxlibConverter::MV1CollCheckLine(
+		_map->GetHandleMap(),
+		_map->GetFrameMapCollision(),
+		startPos,
+		endPos
+	);
+
+	// 当たり判定があれば床が存在
+	return hitPoly.HitFlag == TRUE;
+}
+
+
 
 // デバッグ用：索敵範囲の描画
 void EnemySensor::RenderDetectionSector() const
@@ -255,9 +341,11 @@ void EnemySensor::RenderDetectionSector() const
 	float leftAngle = baseAngle - halfAngleRad;
 	float rightAngle = baseAngle + halfAngleRad;
 
+	// 極座標から直交座標への変換
 	vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * _detectionSector.radius, 0.0f, cosf(leftAngle) * _detectionSector.radius));
 	vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * _detectionSector.radius, 0.0f, cosf(rightAngle) * _detectionSector.radius));
 
+	// 3D空間での線描画
 	DxlibConverter::DrawLine3D(center, leftEdge, color);
 	DxlibConverter::DrawLine3D(center, rightEdge, color);
 
@@ -266,6 +354,7 @@ void EnemySensor::RenderDetectionSector() const
 	vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 	vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
 
+	// 3D空間での線描画
 	DxlibConverter::DrawLine3D(center_up, leftEdge_up, color);
 	DxlibConverter::DrawLine3D(center_up, rightEdge_up, color);
 
@@ -279,6 +368,7 @@ void EnemySensor::RenderDetectionSector() const
 	vec::Vec3 marker3 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, -10.0f));
 	vec::Vec3 marker4 = vec3::VAdd(center, vec3::VGet(0.0f, 5.0f, 10.0f));
 
+	// 十字マーカーの描画
 	DxlibConverter::DrawLine3D(marker1, marker2, color);
 	DxlibConverter::DrawLine3D(marker3, marker4, color);
 }
