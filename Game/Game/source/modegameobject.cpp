@@ -127,15 +127,19 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->Process();
 			return true;
 		}
+		else
+		{
 
-		// 人間 -> タヌキ（こちらは今まで通り即切替）
-		_bShowTanuki = true;
-		_playerTanuki->SetPos(_player->GetPos());
-		_playerTanuki->SetDir(_player->GetDir());
-		_playerTanuki->PlayAnimation("hensin", false);
+			// 人間 -> タヌキ（こちらは今まで通り即切替）
+			_bShowTanuki = true;
+			_playerTanuki->SetPos(_player->GetPos());
+			_playerTanuki->SetDir(_player->GetDir());
+			_playerTanuki->PlayAnimation("hensin", false);
 
-		_playerTanuki->_status = CharaBase::STATUS::WAIT;
-		_playerTanuki->PlayAnimation("taiki", true);
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("taiki", true);
+		}
+
 
 		if(_soundServer)
 		{

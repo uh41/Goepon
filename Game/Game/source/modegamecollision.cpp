@@ -233,7 +233,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 			);
 			if(hit)
 			{
-				player->PlayAnimation("goepon_walk", false);
+				player->PlayAnimation("hensin", false);
 				enemy->PlayAnimation("walk", false);
 			}
 		}
