@@ -521,59 +521,59 @@ bool ModeGame::Render()
 	return true;
 }
 
-// 全てのエネミーに対してプレイヤー検出をチェック
-bool ModeGame::CheckAllDetections()
-{
-	if (!_enemySensor)
-	{
-		return false;
-	}
-
-	// タヌキ状態の時のみ検知処理を実行
-	if (!_bShowTanuki)
-	{
-		// 人間状態では検知されない
-		// 検知状態をリセットして敵に状態変更を通知
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->OnPlayerLost();
-			}
-		}
-		return true;
-	}
-
-	// タヌキ状態のプレイヤーのみをチェック対象にする
-	PlayerBase* currentPlayer = _playerTanuki.get();
-	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
-
-	// 検出状態に応じてエネミーに通知
-	if (detected)
-	{
-		vec::Vec3 playerPos = currentPlayer->GetPos();
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->OnPlayerDetected(playerPos);
-			}
-		}
-	}
-	else
-	{
-		// プレイヤーが検出範囲外になった場合
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->OnPlayerLost();
-			}
-		}
-	}
-
-	return detected;
-}
+//// 全てのエネミーに対してプレイヤー検出をチェック
+//bool ModeGame::CheckAllDetections()
+//{
+//	if (!_enemySensor)
+//	{
+//		return false;
+//	}
+//
+//	// タヌキ状態の時のみ検知処理を実行
+//	if (!_bShowTanuki)
+//	{
+//		// 人間状態では検知されない
+//		// 検知状態をリセットして敵に状態変更を通知
+//		for (auto& enemy : _enemy)
+//		{
+//			if (enemy->IsAlive())
+//			{
+//				enemy->OnPlayerLost();
+//			}
+//		}
+//		return true;
+//	}
+//
+//	// タヌキ状態のプレイヤーのみをチェック対象にする
+//	PlayerBase* currentPlayer = _playerTanuki.get();
+//	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
+//
+//	// 検出状態に応じてエネミーに通知
+//	if (detected)
+//	{
+//		vec::Vec3 playerPos = currentPlayer->GetPos();
+//		for (auto& enemy : _enemy)
+//		{
+//			if (enemy->IsAlive())
+//			{
+//				enemy->OnPlayerDetected(playerPos);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		// プレイヤーが検出範囲外になった場合
+//		for (auto& enemy : _enemy)
+//		{
+//			if (enemy->IsAlive())
+//			{
+//				enemy->OnPlayerLost();
+//			}
+//		}
+//	}
+//
+//	return detected;
+//}
 
 // CheckAllDetections()メソッドの修正版
 bool ModeGame::CheckAllDetections()
