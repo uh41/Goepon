@@ -19,13 +19,13 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 4;
+	constexpr int MAP_SELECT = 0;
 
 	if (MAP_SELECT == 0)
 	{
 		// ダンジョン
-		_iHandleMap = MV1LoadModel("res/map/SM_map.mv1");
-		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "pPlane1");
+		_iHandleMap = MV1LoadModel("res/map/SM_stage_arufa.mv1");
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "Collision_01");
 
 		// コリジョン情報の生成
 		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if (MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "maptry.json";
+		_sJsonFile = "map0126.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -86,7 +86,7 @@ bool Map::Initialize()
 				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
 			}
 
-			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "pPlane1");
+			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "Collision_01");
 
 			// コリジョン情報の生成
 			MV1SetupCollInfo(_mModelHandle[pos.name], _iFrameMapCollision, 16, 16, 16);

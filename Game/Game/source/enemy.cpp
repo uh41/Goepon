@@ -86,6 +86,13 @@ void Enemy::ResetTeleport()
 	_teleportTimer = 0.0f;
 }
 
+// 初期位置を設定するメソッドを実装
+void Enemy::SetInitialPosition(const vec::Vec3& position, const vec::Vec3& direction)
+{
+	_initialPosition = position;
+	_initialDirection = direction;
+}
+
 // EnemySensorを設定
 void Enemy::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 {
@@ -238,6 +245,9 @@ void Enemy::UpdateReturningToInitialPosition()
 {
 	if (!_isReturningToInitialPos) return;
 
+	// 初期位置に戻り中は常に検出状態をfalseに保つ
+	_detectedPlayer = false;
+
 	// テレポート待機中の場合
 	if (_waitingForTeleport)
 	{
@@ -268,6 +278,14 @@ void Enemy::UpdateReturningToInitialPosition()
 		_vPos = _initialPosition;
 		_vDir = _initialDirection;
 		_isReturningToInitialPos = false;
+
+		// ここで検出状態をリセット（初期位置に完全に到達してから）
+		_detectedPlayer = false;
+		if (_enemySensor)
+		{
+			_enemySensor->ResetDetection();
+		}
+
 		return;
 	}
 
@@ -314,6 +332,9 @@ void Enemy::UpdateReturningToInitialPosition()
 	float newAngle = currentAngle + angleDiff;
 	_vDir.x = sin(newAngle);
 	_vDir.z = cos(newAngle);
+
+	// 初期位置に戻り中は検出状態を再度falseに設定（念のため）
+	_detectedPlayer = false;
 }
 
 // 計算処理

@@ -72,7 +72,6 @@ public:
 	// 視線チェック - 指定した2点間で床なしの地点があるかチェック
 	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
 
-	
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
 	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
@@ -81,7 +80,7 @@ protected:
 	DetectionInfo _detectionInfo;      // 検出状態の情報
 
 	// 検出関連定数
-	static constexpr float DETECTION_DISPLAY_TIME = 3.0f; // 検出表示時間（秒）
+	static constexpr float DETECTION_DISPLAY_TIME = 0.1f; // 検出表示時間（秒）
 
 	// 追跡関連定数
 	static constexpr float CHASE_TIME = 5.0f; // 追跡継続時間（秒）

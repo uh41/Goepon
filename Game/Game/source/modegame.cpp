@@ -105,18 +105,18 @@ bool ModeGame::Initialize()
 
 	_bShowTanuki = true;
 
-	// 索敵システムの初期化
-	_enemySensor = std::make_shared<EnemySensor>();			// センサーオブジェクトを生成
-	_enemySensor->Initialize();								// センサーの初期化
-	_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置	
-	_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));	// 適当な向きに設定
-	_enemySensor->SetMap(_map.get());						// マップへの参照を設定
+	//// 索敵システムの初期化
+	//_enemySensor = std::make_shared<EnemySensor>();			// センサーオブジェクトを生成
+	//_enemySensor->Initialize();								// センサーの初期化
+	//_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置	
+	//_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));	// 適当な向きに設定
+	//_enemySensor->SetMap(_map.get());						// マップへの参照を設定
 
-	//// エネミーにセンサーを設定
-	for (auto& enemy : _enemy)
-	{
-		enemy->SetEnemySensor(_enemySensor);
-	}
+	////// エネミーにセンサーを設定
+	//for (auto& enemy : _enemy)
+	//{
+	//	enemy->SetEnemySensor(_enemySensor);
+	//}
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -169,13 +169,6 @@ bool ModeGame::Terminate()
 
 	delete _camera;
 
-	// 索敵システムの終了処理
-	if (_enemySensor)
-	{
-		_enemySensor->Terminate();
-		_enemySensor.reset();
-	}
-
 	// サウンドサーバー終了処理
 	if(_soundServer)
 	{
@@ -212,26 +205,30 @@ bool ModeGame::LoadStageData()
 
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	for(auto& object : stage)
+	for (auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
 
-		if(name == "S_MarkerA")
+		if (name == "S_MarkerA")
 		{
 			_playerTanuki->SetJsonDataUE(object);
 			continue;
 		}
 
-		if(name == "S_MarkerB")
+		if (name == "S_MarkerB")
 		{
 			auto enemy = std::make_shared<Enemy>();
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 
+			// JSONから読み込んだ位置を初期位置として設定
+			enemy->SetInitialPosition(enemy->GetPos(), enemy->GetDir());
+
+			// 各敵に個別のEnemySensorを作成
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
+			sensor->SetMap(_map.get());  // マップ参照を設定
 			enemy->SetEnemySensor(sensor);
-
 
 			_enemy.emplace_back(enemy);
 			_chara.emplace_back(enemy);
@@ -364,12 +361,8 @@ bool ModeGame::Process()
 		EscapeCollision(enemy.get(), _map.get());
 	}
 
-	// 索敵システムの処理
-	if (_enemySensor)
-	{
-		_enemySensor->Process();	// センサー自体の処理
-		CheckAllDetections();		// 全敵に対してプレイヤー検出をチェック
-	}
+	// 索敵システムの処理（個別センサー方式に変更）
+	CheckAllDetections();	// 全敵に対してプレイヤー検出をチェック
 
 	// BGMチェンジ処理
 	ChangeBGM();
@@ -459,11 +452,14 @@ bool ModeGame::Render()
 	DrawFormatString(10, 50, GetColor(0, 255, 0), 
 		"Player HP: %.1f", _player->GetHP());
 
-	// 索敵システムの描画
-	if (_enemySensor)
+	// 各敵のセンサーを個別に描画
+	for (auto& enemy : _enemy)
 	{
-		_enemySensor->Render();
-		_enemySensor->RenderDetectionUI();
+		if (enemy->IsAlive() && enemy->GetEnemySensor())
+		{
+			enemy->GetEnemySensor()->Render();
+			enemy->GetEnemySensor()->RenderDetectionUI();
+		}
 	}
 
 	// YouDiedメッセージの描画（最前面に表示）
@@ -501,64 +497,107 @@ bool ModeGame::Render()
 	return true;
 }
 
-// 全てのエネミーに対してプレイヤー検出をチェック
+// CheckAllDetections()メソッドの修正版
 bool ModeGame::CheckAllDetections()
 {
-	if (!_enemySensor)
-	{
-		return false;
-	}
+	OutputDebugStringA("CheckAllDetections() 開始\n");
+
+	// 敵の数をチェック
+	OutputDebugStringA((std::string("敵の総数: ") + std::to_string(_enemy.size()) + "\n").c_str());
 
 	// タヌキ状態の時のみ検知処理を実行
 	if (!_bShowTanuki)
 	{
+		OutputDebugStringA("人間状態のため検知処理をスキップ\n");
 		// 人間状態では検知されない
-		// 検知状態をリセットして敵に状態変更を通知
 		for (auto& enemy : _enemy)
 		{
-			if (enemy->IsAlive())
+			if (enemy->IsAlive() && enemy->GetEnemySensor())
 			{
+				enemy->GetEnemySensor()->ResetDetection();
 				enemy->OnPlayerLost();
 			}
 		}
 		return true;
 	}
 
-	// 各敵個別に初期位置に戻り中かをチェック
-	// タヌキ状態のプレイヤーのみをチェック対象にする
+	OutputDebugStringA("タヌキ状態で検知処理を実行\n");
+
 	PlayerBase* currentPlayer = _playerTanuki.get();
-	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
-
-	// 検出状態に応じてエネミーに通知（ただし、戻り中の敵は除く）
-	if (detected)
+	if (!currentPlayer)
 	{
-		vec::Vec3 playerPos = currentPlayer->GetPos();// 検出したプレイヤーの位置を取得
-
-		// プレイヤーが検出範囲内に入った場合
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				// 個別に初期位置に戻り中でない敵のみに通知
-				if (!enemy->IsReturningToInitialPosition())
-				{
-					enemy->OnPlayerDetected(playerPos);
-				}
-			}
-		}
-	}
-	else
-	{
-		// プレイヤーが検出範囲外になった場合
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->OnPlayerLost();
-			}
-		}
+		OutputDebugStringA("現在のプレイヤーが見つかりません！\n");
+		return false;
 	}
 
-	return detected;
+	vec::Vec3 playerPos = currentPlayer->GetPos();
+	OutputDebugStringA((std::string("プレイヤー位置: X=") + std::to_string(playerPos.x) +
+		", Y=" + std::to_string(playerPos.y) + ", Z=" + std::to_string(playerPos.z) + "\n").c_str());
+
+	bool anyDetected = false;
+
+	// 各敵の個別センサーでプレイヤー検出をチェック
+	for (int i = 0; i < _enemy.size(); i++)
+	{
+		auto& enemy = _enemy[i];
+		if (!enemy->IsAlive())
+		{
+			OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]は生きていません\n").c_str());
+			continue;
+		}
+
+		auto enemySensor = enemy->GetEnemySensor();
+		if (!enemySensor)
+		{
+			OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]にセンサーがありません！\n").c_str());
+			continue;
+		}
+
+		// センサーの位置と向きを敵の位置に同期
+		vec::Vec3 enemyPos = enemy->GetPos();
+		vec::Vec3 enemyDir = enemy->GetDir();
+
+		enemySensor->SetPos(enemyPos);
+		enemySensor->SetDir(enemyDir);
+
+		// マップ設定を確認（重要）
+		enemySensor->SetMap(_map.get());
+
+		// センサーの処理を実行
+		enemySensor->Process();
+
+		bool detected = enemySensor->CheckPlayerDetection(currentPlayer);
+
+		OutputDebugStringA((std::string("敵[") + std::to_string(i) + "] 位置: X=" + std::to_string(enemyPos.x) +
+			", Y=" + std::to_string(enemyPos.y) + ", Z=" + std::to_string(enemyPos.z) +
+			" 検出結果: " + (detected ? "TRUE" : "FALSE") + "\n").c_str());
+
+		// プレイヤーとの距離を計算してデバッグ出力
+		float distance = vec3::VSize(vec3::VSub(playerPos, enemyPos));
+		OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]とプレイヤーの距離: " + std::to_string(distance) + "\n").c_str());
+
+		if (detected)
+		{
+			anyDetected = true;
+			vec::Vec3 playerPos = currentPlayer->GetPos();
+
+			// 個別に初期位置に戻り中でない敵のみに通知
+			if (!enemy->IsReturningToInitialPosition())
+			{
+				enemy->OnPlayerDetected(playerPos);
+				OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]がプレイヤーを検出しました！\n").c_str());
+			}
+			else
+			{
+				OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]は初期位置に戻り中のため検出を無視\n").c_str());
+			}
+		}
+		else
+		{
+			enemy->OnPlayerLost();
+		}
+	}
+
+	OutputDebugStringA((std::string("検出結果: ") + (anyDetected ? "検出あり" : "検出なし") + "\n").c_str());
+	return anyDetected;
 }
-
