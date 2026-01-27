@@ -287,7 +287,7 @@ bool ModeGame::DebugRender()
 	if(_d_view_collision)
 	{
 		// 好みの色に変更可（R,G,B）
-		CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
+		//CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
 	}
 
 	

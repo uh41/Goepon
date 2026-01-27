@@ -30,6 +30,11 @@ public:
 	void OnPlayerDetected(const vec::Vec3& playerPos);
 	void OnPlayerLost();
 
+	// 既存 include / class 定義は省略
+
+public:
+	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
+
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;

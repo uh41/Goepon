@@ -36,7 +36,7 @@ bool CharaBase::Terminate()
 	return true;
 }
 
-void CharaBase::PlayAnimation(std::string name, bool loop)
+int CharaBase::PlayAnimation(std::string name, bool loop)
 {
 	if(_animId != -1)
 	{
@@ -46,7 +46,7 @@ void CharaBase::PlayAnimation(std::string name, bool loop)
 
 	if(_handle == -1 || name.empty())
 	{
-		return;
+		return -1;
 	}
 
 	_animId = AnimationManager::GetInstance()->Play(_handle, name, loop);
@@ -54,6 +54,7 @@ void CharaBase::PlayAnimation(std::string name, bool loop)
 	{
 		AnimationManager::GetInstance()->SetTime(_animId, 0.0f);
 	}
+	return _animId;
 }
 
 void CharaBase::StopAnimation()

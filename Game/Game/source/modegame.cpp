@@ -103,13 +103,13 @@ bool ModeGame::Initialize()
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
 
-	// 索敵システムの初期化
+	//// 索敵システムの初期化
 	_enemySensor = std::make_shared<EnemySensor>();
 	_enemySensor->Initialize();
-	_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
-	_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
+	//_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
+	//_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
 
-	// エネミーにセンサーを設定
+	//// エネミーにセンサーを設定
 	for (auto& enemy : _enemy)
 	{
 		enemy->SetEnemySensor(_enemySensor);
@@ -126,6 +126,7 @@ bool ModeGame::Initialize()
 	_soundServer->Add("bgmChenge", _bgmChenge.get());
 
 	_isChengeBgm = false;
+
 	_bgmInitialize->Play();
 
 	return true;
@@ -199,7 +200,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maptry.json";
+	std::string jsonFile = "marker0127_2.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -212,10 +213,27 @@ bool ModeGame::LoadStageData()
 
 	for(auto& object : stage)
 	{
-		std::string name = object.at("objectName");
+		const std::string& name = object.at("objectName");
+
 		if(name == "S_MarkerA")
 		{
 			_playerTanuki->SetJsonDataUE(object);
+			continue;
+		}
+
+		if(name == "S_MarkerB")
+		{
+			auto enemy = std::make_shared<Enemy>();
+			enemy->Initialize();
+			enemy->SetJsonDataUE(object);
+
+			auto sensor = std::make_shared<EnemySensor>();
+			sensor->Initialize();
+			enemy->SetEnemySensor(sensor);
+
+
+			_enemy.emplace_back(enemy);
+			_chara.emplace_back(enemy);
 		}
 	}
 
@@ -256,6 +274,11 @@ bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 bool ModeGame::Process()
 {
 	base::Process();
+
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
+
 
 	// カメラ操作
 	_camera->Process();
@@ -427,7 +450,7 @@ bool ModeGame::Process()
 
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();	// オブジェクト処理
-	
+
 	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
@@ -557,7 +580,12 @@ bool ModeGame::Render()
 		_enemySensor->RenderDetectionUI();
 	}
 
-	CollisionManager::GetInstance()->SetDebugDraw(true);
+
+	if(_d_view_collision)
+	{
+		//CollisionManager::GetInstance()->SetDebugDraw(true);
+	}
+
 
 	//if(_player)
 	//{

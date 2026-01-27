@@ -2,9 +2,6 @@
 // * \file   playertanuki.cpp
 // * \brief  �K��ԃN���X
 // *
-// * \author ��ؗT�H
-// * \date   2025/12/15
-// * \��Ɠ�e: �V�K�쐬 ��ؗT�H�@2025/12/15
 /*********************************************************************/
 
 #include "playertanuki.h"
@@ -14,7 +11,7 @@
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	
+
 	_handle = MV1LoadModel("res/Tanuki/goepon.mv1");
 	_iAttachIndex = -1;
 	// �X�e�[�^�X��u�����v�ɐݒ�
@@ -27,11 +24,7 @@ bool PlayerTanuki::Initialize()
 	//{
 	//	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f); // �����ʒu�����������A�����o���ꏈ���̂������ňʒu�������
 	//}
-	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// �L�������f���̓f�t�H���g��-Z����������Ă���
-	// ���ʒu�̐ݒ�
-	// �ʒu�A�����̏�����
-	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
-	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// �L�������f���̓f�t�H���g��-Z����������Ă���
+	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// �L�������f���̓f�t�H���g��-Z����������Ă���
 	// ���ʒu�̐ݒ�
 	_fColSubY = 40.0f;
 	// �R���W�������a�̐ݒ�
@@ -78,40 +71,84 @@ bool PlayerTanuki::Process()
 	lStickZ = fLz;
 
 	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-
-	_vInput = inputLocal;
 	if(CheckHitKey(KEY_INPUT_UP))
 	{
-		lStickZ = -1.0f;
+		inputLocal.z = 1.0f;
 	}
 	if(CheckHitKey(KEY_INPUT_DOWN))
 	{
-		lStickZ = 1.0f;
+		inputLocal.z = -1.0f;
 	}
 	if(CheckHitKey(KEY_INPUT_LEFT))
 	{
-		lStickX = -1.0f;
+		inputLocal.x = -1.0f;
 	}
 	if(CheckHitKey(KEY_INPUT_RIGHT))
 	{
-		lStickX = 1.0f;
+		inputLocal.x = 1.0f;
 	}
-	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-	float rad = atan2(lStickX, lStickZ);
-	if(length < _fAnalogDeadZone)
+
+	// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
+	//_vInput = inputLocal;
+
+
+	//float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+
+
+
+	// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
+
+	// ��i�ŎQ�Ƃ��Ă����`�ɂȂ�Ȃ��悤�ɁA�����Ő錾���Ă���
+		// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
+	float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+
+	// ��i�ŎQ�Ƃ��Ă����`�ɂȂ�Ȃ��悤�ɁA�����Ő錾���Ă���
+	float localRad = 0.0f;
+
+	// �f�b�h�]�[����ׂ�����u�|���������v�Ɉړ��A�f�b�h�]�[�������Ȃ�~�܂�
+	if(length >= _fAnalogDeadZone)
 	{
-		length = 0.0f;
+		// �X�e�B�b�N�����i���[�J���j
+		// �E=+X�A��=+Z �ɂȂ�悤�ɕϊ��iY���͎g��Ȃ��j
+		// ���㉺���]�������ꍇ�� -lStickZ �� +lStickZ �ɕς��Ă�������
+		const float moveX = lStickZ;
+		const float moveZ = lStickX;
+
+		// ���͕���(����)��ۑ��iCharaBase �� GetInputVector �p�j
+		_vInput = vec3::VGet(moveX, 0.0f, moveZ);
+
+		// ���͕����̊p�x�i���[�J����ԁj
+		localRad = atan2f(moveZ, moveX);
+
+		// ��葬�x�ňړ��i�|����ő��x��ς������Ȃ� length ��g���j
+		const float speed = _fMvSpeed;
+
+		// �J�����p�ŉ�]�������[���h�ړ���
+		_v.x = cosf(localRad + camrad) * length;
+		_v.z = sinf(localRad + camrad) * length;
+
+		_vDir = _v;
+		_status = STATUS::WALK;
+	}
+	else
+	{
+		// �f�b�h�]�[���F�����Ȃ�
+		_v = { 0.0f, 0.0f, 0.0f };
+		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+		_status = STATUS::WAIT;
 	}
 
-	// 入力ベクトルを保存（EscapeCollisionで使用）
-	_vInput = inputLocal;
-
-	// カメラ方向に合わせて移動量を計算
+	// �����͏�ňړ��v�Z�ς݂Ȃ̂Łu��d�v�Z�v����Ȃ�
+	// �i�㉺���]�⏟��ɍ��W�����������ɂȂ��Ă����j
+#if 0
+	// �J���������ɍ��킹�Ĉړ��ʂ�v�Z
 	if(length > 0.0f)
 	{
+		float localRad = atan2f(inputLocal.z, inputLocal.x);
+
 		length = _fMvSpeed;
-		_v.x = cosf(rad + camrad) * length;
-		_v.z = sinf(rad + camrad) * length;
+		_v.x = cosf(localRad + camrad) * length;
+		_v.z = sinf(localRad + camrad) * length;
 
 		_vDir = _v;
 		_status = STATUS::WALK;
@@ -121,8 +158,89 @@ bool PlayerTanuki::Process()
 		_v = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
 	}
+#endif
 
-	// アニメーション管理
+
+	//float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+
+	//if(length < _fAnalogDeadZone)
+	//{
+	//	length = 0.0f;
+	//}
+
+	// �J���������ɍ��킹�Ĉړ��ʂ�v�Z
+	// �J���������ɍ��킹�Ĉړ��ʂ�v�Z
+	//if(length > 0.0f)
+	//{
+	//	// localRad������`�̂��߁A�����ōČv�Z����
+	//	float localRad = atan2f(inputLocal.z, inputLocal.x);
+
+	//	length = _fMvSpeed;
+	//	_v.x = cosf(localRad + camrad) * length;
+	//	_v.z = sinf(localRad + camrad) * length;
+
+	//	_vDir = _v;
+	//	_status = STATUS::WALK;
+	//}
+	//else
+	//{
+	//	_status = STATUS::WAIT;
+	//}
+
+	if(_fPlayTime >= _fTotalTime)
+	{
+		_fPlayTime = 0.0f;
+	}
+
+	// �A�j���[�V�������擾�p�����_
+	auto GetAnimName = [this](STATUS name) -> std::string
+		{
+			switch(name)
+			{
+			case STATUS::WAIT:
+				return "taiki";
+			case STATUS::WALK:
+				return "walk";
+			default:
+				return std::string();
+			}
+		};
+
+	// �A�j���[�V�����Đ��p�����_
+	auto PlayAnim = [&](bool change)
+		{
+			std::string name = GetAnimName(_status);
+			if(name.empty()) { return; }
+
+			_animId = AnimationManager::GetInstance()->Play(_handle, name, true);
+			_fPlayTime = 0.0f;
+
+			// �X�e�[�^�X�ύX���̓����_���ōĐ����Ԃ���炷
+			if(change)
+			{
+				switch(_status)
+				{
+				case STATUS::WAIT:
+					_fPlayTime += rand() % 30;
+					break;
+				}
+			}
+
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			}
+		};
+
+	// --- �A�j���[�V�����Ǘ� ---
+	// �Đ����̃A�j���[�V�������I�����Ă��邩�`�F�b�N�i�񃋁[�v�Đ��� AnimationManager ���C���X�^���X��폜����j
+	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
+	{
+		_animId = -1;
+		PlayAnim(false);
+	}
+
+	//�����̃A�j���Ǘ��i�X�e�[�^�X�ω����̏����j
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
@@ -143,34 +261,7 @@ bool PlayerTanuki::Process()
 			_animId = -1;
 		}
 
-		std::string anim_name;
-		switch(_status)
-		{
-			case STATUS::WAIT:
-				anim_name = "idle";
-				break;
-			case STATUS::WALK:
-				anim_name = "walk";
-				break;
-			default:
-				anim_name.clear();
-		}
-
-		if(!anim_name.empty())
-		{
-			_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-			_fPlayTime = 0.0f;
-			switch(_status)
-			{
-				case STATUS::WAIT:
-					_fPlayTime += rand() % 30;
-					break;
-			}
-			if(_animId != -1)
-			{
-				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
-			}
-		}
+		PlayAnim(true);// �X�e�[�^�X�ύX���Ȃ̂�true
 	}
 
 	if(_fPlayTime >= _fTotalTime)
@@ -178,19 +269,20 @@ bool PlayerTanuki::Process()
 		_fPlayTime = 0.0f;
 	}
 
-	// --- ここで実際に位置とカメラを移動させる ---
-	if(vec3::VSize(_v) > 0.0f)
-	{
-		// プレイヤーの位置を移動
-		_vPos = vec3::VAdd(_vPos, _v);
 
-		// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
-		if(_cam != nullptr)
-		{
-			_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
-			_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
-		}
-	}
+	// --- �����Ŏ��ۂɈʒu�ƃJ������ړ������� ---
+	//if(vec3::VSize(_v) > 0.0f)
+	//{
+	//	//// �v���C���[�̈ʒu��ړ�
+	//	_vPos = vec3::VAdd(_vPos, _v);
+
+	//	//// �J�������ݒ肳��Ă���΃J�����ʒu�̓v���C���[�ʒu + �I�t�Z�b�g�Őݒ�i���Z�͂��Ȃ��j
+	//	//if(_cam != nullptr)
+	//	//{
+	//	//	_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
+	//	//	_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
+	//	//}
+	//}
 	return true;
 }
 
@@ -224,6 +316,8 @@ bool PlayerTanuki::Render()
 
 	// �`��
 	MV1DrawModel(_handle);
-	
+
+	DrawFormatString(10, 90, GetColor(255, 255, 0), "fLx=%.3f fLz=%.3f", fLx, fLz);
+
 	return true;
 }

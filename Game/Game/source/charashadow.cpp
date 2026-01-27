@@ -17,7 +17,7 @@ bool CharaShadow::Initialize()
 	if(!base::Initialize()) { return false; }
 
 	// ‰eƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
-	_handle = LoadGraph("res/Texture/shadow_.png");
+	_handle = LoadGraph(img::shadow_);
 
 	_fScale = 1.0f;
 

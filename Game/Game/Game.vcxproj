@@ -35,6 +35,9 @@
     <ClInclude Include="source\modeeffekseer.h" />
     <ClInclude Include="source\modegame.h" />
     <ClInclude Include="source\modemenu.h" />
+    <ClInclude Include="source\modeopscenario.h" />
+    <ClInclude Include="source\modescenariobase.h" />
+    <ClInclude Include="source\modeteamlogo.h" />
     <ClInclude Include="source\modetitle.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
@@ -65,6 +68,9 @@
     <ClCompile Include="source\modegamedebug.cpp" />
     <ClCompile Include="source\modegameobject.cpp" />
     <ClCompile Include="source\modemenu.cpp" />
+    <ClCompile Include="source\modeopscenario.cpp" />
+    <ClCompile Include="source\modescenariobase.cpp" />
+    <ClCompile Include="source\modeteamlogo.cpp" />
     <ClCompile Include="source\modetitle.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />

@@ -1,5 +1,5 @@
 #include "modeinit.h"
-#include "modetitle.h"
+#include "modeteamlogo.h"
 
 ModeInit::ModeInit()
 {
@@ -19,7 +19,7 @@ ModeInit::~ModeInit()
 
 bool ModeInit::Initialize()
 {
-	_iHandle = LoadGraph(img::AMGlogo);
+	_handle = LoadGraph(img::AMGlogo);
 	_isWait = false;
 	
 	return true;
@@ -27,10 +27,10 @@ bool ModeInit::Initialize()
 
 bool ModeInit::Terminate()
 {
-	if(_iHandle != -1)
+	if(_handle != -1)
 	{
-		DeleteGraph(_iHandle);
-		_iHandle = -1;
+		DeleteGraph(_handle);
+		_handle = -1;
 	}
 	return true;
 }
@@ -68,15 +68,15 @@ bool ModeInit::Process()
 		{
 			if(Fade::GetInstance()->IsFade() == false)
 			{
-				ModeServer::GetInstance()->Add(new ModeTitle(), ModeServer::GetInstance()->LayerTop(), "title");
-				ModeServer::GetInstance()->Del(this);
 				_state = ModeBase::State::DONE;
 			}
 			break;
 		}
 		case ModeBase::State::DONE:
 		{
-		default:
+			ModeServer::GetInstance()->Del(this);
+			ModeServer::GetInstance()->Add(new ModeTeamLogo(), 2, "teamlogo");
+
 			break;
 		}
 	}
@@ -85,7 +85,7 @@ bool ModeInit::Process()
 
 bool ModeInit::Render()
 {
-	DrawGraph(0, 0, _iHandle, TRUE);
+	DrawGraph(0, 0, _handle, TRUE);
 
 	Fade::GetInstance()->Render();
 	return true;

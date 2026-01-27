@@ -116,9 +116,45 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	{
 		for(const auto& off : offsets)
 		{
-			const vec::Vec3 from = vec3::VAdd(vec3::VAdd(oldPos, off), vec3::VGet(0.0f, yy, 0.0f));
-			const vec::Vec3 to = vec3::VAdd(vec3::VAdd(candidate, off), vec3::VGet(0.0f, yy, 0.0f));
-			hitWall |= checkLineAndClamp(from, to, candidate);
+			//カメラも移動する
+			break;
+		}
+
+		// 移動した先でコリジョン判定
+		// 移動した先でコリジョン判定
+		//MV1_COLL_RESULT_POLY hitPoly;
+
+		// 主人公の腰位置から下方向への直線
+		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
+		vec::Vec3 hitPos;
+		bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			chara->GetPos(),
+			obj->GetModelHandleMap().begin()->second,
+			obj->GetFrameMapCollision(),
+			chara->GetColSubY(),
+			hitPos
+		);
+		if(hit)
+		{
+			// 当たった
+			// 当たったY位置をキャラ座標にする
+			vec::Vec3 tmpPos = chara->GetPos();
+			tmpPos.y = hitPos.y;
+			chara->SetPos(tmpPos);
+
+			// キャラが上下に移動した量だけ、移動量を修正
+			v.y += chara->GetPos().y - oldvPos.y;
+
+
+
+			// ループiから抜ける
+			break;
+		}
+		else
+		{
+			// 当たらなかった。元の座標に戻す
+			chara->SetPos(oldvPos);
+			//v = oldv;
 		}
 	}
 
@@ -413,12 +449,19 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 		float halfAngle = DEG2RAD(60.0f); // 60度
 		float rad = 120.0f; // 半径100
 
+		// ViewCollision の状態を CollisionManager に反映（デバッグ情報の記録/描画を制御）
+		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
+
+		bool anyhit = false;
+
 		for(auto& enemy : enemy)
 		{
-			if(!enemy->IsAlive()) {
+			if(!enemy->IsAlive())
+			{
 				continue;
 			}
 
+			// 判定自体は常に行う（ViewCollision OFF でもゲーム的な当たり判定は有効）
 			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
 				enemy->GetPos(),
 				vec3::VScale(enemy->GetDir(), -1.0f),
@@ -426,13 +469,30 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 				halfAngle,
 				player->GetPos()
 			);
+
 			if(hit)
 			{
-				player->PlayAnimation("goepon_walk", false);
+				anyhit = true;
 				enemy->PlayAnimation("walk", false);
 			}
+			else
+			{
+				enemy->PlayAnimation("wait", false);
+			}
 		}
+
+		if(anyhit)
+		{
+			player->PlayAnimation("hensin", false);
+		}
+		else
+		{
+			player->PlayAnimation("wait", false);
+		}
+
+		return anyhit;
 	}
 
-	return true;
+
+	return false;
 }

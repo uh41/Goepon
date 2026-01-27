@@ -3,8 +3,20 @@
 namespace img
 {
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
+  inline constexpr const char* Logo = "res/Logo.png";
+  inline constexpr const char* Op1 = "res/Op1.png";
+  inline constexpr const char* Op10 = "res/Op10.png";
+  inline constexpr const char* Op2 = "res/Op2.png";
+  inline constexpr const char* Op3 = "res/Op3.png";
+  inline constexpr const char* Op4 = "res/Op4.png";
+  inline constexpr const char* Op5 = "res/Op5.png";
+  inline constexpr const char* Op6 = "res/Op6.png";
+  inline constexpr const char* Op7 = "res/Op7.png";
+  inline constexpr const char* Op8 = "res/Op8.png";
+  inline constexpr const char* Op9 = "res/Op9.png";
   inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
+  inline constexpr const char* title = "res/title.png";
 }
 
 namespace mv1
@@ -27,6 +39,7 @@ namespace mv1
   inline constexpr const char* S_TreasureBox = "res/IslandJson/S_TreasureBox.mv1";
   inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
+  inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";

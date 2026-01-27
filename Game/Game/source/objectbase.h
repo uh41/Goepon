@@ -60,6 +60,8 @@ public:
 		return _mModelHandle;
 	}
 
+	void SetDir(const vec::Vec3& dir) { _vDir = dir; }
+
 	//回転縮小平行移動を計算し、モデルに適用する
 	void ModelMatrixSetUp();
 
@@ -85,6 +87,8 @@ protected:
 	int _iHandleSkySphere;
 	int _iHandleShadowMap;
 	at::mst<int> _mModelHandle;// マップ画像
+
+	//vec::Vec3 _vDir; // キャラの向き
 
 	//DamageData _damageData;		//ダメージデータ
 

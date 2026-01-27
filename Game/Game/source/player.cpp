@@ -298,6 +298,32 @@ bool Player::Process()
 		_status = STATUS::WAIT;
 	}
 
+	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
+	{
+		_animId = -1;
+		std::string anim_name;
+		switch(_status)
+		{
+		case STATUS::WAIT:
+			anim_name = "mot_attack_charge_loop"; // 元コードに合わせる
+			break;
+		case STATUS::WALK:
+			anim_name = "mot_move_run";
+			break;
+		default:
+			anim_name.clear();
+		}
+		if(!anim_name.empty())
+		{
+			_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
+			_fPlayTime = 0.0f;
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			}
+		}
+	}
+
 	// アニメーション時間・アタッチ管理
 	if(old_status == _status)
 	{
