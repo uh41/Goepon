@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "maptry.json";
+		_sJsonFile = "marker0127_2.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -86,7 +86,7 @@ bool Map::Initialize()
 				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
 			}
 
-			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "pPlane1");
+			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "Collision_01");
 
 			// コリジョン情報の生成
 			MV1SetupCollInfo(_mModelHandle[pos.name], _iFrameMapCollision, 16, 16, 16);

@@ -86,7 +86,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		{
 			// 当たらなかった。元の座標に戻す
 			chara->SetPos(oldvPos);
-			v = oldv;
+			//v = oldv;
 		}
 	}
 	return true;
@@ -218,12 +218,19 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 		float halfAngle = DEG2RAD(60.0f); // 60度
 		float rad = 120.0f; // 半径100
 
+		// ViewCollision の状態を CollisionManager に反映（デバッグ情報の記録/描画を制御）
+		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
+
+		bool anyhit = false;
+
 		for(auto& enemy : enemy)
 		{
-			if(!enemy->IsAlive()) {
+			if(!enemy->IsAlive())
+			{
 				continue;
 			}
 
+			// 判定自体は常に行う（ViewCollision OFF でもゲーム的な当たり判定は有効）
 			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
 				enemy->GetPos(),
 				vec3::VScale(enemy->GetDir(), -1.0f),
@@ -231,13 +238,30 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 				halfAngle,
 				player->GetPos()
 			);
+
 			if(hit)
 			{
-				player->PlayAnimation("hensin", false);
+				anyhit = true;
 				enemy->PlayAnimation("walk", false);
 			}
+			else
+			{
+				enemy->PlayAnimation("wait", false);
+			}
 		}
+
+		if(anyhit)
+		{
+			player->PlayAnimation("hensin", false);
+		}
+		else
+		{
+			player->PlayAnimation("wait", false);
+		}
+
+		return anyhit;
 	}
 
-	return true;
+
+	return false;
 }
