@@ -19,7 +19,7 @@ bool Map::Initialize()
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	constexpr int MAP_SELECT = 0;
+	constexpr int MAP_SELECT = 2;
 
 	if (MAP_SELECT == 0)
 	{
@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if (MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "map0126.json";
+		_sJsonFile = "marker0127_2.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);

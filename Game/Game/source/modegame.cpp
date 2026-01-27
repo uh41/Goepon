@@ -194,7 +194,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maptry.json";
+	std::string jsonFile = "marker0127_2.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -218,8 +218,9 @@ bool ModeGame::LoadStageData()
 		if (name == "S_MarkerB")
 		{
 			auto enemy = std::make_shared<Enemy>();
-			enemy->Initialize();
+
 			enemy->SetJsonDataUE(object);
+			enemy->Initialize();
 
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
@@ -227,7 +228,7 @@ bool ModeGame::LoadStageData()
 
 
 			_enemy.emplace_back(enemy);
-			_chara.emplace_back(enemy);
+			//_chara.emplace_back(enemy);
 		}
 	}
 
@@ -355,6 +356,14 @@ bool ModeGame::Process()
 	for(auto enemy : _enemy)
 	{
 		EscapeCollision(enemy.get(), _map.get());
+	}
+
+	for(auto& enemy : _enemy)
+	{
+		if(enemy && enemy->IsAlive())
+		{
+			enemy->Process();
+		}
 	}
 
 	// 索敵システムの処理（個別センサー方式に変更）

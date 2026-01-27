@@ -27,8 +27,11 @@ bool Enemy::Initialize()
 	_fPlayTime = 0.0f;
 
 	// 位置、向きの初期化
-	_vPos = vec3::VGet(-700.0f, 0.0f, -1500.0f);
-	_vDir = vec3::VGet(1.0f, 0.0f, 0.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	//_vPos = vec3::VGet(-700.0f, 0.0f, -1500.0f);
+	//_vDir = vec3::VGet(1.0f, 0.0f, 0.0f);// キャラモデルはデフォルトで-Z方向を向いている
+
+	//_initialPosition = _vPos;
+	//_initialDirection = _vDir;
 
 	// 腰位置の設定
 	_fColSubY = 40.0f;
