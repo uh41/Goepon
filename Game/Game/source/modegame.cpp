@@ -127,6 +127,8 @@ bool ModeGame::Initialize()
 
 	_isChengeBgm = false;
 
+	_bgmInitialize->Play();
+
 	return true;
 }
 
@@ -198,7 +200,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maptry.json";
+	std::string jsonFile = "marker0127_2.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -276,7 +278,7 @@ bool ModeGame::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	_bgmInitialize->Play();
+
 
 	// カメラ操作
 	_camera->Process();
@@ -295,7 +297,7 @@ bool ModeGame::Process()
 
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();	// オブジェクト処理
-	
+
 	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
@@ -426,7 +428,12 @@ bool ModeGame::Render()
 		_enemySensor->RenderDetectionUI();
 	}
 
-	CollisionManager::GetInstance()->SetDebugDraw(true);
+
+	if(_d_view_collision)
+	{
+		//CollisionManager::GetInstance()->SetDebugDraw(true);
+	}
+
 
 	//if(_player)
 	//{
