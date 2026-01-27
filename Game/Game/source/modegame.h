@@ -51,6 +51,7 @@ public:
 	bool GetEffekseerLaunched() const { return _effekseerLaunched; }
 	void SetEffekseerLaunched(bool b) { _effekseerLaunched = b; }
 
+
 	bool PushChara(CharaBase* move, CharaBase* stop);
 	
 	bool IsHitCircle(CharaBase* c1, CharaBase* c2);
@@ -134,10 +135,15 @@ protected:
 	// メニューから切り替える「カメラ操作モード」フラグ
 	bool _bCameraControlMode;
 	
+
 	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+	bool _isTransformingToHuman = false;
+	int _transformAnimId = -1;
+	bool _isTanukiAttackPlaying = false;
+	int _tanukiAttackAnimId = -1;
 
 	int _iBlocks;	// ブロック数
 	std::vector<float> _vBlockFill; // 表示用現在値(0..1)

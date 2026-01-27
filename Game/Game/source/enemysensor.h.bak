@@ -38,7 +38,7 @@ public:
 	virtual bool Render();
 
 	// 索敵範囲の設定
-	void SetDetectionSector(float radius, float angle);	// 半径、角度
+	void SetDetectionSector(float radius, float angle);
 
 	// プレイヤーが索敵範囲内にいるかチェック
 	bool IsPlayerInDetectionRange(const vec::Vec3& playerPos) const;

@@ -14,24 +14,24 @@
 // 初期化
 bool Map::Initialize()
 {
-	if (!base::Initialize()) { return false; }
+	if(!base::Initialize()) { return false; }
 
 	// マップ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
 	constexpr int MAP_SELECT = 2;
 
-	if (MAP_SELECT == 0)
+	if(MAP_SELECT == 0)
 	{
 		// ダンジョン
-		_iHandleMap = MV1LoadModel("res/map/SM_stage_arufa.mv1");
-		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "Collision_01");
+		_iHandleMap = MV1LoadModel("res/map/SM_map.mv1");
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "pPlane1");
 
 		// コリジョン情報の生成
 		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
 		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
-	else if (MAP_SELECT == 1)
+	else if(MAP_SELECT == 1)
 	{
 		// フィールド
 		_iHandleMap = MV1LoadModel("res/Ground/Ground.mv1");
@@ -41,7 +41,7 @@ bool Map::Initialize()
 		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
 		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 	}
-	else if (MAP_SELECT == 2)
+	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
 		_sJsonFile = "marker0127_2.json";
@@ -53,7 +53,7 @@ bool Map::Initialize()
 		_iFile >> json;
 
 		nlohmann::json stage = json.at(_sJsonObjectName);
-		for (auto& data : stage)
+		for(auto& data : stage)
 		{
 			mymath::BLOCKPOS pos;
 			data.at("objectName").get_to(pos.name);
@@ -73,14 +73,14 @@ bool Map::Initialize()
 			data.at("scale").at("y").get_to(pos.sz);
 
 			// 名前のモデルがすでに読み込み済か？
-			if (_mModelHandle.count(pos.name) == 0)
+			if(_mModelHandle.count(pos.name) == 0)
 			{
 				// まだ読み込まれていない。読み込みを行う
 				std::string filename = _sPath + pos.name + ".mv1";
 				_mModelHandle[pos.name] = MV1LoadModel(filename.c_str());
 			}
 			// 名前から使うモデルハンドル＆表示フレームを決める
-			if (_mModelHandle.count(pos.name) > 0)
+			if(_mModelHandle.count(pos.name) > 0)
 			{
 				pos.modelHandle = _mModelHandle[pos.name];
 				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
@@ -93,7 +93,7 @@ bool Map::Initialize()
 			MV1SetFrameVisible(_mModelHandle[pos.name], _iFrameMapCollision, FALSE);
 
 			// データをコンテナに追加（モデル番号があれば）
-			if (pos.modelHandle != -1)
+			if(pos.modelHandle != -1)
 			{
 				_vBlockPos.push_back(pos);
 			}
@@ -101,7 +101,7 @@ bool Map::Initialize()
 
 
 	}
-	else if (MAP_SELECT == 3)
+	else if(MAP_SELECT == 3)
 	{
 		// 地面を使うパターン（モデルは読み込まない）
 		_iHandleMap = -1;
@@ -123,17 +123,6 @@ bool Map::Initialize()
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
-	else if (MAP_SELECT == 4)
-	{
-		// フィールド
-		_iHandleMap = MV1LoadModel("res/Dungeon/Dungeon.mv1");
-		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, "dungeon_collision");
-
-		// コリジョン情報の生成
-		MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);
-		MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
-	}
-
 	// コリジョン情報の生成
 	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
 	// コリジョンのフレームを描画しない設定

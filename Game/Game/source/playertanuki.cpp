@@ -2,9 +2,6 @@
 // * \file   playertanuki.cpp
 // * \brief  狸状態クラス
 // *
-// * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #include "playertanuki.h"
@@ -14,7 +11,7 @@
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	
+
 	_handle = MV1LoadModel("res/Tanuki/goepon.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
@@ -73,42 +70,84 @@ bool PlayerTanuki::Process()
 	lStickZ = fLz;
 
 	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-	if (CheckHitKey(KEY_INPUT_UP))
-	{
-		inputLocal.x = -1.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_DOWN))
-	{
-		inputLocal.x = 1.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_LEFT))
-	{
-		inputLocal.z = -1.0f;
-	}
-	if (CheckHitKey(KEY_INPUT_RIGHT))
+	if(CheckHitKey(KEY_INPUT_UP))
 	{
 		inputLocal.z = 1.0f;
 	}
-
-	// スティックの傾きから移動量を計算
-	_vInput = inputLocal;
-
-	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-	float rad = atan2(lStickX, lStickZ);
-	if (length < _fAnalogDeadZone)
+	if(CheckHitKey(KEY_INPUT_DOWN))
 	{
-		length = 0.0f;
+		inputLocal.z = -1.0f;
+	}
+	if(CheckHitKey(KEY_INPUT_LEFT))
+	{
+		inputLocal.x = -1.0f;
+	}
+	if(CheckHitKey(KEY_INPUT_RIGHT))
+	{
+		inputLocal.x = 1.0f;
 	}
 
-	//// 入力ベクトルを保存（EscapeCollisionで使用）
+	// スティックの傾きから移動量を計算
 	//_vInput = inputLocal;
 
-	// カメラ方向に合わせて移動量を計算
-	if (length > 0.0f)
+
+	//float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+
+
+
+	// スティックの傾きから移動量を計算
+
+	// 後段で参照しても未定義にならないように、ここで宣言しておく
+		// スティックの傾きから移動量を計算
+	float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+
+	// 後段で参照しても未定義にならないように、ここで宣言しておく
+	float localRad = 0.0f;
+
+	// デッドゾーンを跨いだら「倒した方向」に移動、デッドゾーン未満なら止まる
+	if(length >= _fAnalogDeadZone)
 	{
+		// スティック方向（ローカル）
+		// 右=+X、上=+Z になるように変換（Y軸は使わない）
+		// ※上下反転したい場合は -lStickZ を +lStickZ に変えてください
+		const float moveX = lStickZ;
+		const float moveZ = lStickX;
+
+		// 入力方向(向き)を保存（CharaBase の GetInputVector 用）
+		_vInput = vec3::VGet(moveX, 0.0f, moveZ);
+
+		// 入力方向の角度（ローカル空間）
+		localRad = atan2f(moveZ, moveX);
+
+		// 一定速度で移動（倒し具合で速度を変えたいなら length を使う）
+		const float speed = _fMvSpeed;
+
+		// カメラ角で回転したワールド移動量
+		_v.x = cosf(localRad + camrad) * length;
+		_v.z = sinf(localRad + camrad) * length;
+
+		_vDir = _v;
+		_status = STATUS::WALK;
+	}
+	else
+	{
+		// デッドゾーン：動かない
+		_v = { 0.0f, 0.0f, 0.0f };
+		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+		_status = STATUS::WAIT;
+	}
+
+	// ここは上で移動計算済みなので「二重計算」をしない
+	// （上下反転や勝手に座標が動く原因になっていた）
+#if 0
+	// カメラ方向に合わせて移動量を計算
+	if(length > 0.0f)
+	{
+		float localRad = atan2f(inputLocal.z, inputLocal.x);
+
 		length = _fMvSpeed;
-		_v.x = cosf(rad + camrad) * length;
-		_v.z = sinf(rad + camrad) * length;
+		_v.x = cosf(localRad + camrad) * length;
+		_v.z = sinf(localRad + camrad) * length;
 
 		_vDir = _v;
 		_status = STATUS::WALK;
@@ -117,8 +156,89 @@ bool PlayerTanuki::Process()
 	{
 		_status = STATUS::WAIT;
 	}
+#endif
 
-	// アニメーション管理
+
+	//float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+
+	//if(length < _fAnalogDeadZone)
+	//{
+	//	length = 0.0f;
+	//}
+
+	// カメラ方向に合わせて移動量を計算
+	// カメラ方向に合わせて移動量を計算
+	//if(length > 0.0f)
+	//{
+	//	// localRadが未定義のため、ここで再計算する
+	//	float localRad = atan2f(inputLocal.z, inputLocal.x);
+
+	//	length = _fMvSpeed;
+	//	_v.x = cosf(localRad + camrad) * length;
+	//	_v.z = sinf(localRad + camrad) * length;
+
+	//	_vDir = _v;
+	//	_status = STATUS::WALK;
+	//}
+	//else
+	//{
+	//	_status = STATUS::WAIT;
+	//}
+
+	if(_fPlayTime >= _fTotalTime)
+	{
+		_fPlayTime = 0.0f;
+	}
+
+	// アニメーション名取得用ラムダ
+	auto GetAnimName = [this](STATUS name) -> std::string
+		{
+			switch(name)
+			{
+			case STATUS::WAIT:
+				return "taiki";
+			case STATUS::WALK:
+				return "walk";
+			default:
+				return std::string();
+			}
+		};
+
+	// アニメーション再生用ラムダ
+	auto PlayAnim = [&](bool change)
+		{
+			std::string name = GetAnimName(_status);
+			if(name.empty()) { return; }
+
+			_animId = AnimationManager::GetInstance()->Play(_handle, name, true);
+			_fPlayTime = 0.0f;
+
+			// ステータス変更時はランダムで再生時間をずらす
+			if(change)
+			{
+				switch(_status)
+				{
+				case STATUS::WAIT:
+					_fPlayTime += rand() % 30;
+					break;
+				}
+			}
+
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			}
+		};
+
+	// --- アニメーション管理 ---
+	// 再生中のアニメーションが終了しているかチェック（非ループ再生は AnimationManager がインスタンスを削除する）
+	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
+	{
+		_animId = -1;
+		PlayAnim(false);
+	}
+
+	//既存のアニメ管理（ステータス変化時の処理）
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
@@ -133,40 +253,13 @@ bool PlayerTanuki::Process()
 	else
 	{
 
-        if(_animId != -1)
-        {
-            AnimationManager::GetInstance()->Stop(_animId);
-            _animId = -1;
-        }
-
-        std::string anim_name;
-        switch(_status)
-        {
-        case STATUS::WAIT:
-            anim_name = "taiki";
-            break;
-        case STATUS::WALK:
-            anim_name = "goepon_walk";
-            break;
-        default:
-            anim_name.clear();
-        }
-
-        if(!anim_name.empty())
-        {
-            _animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-            _fPlayTime = 0.0f;
-            switch(_status)
-            {
-            case STATUS::WAIT:
-                _fPlayTime += rand() % 30;
-                break;
-            }
-            if(_animId != -1)
-            {
-                AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
-            }
+		if(_animId != -1)
+		{
+			AnimationManager::GetInstance()->Stop(_animId);
+			_animId = -1;
 		}
+
+		PlayAnim(true);// ステータス変更時なのでtrue
 	}
 
 	if(_fPlayTime >= _fTotalTime)
@@ -174,19 +267,20 @@ bool PlayerTanuki::Process()
 		_fPlayTime = 0.0f;
 	}
 
-	// --- ここで実際に位置とカメラを移動させる ---
-	if(vec3::VSize(_v) > 0.0f)
-	{
-		// プレイヤーの位置を移動
-		_vPos = vec3::VAdd(_vPos, _v);
 
-		// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
-		if(_cam != nullptr)
-		{
-			_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
-			_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
-		}
-	}
+	// --- ここで実際に位置とカメラを移動させる ---
+	//if(vec3::VSize(_v) > 0.0f)
+	//{
+	//	//// プレイヤーの位置を移動
+	//	_vPos = vec3::VAdd(_vPos, _v);
+
+	//	//// カメラが設定されていればカメラ位置はプレイヤー位置 + オフセットで設定（加算はしない）
+	//	//if(_cam != nullptr)
+	//	//{
+	//	//	_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
+	//	//	_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
+	//	//}
+	//}
 	return true;
 }
 
@@ -220,6 +314,8 @@ bool PlayerTanuki::Render()
 
 	// 描画
 	MV1DrawModel(_handle);
-	
+
+	DrawFormatString(10, 90, GetColor(255, 255, 0), "fLx=%.3f fLz=%.3f", fLx, fLz);
+
 	return true;
 }

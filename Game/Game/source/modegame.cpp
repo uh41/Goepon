@@ -103,20 +103,19 @@ bool ModeGame::Initialize()
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
 
-	_bShowTanuki = true;
-
 	//// 索敵システムの初期化
-	//_enemySensor = std::make_shared<EnemySensor>();			// センサーオブジェクトを生成
-	//_enemySensor->Initialize();								// センサーの初期化
-	//_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置	
-	//_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));	// 適当な向きに設定
-	//_enemySensor->SetMap(_map.get());						// マップへの参照を設定
+	_enemySensor = std::make_shared<EnemySensor>();
+	_enemySensor->Initialize();
+	//_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
+	//_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
 
-	////// エネミーにセンサーを設定
-	//for (auto& enemy : _enemy)
-	//{
-	//	enemy->SetEnemySensor(_enemySensor);
-	//}
+	//// エネミーにセンサーを設定
+	for (auto& enemy : _enemy)
+	{
+		enemy->SetEnemySensor(_enemySensor);
+	}
+
+
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -127,6 +126,8 @@ bool ModeGame::Initialize()
 	_soundServer->Add("bgmChenge", _bgmChenge.get());
 
 	_isChengeBgm = false;
+
+	_bgmInitialize->Play();
 
 	return true;
 }
@@ -169,7 +170,12 @@ bool ModeGame::Terminate()
 
 	delete _camera;
 
-	// サウンドサーバー終了処理
+	// 索敵システムの終了処理
+	if (_enemySensor)
+	{
+		_enemySensor->Terminate();
+		_enemySensor.reset();
+	}
 	if(_soundServer)
 	{
 		// 全サウンド停止
@@ -205,22 +211,21 @@ bool ModeGame::LoadStageData()
 
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	for (auto& object : stage)
+	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
 
-		if (name == "S_MarkerA")
+		if(name == "S_MarkerA")
 		{
 			_playerTanuki->SetJsonDataUE(object);
 			continue;
 		}
 
-		if (name == "S_MarkerB")
+		if(name == "S_MarkerB")
 		{
 			auto enemy = std::make_shared<Enemy>();
-
-			enemy->SetJsonDataUE(object);
 			enemy->Initialize();
+			enemy->SetJsonDataUE(object);
 
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
@@ -228,7 +233,7 @@ bool ModeGame::LoadStageData()
 
 
 			_enemy.emplace_back(enemy);
-			//_chara.emplace_back(enemy);
+			_chara.emplace_back(enemy);
 		}
 	}
 
@@ -273,7 +278,7 @@ bool ModeGame::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	_bgmInitialize->Play();
+
 
 	// カメラ操作
 	_camera->Process();
@@ -281,8 +286,7 @@ bool ModeGame::Process()
 	DebugProcess();// デバック処理
 	DebugCameraControl();// デバックカメラ処理
 
-	// メニュー経由でカメラ編集モードが有効なら、カメラのみ操作して他は処理しない
-	if(_bCameraControlMode)
+	if(_soundServer)
 	{
 		_soundServer->Update();
 	}
@@ -293,11 +297,16 @@ bool ModeGame::Process()
 
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();	// オブジェクト処理
-	
+
 	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
+
+	for(auto enemy : _enemy)
+	{
+		IsPlayerAttack(_player.get(), { enemy.get() });
+	}
 	
 	// エネミーとプレイヤーの当たり判定処理（現在表示中のプレイヤーのみ）
 	for (auto& enemy : _enemy)
@@ -358,16 +367,12 @@ bool ModeGame::Process()
 		EscapeCollision(enemy.get(), _map.get());
 	}
 
-	for(auto& enemy : _enemy)
+	// 索敵システムの処理
+	if (_enemySensor)
 	{
-		if(enemy && enemy->IsAlive())
-		{
-			enemy->Process();
-		}
+		_enemySensor->Process();
+		CheckAllDetections();
 	}
-
-	// 索敵システムの処理（個別センサー方式に変更）
-	CheckAllDetections();	// 全敵に対してプレイヤー検出をチェック
 
 	// BGMチェンジ処理
 	ChangeBGM();
@@ -457,6 +462,19 @@ bool ModeGame::Render()
 	DrawFormatString(10, 50, GetColor(0, 255, 0), 
 		"Player HP: %.1f", _player->GetHP());
 
+	// 索敵システムの描画
+	if (_enemySensor)
+	{
+		_enemySensor->Render();
+		_enemySensor->RenderDetectionUI();
+	}
+
+
+	if(_d_view_collision)
+	{
+		//CollisionManager::GetInstance()->SetDebugDraw(true);
+	}
+	
 	// 各敵のセンサーを個別に描画
 	for (auto& enemy : _enemy)
 	{
@@ -475,6 +493,7 @@ bool ModeGame::Render()
 			enemy->RenderYouDiedMessage();
 		}
 	}
+
 
 	//if(_player)
 	//{
@@ -500,6 +519,60 @@ bool ModeGame::Render()
 	//}
 
 	return true;
+}
+
+// 全てのエネミーに対してプレイヤー検出をチェック
+bool ModeGame::CheckAllDetections()
+{
+	if (!_enemySensor)
+	{
+		return false;
+	}
+
+	// タヌキ状態の時のみ検知処理を実行
+	if (!_bShowTanuki)
+	{
+		// 人間状態では検知されない
+		// 検知状態をリセットして敵に状態変更を通知
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerLost();
+			}
+		}
+		return true;
+	}
+
+	// タヌキ状態のプレイヤーのみをチェック対象にする
+	PlayerBase* currentPlayer = _playerTanuki.get();
+	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
+
+	// 検出状態に応じてエネミーに通知
+	if (detected)
+	{
+		vec::Vec3 playerPos = currentPlayer->GetPos();
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerDetected(playerPos);
+			}
+		}
+	}
+	else
+	{
+		// プレイヤーが検出範囲外になった場合
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->OnPlayerLost();
+			}
+		}
+	}
+
+	return detected;
 }
 
 // CheckAllDetections()メソッドの修正版
