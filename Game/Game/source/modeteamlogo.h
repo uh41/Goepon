@@ -1,15 +1,15 @@
 #pragma once
 #include "appframe.h"
 
-class ModeInit : public ModeBase
+class ModeTeamLogo : public ModeBase
 {
 public:
-
-	ModeInit();
-	virtual ~ModeInit();
+	ModeTeamLogo();
+	virtual ~ModeTeamLogo();
 	virtual bool Initialize()override;
 	virtual bool Terminate()override;
 	virtual bool Process()override;
 	virtual bool Render()override;
+
 };
 

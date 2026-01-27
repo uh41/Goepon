@@ -1,7 +1,7 @@
-#include "modeinit.h"
 #include "modeteamlogo.h"
+#include "modetitle.h"
 
-ModeInit::ModeInit()
+ModeTeamLogo::ModeTeamLogo()
 {
 	Initialize();
 
@@ -12,20 +12,19 @@ ModeInit::ModeInit()
 	_fadeTimer = 0;
 }
 
-ModeInit::~ModeInit()
+ModeTeamLogo::~ModeTeamLogo()
 {
 	Terminate();
 }
 
-bool ModeInit::Initialize()
+bool ModeTeamLogo::Initialize()
 {
-	_handle = LoadGraph(img::AMGlogo);
+	_handle = LoadGraph(img::Logo);
 	_isWait = false;
-	
 	return true;
 }
 
-bool ModeInit::Terminate()
+bool ModeTeamLogo::Terminate()
 {
 	if(_handle != -1)
 	{
@@ -35,11 +34,10 @@ bool ModeInit::Terminate()
 	return true;
 }
 
-bool ModeInit::Process()
+bool ModeTeamLogo::Process()
 {
 	// フェード処理
 	Fade::GetInstance()->Process();
-
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
@@ -60,7 +58,7 @@ bool ModeInit::Process()
 			if(_fadeTimer <= 0)
 			{
 				_state = ModeBase::State::FADE_OUT;
-				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
+				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// フェードアウト開始
 			}
 			break;
 		}
@@ -74,8 +72,9 @@ bool ModeInit::Process()
 		}
 		case ModeBase::State::DONE:
 		{
+			// 次のモードへ移行
+			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "game");
 			ModeServer::GetInstance()->Del(this);
-			ModeServer::GetInstance()->Add(new ModeTeamLogo(), 2, "teamlogo");
 
 			break;
 		}
@@ -83,11 +82,12 @@ bool ModeInit::Process()
 	return true;
 }
 
-bool ModeInit::Render()
+bool ModeTeamLogo::Render()
 {
-	DrawGraph(0, 0, _handle, TRUE);
+	// 画面中央にロゴを描画
 
+	DrawGraph(0, 0, _handle, TRUE);
+	// フェード描画
 	Fade::GetInstance()->Render();
 	return true;
 }
-

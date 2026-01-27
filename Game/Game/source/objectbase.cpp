@@ -54,20 +54,12 @@ void ObjectBase::SetJsonDataUE(nlohmann::json j)
 		-1.0f * j.at("translate").at("y").get<float>()
 	};
 
-	// ObjectBase の位置も更新
-	SetPos(newPos);
-
-	// CharaBase を継承している派生クラスなら、そちらの位置も更新する
-	if(auto ch = dynamic_cast<CharaBase*>(this))
-	{
-		ch->SetPos(newPos);
-	}
-	SetEulerAngleDeg(vec::Vec3
+	vec::Vec3 dir =
 	{
 		j.at("rotate").at("x").get<float>(),
 		j.at("rotate").at("z").get<float>(),
 		j.at("rotate").at("y").get<float>()
-	});
+	};
 	SetScale(vec::Vec3
 	{
 		j.at("scale").at("x").get<float>(),
@@ -75,6 +67,18 @@ void ObjectBase::SetJsonDataUE(nlohmann::json j)
 		j.at("scale").at("y").get<float>()
 	});
 	ModelMatrixSetUp();
+
+
+	// ObjectBase の位置も更新
+	SetPos(newPos);
+	SetDir(dir);
+
+	// CharaBase を継承している派生クラスなら、そちらの位置も更新する
+	if(auto ch = dynamic_cast<CharaBase*>(this))
+	{
+		ch->SetPos(newPos);
+		ch->SetDir(dir);
+	}
 }
 
 // モデルに角度と移動値を判定する

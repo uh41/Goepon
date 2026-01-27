@@ -37,6 +37,11 @@ public:
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 
+	// 既存 include / class 定義は省略
+
+public:
+	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
+
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー

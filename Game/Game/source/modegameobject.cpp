@@ -196,10 +196,10 @@ bool ModeGame::ObjectProcess()
 bool ModeGame::ChangeBGM()
 {
 	bool isChase = false;
-	if(_enemySensor)
-	{
-		isChase = _enemySensor->IsChasing();
-	}
+	//if(_enemySensor)
+	//{
+	//	isChase = _enemySensor->IsChasing();
+	//}
 
 	// BGMチェンジ処理
 	if(!_isChengeBgm && isChase)

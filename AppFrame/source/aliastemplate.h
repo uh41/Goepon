@@ -22,8 +22,8 @@ namespace at
 	template<typename C>
 	using spc = std::shared_ptr<C>;					//スマートポインタとクラス
 
-	//template<typename C>
-	//using upc = std::unipue_ptr<C>;				// ユニークポインタとクラス
+	template<typename C>
+	using upc = std::unique_ptr<C>;				// ユニークポインタとクラス
 
 	template<typename T, typename C>
 	using umtc = std::unordered_map<T, C>;	// アンオーダードマップとストリングとクラス
