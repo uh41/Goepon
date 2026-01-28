@@ -217,6 +217,23 @@ bool Map::Process()
 		MV1RefreshCollInfo(block.modelHandle, -1);
 	}
 
+	// SkySphere（スケール・位置）設定
+	if(_iHandleSkySphere >= 0)
+	{
+		// 例：200倍（必要な値に調整）
+		constexpr float kSkySphereScale = 200.0f;
+		MV1SetScale(_iHandleSkySphere, VGet(kSkySphereScale, kSkySphereScale, kSkySphereScale));
+
+		// 原点固定だと移動で端が見えるので、カメラに追従させる（推奨）
+		if(_cam)
+		{
+			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->_vPos));
+		}
+
+		// 変換後の当たり判定更新が不要なら、この行はいりません
+		// MV1RefreshCollInfo(_iHandleSkySphere, -1);
+	}
+
 
 	return true;
 }
