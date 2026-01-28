@@ -25,6 +25,8 @@ public:
 
 	void SetCamera(Camera* cam) override { _cam = cam; }
 
+	const std::vector<mymath::BLOCKPOS>& GetBlockPosList() const { return _vBlockPos; }
+
 
 
 protected:

@@ -35,8 +35,8 @@ bool ModeGame::ObjectInitialize()
 	_playerBase.emplace_back(_playerTanuki);
 
 	// 敵初期化
-	_enemy.emplace_back(std::make_shared<Enemy>());
-	_chara.emplace_back(_enemy.back());
+	//_enemy.emplace_back(std::make_shared<Enemy>());
+	//_chara.emplace_back(_enemy.back());
 
 	// 宝箱初期化
 	//_object.emplace_back(std::make_shared<Treasure>());
@@ -120,7 +120,7 @@ bool ModeGame::PlayerTransform()
 		// いまタヌキ表示なら「タヌキ -> 人間」はアニメを見せたいので即切替しない
 		if(_bShowTanuki)
 		{
-			_transformAnimId = _playerTanuki->PlayAnimation("hensin", false);
+			_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
 			_isTransformingToHuman = true;
 
 			if(_soundServer)
@@ -177,6 +177,14 @@ bool ModeGame::PlayerTransform()
 
 bool ModeGame::ObjectProcess()
 {
+
+
+	// オブジェクト処理
+	for(auto& object : _object)
+	{
+		object->Process();
+	}
+
 
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)

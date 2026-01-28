@@ -24,8 +24,8 @@ bool Enemy::Initialize()
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
 	// 位置、向きの初期化
-	_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
-	_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
+	//_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
+	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定
@@ -33,6 +33,8 @@ bool Enemy::Initialize()
 	_fCollisionWeight = 10.0f;
 
 	_fHp = 30.0f;
+
+	_bLand = true;
 
 	// センサー関連の初期化
 	_detectedPlayer = false;
@@ -319,15 +321,16 @@ bool Enemy::Render()
 	base::Render();
 	// 再生時間をセット
 	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
-
-<<<<<<< HEAD
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ���f�����W���łǂ��������Ă��邩�Ŏ����ς��(�����-z������Ă���ꍇ)
 
 	MATRIX mRotY = MGetRotY(vorty);
 
+	// 位置
+	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
+	// 向きからY軸回転を算出
 	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90�x�i�K�v�ɉ����ĕ����𔽓]�j
 
-	MATRIX mTrans = MGetTranslate(VectorConverter::VecToDxLib(_vPos));
+	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mScale = MGetScale(VGet(1.7f, 1.7f, 1.7f));
 
@@ -339,14 +342,6 @@ bool Enemy::Render()
 	m = MMult(m, mTrans);
 
 	MV1SetMatrix(_handle, m);
-=======
-	// 位置
-	MV1SetPosition(_iHandle, DxlibConverter::VecToDxLib(_vPos));
-	// 向きからY軸回転を算出
-	VECTOR vrot = { 0,0,0, };
-	vrot.y = atan2f(-_vDir.x, -_vDir.z);
-	MV1SetRotationXYZ(_iHandle, vrot);
->>>>>>> SuzukiYuuki
 
 	// 描画
 	MV1DrawModel(_handle);
