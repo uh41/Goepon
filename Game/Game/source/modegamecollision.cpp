@@ -209,8 +209,21 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 
 bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 {
+	// 攻撃アニメ再生中なら入力を受け付けない（終了したら解除）
+	if(_isTanukiAttackPlaying)
+	{
+		if(_tanukiAttackAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_tanukiAttackAnimId))
+		{
+			return false;
+		}
+
+		_isTanukiAttackPlaying = false;
+		_tanukiAttackAnimId = -1;
+	}
+
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
+	// 攻撃中は上で return 済みなので、ここに来たら新規受付OK
 	if(trg & PAD_INPUT_2)
 	{
 		player = _playerTanuki.get();
@@ -218,7 +231,6 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 		float halfAngle = DEG2RAD(60.0f); // 60度
 		float rad = 120.0f; // 半径100
 
-		// ViewCollision の状態を CollisionManager に反映（デバッグ情報の記録/描画を制御）
 		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
 
 		bool anyhit = false;
@@ -230,7 +242,6 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 				continue;
 			}
 
-			// 判定自体は常に行う（ViewCollision OFF でもゲーム的な当たり判定は有効）
 			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
 				enemy->GetPos(),
 				vec3::VScale(enemy->GetDir(), -1.0f),
@@ -250,18 +261,15 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 			}
 		}
 
+		// ヒットした時だけ攻撃アニメ開始＆ロックON
 		if(anyhit)
 		{
-			player->PlayAnimation("hensin", false);
-		}
-		else
-		{
-			player->PlayAnimation("wait", false);
+			_tanukiAttackAnimId = player->PlayAnimation("gomepon_hensin", false);
+			_isTanukiAttackPlaying = (_tanukiAttackAnimId != -1);
 		}
 
 		return anyhit;
 	}
-
 
 	return false;
 }

@@ -311,10 +311,18 @@ bool ModeGame::Process()
 		}
 	}
 
-	for(auto enemy : _enemy)
+	at::vec<Enemy*> enemies;
+	enemies.reserve(_enemy.size());
+
+	for(auto& enemy : _enemy)
 	{
-		IsPlayerAttack(_player.get(), { enemy.get() });
+		if(enemy && enemy->IsAlive())
+		{
+			enemies.emplace_back(enemy.get());
+		}
 	}
+
+	IsPlayerAttack(_player.get(), enemies);
 
 	// プレイヤー押し出し
 	if(_bShowTanuki)

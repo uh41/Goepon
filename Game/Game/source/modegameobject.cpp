@@ -115,7 +115,7 @@ bool ModeGame::PlayerTransform()
 		// いまタヌキ表示なら「タヌキ -> 人間」はアニメを見せたいので即切替しない
 		if(_bShowTanuki)
 		{
-			_transformAnimId = _playerTanuki->PlayAnimation("hensin", false);
+			_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
 			_isTransformingToHuman = true;
 
 			if(_soundServer)

@@ -12,19 +12,13 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	_handle = MV1LoadModel("res/Tanuki/goepon.mv1");
+	_handle = MV1LoadModel("res/Tanuki/SK_goepon_multimotion.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
 	// 再生時間の初期化
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
-	// 位置、向きの初期化
-	//if(vec3::VSize(_vPos) == 0.0f)
-	//{
-	//	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f); // 初期位置が同じだが、押し出され処理のおかげで位置がずれる
-	//}
-	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 40.0f;
 	// コリジョン半径の設定
@@ -196,9 +190,9 @@ bool PlayerTanuki::Process()
 			switch(name)
 			{
 			case STATUS::WAIT:
-				return "taiki";
+				return "goepon_idle";
 			case STATUS::WALK:
-				return "walk";
+				return "goepon_walk";
 			default:
 				return std::string();
 			}
