@@ -26,7 +26,7 @@ bool EffekseerManager::Terminate()
 {
 	if(!_initialize)
 	{
-		return;
+		return false;
 	}
 	DeleteAllEffect();
 
@@ -232,14 +232,14 @@ bool EffekseerManager::SetRotationEffect(int handle, const vec::Vec3& rad)
 	{
 		return false;
 	}
-	// Effekseer側でラジアン指定が無いため、度に変換
-	float degX = mymath::RAD2DEG(rad.x);
-	float degY = mymath::RAD2DEG(rad.y);
-	float degZ = vec::RadToDeg(rad.z);
-	int res = SetRotationPlayingEffekseer3DEffect(handle, degX, degY, degZ);
-	if(res == -1)
-	{
-		return false;
-	}
+	//// Effekseer側でラジアン指定が無いため、度に変換
+	//float degX = mymath::RAD2DEG(rad.x);
+	//float degY = mymath::RAD2DEG(rad.y);
+	//float degZ = vec::RadToDeg(rad.z);
+	//int res = SetRotationPlayingEffekseer3DEffect(handle, degX, degY, degZ);
+	//if(res == -1)
+	//{
+	//	return false;
+	//}
 	return true;
 }

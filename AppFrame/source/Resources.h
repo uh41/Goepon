@@ -40,6 +40,7 @@ namespace mv1
   inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
+  inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
@@ -62,6 +63,7 @@ namespace mv1
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
   inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
+  inline constexpr const char* SK_goepon_multimotion = "res/Tanuki/SK_goepon_multimotion.mv1";
   inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
