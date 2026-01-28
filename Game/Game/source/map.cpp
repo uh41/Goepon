@@ -202,6 +202,21 @@ bool Map::Process()
 		_ground_index.push_back(static_cast<unsigned short>(index + 3));
 	}
 
+	for(auto& block : _vBlockPos)
+	{
+		if(block.modelHandle < 0)
+		{
+			continue;
+		}
+
+		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+
+		// コリジョン情報を transform 後の状態に更新（重要）
+		MV1RefreshCollInfo(block.modelHandle, -1);
+	}
+
 
 	return true;
 }

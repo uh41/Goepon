@@ -104,16 +104,16 @@ bool ModeGame::Initialize()
 	_hasSavedCameraState = false;
 
 	//// 索敵システムの初期化
-	_enemySensor = std::make_shared<EnemySensor>();
-	_enemySensor->Initialize();
+	//_enemySensor = std::make_shared<EnemySensor>();
+	//_enemySensor->Initialize();
 	//_enemySensor->SetPos(vec3::VGet(200.0f, 0.0f, 200.0f)); // 適当な位置に配置
 	//_enemySensor->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
 
 	//// エネミーにセンサーを設定
-	for (auto& enemy : _enemy)
-	{
-		enemy->SetEnemySensor(_enemySensor);
-	}
+	//for (auto& enemy : _enemy)
+	//{
+	//	enemy->SetEnemySensor(_enemySensor);
+	//}
 
 
 
@@ -126,6 +126,8 @@ bool ModeGame::Initialize()
 	_soundServer->Add("bgmChenge", _bgmChenge.get());
 
 	_isChengeBgm = false;
+
+	_bgmInitialize->Play();
 
 	return true;
 }
@@ -198,7 +200,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maptry.json";
+	std::string jsonFile = "marker0127_2.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -225,13 +227,19 @@ bool ModeGame::LoadStageData()
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 
+			// JSONのrotateは「向きベクトル」ではないので、センサー用に方向ベクトルを入れる
+			enemy->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
+
+			// ここで「マーカー位置」を初期位置として確定
+			enemy->CaptureInitialTransform();
+
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
+			sensor->SetMap(_map.get());
+
 			enemy->SetEnemySensor(sensor);
 
-
 			_enemy.emplace_back(enemy);
-			_chara.emplace_back(enemy);
 		}
 	}
 
@@ -276,38 +284,39 @@ bool ModeGame::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	_bgmInitialize->Play();
-
-	// カメラ操作
 	_camera->Process();
-	
-	DebugProcess();// デバック処理
-	DebugCameraControl();// デバックカメラ処理
+
+	DebugProcess();
+	DebugCameraControl();
 
 	if(_soundServer)
 	{
 		_soundServer->Update();
 	}
 
-	AnimationManager::GetInstance()->Update(1.0f); // アニメーション更新（仮に60FPS固定で更新）
-	
-	// ここから通常のゲーム処理
+	AnimationManager::GetInstance()->Update(1.0f);
 
-	PlayerTransform(); // プレイヤー変身処理
-	ObjectProcess();	// オブジェクト処理
-	
-	
-	// 敵との当たり判定処理（生存している敵のみ）
-	// 	...
-	// 当たり判定の処理をここに書く
+	PlayerTransform();
+	ObjectProcess();
+
+	// 先に検知（このフレームの isChasing を確定させる）
+	CheckAllDetections();
+
+	// 敵AI（追跡/移動はここで実行される）
+	for(auto& enemy : _enemy)
+	{
+		if(enemy->IsAlive())
+		{
+			enemy->Process();
+		}
+	}
 
 	for(auto enemy : _enemy)
 	{
 		IsPlayerAttack(_player.get(), { enemy.get() });
 	}
 
-
-	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
+	// プレイヤー押し出し
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _map.get());
@@ -315,25 +324,56 @@ bool ModeGame::Process()
 	}
 	else
 	{
-		EscapeCollision(_player.get(),_map.get());
+		EscapeCollision(_player.get(), _map.get());
 		PlayerCameraInfo(_player.get());
 	}
-
+	// 敵押し出し（移動後にやる）
 	for(auto enemy : _enemy)
 	{
 		EscapeCollision(enemy.get(), _map.get());
+
+		// 床に乗せる（最終座標確定後）
+		float floorY = 0.0f;
+		auto sensor = enemy->GetEnemySensor();
+		if(sensor && sensor->GetFloorYCollision(enemy->GetPos(), enemy->GetColSubY(), floorY))
+		{
+			vec::Vec3 pos = enemy->GetPos();
+			pos.y = floorY;
+			enemy->SetPos(pos);
+			enemy->SetLand(true);
+		}
 	}
 
-	// 索敵システムの処理
-	if (_enemySensor)
+	// プレイヤー vs 敵 の当たり判定（押し出し）
+	CharaBase* player = _bShowTanuki
+		? static_cast<CharaBase*>(_playerTanuki.get())
+		: static_cast<CharaBase*>(_player.get());
+
+	if(player && player->IsAlive())
 	{
-		_enemySensor->Process();
-		CheckAllDetections();
+		for(auto& enemy : _enemy)
+		{
+			if(!enemy || !enemy->IsAlive())
+			{
+				continue;
+			}
+
+			// 軽量な早期判定（XZ円）
+			if(IsHitCircle(player, enemy.get()))
+			{
+				// 実際の押し出し（カプセル）
+				if(!enemy->IsShowingYouDiedMessage())
+				{
+					enemy->TriggerYouDiedMessage();
+				}
+
+				CharaToCharaCollision(player, enemy.get());
+			}
+
+		}
 	}
 
-	// BGMチェンジ処理
 	ChangeBGM();
-
 	return true;
 }
 
@@ -355,6 +395,15 @@ bool ModeGame::Render()
 		if(chara->IsAlive())
 		{
 			chara->Render();
+		}
+	}
+
+	// 敵を描画（生存しているもののみ）
+	for(auto& enemy : _enemy)
+	{
+		if(enemy->IsAlive())
+		{
+			enemy->Render();
 		}
 	}
 
@@ -426,7 +475,31 @@ bool ModeGame::Render()
 		_enemySensor->RenderDetectionUI();
 	}
 
-	CollisionManager::GetInstance()->SetDebugDraw(true);
+
+	if(_d_view_collision)
+	{
+		//CollisionManager::GetInstance()->SetDebugDraw(true);
+	}
+	
+	// 各敵のセンサーを個別に描画
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive() && enemy->GetEnemySensor())
+		{
+			enemy->GetEnemySensor()->Render();
+			enemy->GetEnemySensor()->RenderDetectionUI();
+		}
+	}
+
+	// YouDiedメッセージの描画（最前面に表示）
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
+		{
+			enemy->RenderYouDiedMessage();
+		}
+	}
+
 
 	//if(_player)
 	//{
@@ -454,57 +527,159 @@ bool ModeGame::Render()
 	return true;
 }
 
-// 全てのエネミーに対してプレイヤー検出をチェック
 bool ModeGame::CheckAllDetections()
 {
-	if (!_enemySensor)
+	PlayerBase* player = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get())
+		: static_cast<PlayerBase*>(_player.get());
+
+	if(!player)
 	{
 		return false;
 	}
 
-	// タヌキ状態の時のみ検知処理を実行
-	if (!_bShowTanuki)
+	bool anyDetected = false;
+
+	for(auto& enemy : _enemy)
 	{
-		// 人間状態では検知されない
-		// 検知状態をリセットして敵に状態変更を通知
-		for (auto& enemy : _enemy)
+		if(!enemy->IsAlive())
 		{
-			if (enemy->IsAlive())
+			continue;
+		}
+
+		auto sensor = enemy->GetEnemySensor();
+		if(!sensor)
+		{
+			continue;
+		}
+
+		// センサーを敵に同期
+		sensor->SetPos(enemy->GetPos());
+		sensor->SetDir(enemy->GetDir());
+		sensor->SetMap(_map.get());
+
+		// タイマー更新など
+		sensor->Process();
+
+		const bool detected = sensor->CheckPlayerDetection(player);
+
+		if(detected)
+		{
+			anyDetected = true;
+			enemy->OnPlayerDetected(player->GetPos());
+		}
+		else
+		{
+			// 追跡中なら見失い扱いにしない（追跡を継続）
+			if(!sensor->IsChasing())
 			{
 				enemy->OnPlayerLost();
 			}
 		}
-		return true;
 	}
 
-	// タヌキ状態のプレイヤーのみをチェック対象にする
-	PlayerBase* currentPlayer = _playerTanuki.get();
-	bool detected = _enemySensor->CheckPlayerDetection(currentPlayer);
-
-	// 検出状態に応じてエネミーに通知
-	if (detected)
-	{
-		vec::Vec3 playerPos = currentPlayer->GetPos();
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->OnPlayerDetected(playerPos);
-			}
-		}
-	}
-	else
-	{
-		// プレイヤーが検出範囲外になった場合
-		for (auto& enemy : _enemy)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->OnPlayerLost();
-			}
-		}
-	}
-
-	return detected;
+	return anyDetected;
 }
-
+ //CheckAllDetections()メソッドの修正版
+//bool ModeGame::CheckAllDetections()
+//{
+//	OutputDebugStringA("CheckAllDetections() 開始\n");
+//
+//	// 敵の数をチェック
+//	OutputDebugStringA((std::string("敵の総数: ") + std::to_string(_enemy.size()) + "\n").c_str());
+//
+//	// タヌキ状態の時のみ検知処理を実行
+//	if (!_bShowTanuki)
+//	{
+//		OutputDebugStringA("人間状態のため検知処理をスキップ\n");
+//		// 人間状態では検知されない
+//		for (auto& enemy : _enemy)
+//		{
+//			if (enemy->IsAlive() && enemy->GetEnemySensor())
+//			{
+//				enemy->GetEnemySensor()->ResetDetection();
+//				enemy->OnPlayerLost();
+//			}
+//		}
+//		return true;
+//	}
+//
+//	OutputDebugStringA("タヌキ状態で検知処理を実行\n");
+//
+//	PlayerBase* currentPlayer = _playerTanuki.get();
+//	if (!currentPlayer)
+//	{
+//		OutputDebugStringA("現在のプレイヤーが見つかりません！\n");
+//		return false;
+//	}
+//
+//	vec::Vec3 playerPos = currentPlayer->GetPos();
+//	OutputDebugStringA((std::string("プレイヤー位置: X=") + std::to_string(playerPos.x) +
+//		", Y=" + std::to_string(playerPos.y) + ", Z=" + std::to_string(playerPos.z) + "\n").c_str());
+//
+//	bool anyDetected = false;
+//
+//	// 各敵の個別センサーでプレイヤー検出をチェック
+//	for (int i = 0; i < _enemy.size(); i++)
+//	{
+//		auto& enemy = _enemy[i];
+//		if (!enemy->IsAlive())
+//		{
+//			OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]は生きていません\n").c_str());
+//			continue;
+//		}
+//
+//		auto enemySensor = enemy->GetEnemySensor();
+//		if (!enemySensor)
+//		{
+//			OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]にセンサーがありません！\n").c_str());
+//			continue;
+//		}
+//
+//		// センサーの位置と向きを敵の位置に同期
+//		vec::Vec3 enemyPos = enemy->GetPos();
+//		vec::Vec3 enemyDir = enemy->GetDir();
+//
+//		enemySensor->SetPos(enemyPos);
+//		enemySensor->SetDir(enemyDir);
+//
+//		// マップ設定を確認（重要）
+//		enemySensor->SetMap(_map.get());
+//
+//		// センサーの処理を実行
+//		enemySensor->Process();
+//
+//		bool detected = enemySensor->CheckPlayerDetection(currentPlayer);
+//
+//		OutputDebugStringA((std::string("敵[") + std::to_string(i) + "] 位置: X=" + std::to_string(enemyPos.x) +
+//			", Y=" + std::to_string(enemyPos.y) + ", Z=" + std::to_string(enemyPos.z) +
+//			" 検出結果: " + (detected ? "TRUE" : "FALSE") + "\n").c_str());
+//
+//		// プレイヤーとの距離を計算してデバッグ出力
+//		float distance = vec3::VSize(vec3::VSub(playerPos, enemyPos));
+//		OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]とプレイヤーの距離: " + std::to_string(distance) + "\n").c_str());
+//
+//		if (detected)
+//		{
+//			anyDetected = true;
+//			vec::Vec3 playerPos = currentPlayer->GetPos();
+//
+//			// 個別に初期位置に戻り中でない敵のみに通知
+//			if (!enemy->IsReturningToInitialPosition())
+//			{
+//				enemy->OnPlayerDetected(playerPos);
+//				OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]がプレイヤーを検出しました！\n").c_str());
+//			}
+//			else
+//			{
+//				OutputDebugStringA((std::string("敵[") + std::to_string(i) + "]は初期位置に戻り中のため検出を無視\n").c_str());
+//			}
+//		}
+//		else
+//		{
+//			enemy->OnPlayerLost();
+//		}
+//	}
+//
+//	OutputDebugStringA((std::string("検出結果: ") + (anyDetected ? "検出あり" : "検出なし") + "\n").c_str());
+//	return anyDetected;
+//}

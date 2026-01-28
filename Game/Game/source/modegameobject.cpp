@@ -35,8 +35,8 @@ bool ModeGame::ObjectInitialize()
 	_playerBase.emplace_back(_playerTanuki);
 
 	// 敵初期化
-	_enemy.emplace_back(std::make_shared<Enemy>());
-	_chara.emplace_back(_enemy.back());
+	//_enemy.emplace_back(std::make_shared<Enemy>());
+	//_chara.emplace_back(_enemy.back());
 
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();
@@ -85,26 +85,61 @@ bool ModeGame::ShadowInitialize()
 
 bool ModeGame::PlayerTransform()
 {
+	// 変身アニメ中の監視（タヌキ -> 人間）
+	if(_isTransformingToHuman)
+	{
+		// まだ再生中なら、タヌキ表示のまま継続
+		if(_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
+		{
+			_playerTanuki->Process();
+			return true;
+		}
+
+		// 再生が終わったので、人間へ切り替え（ここで座標同期）
+		_isTransformingToHuman = false;
+		_transformAnimId = -1;
+
+		_bShowTanuki = false;
+		_player->SetPos(_playerTanuki->GetPos());
+		_player->SetDir(_playerTanuki->GetDir());
+
+		_player->Process();
+		return true;
+	}
+
 	int trg = ApplicationMain::GetInstance()->GetTrg();
+
 	// タヌキプレイヤー表示切替
 	if(trg & PAD_INPUT_4)
 	{
-		_bShowTanuki = !_bShowTanuki;
-		// 切り替え時に同じ場所で表示されるよう座標を同期する
+		// いまタヌキ表示なら「タヌキ -> 人間」はアニメを見せたいので即切替しない
 		if(_bShowTanuki)
 		{
-			// プレイヤー→タヌキに切替：タヌキをプレイヤー位置へ
-			_playerTanuki->SetPos(_player->GetPos());
-			// 向きも合わせる
-			_playerTanuki->SetDir(_player->GetDir());
+			_transformAnimId = _playerTanuki->PlayAnimation("hensin", false);
+			_isTransformingToHuman = true;
+
+			if(_soundServer)
+			{
+				_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
+			}
+
+			// 変身中はタヌキのまま処理
+			_playerTanuki->Process();
+			return true;
 		}
 		else
 		{
-			// タヌキ→プレイヤーに切替：プレイヤーをタヌキ位置へ
-			_player->SetPos(_playerTanuki->GetPos());
-			// 向きも合わせる
-			_player->SetDir(_playerTanuki->GetDir());
+
+			// 人間 -> タヌキ（こちらは今まで通り即切替）
+			_bShowTanuki = true;
+			_playerTanuki->SetPos(_player->GetPos());
+			_playerTanuki->SetDir(_player->GetDir());
+			_playerTanuki->PlayAnimation("hensin", false);
+
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("taiki", true);
 		}
+
 
 		if(_soundServer)
 		{
@@ -117,14 +152,7 @@ bool ModeGame::PlayerTransform()
 			auto& playerShadow = _charaShadow.front();
 			if(playerShadow)
 			{
-				if(_bShowTanuki)
-				{
-					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
-				}
-				else
-				{
-					playerShadow->SetTargetChara(static_cast<PlayerBase*>(_player.get()));
-				}
+				playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
 			}
 		}
 	}
@@ -137,17 +165,6 @@ bool ModeGame::PlayerTransform()
 	else
 	{
 		_player->Process();
-	}
-
-	// 現在のプレイヤーの位置を取得
-	vec::Vec3 PlayerPos;
-	if(_bShowTanuki)
-	{
-		PlayerPos = _playerTanuki->GetPos();
-	}
-	else
-	{
-		PlayerPos = _player->GetPos();
 	}
 
 	return true;

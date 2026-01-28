@@ -140,6 +140,10 @@ protected:
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+	bool _isTransformingToHuman = false;
+	int _transformAnimId = -1;
+	bool _isTanukiAttackPlaying = false;
+	int _tanukiAttackAnimId = -1;
 
 	int _iBlocks;	// ブロック数
 	std::vector<float> _vBlockFill; // 表示用現在値(0..1)
