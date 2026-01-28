@@ -38,6 +38,11 @@ bool ModeGame::ObjectInitialize()
 	//_enemy.emplace_back(std::make_shared<Enemy>());
 	//_chara.emplace_back(_enemy.back());
 
+	// 宝箱初期化
+	//_object.emplace_back(std::make_shared<Treasure>());
+	_treasure = std::make_shared<Treasure>();
+	_object.emplace_back(_treasure);
+
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();
 	_uiHp->SetPlayer(_player.get());
@@ -208,10 +213,16 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
-	for(auto& treasure : _treasure)
+	// オブジェクト処理
+	for(auto& object : _object)
+	{
+		object->Process();
+	}
+
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Process();
-	}
+	}*/
 
 	// UI処理
 	for(auto& ui_base : _uiBase)

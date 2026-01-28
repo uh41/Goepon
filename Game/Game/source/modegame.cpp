@@ -22,8 +22,8 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
-	_treasure.push_back(std::make_shared<Treasure>());
-	_object.emplace_back(_treasure.back());
+	//_treasure.push_back(std::make_shared<Treasure>());
+	//_object.emplace_back(_treasure.back());
 	_camera->Initialize();
 
 	_bShowTanuki = true;
@@ -49,10 +49,10 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Initialize();
-	}
+	}*/
 	// UI
 	for(auto& ui_base : _uiBase)
 	{
@@ -178,10 +178,10 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Terminate();
-	}
+	}*/
 	
 	for(auto& charaShadow : _charaShadow)
 	{
@@ -339,11 +339,12 @@ bool ModeGame::Process()
 
 	AnimationManager::GetInstance()->Update(1.0f);
 
-	PlayerTransform();
-	ObjectProcess();
-
-	// 先に検知（このフレームの isChasing を確定させる）
-	CheckAllDetections();
+	PlayerTransform(); // プレイヤー変身処理
+	ObjectProcess();   // オブジェクト処理
+	
+	// 敵との当たり判定処理（生存している敵のみ）
+	// 	...
+	// 当たり判定の処理をここに書く
 
 	// 敵AI（追跡/移動はここで実行される）
 	for(auto& enemy : _enemy)
@@ -353,29 +354,20 @@ bool ModeGame::Process()
 			enemy->Process();
 		}
 	}
-
-	at::vec<Enemy*> enemies;
-	enemies.reserve(_enemy.size());
-
-	for(auto& enemy : _enemy)
-	{
-		if(enemy && enemy->IsAlive())
-		{
-			enemies.emplace_back(enemy.get());
-		}
-	}
-
-	IsPlayerAttack(_player.get(), enemies);
-
-	// プレイヤー押し出し
+	
+	
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
 		EscapeCollision(_player.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
 	}
 	// 敵押し出し（移動後にやる）
@@ -464,11 +456,11 @@ bool ModeGame::Render()
 		object->Render();
 	}
 
-	// 宝箱を描画
-	for(auto& treasure : _treasure)
-	{
-		treasure->Render();
-	}
+	//// 宝箱を描画
+	//for(auto& treasure : _treasure)
+	//{
+	//	treasure->Render();
+	//}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
 	for(auto & player_base : _playerBase)
@@ -488,8 +480,7 @@ bool ModeGame::Render()
 			}
 		}
 	}
-
-
+	
 	// UIを描画
 	for(auto& ui_base : _uiBase)
 	{
@@ -600,6 +591,16 @@ bool ModeGame::Render()
 	//	float hp = _player->GetHP();
 
 	//}
+
+	if (_isOpeningTreasure)
+	{
+		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
+		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
+		const char* msg = "お宝を開けています...(Aを押し続けてください)";
+		int color = GetColor(255, 0, 0); // 黄色
+		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
+		DrawString(900, 500, msg, color);
+	}
 
 	return true;
 }

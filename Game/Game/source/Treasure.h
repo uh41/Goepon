@@ -7,29 +7,57 @@ class Treasure : public ObjectBase
 	typedef ObjectBase base;
 public:
 
-	// •ó” ‚Ìó‘Ô
+	// ï¿½ó” ‚Ìï¿½ï¿½
 	enum class OBJSTATUS
 	{
-		NONE, 
+		NONE,
 		NOMAR,
 		OPEN,
 	};
 	OBJSTATUS _objStatus;
 
-	// Šî‘bˆ—
-	bool Initialize() override; // ‰Šú‰»
-	bool Terminate()  override; // I—¹
-	bool Process()    override; // ŒvZˆ—
-	bool Render()     override; // •`‰æˆ—
+	// ï¿½ï¿½bï¿½ï¿½ï¿½ï¿½
+	bool Initialize() override; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	bool Terminate()  override; // ï¿½Iï¿½ï¿½
+	bool Process()    override; // ï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
+	bool Render()     override; // ï¿½`ï¿½æˆï¿½ï¿½
 
-	// •ó” ‚ªŠJ‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©æ“¾Eİ’è
+	auto GetPos() const { return _vPos; }
+	// ï¿½ó” ‚Ì“ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½pï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½æ“¾
+	auto GetHitCollisionFrame() const { return _hitCollisionFrame; }
+	// ï¿½ó” ŠJï¿½Â—pï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½æ“¾
+	auto GetOpenCollisionFrame() const { return _openCollisionFrame; }
+	// ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½æ“¾
+	auto GetModelHandle() const { return _handle; }
+
+	// ï¿½ó” ‚ï¿½ï¿½Jï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½æ“¾ï¿½Eï¿½İ’ï¿½
 	bool IsOpen() const { return _isOpen; }
-	void SetOpen(bool isOpen) { _isOpen = isOpen; }
+	// å®Ÿè£…ã¯ã“ã£ã¡
+	//void SetOpen(bool isOpen) { _isOpen = isOpen; }
+	// ãƒ‡ãƒãƒƒã‚¯ã¨ã—ã¦ã“ã¡ã‚‰ã‚’ä»Šä½¿ã£ã¦ã„ã‚‹
+	void SetOpen(bool isOpen)
+	{
+		_isOpen = isOpen;
 
+		// ã“ã“ã‚’è¿½åŠ ï¼šé–‹ã„ãŸã‚‰è¦‹ãŸç›®ã‚’æ¶ˆã™
+		if (_isOpen)
+		{
+			_isVisible = false;
+		}
+	}
+
+	// ãƒ‡ãƒãƒƒã‚¯ç”¨(ãƒ¢ãƒ‡ãƒ«ã‚’è¡¨ç¤º/éè¡¨ç¤º)
+	bool IsVisible() const { return _isVisible; }
+
+	// ï¿½ï¿½ï¿½İ‚ï¿½ _vPos/_vDir/_vScale ï¿½ï¿½ï¿½çƒ‚ï¿½fï¿½ï¿½ï¿½sï¿½ï¿½ğ¶ï¿½
+	MATRIX MakeModelMatrix() const;
 
 protected:
-	//int _handle;      // ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
-	int _attachIndex; // ƒAƒ^ƒbƒ`ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒ“ƒfƒbƒNƒX
-	bool _isOpen;	  // •ó” ‚ªŠJ‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	int _handle;                 // ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½nï¿½ï¿½ï¿½hï¿½ï¿½
+	int _hitCollisionFrame;      // ï¿½ó” ‚Ì“ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½pï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½
+	int _openCollisionFrame;     // ï¿½ó” ŠJï¿½Â—pï¿½tï¿½ï¿½ï¿½[ï¿½ï¿½
+	int _attachIndex;            // ï¿½Aï¿½^ï¿½bï¿½`ï¿½Aï¿½jï¿½ï¿½ï¿½[ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
+	bool _isOpen;	             // ï¿½ó” ‚ï¿½ï¿½Jï¿½ï¿½ï¿½Ä‚ï¿½ï¿½é‚©ï¿½Ç‚ï¿½ï¿½ï¿½
+	bool _isVisible;             // è¡¨ç¤ºãƒ•ãƒ©ã‚°
 };
 

@@ -198,7 +198,12 @@
     <ClCompile Include="source\CFile\cfile.cpp" />
     <ClCompile Include="source\fade\fade.cpp" />
     <ClCompile Include="source\manager\collisionmanager.cpp" />
-    <ClCompile Include="source\manager\effekseermanager.cpp" />
+    <ClCompile Include="source\manager\effekseermanager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="source\Mode\modebase.cpp" />
     <ClCompile Include="source\Mode\modeserver.cpp" />
     <ClCompile Include="source\mymath.cpp" />

@@ -25,12 +25,19 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	{
 		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
 	};
+
+	// 角度を変えて回避を試みるループ
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		// 移動前の位置を保存
-		vec::Vec3 oldvPos = chara->GetPos();
-		vec::Vec3 v = chara->GetInputVector();
-		vec::Vec3 oldv = v;
+		vec::Vec3 oldvPos = chara->GetPos();   // 移動前の位置を保存
+		vec::Vec3 v = chara->GetInputVector(); // 移動量ベクトル
+		vec::Vec3 oldv = v;					   // 移動量ベクトル保存
+
+		// マップの情報
+		auto handleMap = obj->GetModelHandleMap().begin()->second;
+		auto frameMapCollision = obj->GetFrameMapCollision();
+
 		float rad = atan2((float)v.z, (float)v.x);
 		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
 		float sx = _camera->_vPos.x - _camera->_vTarget.x;
@@ -52,17 +59,13 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 			break;
 		}
 
-		// 移動した先でコリジョン判定
-		// 移動した先でコリジョン判定
-		//MV1_COLL_RESULT_POLY hitPoly;
-
 		// 主人公の腰位置から下方向への直線
 		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
 		vec::Vec3 hitPos;
 		bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
 			chara->GetPos(),
-			obj->GetModelHandleMap().begin()->second,
-			obj->GetFrameMapCollision(),
+			handleMap,
+			frameMapCollision,
 			chara->GetColSubY(),
 			hitPos
 		);
@@ -76,8 +79,6 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 
 			// キャラが上下に移動した量だけ、移動量を修正
 			v.y += chara->GetPos().y - oldvPos.y;
-
-
 
 			// ループiから抜ける
 			break;
@@ -156,12 +157,168 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 			(stop->GetPos().z + move->GetPos().z) / 2);
 		float halfSize = 8.0f;
 		VECTOR aBox = VAdd(mid, VGet(-halfSize, -halfSize, -halfSize));
-		VECTOR bBox = VAdd(mid, VGet(halfSize, halfSize, halfSize));
+		VECTOR bBox = VAdd(mid, VGet( halfSize,  halfSize,  halfSize));
 		DrawCube3D(aBox, bBox, GetColor(255, 0, 255), TRUE, FALSE);
 	}
 
 	return true;
 }
+
+// キャラと宝箱の当たり判定処理
+bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
+{
+	// 引数チェック
+	if(!chara || !treasure)
+	{
+		return false;
+	}
+
+	// 空中なら処理しない（設計に合わせて維持）
+	if(!chara->GetLand())
+	{
+		return false;
+	}
+
+	// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
+	float escapeTbl[] =
+	{
+		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
+	};
+
+	// 角度を変えて回避を試みるループ
+	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
+	{
+		// 移動前の位置を保存
+		vec::Vec3 oldvPos = chara->GetPos();   // 移動前の位置を保存
+		vec::Vec3 v = chara->GetInputVector(); // 移動量ベクトル
+		vec::Vec3 oldv = v;					   // 移動量ベクトル保存
+
+		
+		float rad = atan2((float)v.z, (float)v.x);
+		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
+		float sx = _camera->_vPos.x - _camera->_vTarget.x;
+		float sz = _camera->_vPos.z - _camera->_vTarget.z;
+		float camrad = atan2(sz, sx);
+
+		// escapeTbl[i]の分だけ移動量v回転
+		float escape_rad = DEG2RAD(escapeTbl[i]);
+		v.x = cos(rad + camrad + escape_rad) * length;
+		v.z = sin(rad + camrad + escape_rad) * length;
+
+		// vの分移動
+		chara->SetPos(vec3::VAdd(chara->GetPos(), v));
+
+		// 宝箱の指定フレームで判定
+		const auto handleTreasure = treasure->GetModelHandle();
+		const auto frameTreasure = treasure->GetHitCollisionFrame();
+
+		// プレイヤーと指定したコリジョンフレームで当たり判定
+		vec::Vec3 hitPos;
+		const bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			chara->GetPos(),
+			handleTreasure,
+			frameTreasure,
+			chara->GetColSubY(),
+			hitPos
+		);
+
+		//　当たったから元の位置に戻す
+		if(hit)
+		{
+			// 位置を戻して「めり込み/加速」を防ぐ
+			chara->SetPos(chara->GetOldPos());
+			return true;
+			break;
+		}
+		else
+		{
+			// 当たらなかった。元の座標に戻す
+			chara->SetPos(oldvPos);
+		}
+	}
+	return false;
+}
+
+bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure)
+{
+	// 引数チェック
+	if(!player || !treasure)
+	{
+		return false;
+	}
+
+	if(!treasure->IsVisible())
+	{
+		return false;
+	}
+
+	// 空中なら処理しない（設計に合わせて維持）
+	if(!player->GetLand())
+	{
+		return false;
+	}
+	// 宝箱の指定フレームで判定
+	const auto handleTreasure = treasure->GetModelHandle();
+	const auto frameTreasure  = treasure->GetOpenCollisionFrame();
+
+	// プレイヤーと指定したコリジョンフレームで当たり判定
+	vec::Vec3 hitPos;
+	const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision
+	(
+		player->GetPos(),
+		handleTreasure,
+		frameTreasure,
+		player->GetColSubY(),
+		hitPos
+	);
+
+
+	const int key = ApplicationBase::GetInstance()->GetKey();
+	const bool holdA = (key & PAD_INPUT_1) != 0;
+
+	// 条件崩れたらリセット
+	if(!inTreasure || !holdA)
+	{
+		_isOpeningTreasure = false;
+		_treasureHoldSec = 0.0f;
+		// 宝箱から離れたら取得フラグリセット
+		if(!inTreasure)
+		{
+			_treasureTakenThisTreasure = false; // 離れたら再取得可能（”同じ宝箱で1回だけ”にしたいならここを消す）
+		}
+		return false;
+	}
+
+	// ここに来た時点で「宝箱の範囲内 + A を押している」
+	_isOpeningTreasure = true;          
+
+	// すでに取得済みなら何もしない
+	if(_treasureTakenThisTreasure)
+	{
+		return false;
+	}
+
+	// 経過時間加算（固定60FPS前提：必要なら実測deltaに置換）
+	const float dt = 1.0f / 180.0f;
+	_treasureHoldSec += dt;
+
+	// 1秒間ホールドで取得
+	if(_treasureHoldSec >= 1.0f)
+	{
+		_treasureTakenCount++;
+		_treasureTakenThisTreasure = true;
+		_treasureHoldSec = 0.0f;
+
+		// 宝箱状態を変えたい場合（見た目を開ける等）
+		treasure->SetOpen(true);
+		_isOpeningTreasure = false;      // 開き終わったので OFF
+
+		return true;
+	}
+
+	return false;
+}
+
 
 // キャラ同士の押し出し処理
 bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
