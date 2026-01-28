@@ -2,13 +2,14 @@
 #include "enemybase.h"
 #include "playerbase.h"
 
-class Map; // 前方宣言
+// 前方宣言
+class Map; 
 
 // 索敵範囲の情報を格納する構造体
 struct DetectionSector
 {
-	vec::Vec3 center;      // 扇形の中心点（敵の位置）
-	vec::Vec3 forward;     // 敵の正面方向
+	vec::Vec3 center;   // 扇形の中心点（敵の位置）
+	vec::Vec3 forward;  // 敵の正面方向
 	float radius;       // 索敵範囲の半径
 	float angle;        // 索敵角度（度）
 };
@@ -66,7 +67,8 @@ public:
 	// センサーの有効/無効状態
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
-// Mapクラスへの参照を設定
+
+	// Mapクラスへの参照を設定
 	void SetMap(Map* map) { _map = map; }
 
 	// 床の存在を確認する関数
@@ -77,7 +79,6 @@ public:
 
 	// コリジョンマネージャーを使って床のY座標を取得する関数
 	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
-
 
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
@@ -97,6 +98,4 @@ protected:
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 	Map* _map;	// マップへの参照
-
-
 };

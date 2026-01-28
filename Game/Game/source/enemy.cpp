@@ -108,7 +108,7 @@ void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 	_isReturningToInitialPos = false;
 
 	// テレポート関連をリセット
-	//ResetTeleport();
+	ResetTeleport();
 }
 
 // プレイヤーが検出範囲外になった時の処理
@@ -124,6 +124,7 @@ void Enemy::LookAtPlayer()
 
 	// プレイヤーへの方向ベクトルを計算
 	vec::Vec3 toPlayer = vec3::VSub(_playerPos, _vPos);
+
 	// Y成分は無視して水平方向のみ
 	toPlayer.y = 0.0f;
 
@@ -211,7 +212,7 @@ void Enemy::StartReturningToInitialPosition()
 		_isMoving = false;				 // 他の移動を停止
 
 		// テレポート関連をリセット
-		//ResetTeleport();
+		ResetTeleport();
 
 		// 初期位置に戻り始める際に検出状態をリセット
 		_detectedPlayer = false;
