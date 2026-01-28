@@ -12,7 +12,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	_handle = MV1LoadModel("res/Tanuki/goepon.mv1");
+	_handle = MV1LoadModel("res/Tanuki/SK_goepon_multimotion.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -196,9 +196,9 @@ bool PlayerTanuki::Process()
 			switch(name)
 			{
 			case STATUS::WAIT:
-				return "taiki";
+				return "goepon_idle";
 			case STATUS::WALK:
-				return "walk";
+				return "goepon_walk";
 			default:
 				return std::string();
 			}
