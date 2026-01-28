@@ -66,6 +66,39 @@ bool EnemySensor::Render()
 		RenderDetectionSector();
 	}
 
+	{
+		DrawFormatString(
+			20,
+			90,
+			GetColor(255, 255, 255),
+			"Enemy Pos: (%.2f, %.2f, %.2f)  Dir: (%.2f, %.2f, %.2f)",
+			_vPos.x, _vPos.y, _vPos.z,
+			_vDir.x, _vDir.y, _vDir.z
+		);
+	}
+
+	// デバッグ表示：Collision_01(床)に乗っているか
+	{
+		float floorY = 0.0f;
+		const float colSubY = 100.0f;
+		const bool onCollision01 = GetFloorYCollision(_vPos, colSubY, floorY);
+
+		const unsigned int color = onCollision01 ? GetColor(0, 255, 0) : GetColor(255, 0, 0);
+		const float diffY = onCollision01 ? (_vPos.y - floorY) : 0.0f;
+
+		DrawFormatString(
+			20,
+			120,
+			color,
+			"Enemy On Collision_01: %s  EnemyY: %.2f  FloorY: %.2f  DiffY: %.2f",
+			onCollision01 ? "TRUE" : "FALSE",
+			_vPos.y,
+			floorY,
+			diffY
+		);
+	}
+
+
 	return true;
 }
 
@@ -215,10 +248,10 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 	}
 
 	// 視線チェック - 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
-	//if (!CheckLineOfSight(detectionCenter, playerPos))
-	//{
-	//	return false; // 視線が遮断されている
-	//}
+	if (!CheckLineOfSight(detectionCenter, playerPos))
+	{
+		return false; // 視線が遮断されている
+	}
 
 	return true;
 }
@@ -277,13 +310,11 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 		return true;
 	}
 
-	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 100.0f, 0.0f));
-	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -9999.0f, 0.0f));
+	// 「乗れるか」判定なので、真下へのレイ開始高さは最低限必要
+	// （position.y が床より下の場合でも拾えるように余裕を持たせる）
+	constexpr float kColSubY = 100.0f;
 
-	// MAP_SELECT == 2 相当：ブロック毎にコリジョンチェック
-	float nearestDist = FLT_MAX;
-	bool hit = false;
-
+	vec::Vec3 hitPos{};
 	for(const auto& block : _map->GetBlockPosList())
 	{
 		if(block.modelHandle < 0)
@@ -291,35 +322,29 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 			continue;
 		}
 
-		// map.cpp では Collision_01 を使って SetupCollInfo 済み
-		const int frame = MV1SearchFrame(block.modelHandle, "Collision_01");
-		if(frame < 0)
-		{
-			continue;
-		}
+		
 
-		MV1_COLL_RESULT_POLY poly = DxlibConverter::MV1CollCheckLine(
+		//const int frame = block.collisionFrame;
+		//if(frame < 0)
+		//{
+		//	continue;
+		//}
+
+		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			position,
 			block.modelHandle,
-			frame,
-			startPos,
-			endPos
-		);
-
-		if(poly.HitFlag == TRUE)
+			_map->GetFrameMapCollision(),
+			kColSubY,
+			hitPos))
 		{
-			const vec::Vec3 hitPos = DxlibConverter::DxLibToVec(poly.HitPosition);
-			const float dist = vec3::VSize(vec3::VSub(hitPos, startPos));
-			if(dist < nearestDist)
-			{
-				nearestDist = dist;
-				hit = true;
-			}
+			return true;
 		}
 	}
 
-	return hit;
+	return false;
 }
 
+// Collision_01 にヒットした床Yを返す（最も近い床を採用）
 bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const
 {
 	if(!_map)
@@ -327,13 +352,13 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 		return false;
 	}
 
-	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 50.0f, 0.0f));
-	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -9999.0f, 0.0f));
-
-	float nearestDist = FLT_MAX;
 	bool hit = false;
 	float bestY = 0.0f;
+	float nearestDist = FLT_MAX;
 
+	const vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, colSubY, 0.0f));
+
+	vec::Vec3 hitPos{};
 	for(const auto& block : _map->GetBlockPosList())
 	{
 		if(block.modelHandle < 0)
@@ -341,29 +366,30 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 			continue;
 		}
 
-		const int frame = MV1SearchFrame(block.modelHandle, "Collision_01");
+		// 「ブロック全体」ではなく、「Collision_01 フレーム(床)」のみを対象にする
+		const int frame = block.collisionFrame;
 		if(frame < 0)
 		{
 			continue;
 		}
 
-		MV1_COLL_RESULT_POLY poly = DxlibConverter::MV1CollCheckLine(
+		if(!CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			position,
 			block.modelHandle,
-			frame,
-			startPos,
-			endPos
-		);
-
-		if(poly.HitFlag == TRUE)
+			_map->GetFrameMapCollision(),
+			colSubY,
+			hitPos))
 		{
-			const vec::Vec3 hitPos = DxlibConverter::DxLibToVec(poly.HitPosition);
-			const float dist = vec3::VSize(vec3::VSub(hitPos, startPos));
-			if(dist < nearestDist)
-			{
-				nearestDist = dist;
-				bestY = hitPos.y;
-				hit = true;
-			}
+			continue;
+		}
+
+		// 開始点からの距離が最小のものを採用（最上面/直下の床を取りたい）
+		const float dist = vec3::VSize(vec3::VSub(hitPos, startPos));
+		if(dist < nearestDist)
+		{
+			nearestDist = dist;
+			bestY = hitPos.y;
+			hit = true;
 		}
 	}
 

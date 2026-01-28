@@ -27,7 +27,7 @@ bool Enemy::Initialize()
 	//_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
 	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
-	_fColSubY = 40.0f;
+	_fColSubY = 100.0f;
 	// コリジョン半径の設定
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 10.0f;
@@ -35,8 +35,8 @@ bool Enemy::Initialize()
 	_fHp = 30.0f;
 
 	// 初期位置と向きを保存
-	_initialPosition = _vPos;
-	_initialDirection = _vDir;
+	//_initialPosition = _vPos;
+	//_initialDirection = _vDir;
 
 	// センサー関連の初期化
 	_detectedPlayer = false;					// プレイヤー検出フラグの初期化

@@ -114,6 +114,7 @@ namespace mymath
 		float sx, sy, sz; // ブロックのスケール
 		int modelHandle; // ブロックのモデルハンドル
 		int drawFrame; // ブロックの描画フレーム
+		int collisionFrame; // ブロックの当たり判定フレーム
 	};
 	// Declare the vector as extern to avoid multiple definitions
 	extern std::vector<BLOCKPOS> _vBlockPos;

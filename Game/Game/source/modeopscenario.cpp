@@ -107,6 +107,7 @@ bool ModeOpScenario::Process()
 		// 前のページへ
 		if(trg & PAD_INPUT_1)
 		{
+			
 			ChangePage(-1);
 		}
 
