@@ -121,22 +121,26 @@ bool ModeGame::Initialize()
 	//	enemy->SetEnemySensor(_enemySensor);
 	//}
 
-	auto em = EffekseerManager::GetInstance();
-	if(em)
-	{
-		// 初期化に成功したらフラグを立て、エフェクトを読み込む
-		if(em->Initialize())
-		{
-			_effekseerLaunched = true;
-			// 変身エフェクト（ModeEffekseer と同じ efk ファイルを利用）
-			_henshineffectHandle = em->LoadEffect("res/Effect/hennsin.efkefc", 100.0f);
-			// 読み込み失敗時は -1 のまま
-			if(_henshineffectHandle == -1)
-			{
-				// ロード失敗時のログ（必要なら追加）
-			}
-		}
-	}
+	// auto em = EffekseerManager::GetInstance();
+	//if(em)
+	//{
+	//	// 初期化に成功したらフラグを立て、エフェクトを読み込む
+	//	if(em->Initialize())
+	//	{
+	//		_effekseerLaunched = true;
+	//		// 変身エフェクト（ModeEffekseer と同じ efk ファイルを利用）
+	//		_henshineffectHandle = em->LoadEffect("res/Effect/hennsin.efkefc", 100.0f);
+	//		// 読み込み失敗時は -1 のまま
+	//		if(_henshineffectHandle == -1)
+	//		{
+	//			// ロード失敗時のログ（必要なら追加）
+	//		}
+	//	}
+	//}
+
+	// Effekseer 初期化
+	EffekseerManager::GetInstance()->Initialize();
+	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1000.0f);
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -339,9 +343,21 @@ bool ModeGame::Process()
 
 	AnimationManager::GetInstance()->Update(1.0f);
 
+	// Effekseer 更新
+	EffekseerManager::GetInstance()->Update();
+
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();   // オブジェクト処理
 	
+	// キャラクターの影処理
+	for (auto& shadow : _charaShadow)
+	{
+		if (shadow)
+		{
+			shadow->Process();
+		}
+	}
+
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
@@ -480,7 +496,15 @@ bool ModeGame::Render()
 			}
 		}
 	}
-	
+	// キャラクターの影描画
+	for (auto& shadow : _charaShadow)
+	{
+		if (shadow)
+		{
+			shadow->Render();
+		}
+	}
+
 	// UIを描画
 	for(auto& ui_base : _uiBase)
 	{
@@ -601,6 +625,8 @@ bool ModeGame::Render()
 		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
 		DrawString(900, 500, msg, color);
 	}
+
+	EffekseerManager::GetInstance()->Render();
 
 	return true;
 }
