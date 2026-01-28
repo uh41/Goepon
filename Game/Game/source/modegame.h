@@ -99,6 +99,11 @@ public:
 
 	bool LoadStageData();
 
+	// キャラと宝箱の当たり判定処理
+	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
+	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
+	// 取得数（UI等で使う想定）
+	int GetTreasureTakenCount() const { return _treasureTakenCount; }
 
 protected:
 	Camera* _camera;
@@ -114,7 +119,9 @@ protected:
 	at::spc<Player> _player;
 	at::spc<PlayerTanuki> _playerTanuki;
 	// 宝箱(オブジェクト)
-	at::vspc<Treasure> _treasure;
+	at::spc<Treasure> _treasure;
+	//at::vspc<Treasure> _treasure;
+
 	// マップ
 	at::spc<Map> _map;
 	// キューブ
@@ -165,5 +172,11 @@ protected:
 
 	// 索敵関連の処理（簡略化）
 	bool CheckAllDetections();// 全体の索敵チェック
+
+	// --- 宝箱取得（A長押し）用 ---
+	int _treasureTakenCount = 0;             // 取得した宝箱の数
+	float _treasureHoldSec = 0.0f;           // 押下時間カウント用
+	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
+	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
 };
 

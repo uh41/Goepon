@@ -118,11 +118,32 @@ bool ModeGame::DebugProcess()
 	{
 			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), TRUE);
 		
+			if(_treasure)
+			{
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetHitCollisionFrame(), TRUE);
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetOpenCollisionFrame(), TRUE);
+			}
 	}
 	else
 	{
 			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), FALSE);
+			if(_treasure)
+			{
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetHitCollisionFrame(), FALSE);
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetOpenCollisionFrame(), FALSE);
+			}
 	}
+
+	/*for(auto& t : _treasure)
+	{
+		if(!t) continue;
+		int h = t->GetModelHandle();
+		int hf = t->GetHitCollisionFrame();
+		if(h >= 0 && hf >= 0)
+		{
+			MV1SetFrameVisible(h, hf, _d_view_collision ? TRUE : FALSE);
+		}
+	}*/
 
 	return true;
 }
@@ -231,6 +252,38 @@ bool ModeGame::DebugRender()
 		}
 	}
 
+	// タヌキプレイヤーのカプセル当たり判定を表示
+	if(_bShowTanuki && _d_view_collision)
+	{
+		// タヌキプレイヤーの参照を取得
+		if(_playerTanuki)
+		{
+			PlayerBase* p = _playerTanuki.get();
+			if(p && p->IsAlive())
+			{
+				// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
+				vec::Vec3 currentPos = p->GetPos();
+				float rad            = static_cast<float>(p->GetCollisionR());
+				float half           = p->GetColSubY();
+
+				// カプセルの上下端を計算
+				vec::Vec3 capTop    = vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f));
+				vec::Vec3 capBottom = vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f));
+
+				// DxLib の描画用に変換
+				VECTOR top    = DxlibConverter::VecToDxLib(capTop);
+				VECTOR bottom = DxlibConverter::VecToDxLib(capBottom);
+
+				int color = GetColor(0, 255, 255); // シアン
+
+				// カプセルの描画
+				const int divNum = 16; // 分割数（見た目の滑らかさ）
+				DrawCapsule3D(top, bottom, rad, divNum, color, color, TRUE);
+			}
+		}
+	}
+
+
 	// シャドウマップの表示
 	if(_d_view_shadow_map)
 	{
@@ -242,12 +295,18 @@ bool ModeGame::DebugRender()
 		_camera->Render();
 	}
 
-	if(_d_view_collision)
-	{
-		// 好みの色に変更可（R,G,B）
-		CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
-	}
+	//if(_d_view_collision)
+	//{
+	//	// CollisionManager 側のデバッグ描画（線やマーカー）
+	//	CollisionManager::GetInstance()->SetDebugDraw(true);
+	//	CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
+	//}
+	//else
+	//{
+	//	CollisionManager::GetInstance()->SetDebugDraw(false);
+	//}
 
+	
 	return true;
 }
 
