@@ -64,6 +64,7 @@ namespace mv1
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
   inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
+  inline constexpr const char* SK_goepon_multimotion = "res/Tanuki/SK_goepon_multimotion.mv1";
   inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
