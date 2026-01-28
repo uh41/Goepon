@@ -13,6 +13,8 @@
 #include "applicationmain.h"
 #include "modeeffekseer.h"
 
+
+
 // 初期化
 bool ModeGame::Initialize()
 {
@@ -115,7 +117,22 @@ bool ModeGame::Initialize()
 	//	enemy->SetEnemySensor(_enemySensor);
 	//}
 
-
+	auto em = EffekseerManager::GetInstance();
+	if(em)
+	{
+		// 初期化に成功したらフラグを立て、エフェクトを読み込む
+		if(em->Initialize())
+		{
+			_effekseerLaunched = true;
+			// 変身エフェクト（ModeEffekseer と同じ efk ファイルを利用）
+			_henshineffectHandle = em->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
+			// 読み込み失敗時は -1 のまま
+			if(_henshineffectHandle == -1)
+			{
+				// ロード失敗時のログ（必要なら追加）
+			}
+		}
+	}
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -194,6 +211,28 @@ bool ModeGame::Terminate()
 		_bgmChenge = nullptr;
 		_isChengeBgm = false;
 	}
+
+	if(_henshineffectHandle != -1)
+	{
+		auto em = EffekseerManager::GetInstance();
+		if(em)
+		{
+			em->DeleteEffect(_henshineffectHandle);
+			_henshineffectHandle = -1;
+		}
+	}
+
+	// Effekseer の終了（Initialize で起動していれば）
+	if(_effekseerLaunched)
+	{
+		auto em = EffekseerManager::GetInstance();
+		if(em)
+		{
+			em->Terminate();
+			_effekseerLaunched = false;
+		}
+	}
+
 	return true;
 }
 
@@ -228,7 +267,7 @@ bool ModeGame::LoadStageData()
 			enemy->SetJsonDataUE(object);
 
 			// JSONのrotateは「向きベクトル」ではないので、センサー用に方向ベクトルを入れる
-			enemy->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
+			//enemy->SetDir());
 
 			// ここで「マーカー位置」を初期位置として確定
 			enemy->CaptureInitialTransform();

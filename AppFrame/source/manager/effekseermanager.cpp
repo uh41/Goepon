@@ -1,11 +1,5 @@
 #include "effekseermanager.h"
 
-EffekseerManager* EffekseerManager::GetInstance()
-{
-	static EffekseerManager instance;
-	return &instance;
-}
-
 bool EffekseerManager::Initialize()
 {
 	if(_initialize)
@@ -54,7 +48,7 @@ int EffekseerManager::LoadEffect(const char* path, float scale)
 	int handle = LoadEffekseerEffect(path, scale);
 	if(handle != -1)
 	{
-		_effect.emplace(std::string(path),handle);
+		_effect.emplace(std::string(path), handle);
 	}
 	return handle;
 }
@@ -138,11 +132,11 @@ int EffekseerManager::PlayEffect3D(int handle)
 	{
 		return -1;
 	}
-	
+
 	int playing = PlayEffekseer3DEffect(handle);
 	if(playing != -1)
 	{
-		float speed = PlayEffekseer3DEffect(handle);
+		float speed = 1.0f;
 		_effectSpeed.emplace(playing, speed);
 	}
 
@@ -159,7 +153,7 @@ int EffekseerManager::PlayEffect3DPos(int handle, const vec::Vec3& pos)
 	if(playing != -1)
 	{
 		SetPosPlayingEffekseer3DEffect(playing, pos.x, pos.y, pos.z);
-		float speed = PlayEffekseer3DEffect(handle);
+		float speed = 1.0f;
 		_effectSpeed.emplace(playing, speed);
 	}
 	return playing;
@@ -252,7 +246,7 @@ vec::Vec3 EffekseerManager::GetRotationEffect(int handle) const
 	}
 
 	auto it = _effectRotation.find(handle);
-	if(it != _effectRotation.end())
+	if(it == _effectRotation.end())
 	{
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
@@ -281,7 +275,7 @@ vec::Vec3 EffekseerManager::GetPosEffect(int handle) const
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
 	auto it = _effectPos.find(handle);
-	if(it != _effectPos.end())
+	if(it == _effectPos.end())
 	{
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
@@ -346,7 +340,7 @@ int EffekseerManager::PlayEffect2D(int handle)
 	int playing = PlayEffekseer2DEffect(handle);
 	if(playing != -1)
 	{
-		float speed = PlayEffekseer2DEffect(handle);
+		float speed = 1.0f;
 		_effectSpeed.emplace(playing, speed);
 	}
 	return playing;
@@ -363,7 +357,7 @@ int EffekseerManager::PlayEffect2DPos(int handle, const vec::Vec3& pos)
 	if(playing != -1)
 	{
 		SetPosPlayingEffekseer2DEffect(playing, pos.x, pos.y, pos.z);
-		float speed = PlayEffekseer2DEffect(handle);
+		float speed = 1.0f;
 		_effectSpeed.emplace(playing, speed);
 	}
 	return playing;
@@ -488,7 +482,7 @@ vec::Vec3 EffekseerManager::GetPosEffect2D(int handle) const
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
 	auto it = _effectPos.find(handle);
-	if(it != _effectPos.end())
+	if(it == _effectPos.end())
 	{
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
@@ -510,19 +504,6 @@ bool EffekseerManager::SetPosEffect2D(int handle, const vec::Vec3& pos)
 	return true;
 }
 
-vec::Vec3 EffekseerManager::GetPosEffect2D(int handle) const
-{
-	if(!_initialize || handle == -1)
-	{
-		return vec3::VGet(0.0f, 0.0f, 0.0f);
-	}
-	auto it = _effectPos.find(handle);
-	if(it != _effectPos.end())
-	{
-		return vec3::VGet(0.0f, 0.0f, 0.0f);
-	}
-	return it->second;
-}
 
 // 	// 2Dエフェクト回転設定
 bool EffekseerManager::SetRotationEffect2D(int handle, const vec::Vec3& rad)
@@ -550,26 +531,25 @@ vec::Vec3 EffekseerManager::GetRotationEffect2D(int handle) const
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
 	auto it = _effectRotation.find(handle);
-	if(it != _effectRotation.end())
+	if(it == _effectRotation.end())
 	{
 		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
 	return it->second;
 }
 
-// 	// 2Dエフェクトスケール
-bool EffekseerManager::SetScaleEffect2D(int handle, float scale)
+vec::Vec3 EffekseerManager::GetScaleEffect2D(int handle) const
 {
-	if(handle == -1)
+	if(!_initialize || handle == -1)
 	{
-		return false;
+		return vec3::VGet(1.0f, 1.0f, 1.0f);
 	}
-	int res = SetScalePlayingEffekseer2DEffect(handle, scale, scale, scale);
-	if(res == -1)
+	auto it = _effectPos.find(handle);
+	if(it == _effectPos.end())
 	{
-		return false;
+		return vec3::VGet(1.0f, 1.0f, 1.0f);
 	}
-	return true;
+	return it->second;
 }
 
 // 	// 2Dエフェクト更新

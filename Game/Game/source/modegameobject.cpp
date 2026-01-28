@@ -123,6 +123,15 @@ bool ModeGame::PlayerTransform()
 				_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
 			}
 
+			if(_henshineffectHandle != -1)
+			{
+				auto em = EffekseerManager::GetInstance();
+				if(em)
+				{
+					em->PlayEffect3DPos(_henshineffectHandle, _playerTanuki->GetPos());
+				}
+			}
+
 			// 変身中はタヌキのまま処理
 			_playerTanuki->Process();
 			return true;

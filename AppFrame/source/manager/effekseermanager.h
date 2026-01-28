@@ -6,7 +6,11 @@
 class EffekseerManager
 {
 public:
-	static EffekseerManager* GetInstance();
+	static EffekseerManager* GetInstance()
+	{
+		static EffekseerManager instance;
+		return &instance;
+	}
 
 	bool Initialize();
 	bool Terminate();
@@ -81,7 +85,7 @@ public:
 
 	// 2Dエフェクトスケール設定
 	bool SetScaleEffect2D(int handle, float scale);
-	vec::Vec3 GetPosEffect2D(int handle) const;
+	vec::Vec3 GetScaleEffect2D(int handle) const;
 
 	// 2Dエフェクト位置設定
 	bool SetPosEffect2D(int handle, const vec::Vec3& pos);
@@ -91,9 +95,6 @@ public:
 	bool SetRotationEffect2D(int handle, const vec::Vec3& rad);
 	vec::Vec3 GetRotationEffect2D(int handle) const;
 
-	// 2Dエフェクトスケール
-	bool SetScaleEffect2D(int handle, float scale);
-
 	// 2Dエフェクト更新
 	void Update2D();
 	void Render2D();
@@ -101,7 +102,7 @@ public:
 private:
 
 	EffekseerManager() { _initialize = false; }
-	~EffekseerManager() {} ;
+	~EffekseerManager() {};
 
 	EffekseerManager(const EffekseerManager&) = delete;
 	EffekseerManager& operator=(const EffekseerManager&) = delete;
@@ -116,4 +117,3 @@ private:
 	at::umtt<int, vec::Vec3> _effectPos; // エフェクトハンドルと位置のマップ
 
 };
-

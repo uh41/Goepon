@@ -159,6 +159,8 @@ protected:
 	at::spc<soundserver::SoundServer> _soundServer;
 	at::spc<soundserver::SoundItemBase> _bgmInitialize;
 	at::spc<soundserver::SoundItemBase> _bgmChenge;
+
+	int _henshineffectHandle = -1;
 	bool _isChengeBgm;
 
 	// 索敵関連の処理（簡略化）
