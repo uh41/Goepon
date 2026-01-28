@@ -59,11 +59,11 @@ bool ModeGame::Initialize()
 		ui_base->Initialize();
 	}
 
-	// シャドウ
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
-	}
+	//// シャドウ
+	//for(auto& charaShadow : _charaShadow)
+	//{
+	//	charaShadow->Initialize();
+	//}
 
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if(_camera != nullptr)
@@ -98,7 +98,11 @@ bool ModeGame::Initialize()
 	//InitHpBlock();// ブロック初期化
 
 	DebugInitialize();// デバック初期化
-	ShadowInitialize();// シャドウ初期化
+	ShadowInitialize();// シャドウ生成
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Initialize();
+	}
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
@@ -125,7 +129,7 @@ bool ModeGame::Initialize()
 		{
 			_effekseerLaunched = true;
 			// 変身エフェクト（ModeEffekseer と同じ efk ファイルを利用）
-			_henshineffectHandle = em->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
+			_henshineffectHandle = em->LoadEffect("res/Effect/hennsin.efkefc", 100.0f);
 			// 読み込み失敗時は -1 のまま
 			if(_henshineffectHandle == -1)
 			{
@@ -239,7 +243,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "marker0128.json";
+	std::string jsonFile = "marker.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
