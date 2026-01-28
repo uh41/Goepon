@@ -37,7 +37,7 @@ public:
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 
-	
+	void CaptureInitialTransform();
 
 public:
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }

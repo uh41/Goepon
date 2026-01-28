@@ -75,6 +75,10 @@ public:
 	// 視線チェック - 指定した2点間で床なしの地点があるかチェック
 	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
 
+	// コリジョンマネージャーを使って床のY座標を取得する関数
+	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
+
+
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
 	bool _bHasDetectionSector;         // 索敵範囲が設定されているか
@@ -93,4 +97,6 @@ protected:
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 	Map* _map;	// マップへの参照
+
+
 };

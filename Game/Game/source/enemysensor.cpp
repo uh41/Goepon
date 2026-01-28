@@ -25,6 +25,8 @@ bool EnemySensor::Initialize()
 	// デフォルトの索敵範囲設定
 	SetDetectionSector(400.0f, 90.0f);//半径、角度
 
+
+
 	return true;
 }
 
@@ -45,6 +47,7 @@ bool EnemySensor::Process()
 	{
 		return true;
 	}
+
 
 	// 検出タイマーの更新
 	UpdateDetectionTimer();
@@ -212,10 +215,10 @@ bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
 	}
 
 	// 視線チェック - 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
-	if (!CheckLineOfSight(detectionCenter, playerPos))
-	{
-		return false; // 視線が遮断されている
-	}
+	//if (!CheckLineOfSight(detectionCenter, playerPos))
+	//{
+	//	return false; // 視線が遮断されている
+	//}
 
 	return true;
 }
@@ -269,25 +272,108 @@ bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& e
 bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 {
 	// マップが設定されていない場合は床があるものとして処理
-	if (!_map)
+	if(!_map)
 	{
 		return true;
 	}
 
-	// 足元から下方向への直線でコリジョン判定
-	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 50.0f, 0.0f));  // 少し上から開始
-	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -50.0f, 0.0f)); // 下方向に長い距離
+	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 100.0f, 0.0f));
+	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -9999.0f, 0.0f));
 
-	// DXライブラリのコリジョン判定を使用
-	MV1_COLL_RESULT_POLY hitPoly = DxlibConverter::MV1CollCheckLine(
-		_map->GetHandleMap(),
-		_map->GetFrameMapCollision(),
-		startPos,
-		endPos
-	);
+	// MAP_SELECT == 2 相当：ブロック毎にコリジョンチェック
+	float nearestDist = FLT_MAX;
+	bool hit = false;
 
-	// 当たり判定があれば床が存在
-	return hitPoly.HitFlag == TRUE;
+	for(const auto& block : _map->GetBlockPosList())
+	{
+		if(block.modelHandle < 0)
+		{
+			continue;
+		}
+
+		// map.cpp では Collision_01 を使って SetupCollInfo 済み
+		const int frame = MV1SearchFrame(block.modelHandle, "Collision_01");
+		if(frame < 0)
+		{
+			continue;
+		}
+
+		MV1_COLL_RESULT_POLY poly = DxlibConverter::MV1CollCheckLine(
+			block.modelHandle,
+			frame,
+			startPos,
+			endPos
+		);
+
+		if(poly.HitFlag == TRUE)
+		{
+			const vec::Vec3 hitPos = DxlibConverter::DxLibToVec(poly.HitPosition);
+			const float dist = vec3::VSize(vec3::VSub(hitPos, startPos));
+			if(dist < nearestDist)
+			{
+				nearestDist = dist;
+				hit = true;
+			}
+		}
+	}
+
+	return hit;
+}
+
+bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const
+{
+	if(!_map)
+	{
+		return false;
+	}
+
+	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 50.0f, 0.0f));
+	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -9999.0f, 0.0f));
+
+	float nearestDist = FLT_MAX;
+	bool hit = false;
+	float bestY = 0.0f;
+
+	for(const auto& block : _map->GetBlockPosList())
+	{
+		if(block.modelHandle < 0)
+		{
+			continue;
+		}
+
+		const int frame = MV1SearchFrame(block.modelHandle, "Collision_01");
+		if(frame < 0)
+		{
+			continue;
+		}
+
+		MV1_COLL_RESULT_POLY poly = DxlibConverter::MV1CollCheckLine(
+			block.modelHandle,
+			frame,
+			startPos,
+			endPos
+		);
+
+		if(poly.HitFlag == TRUE)
+		{
+			const vec::Vec3 hitPos = DxlibConverter::DxLibToVec(poly.HitPosition);
+			const float dist = vec3::VSize(vec3::VSub(hitPos, startPos));
+			if(dist < nearestDist)
+			{
+				nearestDist = dist;
+				bestY = hitPos.y;
+				hit = true;
+			}
+		}
+	}
+
+	if(hit)
+	{
+		outY = bestY;
+		return true;
+	}
+
+	return false;
 }
 
 // デバッグ用：索敵範囲の描画

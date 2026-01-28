@@ -66,6 +66,12 @@ bool Enemy::Initialize()
 	return true;
 }
 
+void Enemy::CaptureInitialTransform()
+{
+	_initialPosition = _vPos;
+	_initialDirection = _vDir;
+}
+
 // 終了
 bool Enemy::Terminate()
 {
@@ -102,7 +108,7 @@ void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 	_isReturningToInitialPos = false;
 
 	// テレポート関連をリセット
-	ResetTeleport();
+	//ResetTeleport();
 }
 
 // プレイヤーが検出範囲外になった時の処理
@@ -205,7 +211,7 @@ void Enemy::StartReturningToInitialPosition()
 		_isMoving = false;				 // 他の移動を停止
 
 		// テレポート関連をリセット
-		ResetTeleport();
+		//ResetTeleport();
 
 		// 初期位置に戻り始める際に検出状態をリセット
 		_detectedPlayer = false;
@@ -354,7 +360,7 @@ bool Enemy::Process()
 			_isReturningToInitialPos = false;
 
 			// テレポート関連をリセット
-			ResetTeleport();
+			//ResetTeleport();
 		}
 		else if (_isReturningToInitialPos)
 		{
@@ -541,8 +547,9 @@ void Enemy::MoveTowardsTarget(const vec::Vec3& target)
 	// 目標位置までの距離
 	float distance = vec3::VSize(toTarget);	
 
-	// 十分近い場合は移動しない
-	if (distance < 50.0f)
+	// 十分近い場合は移動しない（停止距離を縮小）
+	const float stopDistance = 5.0f;
+	if(distance < stopDistance)
 	{
 		_isMoving = false;
 		return;

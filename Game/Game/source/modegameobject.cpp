@@ -35,8 +35,8 @@ bool ModeGame::ObjectInitialize()
 	_playerBase.emplace_back(_playerTanuki);
 
 	// 敵初期化
-	_enemy.emplace_back(std::make_shared<Enemy>());
-	_chara.emplace_back(_enemy.back());
+	//_enemy.emplace_back(std::make_shared<Enemy>());
+	//_chara.emplace_back(_enemy.back());
 
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();
