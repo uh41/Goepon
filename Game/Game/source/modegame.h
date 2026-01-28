@@ -99,6 +99,10 @@ public:
 
 	bool LoadStageData();
 
+	// キャラと宝箱の当たり判定処理
+	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
+	//bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
+
 
 protected:
 	Camera* _camera;
@@ -114,7 +118,9 @@ protected:
 	at::spc<Player> _player;
 	at::spc<PlayerTanuki> _playerTanuki;
 	// 宝箱(オブジェクト)
-	at::vspc<Treasure> _treasure;
+	at::spc<Treasure> _treasure;
+	//at::vspc<Treasure> _treasure;
+
 	// マップ
 	at::spc<Map> _map;
 	// キューブ

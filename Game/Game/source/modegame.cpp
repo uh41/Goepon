@@ -20,8 +20,8 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
-	_treasure.push_back(std::make_shared<Treasure>());
-	_object.emplace_back(_treasure.back());
+	//_treasure.push_back(std::make_shared<Treasure>());
+	//_object.emplace_back(_treasure.back());
 	_camera->Initialize();
 
 	_bShowTanuki = true;
@@ -47,10 +47,10 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Initialize();
-	}
+	}*/
 	// UI
 	for(auto& ui_base : _uiBase)
 	{
@@ -157,10 +157,10 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Terminate();
-	}
+	}*/
 	
 	for(auto& charaShadow : _charaShadow)
 	{
@@ -307,7 +307,17 @@ bool ModeGame::Process()
 	{
 		IsPlayerAttack(_player.get(), { enemy.get() });
 	}
-
+	// 宝箱とキャラクターの当たり判定
+	if(_bShowTanuki)
+	{
+		CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
+		PlayerCameraInfo(_playerTanuki.get());
+	}
+	else
+	{
+		CharaToTreasureHitCollision(_player.get(), _treasure.get());
+		PlayerCameraInfo(_player.get());
+	}
 
 	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
 	if(_bShowTanuki)
@@ -366,11 +376,11 @@ bool ModeGame::Render()
 		object->Render();
 	}
 
-	// 宝箱を描画
-	for(auto& treasure : _treasure)
-	{
-		treasure->Render();
-	}
+	//// 宝箱を描画
+	//for(auto& treasure : _treasure)
+	//{
+	//	treasure->Render();
+	//}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
 	for(auto & player_base : _playerBase)
