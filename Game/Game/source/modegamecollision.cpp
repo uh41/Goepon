@@ -25,6 +25,8 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	{
 		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
 	};
+
+	// 角度を変えて回避を試みるループ
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		// 移動前の位置を保存
@@ -52,10 +54,6 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 			break;
 		}
 
-		// 移動した先でコリジョン判定
-		// 移動した先でコリジョン判定
-		//MV1_COLL_RESULT_POLY hitPoly;
-
 		// 主人公の腰位置から下方向への直線
 		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
 		vec::Vec3 hitPos;
@@ -76,8 +74,6 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 
 			// キャラが上下に移動した量だけ、移動量を修正
 			v.y += chara->GetPos().y - oldvPos.y;
-
-
 
 			// ループiから抜ける
 			break;

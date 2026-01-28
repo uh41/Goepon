@@ -53,11 +53,12 @@ bool PlayerTanuki::Process()
 
 	int key = ApplicationBase::GetInstance()->GetKey();
 
-	// 処理前の位置を保存
+	// 前フレーム情報の保存
 	_vOldPos = _vPos;
-
-	// 処理前のステータスを保存しておく
+	// 古いステータスの保存
 	CharaBase::STATUS old_status = _status;
+
+	// 入力 → 移動ベクトルの計算
 	_v = { 0,0,0 };
 
 	// カメラの向いている角度を取得
@@ -65,10 +66,11 @@ bool PlayerTanuki::Process()
 	float sz = _cam->_vPos.z - _cam->_vTarget.z;
 	float camrad = atan2(sz, sx);
 
-	// キャラ移動(カメラ設定に合わせて)
+	// 左スティック
 	lStickX = fLx;
 	lStickZ = fLz;
 
+	// キーボード入力
 	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 	if(CheckHitKey(KEY_INPUT_UP))
 	{
@@ -87,29 +89,21 @@ bool PlayerTanuki::Process()
 		inputLocal.x = 1.0f;
 	}
 
-	// スティックの傾きから移動量を計算
-	//_vInput = inputLocal;
-
-
-	//float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
-
-
-
+	
 	// スティックの傾きから移動量を計算
 
 	// 後段で参照しても未定義にならないように、ここで宣言しておく
 		// スティックの傾きから移動量を計算
 	float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
 
-	// 後段で参照しても未定義にならないように、ここで宣言しておく
+	// 入力角（ローカル）
 	float localRad = 0.0f;
 
-	// デッドゾーンを跨いだら「倒した方向」に移動、デッドゾーン未満なら止まる
+	// デッドゾーンを超えたら移動、未満なら停止
 	if(length >= _fAnalogDeadZone)
 	{
-		// スティック方向（ローカル）
-		// 右=+X、上=+Z になるように変換（Y軸は使わない）
-		// ※上下反転したい場合は -lStickZ を +lStickZ に変えてください
+		// 入力座標系（ローカル）
+		// 右=+X、上=+Z に合わせる（Yは使用しない）
 		const float moveX = lStickZ;
 		const float moveZ = lStickX;
 
@@ -137,53 +131,6 @@ bool PlayerTanuki::Process()
 		_status = STATUS::WAIT;
 	}
 
-	// ここは上で移動計算済みなので「二重計算」をしない
-	// （上下反転や勝手に座標が動く原因になっていた）
-#if 0
-	// カメラ方向に合わせて移動量を計算
-	if(length > 0.0f)
-	{
-		float localRad = atan2f(inputLocal.z, inputLocal.x);
-
-		length = _fMvSpeed;
-		_v.x = cosf(localRad + camrad) * length;
-		_v.z = sinf(localRad + camrad) * length;
-
-		_vDir = _v;
-		_status = STATUS::WALK;
-	}
-	else
-	{
-		_status = STATUS::WAIT;
-	}
-#endif
-
-
-	//float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-
-	//if(length < _fAnalogDeadZone)
-	//{
-	//	length = 0.0f;
-	//}
-
-	// カメラ方向に合わせて移動量を計算
-	// カメラ方向に合わせて移動量を計算
-	//if(length > 0.0f)
-	//{
-	//	// localRadが未定義のため、ここで再計算する
-	//	float localRad = atan2f(inputLocal.z, inputLocal.x);
-
-	//	length = _fMvSpeed;
-	//	_v.x = cosf(localRad + camrad) * length;
-	//	_v.z = sinf(localRad + camrad) * length;
-
-	//	_vDir = _v;
-	//	_status = STATUS::WALK;
-	//}
-	//else
-	//{
-	//	_status = STATUS::WAIT;
-	//}
 
 	if(_fPlayTime >= _fTotalTime)
 	{
