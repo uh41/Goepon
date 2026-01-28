@@ -2,6 +2,8 @@
 #include "enemybase.h"
 #include "playerbase.h"
 
+class Map; // 前方宣言
+
 // 索敵範囲の情報を格納する構造体
 struct DetectionSector
 {
@@ -17,12 +19,12 @@ struct DetectionInfo
 	bool isDetected;        // 検出されているか
 	float timer;            // 検出表示タイマー
 	int detectorIndex;      // 検出した敵のインデックス
-	vec::Vec3 detectorPos;     // 検出した敵の位置
+	vec::Vec3 detectorPos;  // 検出した敵の位置
 
-	// 追加：追跡機能用
-	bool isChasing;         // 現在追跡中か
-	vec::Vec3 lastKnownPlayerPos; // 最後に確認されたプレイヤーの位置
-	float chaseTimer;       // 追跡継続時間
+	// 追跡機能用
+	bool isChasing;					// 現在追跡中か
+	vec::Vec3 lastKnownPlayerPos;	// 最後に確認されたプレイヤーの位置
+	float chaseTimer;				// 追跡継続時間
 };
 
 class EnemySensor : public EnemyBase
@@ -36,7 +38,7 @@ public:
 	virtual bool Render();
 
 	// 索敵範囲の設定
-	void SetDetectionSector(float radius, float angle);
+	void SetDetectionSector(float radius, float angle);	// 半径、角度
 
 	// プレイヤーが索敵範囲内にいるかチェック
 	bool IsPlayerInDetectionRange(const vec::Vec3& playerPos) const;
@@ -64,6 +66,18 @@ public:
 	// センサーの有効/無効状態
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
+// Mapクラスへの参照を設定
+	void SetMap(Map* map) { _map = map; }
+
+	// 床の存在を確認する関数
+	bool CheckFloorExistence(const vec::Vec3& position) const;
+
+	// 視線チェック - 指定した2点間で床なしの地点があるかチェック
+	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
+
+	// コリジョンマネージャーを使って床のY座標を取得する関数
+	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
+
 
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲
@@ -72,13 +86,17 @@ protected:
 
 	DetectionInfo _detectionInfo;      // 検出状態の情報
 
-	static constexpr float DETECTION_DISPLAY_TIME = 3.0f; // 検出表示時間（秒）
+	// 検出関連定数
+	static constexpr float DETECTION_DISPLAY_TIME = 0.1f; // 検出表示時間（秒）
 
 	// 追跡関連定数
 	static constexpr float CHASE_TIME = 5.0f; // 追跡継続時間（秒）
 
 	// 内部処理用メソッド
-	void UpdateDetectionTimer();       // 検出タイマーの更新
+	void UpdateDetectionTimer();		  // 検出タイマーの更新
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
+
+	Map* _map;	// マップへの参照
+
 
 };

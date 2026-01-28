@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "maptry.json";
+		_sJsonFile = "marker0127_2.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -86,7 +86,7 @@ bool Map::Initialize()
 				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
 			}
 
-			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "pPlane1");
+			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "Collision_01");
 
 			// コリジョン情報の生成
 			MV1SetupCollInfo(_mModelHandle[pos.name], _iFrameMapCollision, 16, 16, 16);
@@ -200,6 +200,38 @@ bool Map::Process()
 		_ground_index.push_back(static_cast<unsigned short>(index + 2));
 		_ground_index.push_back(static_cast<unsigned short>(index + 1));
 		_ground_index.push_back(static_cast<unsigned short>(index + 3));
+	}
+
+	for(auto& block : _vBlockPos)
+	{
+		if(block.modelHandle < 0)
+		{
+			continue;
+		}
+
+		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+
+		// コリジョン情報を transform 後の状態に更新（重要）
+		MV1RefreshCollInfo(block.modelHandle, -1);
+	}
+
+	// SkySphere（スケール・位置）設定
+	if(_iHandleSkySphere >= 0)
+	{
+		// 例：200倍（必要な値に調整）
+		float kSkySphereScale = 200.0f;
+		MV1SetScale(_iHandleSkySphere, VGet(kSkySphereScale, kSkySphereScale, kSkySphereScale));
+
+		// 原点固定だと移動で端が見えるので、カメラに追従させる（推奨）
+		if(_cam)
+		{
+			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->_vPos));
+		}
+
+		// 変換後の当たり判定更新が不要なら、この行はいりません
+		// MV1RefreshCollInfo(_iHandleSkySphere, -1);
 	}
 
 

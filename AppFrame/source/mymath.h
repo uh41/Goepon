@@ -114,6 +114,7 @@ namespace mymath
 		float sx, sy, sz; // ブロックのスケール
 		int modelHandle; // ブロックのモデルハンドル
 		int drawFrame; // ブロックの描画フレーム
+		int collisionFrame; // ブロックの当たり判定フレーム
 	};
 	// Declare the vector as extern to avoid multiple definitions
 	extern std::vector<BLOCKPOS> _vBlockPos;
@@ -144,7 +145,7 @@ namespace mymath
 	float EasingInOutCirc(float cnt, float start, float end, float frames);
 
 	template<typename T>
-	static float Clamp(T min, T max, T n)
+	static T Clamp(T min, T max, T n)
 	{
 		if(n <= min)
 		{

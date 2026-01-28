@@ -189,6 +189,9 @@
     <ClCompile Include="source\manager\collisionmanager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\manager\effekseermanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\resource\ResourceServer.h">
@@ -279,6 +282,12 @@
       <Filter>リソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\manager\collisionmanager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\gameconfig.h">
+      <Filter>リソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\manager\effekseermanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

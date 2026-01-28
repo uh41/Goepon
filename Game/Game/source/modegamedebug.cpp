@@ -117,10 +117,21 @@ bool ModeGame::DebugProcess()
 	if(_d_view_collision)
 	{
 			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), TRUE);
+		
+			if(_treasure)
+			{
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetHitCollisionFrame(), TRUE);
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetOpenCollisionFrame(), TRUE);
+			}
 	}
 	else
 	{
 			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), FALSE);
+			if(_treasure)
+			{
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetHitCollisionFrame(), FALSE);
+				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetOpenCollisionFrame(), FALSE);
+			}
 	}
 
 	for(auto& t : _treasure)
@@ -284,11 +295,16 @@ bool ModeGame::DebugRender()
 		_camera->Render();
 	}
 
-	if(_d_view_collision)
-	{
-		// 好みの色に変更可（R,G,B）
-		CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
-	}
+	//if(_d_view_collision)
+	//{
+	//	// CollisionManager 側のデバッグ描画（線やマーカー）
+	//	CollisionManager::GetInstance()->SetDebugDraw(true);
+	//	CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
+	//}
+	//else
+	//{
+	//	CollisionManager::GetInstance()->SetDebugDraw(false);
+	//}
 
 	
 	return true;
