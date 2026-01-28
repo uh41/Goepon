@@ -63,7 +63,8 @@ bool Treasure::Initialize()
 	}
 
 	// �󔠂͏�����Ԃŕ��Ă���
-	_isOpen = false;
+	_isOpen    = false;
+	_isVisible = true;
 
 	// �������f�i�`��Ɣ���ŋ��ʁj
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
@@ -99,7 +100,15 @@ bool Treasure::Process()
 
 bool Treasure::Render()
 {
-		base::Render();
+	base::Render();
+
+	// 非表示なら描画しない（デバック)
+	if (!_isVisible)
+	{
+		return true; 
+
+	}
+
 
 	if(_handle >= 0)
 	{

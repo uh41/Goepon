@@ -175,5 +175,6 @@ protected:
 	int _treasureTakenCount = 0;             // 取得した宝箱の数
 	float _treasureHoldSec = 0.0f;           // 押下時間カウント用
 	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
+	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
 };
 

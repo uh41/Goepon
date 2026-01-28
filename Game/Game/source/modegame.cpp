@@ -549,7 +549,15 @@ bool ModeGame::Render()
 
 	//}
 
-
+	if (_isOpeningTreasure)
+	{
+		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
+		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
+		const char* msg = "お宝を開けています...(Aを押し続けてください)";
+		int color = GetColor(255, 0, 0); // 黄色
+		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
+		DrawString(900, 500, msg, color);
+	}
 
 	return true;
 }

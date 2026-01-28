@@ -134,7 +134,7 @@ bool ModeGame::DebugProcess()
 			}
 	}
 
-	for(auto& t : _treasure)
+	/*for(auto& t : _treasure)
 	{
 		if(!t) continue;
 		int h = t->GetModelHandle();
@@ -143,7 +143,7 @@ bool ModeGame::DebugProcess()
 		{
 			MV1SetFrameVisible(h, hf, _d_view_collision ? TRUE : FALSE);
 		}
-	}
+	}*/
 
 	return true;
 }

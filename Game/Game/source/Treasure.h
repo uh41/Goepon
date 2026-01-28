@@ -32,7 +32,22 @@ public:
 
 	// �󔠂��J���Ă��邩�ǂ����擾�E�ݒ�
 	bool IsOpen() const { return _isOpen; }
-	void SetOpen(bool isOpen) { _isOpen = isOpen; }
+	// 実装はこっち
+	//void SetOpen(bool isOpen) { _isOpen = isOpen; }
+	// デバックとしてこちらを今使っている
+	void SetOpen(bool isOpen)
+	{
+		_isOpen = isOpen;
+
+		// ここを追加：開いたら見た目を消す
+		if (_isOpen)
+		{
+			_isVisible = false;
+		}
+	}
+
+	// デバック用(モデルを表示/非表示)
+	bool IsVisible() const { return _isVisible; }
 
 	// ���݂� _vPos/_vDir/_vScale ���烂�f���s��𐶐�
 	MATRIX MakeModelMatrix() const;
@@ -43,5 +58,6 @@ protected:
 	int _openCollisionFrame;     // �󔠊J�p�t���[��
 	int _attachIndex;            // �A�^�b�`�A�j���[�V�����C���f�b�N�X
 	bool _isOpen;	             // �󔠂��J���Ă��邩�ǂ���
+	bool _isVisible;             // 表示フラグ
 };
 

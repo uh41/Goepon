@@ -247,6 +247,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 		return false;
 	}
 
+	if(!treasure->IsVisible())
+	{
+		return false;
+	}
+
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
@@ -267,12 +272,14 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 		hitPos
 	);
 
+
 	const int key = ApplicationBase::GetInstance()->GetKey();
 	const bool holdA = (key & PAD_INPUT_1) != 0;
 
 	// 条件崩れたらリセット
 	if(!inTreasure || !holdA)
 	{
+		_isOpeningTreasure = false;
 		_treasureHoldSec = 0.0f;
 		// 宝箱から離れたら取得フラグリセット
 		if(!inTreasure)
@@ -282,6 +289,9 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 		return false;
 	}
 
+	// ここに来た時点で「宝箱の範囲内 + A を押している」
+	_isOpeningTreasure = true;          
+
 	// すでに取得済みなら何もしない
 	if(_treasureTakenThisTreasure)
 	{
@@ -289,7 +299,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 	}
 
 	// 経過時間加算（固定60FPS前提：必要なら実測deltaに置換）
-	const float dt = 1.0f / 60.0f;
+	const float dt = 1.0f / 180.0f;
 	_treasureHoldSec += dt;
 
 	// 1秒間ホールドで取得
@@ -301,6 +311,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 
 		// 宝箱状態を変えたい場合（見た目を開ける等）
 		treasure->SetOpen(true);
+		_isOpeningTreasure = false;      // 開き終わったので OFF
 
 		return true;
 	}
