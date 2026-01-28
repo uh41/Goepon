@@ -594,6 +594,27 @@ bool ModeGame::CheckAllDetections()
 		// タイマー更新など
 		sensor->Process();
 
+		// タヌキ状態の時のみ検知処理を実行
+		if (!_bShowTanuki)
+		{
+			// 人間状態では検知されない
+			for (auto& enemy : _enemy)
+			{
+				if (enemy->IsAlive() && enemy->GetEnemySensor())
+				{
+					enemy->GetEnemySensor()->ResetDetection();
+					enemy->OnPlayerLost();
+				}
+			}
+			return true;
+		}
+
+		PlayerBase* currentPlayer = _playerTanuki.get();
+		if (!currentPlayer)
+		{
+			return false;
+		}
+
 		const bool detected = sensor->CheckPlayerDetection(player);
 
 		if(detected)
