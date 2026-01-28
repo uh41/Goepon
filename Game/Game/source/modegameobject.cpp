@@ -173,6 +173,14 @@ bool ModeGame::PlayerTransform()
 bool ModeGame::ObjectProcess()
 {
 
+
+	// オブジェクト処理
+	for(auto& object : _object)
+	{
+		object->Process();
+	}
+
+
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)
 	{
@@ -189,12 +197,6 @@ bool ModeGame::ObjectProcess()
 		{
 			enemy->Process();
 		}
-	}
-
-	// オブジェクト処理
-	for(auto& object : _object)
-	{
-		object->Process();
 	}
 
 	for(auto& treasure : _treasure)

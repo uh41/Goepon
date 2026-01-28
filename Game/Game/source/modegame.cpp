@@ -200,7 +200,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "marker0127_2.json";
+	std::string jsonFile = "marker0128.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -330,18 +330,18 @@ bool ModeGame::Process()
 	// 敵押し出し（移動後にやる）
 	for(auto enemy : _enemy)
 	{
-		EscapeCollision(enemy.get(), _map.get());
+		//EscapeCollision(enemy.get(), _map.get());
 
-		// 床に乗せる（最終座標確定後）
-		float floorY = 0.0f;
-		auto sensor = enemy->GetEnemySensor();
-		if(sensor && sensor->GetFloorYCollision(enemy->GetPos(), enemy->GetColSubY(), floorY))
-		{
-			vec::Vec3 pos = enemy->GetPos();
-			pos.y = floorY;
-			enemy->SetPos(pos);
-			enemy->SetLand(true);
-		}
+		//// 床に乗せる（最終座標確定後）
+		//float floorY = 0.0f;
+		//auto sensor = enemy->GetEnemySensor();
+		//if(sensor && sensor->GetFloorYCollision(enemy->GetPos(), enemy->GetColSubY(), floorY))
+		//{
+		//	vec::Vec3 pos = enemy->GetPos();
+		//	pos.y = floorY;
+		//	enemy->SetPos(pos);
+		//	enemy->SetLand(true);
+		//}
 	}
 
 	// プレイヤー vs 敵 の当たり判定（押し出し）
@@ -447,22 +447,22 @@ bool ModeGame::Render()
 
 	DebugRender();// デバック描画処理
 
-	// 敵のHP情報を画面に表示（生存している敵のみ）
-	int y_offset = 100; // 画面上部からのオフセット
-	int alive_count = 0; // 生存している敵のカウント用
-	for(int i = 0; i < _enemy.size(); i++)
-	{
-		auto& enemy = _enemy[i];
-		if(enemy->IsAlive())
-		{
-			DrawFormatString(10, y_offset + (alive_count * 20), GetColor(255, 0, 0), 
-				"Enemy[%d] HP: %.1f / MaxHP: %.1f", 
-				i, 
-				enemy->GetHP(), 
-				enemy->GetHP()); // 最大HPが分からないので現在HPを表示
-			alive_count++;
-		}
-	}
+	//// 敵のHP情報を画面に表示（生存している敵のみ）
+	//int y_offset = 100; // 画面上部からのオフセット
+	//int alive_count = 0; // 生存している敵のカウント用
+	//for(int i = 0; i < _enemy.size(); i++)
+	//{
+	//	auto& enemy = _enemy[i];
+	//	if(enemy->IsAlive())
+	//	{
+	//		DrawFormatString(10, y_offset + (alive_count * 20), GetColor(255, 0, 0), 
+	//			"Enemy[%d] HP: %.1f / MaxHP: %.1f", 
+	//			i, 
+	//			enemy->GetHP(), 
+	//			enemy->GetHP()); // 最大HPが分からないので現在HPを表示
+	//		alive_count++;
+	//	}
+	//}
 
 	// プレイヤーのHP情報も表示
 	DrawFormatString(10, 50, GetColor(0, 255, 0), 
@@ -497,6 +497,32 @@ bool ModeGame::Render()
 		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
 		{
 			enemy->RenderYouDiedMessage();
+		}
+	}
+
+	
+	// HP情報を画面に表示（生存している敵のみ）
+	int ey_offset = 100; // 画面上部からのオフセット
+	int live_count = 0; // 生存している敵のカウント用
+	for(int i = 0; i < _enemy.size(); i++)
+	{
+		auto& enemy = _enemy[i];
+		if(enemy->IsAlive())
+		{
+			const vec::Vec3 p = enemy->GetPos();
+			const vec::Vec3 m = enemy->GetInitialPosition(); // マーカー座標（初期位置）
+
+			DrawFormatString(
+				10,
+				ey_offset + (live_count * 20),
+				GetColor(255, 0, 0),
+				"Enemy[%d] Pos:(%.1f,%.1f,%.1f)  Marker:(%.1f,%.1f,%.1f)",
+				i,
+				p.x, p.y, p.z,
+				m.x, m.y, m.z
+			);
+
+			live_count++;
 		}
 	}
 

@@ -37,6 +37,10 @@ public:
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 
+public:
+	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
+	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
+
 	void CaptureInitialTransform();
 
 public:
