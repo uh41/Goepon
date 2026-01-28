@@ -531,8 +531,8 @@ bool ModeGame::Render()
 	//}
 
 	// プレイヤーのHP情報も表示
-	DrawFormatString(10, 50, GetColor(0, 255, 0), 
-		"Player HP: %.1f", _player->GetHP());
+	//DrawFormatString(10, 50, GetColor(0, 255, 0), 
+	//	"Player HP: %.1f", _player->GetHP());
 
 	// 索敵システムの描画
 	if (_enemySensor)
@@ -568,29 +568,29 @@ bool ModeGame::Render()
 
 	
 	// HP情報を画面に表示（生存している敵のみ）
-	int ey_offset = 100; // 画面上部からのオフセット
-	int live_count = 0; // 生存している敵のカウント用
-	for(int i = 0; i < _enemy.size(); i++)
-	{
-		auto& enemy = _enemy[i];
-		if(enemy->IsAlive())
-		{
-			const vec::Vec3 p = enemy->GetPos();
-			const vec::Vec3 m = enemy->GetInitialPosition(); // マーカー座標（初期位置）
-
-			DrawFormatString(
-				10,
-				ey_offset + (live_count * 20),
-				GetColor(255, 0, 0),
-				"Enemy[%d] Pos:(%.1f,%.1f,%.1f)  Marker:(%.1f,%.1f,%.1f)",
-				i,
-				p.x, p.y, p.z,
-				m.x, m.y, m.z
-			);
-
-			live_count++;
-		}
-	}
+	//int ey_offset = 100; // 画面上部からのオフセット
+	//int live_count = 0; // 生存している敵のカウント用
+	//for(int i = 0; i < _enemy.size(); i++)
+	//{
+	//	auto& enemy = _enemy[i];
+	//	if(enemy->IsAlive())
+	//	{
+	//		const vec::Vec3 p = enemy->GetPos();
+	//		const vec::Vec3 m = enemy->GetInitialPosition(); // マーカー座標（初期位置）
+	//
+	//		DrawFormatString(
+	//			10,
+	//			ey_offset + (live_count * 20),
+	//			GetColor(255, 0, 0),
+	//			"Enemy[%d] Pos:(%.1f,%.1f,%.1f)  Marker:(%.1f,%.1f,%.1f)",
+	//			i,
+	//			p.x, p.y, p.z,
+	//			m.x, m.y, m.z
+	//		);
+	//
+	//		live_count++;
+	//	}
+	//}
 
 
 	//if(_player)
