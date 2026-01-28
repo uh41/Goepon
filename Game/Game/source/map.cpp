@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "map0126.json";
+		_sJsonFile = "marker0127_2.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
