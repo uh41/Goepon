@@ -269,10 +269,11 @@ bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& e
 	return CheckFloorExistence(endPos);
 }
 
+// 床の存在を確認する関数
 bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 {
 	// マップが設定されていない場合は床があるものとして処理
-	if (!_map)
+	if(!_map)
 	{
 		return true;
 	}
@@ -280,25 +281,22 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 	vec::Vec3 startPos = vec3::VAdd(position, vec3::VGet(0.0f, 100.0f, 0.0f));
 	vec::Vec3 endPos = vec3::VAdd(position, vec3::VGet(0.0f, -9999.0f, 0.0f));
 
-	// _iFrameMapCollisionを取得して使用する例
-	int frameMapCollision = _map->GetFrameMapCollision();
-
 	// MAP_SELECT == 2 相当：ブロック毎にコリジョンチェック
 	float nearestDist = FLT_MAX;
 	bool hit = false;
 
 	// ブロック毎にコリジョンチェック
-	for (const auto& block : _map->GetBlockPosList())
+	for(const auto& block : _map->GetBlockPosList())
 	{
 		// モデルハンドルが無効な場合はスキップ
-		if (block.modelHandle < 0)
+		if(block.modelHandle < 0)
 		{
 			continue;
 		}
 
 		// map.cpp では Collision_01 を使って SetupCollInfo 済み
 		const int frame = MV1SearchFrame(block.modelHandle, "Collision_01");
-		if (frame < 0)
+		if(frame < 0)
 		{
 			continue;
 		}
@@ -310,15 +308,15 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 			startPos,
 			endPos
 		);
-
+		
 		// 衝突している場合は最も近い衝突位置を記録
-		if (poly.HitFlag == TRUE)
+		if(poly.HitFlag == TRUE)
 		{
 			const vec::Vec3 hitPos = DxlibConverter::DxLibToVec(poly.HitPosition);
 			const float dist = vec3::VSize(vec3::VSub(hitPos, startPos));
 
 			// 最も近い衝突位置の更新
-			if (dist < nearestDist)
+			if(dist < nearestDist)
 			{
 				nearestDist = dist;
 				hit = true;
