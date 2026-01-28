@@ -15,7 +15,7 @@ bool ModeGame::DebugInitialize()
 {
 	// その他初期化
 	_d_view_collision = true;
-	_d_use_collision = false;
+	_d_use_collision = true;
 	_d_view_camera_info = true;
 	_d_view_shadow_map = false;
 
