@@ -40,8 +40,8 @@ bool ModeGame::ObjectInitialize()
 
 	// 宝箱初期化
 	//_object.emplace_back(std::make_shared<Treasure>());
-	_object.emplace_back(std::make_shared<Treasure>());
 	_treasure = std::make_shared<Treasure>();
+	_object.emplace_back(_treasure);
 
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();

@@ -297,7 +297,6 @@ bool ModeGame::Process()
 
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();	// オブジェクト処理
-
 	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
@@ -307,27 +306,18 @@ bool ModeGame::Process()
 	{
 		IsPlayerAttack(_player.get(), { enemy.get() });
 	}
-	// 宝箱とキャラクターの当たり判定
-	if(_bShowTanuki)
-	{
-		CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
-		PlayerCameraInfo(_playerTanuki.get());
-	}
-	else
-	{
-		CharaToTreasureHitCollision(_player.get(), _treasure.get());
-		PlayerCameraInfo(_player.get());
-	}
-
-	// EscapeCollisionはプレイヤー処理の後に呼ぶ（現在表示中のプレイヤーのみ）	
+	
+	
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
-		EscapeCollision(_player.get(),_map.get());
+		EscapeCollision(_player.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
 	}
 
