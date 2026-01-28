@@ -28,11 +28,14 @@ namespace at
 	template<typename T, typename C>
 	using umtc = std::unordered_map<T, C>;	// アンオーダードマップとストリングとクラス
 
+	template<typename T, typename U>
+	using umtt = std::unordered_map<T, U>;	// アンオーダードマップとテンプレート(型)
+
 	template<typename C, size_t s>
 	using arc = std::array<C, s>;					// アレイとクラス
 
 	template<typename T, size_t s>
-	using art = std::array<T, s>;
+	using art = std::array<T, s>;					// アレイとテンプレート(型)
 
 	template<typename C, typename D>
 	using vpcc = std::vector<std::pair<C, D>>;	// ベクターとペアとクラス
