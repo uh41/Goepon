@@ -296,7 +296,7 @@ bool ModeGame::Process()
 	// ここから通常のゲーム処理
 
 	PlayerTransform(); // プレイヤー変身処理
-	ObjectProcess();	// オブジェクト処理
+	ObjectProcess();   // オブジェクト処理
 	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
@@ -312,12 +312,14 @@ bool ModeGame::Process()
 	{
 		EscapeCollision(_playerTanuki.get(), _map.get());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
 		EscapeCollision(_player.get(), _map.get());
 		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
 	}
 

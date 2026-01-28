@@ -167,6 +167,7 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 // キャラと宝箱の当たり判定処理
 bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
 {
+	// 引数チェック
 	if(!chara || !treasure)
 	{
 		return false;
@@ -238,10 +239,74 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
 	return false;
 }
 
-//bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure)
-//{
-//	
-//}
+bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure)
+{
+	// 引数チェック
+	if(!player || !treasure)
+	{
+		return false;
+	}
+
+	// 空中なら処理しない（設計に合わせて維持）
+	if(!player->GetLand())
+	{
+		return false;
+	}
+	// 宝箱の指定フレームで判定
+	const auto handleTreasure = treasure->GetModelHandle();
+	const auto frameTreasure  = treasure->GetOpenCollisionFrame();
+
+	// プレイヤーと指定したコリジョンフレームで当たり判定
+	vec::Vec3 hitPos;
+	const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision
+	(
+		player->GetPos(),
+		handleTreasure,
+		frameTreasure,
+		player->GetColSubY(),
+		hitPos
+	);
+
+	const int key = ApplicationBase::GetInstance()->GetKey();
+	const bool holdA = (key & PAD_INPUT_1) != 0;
+
+	// 条件崩れたらリセット
+	if(!inTreasure || !holdA)
+	{
+		_treasureHoldSec = 0.0f;
+		// 宝箱から離れたら取得フラグリセット
+		if(!inTreasure)
+		{
+			_treasureTakenThisTreasure = false; // 離れたら再取得可能（”同じ宝箱で1回だけ”にしたいならここを消す）
+		}
+		return false;
+	}
+
+	// すでに取得済みなら何もしない
+	if(_treasureTakenThisTreasure)
+	{
+		return false;
+	}
+
+	// 経過時間加算（固定60FPS前提：必要なら実測deltaに置換）
+	const float dt = 1.0f / 60.0f;
+	_treasureHoldSec += dt;
+
+	// 1秒間ホールドで取得
+	if(_treasureHoldSec >= 1.0f)
+	{
+		_treasureTakenCount++;
+		_treasureTakenThisTreasure = true;
+		_treasureHoldSec = 0.0f;
+
+		// 宝箱状態を変えたい場合（見た目を開ける等）
+		treasure->SetOpen(true);
+
+		return true;
+	}
+
+	return false;
+}
 
 
 // キャラ同士の押し出し処理
