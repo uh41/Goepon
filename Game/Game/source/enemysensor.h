@@ -98,4 +98,6 @@ protected:
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 	Map* _map;	// マップへの参照
+	// コリジョンフレームのキャッシュ（各ブロックのコリジョンフレーム番号を保持）
+	mutable std::map<int, int> _collisionFrameCache;
 };

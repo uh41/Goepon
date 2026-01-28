@@ -702,10 +702,10 @@ void Enemy::RenderYouDiedMessage()
 	int x = (screenWidth - textWidth) / 2;
 	int y = (screenHeight - 72) / 2; // フォントサイズ分考慮
 
-	// 半透明の黒背景を描画
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-	DrawBox(0, 0, screenWidth, screenHeight, GetColor(0, 0, 0), TRUE);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	//// 半透明の黒背景を描画
+	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
+	//DrawBox(0, 0, screenWidth, screenHeight, GetColor(0, 0, 0), TRUE);
+	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 	// 文字に影をつけて見やすくする
 	for (int dx = -2; dx <= 2; dx++)

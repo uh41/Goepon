@@ -123,6 +123,7 @@ bool Map::Initialize()
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
+	
 	// コリジョン情報の生成
 	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
 	// コリジョンのフレームを描画しない設定

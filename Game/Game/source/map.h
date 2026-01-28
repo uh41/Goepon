@@ -27,7 +27,7 @@ public:
 
 	const std::vector<mymath::BLOCKPOS>& GetBlockPosList() const { return _vBlockPos; }
 
-
+	int GetFrameMapCollision() const { return _iFrameMapCollision; }
 
 protected:
 	Camera* _cam;
