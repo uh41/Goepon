@@ -43,145 +43,6 @@ bool PlayerTanuki::Terminate()
 // �v�Z����
 bool PlayerTanuki::Process()
 {
-	//base::Process();
-
-	//int key = ApplicationBase::GetInstance()->GetKey();
-
-	//// �����O�̈ʒu��ۑ�
-	//_vOldPos = _vPos;
-
-	//// �����O�̃X�e�[�^�X��ۑ����Ă���
-	//CharaBase::STATUS old_status = _status;
-	////vec::Vec3 v = { 0,0,0 };
-
-	//// �J�����̌����Ă���p�x��擾
-	//float sx = _cam->_vPos.x - _cam->_vTarget.x;
-	//float sz = _cam->_vPos.z - _cam->_vTarget.z;
-	//float camrad = atan2(sz, sx);
-
-	//// �L�����ړ�(�J�����ݒ�ɍ��킹��)
-	//lStickX = fLx;
-	//lStickZ = fLz;
-
-	//vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-	//if (CheckHitKey(KEY_INPUT_UP))
-	//{
-	//	inputLocal.x = -1.0f;
-	//}
-	//if (CheckHitKey(KEY_INPUT_DOWN))
-	//{
-	//	inputLocal.x = 1.0f;
-	//}
-	//if (CheckHitKey(KEY_INPUT_LEFT))
-	//{
-	//	inputLocal.z = -1.0f;
-	//}
-	//if (CheckHitKey(KEY_INPUT_RIGHT))
-	//{
-	//	inputLocal.z = 1.0f;
-	//}
-
-	//// �X�e�B�b�N�̌X������ړ��ʂ�v�Z
-	//_vInput = inputLocal;
-
-	//float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-	//float rad = atan2(lStickX, lStickZ);
-	//if (length < _fAnalogDeadZone)
-	//{
-	//	length = 0.0f;
-	//}
-
-	////// ���̓x�N�g����ۑ��iEscapeCollision�Ŏg�p�j
-	////_vInput = inputLocal;
-	//// ���̓x�N�g����ۑ��iEscapeCollision�Ŏg�p�j
-	//_vInput = inputLocal;
-
-	//// �J���������ɍ��킹�Ĉړ��ʂ�v�Z
-	//if (length > 0.0f)
-	//{
-	//	length = _fMvSpeed;
-	//	_v.x = cosf(rad + camrad) * length;
-	//	_v.z = sinf(rad + camrad) * length;
-
-	//	_vDir = _v;
-	//	_status = STATUS::WALK;
-	//}
-	//else
-	//{
-	//	_v = vec3::VGet(0.0f, 0.0f, 0.0f);
-	//	_status = STATUS::WAIT;
-	//}
-
-	//// �A�j���[�V�����Ǘ�
-	//if (old_status == _status)
-	//{
-	//	float anim_speed = 0.5f;
-	//	_fPlayTime += anim_speed;
-	//	switch (_status)
-	//	{
-	//	case STATUS::WAIT:
-	//		_fPlayTime += (float)(rand() % 10) / 100.0f;
-	//		break;
-	//	}
-	//}
-	//else
-	//{
-
-	//	if (_animId != -1)
-	//	{
-	//		AnimationManager::GetInstance()->Stop(_animId);
-	//		_animId = -1;
-	//	}
-
-	//	std::string anim_name;
-	//	switch (_status)
-	//	{
-	//	case STATUS::WAIT:
-	//		anim_name = "hensin";
-	//		break;
-	//	case STATUS::WALK:
-	//		anim_name = "walk";
-	//		break;
-	//	default:
-	//		anim_name.clear();
-	//	}
-
-	//	if (!anim_name.empty())
-	//	{
-	//		_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-	//		_fPlayTime = 0.0f;
-	//		switch (_status)
-	//		{
-	//		case STATUS::WAIT:
-	//			_fPlayTime += rand() % 30;
-	//			break;
-	//		}
-	//		if (_animId != -1)
-	//		{
-	//			AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
-	//		}
-	//	}
-	//}
-
-	//if (_fPlayTime >= _fTotalTime)
-	//{
-	//	_fPlayTime = 0.0f;
-	//}
-
-	//// --- �����Ŏ��ۂɈʒu�ƃJ������ړ������� ---
-	//if (vec3::VSize(_v) > 0.0f)
-	//{
-	//	// �v���C���[�̈ʒu��ړ�
-	//	_vPos = vec3::VAdd(_vPos, _v);
-
-	//	// �J�������ݒ肳��Ă���΃J�����ʒu�̓v���C���[�ʒu + �I�t�Z�b�g�Őݒ�i���Z�͂��Ȃ��j
-	//	if (_cam != nullptr)
-	//	{
-	//		_cam->_vPos = vec3::VAdd(_vPos, _camOffset);
-	//		_cam->_vTarget = vec3::VAdd(_vPos, _camTargetOffset);
-	//	}
-	//}
-
 	base::Process();
 
 	int key = ApplicationBase::GetInstance()->GetKey();
@@ -332,14 +193,12 @@ bool PlayerTanuki::Process()
 	}
 	else
 	{
-
 		if(_animId != -1)
 		{
 			AnimationManager::GetInstance()->Stop(_animId);
 			_animId = -1;
 		}
-
-		PlayAnim(true);// �X�e�[�^�X�ύX���Ȃ̂�true
+		PlayAnim(true);
 	}
 
 	if(_fPlayTime >= _fTotalTime)

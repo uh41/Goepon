@@ -90,8 +90,6 @@ bool ModeOpScenario::Process()
 		// 次のページへ
 		if(trg & PAD_INPUT_2)
 		{
-
-
 			// 最終ページならフェードアウトへ
 			if(_pageNo >= static_cast<int>(_page.size()) - 1)
 			{
@@ -106,8 +104,7 @@ bool ModeOpScenario::Process()
 
 		// 前のページへ
 		if(trg & PAD_INPUT_1)
-		{
-			
+		{	
 			ChangePage(-1);
 		}
 
