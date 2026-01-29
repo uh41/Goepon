@@ -28,11 +28,11 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 	gGlobal.Init();
 
 	// モードの登録
-	ModeServer::GetInstance()->Add(new ModeInit(), 4, "logo");
+	//ModeServer::GetInstance()->Add(new ModeInit(), 4, "logo");
 	//ModeServer::GetInstance()->Add(new ModeTeamLogo(), 3, "teamlogo");
 	//ModeServer::GetInstance()->Add(new ModeTitle(), 2, "title");
 	//ModeServer::GetInstance()->Add(new ModeOpScenario(), 1, "opscenario");
-	//ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
+	ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
 
 	return true;
 }
