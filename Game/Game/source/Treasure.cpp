@@ -1,4 +1,4 @@
-#include "Treasure.h"
+﻿#include "Treasure.h"
 
 
 namespace
@@ -48,7 +48,7 @@ bool Treasure::Initialize()
 
 	_objStatus = OBJSTATUS::NONE;
 
-	_vPos = vec::Vec3{ 600.0f, 0.0f, 2450.0f };
+	_vPos = vec::Vec3{ 714.0f, 0.0f, 5803.0f };
 	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 
 

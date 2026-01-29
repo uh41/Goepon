@@ -411,6 +411,8 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 			{
 				anyhit = true;
 				enemy->PlayAnimation("walk", false);
+				_showKnockdownMessage = true;
+				_knockdownMessageSec = 1.0f; // 表示時間 1秒
 			}
 			else
 			{

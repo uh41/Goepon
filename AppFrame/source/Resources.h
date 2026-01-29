@@ -16,6 +16,7 @@ namespace img
   inline constexpr const char* Op9 = "res/Op9.png";
   inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
+  inline constexpr const char* teamlogo = "res/teamlogo.png";
   inline constexpr const char* title = "res/title.png";
 }
 

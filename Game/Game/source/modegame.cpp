@@ -241,6 +241,7 @@ bool ModeGame::Terminate()
 		}
 	}
 
+
 	return true;
 }
 
@@ -436,6 +437,27 @@ bool ModeGame::Process()
 
 		}
 	}
+
+	at::vec<Enemy*> enemy;
+	enemy.reserve(_enemy.size());
+	for(auto& e : _enemy)
+	{
+		enemy.push_back(e.get());
+	}
+
+	// デバック用タイマー（転ばせる）
+	if(_showKnockdownMessage)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_knockdownMessageSec -= dt;
+		if(_knockdownMessageSec <= 0.0f)
+		{
+			_showKnockdownMessage = false;
+			_knockdownMessageSec = 0.0f;
+		}
+	}
+
+	IsPlayerAttack(_player.get(), enemy);
 
 	ChangeBGM();
 	return true;
@@ -633,6 +655,7 @@ bool ModeGame::Render()
 
 	//}
 
+	// 宝箱を開けているメッセージ表示
 	if (_isOpeningTreasure)
 	{
 		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
@@ -643,7 +666,12 @@ bool ModeGame::Render()
 		DrawString(900, 500, msg, color);
 	}
 
-
+	// 敵を転ばせたメッセージ表示
+	if(_showKnockdownMessage)
+	{
+		const char* msg = "敵を転ばせた";
+		DrawString(900, 500, msg, GetColor(255, 255, 255));
+	}
 
 	return true;
 }

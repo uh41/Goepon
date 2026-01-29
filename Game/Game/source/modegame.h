@@ -178,5 +178,9 @@ protected:
 	float _treasureHoldSec = 0.0f;           // 押下時間カウント用
 	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
 	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
+
+	// --- 画面メッセージ（敵を転ばせた） ---
+	bool _showKnockdownMessage = false;
+	float _knockdownMessageSec = 0.0f;
 };
 
