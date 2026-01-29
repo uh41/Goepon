@@ -20,5 +20,8 @@ public:
 
 	// 文字列からkey=value をパースして map を返す
 	static std::unordered_map<std::string, std::string> ParseKeyValueConfig(const std::string& content);
+
+	// ファイルを読みこんで、 key=value をパースして map を返す
+	void staticParseKeyValueConfigFromFile(const std::string filePath, const char* val);
 };
 

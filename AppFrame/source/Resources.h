@@ -82,3 +82,9 @@ namespace wav
 {
   inline constexpr const char* ks010 = "res/BGM/ks010.wav";
 }
+
+
+namespace st
+{
+	inline constexpr const float PLAYER_SPEED;
+}
