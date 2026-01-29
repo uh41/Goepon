@@ -85,6 +85,19 @@ bool ModeGame::ShadowInitialize()
 		_charaShadow.emplace_back(shadow);
 	}
 
+
+	for(auto& e : _enemy)
+	{
+		if(!e)
+		{
+			continue;
+		}
+		// 敵は CharaBase を継承しているのでそのまま渡せる
+		auto shadow = std::make_shared<CharaShadow>();
+		shadow->SetTargetChara(e.get());
+		_charaShadow.emplace_back(shadow);
+	}
+
 	return true;
 }
 
@@ -107,6 +120,13 @@ bool ModeGame::PlayerTransform()
 		_bShowTanuki = false;
 		_player->SetPos(_playerTanuki->GetPos());
 		_player->SetDir(_playerTanuki->GetDir());
+
+		// Effekseer のエフェクトを再生（タヌキ->人間 変身完了時）
+		if(_henshineffectHandle != -1)
+		{
+			// プレイヤー位置にエフェクトを出す（必要ならオフセットを調整）
+			EffekseerManager::GetInstance()->PlayEffect3DPos(_henshineffectHandle, _player->GetPos());
+		}
 
 		// ここが重要：影の追従先を「人間」に更新
 		if (!_charaShadow.empty())
@@ -142,10 +162,12 @@ bool ModeGame::PlayerTransform()
 			_bShowTanuki = true;
 			_playerTanuki->SetPos(_player->GetPos());
 			_playerTanuki->SetDir(_player->GetDir());
-			_playerTanuki->PlayAnimation("hensin", false);
+			//_playerTanuki->PlayAnimation("hensin", false);
+
+			//_playerTanuki->PlayAnimation("gomepon_hensin", false);
 
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("taiki", true);
+			_playerTanuki->PlayAnimation("goepon_idle", true);
 		}
 
 		// シャドウの追従キャラも切り替え
@@ -159,6 +181,7 @@ bool ModeGame::PlayerTransform()
 			}
 		}
 	}
+
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
 	if (_bShowTanuki)

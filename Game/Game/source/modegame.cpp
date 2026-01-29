@@ -140,7 +140,7 @@ bool ModeGame::Initialize()
 
 	// Effekseer 初期化
 	EffekseerManager::GetInstance()->Initialize();
-	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1000.0f);
+	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -361,6 +361,11 @@ bool ModeGame::Process()
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
+	if(_d_use_collision)
+	{
+		CheckAllDetections();
+	}
+
 
 	// 敵AI（追跡/移動はここで実行される）
 	for(auto& enemy : _enemy)
@@ -448,6 +453,16 @@ bool ModeGame::Render()
 	float fov_rad = DEG2RAD(fov_deg);
 	SetupCamera_Perspective(fov_rad);
 
+	EffekseerManager::GetInstance()->Render();
+
+	//if(_henshineffectHandle != -1)
+	//{
+	//	if(!EffekseerManager::GetInstance()->IsPlayingEffect(_henshineffectHandle))
+	//	{
+	//		_henshineffectHandle = -1;
+	//	}
+	//}
+
 	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
 	{
@@ -504,6 +519,8 @@ bool ModeGame::Render()
 			shadow->Render();
 		}
 	}
+
+
 
 	// UIを描画
 	for(auto& ui_base : _uiBase)
@@ -626,7 +643,7 @@ bool ModeGame::Render()
 		DrawString(900, 500, msg, color);
 	}
 
-	EffekseerManager::GetInstance()->Render();
+
 
 	return true;
 }
