@@ -7,6 +7,12 @@ public:
 	// 空白判定
 	static bool IsSpace(unsigned char character);
 
+	static TextUtil* GetInstance()
+	{
+		static TextUtil instance;
+		return &instance;
+	}
+
 	// トリム
 	static void LTrim(std::string& text);
 	static void RTrim(std::string& text);
@@ -22,6 +28,6 @@ public:
 	static std::unordered_map<std::string, std::string> ParseKeyValueConfig(const std::string& content);
 
 	// ファイルを読みこんで、 key=value をパースして map を返す
-	void staticParseKeyValueConfigFromFile(const std::string filePath, const char* val);
+	float staticParseKeyValueConfigFromFile(const std::string filePath, const float value);
 };
 

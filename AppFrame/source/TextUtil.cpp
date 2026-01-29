@@ -117,7 +117,7 @@ std::unordered_map<std::string, std::string> TextUtil::ParseKeyValueConfig(const
 }
 
 
-void TextUtil::staticParseKeyValueConfigFromFile(const std::string filePath, const char* val)
+float TextUtil::staticParseKeyValueConfigFromFile(const std::string filePath, float value)
 {
 	// Ý’èƒtƒ@ƒCƒ‹‚©‚çã‘‚«“Ç‚Ýž‚Ý
 	CFile cfgFile("res/Player/player_config.txt");
@@ -132,7 +132,7 @@ void TextUtil::staticParseKeyValueConfigFromFile(const std::string filePath, con
 			// •ÏŠ·¬Œ÷‚µ‚½‚çã‘‚«
 			if(TextUtil::TryParseFloat(it->second, val))
 			{
-				val = val;
+				value = val;
 			}
 		}
 	}

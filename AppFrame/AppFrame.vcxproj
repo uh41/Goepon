@@ -194,10 +194,10 @@
     <ClInclude Include="source\Sound\sounditemstream.h" />
     <ClInclude Include="source\Sound\sounditemvoice.h" />
     <ClInclude Include="source\Sound\soundserver.h" />
+    <ClInclude Include="source\TextUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AnimationManager\animationmanager.cpp" />
-    <ClCompile Include="..\Game\Game\source\TextUtil.cpp" />
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
@@ -217,6 +217,7 @@
     <ClCompile Include="source\resource\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
+    <ClCompile Include="source\TextUtil.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

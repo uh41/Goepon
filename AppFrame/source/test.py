@@ -10,6 +10,7 @@ config_data = {
     "FADE_FRAME": 60,
     "FADE_WAIT": 60,
     "FADE_OUT_WAIT": 30,
+    "PLAYER_SPEED": "speed",
 }
 
 # ==========================================
