@@ -467,7 +467,7 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 	return false;
 }
 
-// デバッグ用：索敵範囲の描画
+// デバッグ用:索敵範囲の描画
 void EnemySensor::RenderDetectionSector() const
 {
 	// 索敵範囲が設定されていない場合は描画しない
@@ -491,45 +491,108 @@ void EnemySensor::RenderDetectionSector() const
 	// 敵の向いている方向を基準角度として計算
 	float baseAngle = atan2f(forward.x, forward.z);
 
-	// 扇形の輪郭線を描画
+	// 半径方向の分割数（床チェック用）
+	const int radialSegments = 10;
+	const float radialStep = _detectionSector.radius / radialSegments;
+
+	// 扇形の輪郭線を描画（床が存在する部分のみ）
 	for (int i = 0; i < segments; i++)
 	{
 		float angle1 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / (float)segments));
 		float angle2 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * (i + 1) / (float)segments));
 
-		// 極座標から直交座標への変換
-		vec::Vec3 pos1 = vec3::VAdd(center, vec3::VGet(sinf(angle1) * _detectionSector.radius, 0.0f, cosf(angle1) * _detectionSector.radius));
-		vec::Vec3 pos2 = vec3::VAdd(center, vec3::VGet(sinf(angle2) * _detectionSector.radius, 0.0f, cosf(angle2) * _detectionSector.radius));
+		// 半径方向に分割してチェック
+		vec::Vec3 prevPos1, prevPos2;
+		bool hasPrevPos = false;
 
-		// 3D空間での線描画
-		DxlibConverter::DrawLine3D(pos1, pos2, color);
+		for (int r = 1; r <= radialSegments; r++)
+		{
+			float currentRadius = radialStep * r;
 
-		// 少し上の位置にも線を描画して見えやすくする
-		vec::Vec3 pos1_up = vec3::VAdd(pos1, vec3::VGet(0.0f, 10.0f, 0.0f));
-		vec::Vec3 pos2_up = vec3::VAdd(pos2, vec3::VGet(0.0f, 10.0f, 0.0f));
-		DxlibConverter::DrawLine3D(pos1_up, pos2_up, color);
+			// 極座標から直交座標への変換
+			vec::Vec3 pos1 = vec3::VAdd(center, vec3::VGet(sinf(angle1) * currentRadius, 0.0f, cosf(angle1) * currentRadius));
+			vec::Vec3 pos2 = vec3::VAdd(center, vec3::VGet(sinf(angle2) * currentRadius, 0.0f, cosf(angle2) * currentRadius));
+
+			// 床の存在をチェック
+			bool hasFloor1 = CheckFloorExistence(pos1);
+			bool hasFloor2 = CheckFloorExistence(pos2);
+
+			// 両方の点に床がある場合のみ線を描画
+			if (hasFloor1 && hasFloor2)
+			{
+				// 円弧方向の線
+				DxlibConverter::DrawLine3D(pos1, pos2, color);
+
+				// 少し上の位置にも線を描画して見えやすくする
+				vec::Vec3 pos1_up = vec3::VAdd(pos1, vec3::VGet(0.0f, 10.0f, 0.0f));
+				vec::Vec3 pos2_up = vec3::VAdd(pos2, vec3::VGet(0.0f, 10.0f, 0.0f));
+				DxlibConverter::DrawLine3D(pos1_up, pos2_up, color);
+
+				// 前の半径位置から現在の半径位置への線（放射状の線）
+				if (hasPrevPos)
+				{
+					DxlibConverter::DrawLine3D(prevPos1, pos1, color);
+					DxlibConverter::DrawLine3D(prevPos2, pos2, color);
+
+					vec::Vec3 prevPos1_up = vec3::VAdd(prevPos1, vec3::VGet(0.0f, 10.0f, 0.0f));
+					vec::Vec3 prevPos2_up = vec3::VAdd(prevPos2, vec3::VGet(0.0f, 10.0f, 0.0f));
+					DxlibConverter::DrawLine3D(prevPos1_up, pos1_up, color);
+					DxlibConverter::DrawLine3D(prevPos2_up, pos2_up, color);
+				}
+
+				prevPos1 = pos1;
+				prevPos2 = pos2;
+				hasPrevPos = true;
+			}
+			else
+			{
+				// 床がない場合は前の位置情報をリセット
+				hasPrevPos = false;
+			}
+		}
 	}
 
-	// 中心から両端への線を描画
+	// 中心から両端への線を描画（床が存在する部分のみ）
 	float leftAngle = baseAngle - halfAngleRad;
 	float rightAngle = baseAngle + halfAngleRad;
 
-	// 極座標から直交座標への変換
-	vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * _detectionSector.radius, 0.0f, cosf(leftAngle) * _detectionSector.radius));
-	vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * _detectionSector.radius, 0.0f, cosf(rightAngle) * _detectionSector.radius));
+	// 各エッジラインを分割してチェック
+	for (int r = 1; r <= radialSegments; r++)
+	{
+		float currentRadius1 = radialStep * (r - 1);
+		float currentRadius2 = radialStep * r;
 
-	// 3D空間での線描画
-	DxlibConverter::DrawLine3D(center, leftEdge, color);
-	DxlibConverter::DrawLine3D(center, rightEdge, color);
+		vec::Vec3 leftEdge1 = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * currentRadius1, 0.0f, cosf(leftAngle) * currentRadius1));
+		vec::Vec3 leftEdge2 = vec3::VAdd(center, vec3::VGet(sinf(leftAngle) * currentRadius2, 0.0f, cosf(leftAngle) * currentRadius2));
+		vec::Vec3 rightEdge1 = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * currentRadius1, 0.0f, cosf(rightAngle) * currentRadius1));
+		vec::Vec3 rightEdge2 = vec3::VAdd(center, vec3::VGet(sinf(rightAngle) * currentRadius2, 0.0f, cosf(rightAngle) * currentRadius2));
 
-	// 少し上の位置にも線を描画
-	vec::Vec3 center_up = vec3::VAdd(center, vec3::VGet(0.0f, 10.0f, 0.0f));
-	vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
-	vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, vec3::VGet(0.0f, 10.0f, 0.0f));
+		// 床の存在をチェック
+		bool hasFloorLeft1 = CheckFloorExistence(leftEdge1);
+		bool hasFloorLeft2 = CheckFloorExistence(leftEdge2);
+		bool hasFloorRight1 = CheckFloorExistence(rightEdge1);
+		bool hasFloorRight2 = CheckFloorExistence(rightEdge2);
 
-	// 3D空間での線描画
-	DxlibConverter::DrawLine3D(center_up, leftEdge_up, color);
-	DxlibConverter::DrawLine3D(center_up, rightEdge_up, color);
+		// 左端の線（両方の点に床がある場合のみ）
+		if (hasFloorLeft1 && hasFloorLeft2)
+		{
+			DxlibConverter::DrawLine3D(leftEdge1, leftEdge2, color);
+
+			vec::Vec3 leftEdge1_up = vec3::VAdd(leftEdge1, vec3::VGet(0.0f, 10.0f, 0.0f));
+			vec::Vec3 leftEdge2_up = vec3::VAdd(leftEdge2, vec3::VGet(0.0f, 10.0f, 0.0f));
+			DxlibConverter::DrawLine3D(leftEdge1_up, leftEdge2_up, color);
+		}
+
+		// 右端の線（両方の点に床がある場合のみ）
+		if (hasFloorRight1 && hasFloorRight2)
+		{
+			DxlibConverter::DrawLine3D(rightEdge1, rightEdge2, color);
+
+			vec::Vec3 rightEdge1_up = vec3::VAdd(rightEdge1, vec3::VGet(0.0f, 10.0f, 0.0f));
+			vec::Vec3 rightEdge2_up = vec3::VAdd(rightEdge2, vec3::VGet(0.0f, 10.0f, 0.0f));
+			DxlibConverter::DrawLine3D(rightEdge1_up, rightEdge2_up, color);
+		}
+	}
 
 	// 敵の正面方向を示す緑の線を描画（敵の位置から索敵中心まで）
 	vec::Vec3 enemyPos = _vPos;
@@ -545,7 +608,6 @@ void EnemySensor::RenderDetectionSector() const
 	DxlibConverter::DrawLine3D(marker1, marker2, color);
 	DxlibConverter::DrawLine3D(marker3, marker4, color);
 }
-
 // 検出UI表示
 void EnemySensor::RenderDetectionUI() const
 {
