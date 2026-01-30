@@ -8,6 +8,11 @@
 /*********************************************************************/
 
 #include "appframe.h"
+#include "Player.h"
+#include "Playertanuki.h"
+#include "Enemy.h"
+#include "map.h"
+
 
 class ApplicationGlobal
 {
@@ -15,9 +20,10 @@ public:
 	ApplicationGlobal();
 	virtual ~ApplicationGlobal();
 
-	bool Init();
+	bool Init();    // 初期化
 
-	int _iCgCursor;
+	int _iCgCursor;       // カーソル画像ハンドル
+
 };
 
 // 他のソースでgGlobalを使えるように

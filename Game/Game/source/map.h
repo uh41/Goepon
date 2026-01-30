@@ -27,8 +27,8 @@ public:
 
 	const std::vector<mymath::BLOCKPOS>& GetBlockPosList() const { return _vBlockPos; }
 
-
-
+	//モデル読み込み
+	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
 protected:
 	Camera* _cam;
 	// マップ用

@@ -116,24 +116,24 @@ std::unordered_map<std::string, std::string> TextUtil::ParseKeyValueConfig(const
 	return result;
 }
 
-
-float TextUtil::staticParseKeyValueConfigFromFile(const std::string filePath, float value)
-{
-	// 設定ファイルから上書き読み込み
-	CFile cfgFile("res/Player/player_config.txt");
-	if(cfgFile.Success())
-	{
-		auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
-		// 移動速度
-		auto it = config.find(filePath);
-		if(it != config.end())
-		{
-			float val;
-			// 変換成功したら上書き
-			if(TextUtil::TryParseFloat(it->second, val))
-			{
-				value = val;
-			}
-		}
-	}
-}
+//
+//float TextUtil::staticParseKeyValueConfigFromFile(const std::string filePath, float value)
+//{
+//	// 設定ファイルから上書き読み込み
+//	CFile cfgFile("res/Player/player_config.txt");
+//	if(cfgFile.Success())
+//	{
+//		auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
+//		// 移動速度
+//		auto it = config.find(filePath);
+//		if(it != config.end())
+//		{
+//			float val;
+//			// 変換成功したら上書き
+//			if(TextUtil::TryParseFloat(it->second, val))
+//			{
+//				value = val;
+//			}
+//		}
+//	}
+//}

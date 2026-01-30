@@ -12,7 +12,7 @@ bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	_handle = MV1LoadModel("res/Tanuki/SK_goepon_multimotion.mv1");
+	LoadModel("res/Tanuki/SK_goepon_multimotion.mv1");
 	_iAttachIndex = -1;
 	// �X�e�[�^�X��u�����v�ɐݒ�
 	_status = STATUS::NONE;

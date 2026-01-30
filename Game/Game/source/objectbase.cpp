@@ -29,6 +29,7 @@ bool ObjectBase::Initialize()
 // 終了
 bool ObjectBase::Terminate()
 {
+	ResourceServer::MV1DeleteModel(_handle);
 	return true;
 }
 
@@ -103,4 +104,29 @@ void ObjectBase::ModelMatrixSetUp()
 	MV1SetMatrix(_handle, matrix);
 
 	MV1RefreshCollInfo(_handle, _attachIndex);
+}
+
+// モデルの読み込み
+bool ObjectBase::LoadModel(std::string fileName, std::string attachFrameName)
+{
+	// モデルの読み込み
+	_handle = ResourceServer::MV1LoadModel(fileName.c_str());
+	if(_handle < 0)
+	{
+		return false;
+	}
+
+	// アタッチフレーム名が指定されていれば、アタッチフレームのインデックスを取得
+	if(!attachFrameName.empty())
+	{
+		// アタッチフレームのインデックスを取得
+		_attachIndex = MV1SearchFrame(_handle, attachFrameName.c_str());
+		// アタッチフレームが見つからなかった場合はエラー
+		if(_attachIndex >= 0)
+		{
+			// アタッチフレームを非表示にする
+			MV1SetFrameVisible(_handle, _attachIndex, FALSE);
+		}
+	}
+	return true;
 }
