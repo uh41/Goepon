@@ -77,6 +77,11 @@ protected:
 	void StartReturningToInitialPosition();		// 初期位置に戻る処理を開始
 	bool IsAtInitialPosition() const;			// 初期位置にいるかどうかをチェック
 
+	// 検知終了後の待機処理用
+	bool _waitingBeforeReturn;     // 帰還前の待機中フラグ
+	float _returnWaitTimer;        // 帰還前の待機タイマー
+	static constexpr float RETURN_WAIT_TIME = 3.0f; // 待機時間（3秒）
+
 	// YouDiedメッセージ表示関連
 	bool _showYouDiedMessage;
 	float _youDiedMessageTimer;

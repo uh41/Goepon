@@ -43,6 +43,7 @@ namespace mv1
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
   inline constexpr const char* SM_stage_arufa2 = "res/map/SM_stage_arufa2.mv1";
+  inline constexpr const char* SM_stage_arufab = "res/map/SM_stage_arufab.mv1";
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";

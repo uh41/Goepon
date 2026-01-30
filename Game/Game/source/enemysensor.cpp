@@ -102,7 +102,7 @@ bool EnemySensor::Render()
 	return true;
 }
 
-// プレイヤーの検出チェック
+// CheckPlayerDetection メソッドを修正
 bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 {
 	// センサーが無効またはプレイヤーが存在しない場合は検出しない
@@ -112,7 +112,23 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 	}
 
 	vec::Vec3 playerPos = player->GetPos();	// プレイヤーの位置取得
-	bool detected = IsPlayerInDetectionRange(playerPos);	// 索敵範囲内かチェック
+
+	// プレイヤーのカプセル情報を計算
+	// PlayerBaseからコリジョン情報を取得
+	float playerColSubY = player->GetColSubY();      // 腰の高さ
+	float playerColRadius = player->GetCollisionR(); // コリジョン半径
+
+	// カプセルの上端と下端を計算
+	vec::Vec3 playerCapsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, playerColSubY, 0.0f));
+	vec::Vec3 playerCapsuleBottom = vec3::VSub(playerPos, vec3::VGet(0.0f, playerColSubY * 0.5f, 0.0f));
+
+	// カプセル判定版の索敵範囲チェック
+	bool detected = IsPlayerInDetectionRangeWithCapsule(
+		playerPos,
+		playerCapsuleTop,
+		playerCapsuleBottom,
+		playerColRadius
+	);
 
 	// 検出状態の更新
 	if (detected)
@@ -131,13 +147,58 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 		_detectionInfo.isChasing = true;				// 追跡中フラグセット
 		_detectionInfo.chaseTimer = CHASE_TIME;			// 追跡タイマーリセット
 	}
-	else if (_detectionInfo.isChasing)
+	else
 	{
-		// プレイヤーが範囲外だが、まだ追跡中の場合
-		// 最後に確認された位置は更新しない（記憶している位置を維持）
+			// プレイヤーが範囲外だが、まだ追跡中の場合
+			// 最後に確認された位置は更新しない（記憶している位置を維持）
 	}
 
 	return detected;
+}
+// カプセル判定版の索敵範囲チェック
+bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
+	const vec::Vec3& playerPos,
+	const vec::Vec3& playerCapsuleTop,
+	const vec::Vec3& playerCapsuleBottom,
+	float playerCapsuleRadius) const
+{
+	if (!_bHasDetectionSector || !_bSensorEnabled)
+	{
+		return false;
+	}
+
+	// 索敵範囲の中心位置を取得
+	vec::Vec3 detectionCenter = GetDetectionCenter();
+
+	// 扇形の半角をラジアンに変換
+	float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
+
+	// 正規化された前方ベクトル
+	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
+
+	// CollisionManagerのCheckSectorToCapsuleを使用
+	bool detected = CollisionManager::GetInstance()->CheckSectorToCapsule(
+		detectionCenter,
+		forwardNorm,
+		_detectionSector.radius,
+		halfAngleRad,
+		playerCapsuleTop,
+		playerCapsuleBottom,
+		playerCapsuleRadius
+	);
+
+	if (!detected)
+	{
+		return false;
+	}
+
+	// 視線チェック - 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
+	if (!CheckLineOfSight(detectionCenter, playerPos))
+	{
+		return false; // 視線が遮断されている
+	}
+
+	return true;
 }
 
 // 検出状態のリセット
@@ -518,5 +579,8 @@ void EnemySensor::RenderDetectionUI() const
 		// タイマー情報
 		DrawFormatString(x, y + 80, GetColor(255, 255, 0),
 			"Timer: %.1f", _detectionInfo.timer);
+
+		DrawFormatString(x, y + 100, GetColor(255, 255, 0),
+			"ChaseTimer: %.1f", _detectionInfo.chaseTimer);
 	}
 }

@@ -63,6 +63,9 @@ bool Enemy::Initialize()
 	// 敵の向き変更タイマーの初期化
 	DirChangeTimer = DirChangeInterval;
 
+	_waitingBeforeReturn = false;
+	_returnWaitTimer = 0.0f;
+
 	return true;
 }
 
@@ -114,7 +117,22 @@ void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 // プレイヤーが検出範囲外になった時の処理
 void Enemy::OnPlayerLost()
 {
-	_detectedPlayer = false;
+	// 既に検出していない場合は何もしない
+	if (_detectedPlayer)
+	{
+		_detectedPlayer = false;
+		_isMoving = false;
+
+		// 検知終了後、すぐに戻らず待機状態にする
+		_waitingBeforeReturn = true;
+		_returnWaitTimer = RETURN_WAIT_TIME;
+
+		// センサーの追跡状態をリセット
+		if (_enemySensor)
+		{
+			_enemySensor->ResetDetection();
+		}
+	}
 }
 
 // プレイヤーの方向を向く処理（即座に向く）
@@ -343,41 +361,60 @@ bool Enemy::Process()
 		_status = STATUS::WAIT;
 	}
 
-	// EnemySensorがあれば、そのセンサーの位置と向きを自分の位置に同期
-	if (_enemySensor)
+	// 検知終了後の待機処理
+	if (_waitingBeforeReturn)
 	{
-		_enemySensor->SetPos(_vPos);
-		_enemySensor->SetDir(_vDir);
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_returnWaitTimer -= dt;
 
-		// 追跡処理
-		UpdateChasing();
-
-		// プレイヤーを検出している、または追跡中の場合のみWALKに設定
-		if (_detectedPlayer || _enemySensor->IsChasing())
+		if (_returnWaitTimer <= 0.0f)
 		{
-			_status = STATUS::WALK;
-
-			// プレイヤーを検出中は初期位置に戻るのを停止
-			_isReturningToInitialPos = false;
-
-			// テレポート関連をリセット
-			//ResetTeleport();
+			// 待機時間が終了したら初期位置への帰還を開始
+			_waitingBeforeReturn = false;
+			StartReturningToInitialPosition();
 		}
-		else if (_isReturningToInitialPos)
-		{
-			// 初期位置に戻り中
-			_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
-			UpdateReturningToInitialPosition();
-		}
-		else
-		{
-			// 追跡も初期位置への復帰もしていない場合
-			_status = STATUS::WAIT;
 
-			// 追跡が終了して初期位置にいない場合、初期位置に戻り始める
-			if (!_enemySensor->IsChasing() && !IsAtInitialPosition())
+		// 待機中はWAITステータスに設定
+		_status = STATUS::WAIT;
+
+		// アニメーション処理は続行するが、移動処理はスキップ
+		// （このため、return true はせずに下のアニメーション処理に進む）
+	}
+	else
+	{
+		// EnemySensorがあれば、そのセンサーの位置と向きを自分の位置に同期
+		if (_enemySensor)
+		{
+			_enemySensor->SetPos(_vPos);
+			_enemySensor->SetDir(_vDir);
+
+			// 追跡処理
+			UpdateChasing();
+
+			// プレイヤーを検出している、または追跡中の場合のみWALKに設定
+			if (_detectedPlayer || _enemySensor->IsChasing())
 			{
-				StartReturningToInitialPosition();
+				_status = STATUS::WALK;
+
+				// プレイヤーを検出中は初期位置に戻るのを停止
+				_isReturningToInitialPos = false;
+			}
+			else if (_isReturningToInitialPos)
+			{
+				// 初期位置に戻り中
+				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
+				UpdateReturningToInitialPosition();
+			}
+			else
+			{
+				// 追跡も初期位置への復帰もしていない場合
+				_status = STATUS::WAIT;
+
+				// 追跡が終了して初期位置にいない場合、初期位置に戻り始める
+				if (!_enemySensor->IsChasing() && !IsAtInitialPosition())
+				{
+					StartReturningToInitialPosition();
+				}
 			}
 		}
 	}
