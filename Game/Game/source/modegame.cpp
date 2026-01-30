@@ -673,6 +673,12 @@ bool ModeGame::Render()
 		DrawString(900, 500, msg, GetColor(255, 255, 255));
 	}
 
+	if (anyDetected)
+	{
+		const char* alertMsg = "敵に発見された！変身できない！";
+		// 座標は適宜調整（ここでは画面中央上部に仮配置）
+		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
+	}
 	return true;
 }
 
@@ -686,7 +692,7 @@ bool ModeGame::CheckAllDetections()
 		return false;
 	}
 
-	bool anyDetected = false;
+	anyDetected = false;
 
 	for(auto& enemy : _enemy)
 	{
@@ -721,21 +727,20 @@ bool ModeGame::CheckAllDetections()
 					enemy->OnPlayerLost();
 				}
 			}
-			return true;
-		}
+			// 人間状態では変身キャンセル不要
+			_bTransCancel = false;
 
-		PlayerBase* currentPlayer = _playerTanuki.get();
-		if (!currentPlayer)
-		{
-			return false;
+			return true;
 		}
 
 		const bool detected = sensor->CheckPlayerDetection(player);
 
+		// プレイヤーとの距離を計算してデバッグ出力
 		if(detected)
 		{
 			anyDetected = true;
 			enemy->OnPlayerDetected(player->GetPos());
+			_bTransCancel = true;
 		}
 		else
 		{
@@ -746,6 +751,9 @@ bool ModeGame::CheckAllDetections()
 			}
 		}
 	}
+
+	// 変身キャンセルフラグを検知結果に基づいて更新
+	_bTransCancel = anyDetected;
 
 	return anyDetected;
 }

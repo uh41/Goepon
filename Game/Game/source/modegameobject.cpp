@@ -146,41 +146,45 @@ bool ModeGame::PlayerTransform()
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
 	// タヌキプレイヤー表示切替
-	if (trg & PAD_INPUT_4)
+	if (!_bTransCancel)
 	{
-		if (_bShowTanuki)
+		if (trg & PAD_INPUT_4)
 		{
-			_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
-			_isTransformingToHuman = true;
-
-			// 変身中はタヌキのまま処理
-			_playerTanuki->Process();
-			return true;
-		}
-		else
-		{
-			_bShowTanuki = true;
-			_playerTanuki->SetPos(_player->GetPos());
-			_playerTanuki->SetDir(_player->GetDir());
-			//_playerTanuki->PlayAnimation("hensin", false);
-
-			//_playerTanuki->PlayAnimation("gomepon_hensin", false);
-
-			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("goepon_idle", true);
-		}
-
-		// シャドウの追従キャラも切り替え
-		if (!_charaShadow.empty())
-		{
-			auto& playerShadow = _charaShadow.front();
-			if (playerShadow)
+			if (_bShowTanuki)
 			{
-				playerShadow->SetTargetChara(_bShowTanuki ? static_cast<CharaBase*>(_playerTanuki.get())
-					: static_cast<CharaBase*>(_player.get()));
+				_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
+				_isTransformingToHuman = true;
+
+				// 変身中はタヌキのまま処理
+				_playerTanuki->Process();
+				return true;
+			}
+			else
+			{
+				_bShowTanuki = true;
+				_playerTanuki->SetPos(_player->GetPos());
+				_playerTanuki->SetDir(_player->GetDir());
+				//_playerTanuki->PlayAnimation("hensin", false);
+
+				//_playerTanuki->PlayAnimation("gomepon_hensin", false);
+
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				_playerTanuki->PlayAnimation("goepon_idle", true);
+			}
+
+			// シャドウの追従キャラも切り替え
+			if (!_charaShadow.empty())
+			{
+				auto& playerShadow = _charaShadow.front();
+				if (playerShadow)
+				{
+					playerShadow->SetTargetChara(_bShowTanuki ? static_cast<CharaBase*>(_playerTanuki.get())
+						: static_cast<CharaBase*>(_player.get()));
+				}
 			}
 		}
 	}
+	
 
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）

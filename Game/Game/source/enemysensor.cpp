@@ -608,6 +608,7 @@ void EnemySensor::RenderDetectionSector() const
 	DxlibConverter::DrawLine3D(marker1, marker2, color);
 	DxlibConverter::DrawLine3D(marker3, marker4, color);
 }
+
 // 検出UI表示
 void EnemySensor::RenderDetectionUI() const
 {
