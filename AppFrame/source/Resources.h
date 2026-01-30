@@ -16,6 +16,7 @@ namespace img
   inline constexpr const char* Op9 = "res/Op9.png";
   inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
+  inline constexpr const char* teamlogo = "res/teamlogo.png";
   inline constexpr const char* title = "res/title.png";
 }
 
@@ -40,7 +41,8 @@ namespace mv1
   inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
-  inline constexpr const char* SM_stage_arufab = "res/map/SM_stage_arufab.mv1";
+  inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
+  inline constexpr const char* SM_stage_arufa2 = "res/map/SM_stage_arufa2.mv1";
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
@@ -61,6 +63,7 @@ namespace mv1
   inline constexpr const char* goepon_busi_03 = "res/PoorEnemyMelee/goepon_busi_03.mv1";
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
+  inline constexpr const char* TanuHuman = "res/Tanuhuman/TanuHuman.mv1";
   inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
   inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
   inline constexpr const char* SK_goepon_multimotion = "res/Tanuki/SK_goepon_multimotion.mv1";

@@ -13,6 +13,8 @@
 #include "applicationmain.h"
 #include "modeeffekseer.h"
 
+
+
 // 初期化
 bool ModeGame::Initialize()
 {
@@ -20,8 +22,8 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
-	_treasure.push_back(std::make_shared<Treasure>());
-	_object.emplace_back(_treasure.back());
+	//_treasure.push_back(std::make_shared<Treasure>());
+	//_object.emplace_back(_treasure.back());
 	_camera->Initialize();
 
 	_bShowTanuki = true;
@@ -47,21 +49,21 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Initialize();
-	}
+	}*/
 	// UI
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Initialize();
 	}
 
-	// シャドウ
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
-	}
+	//// シャドウ
+	//for(auto& charaShadow : _charaShadow)
+	//{
+	//	charaShadow->Initialize();
+	//}
 
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if(_camera != nullptr)
@@ -96,7 +98,11 @@ bool ModeGame::Initialize()
 	//InitHpBlock();// ブロック初期化
 
 	DebugInitialize();// デバック初期化
-	ShadowInitialize();// シャドウ初期化
+	ShadowInitialize();// シャドウ生成
+	for(auto& charaShadow : _charaShadow)
+	{
+		charaShadow->Initialize();
+	}
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
@@ -115,7 +121,26 @@ bool ModeGame::Initialize()
 	//	enemy->SetEnemySensor(_enemySensor);
 	//}
 
+	// auto em = EffekseerManager::GetInstance();
+	//if(em)
+	//{
+	//	// 初期化に成功したらフラグを立て、エフェクトを読み込む
+	//	if(em->Initialize())
+	//	{
+	//		_effekseerLaunched = true;
+	//		// 変身エフェクト（ModeEffekseer と同じ efk ファイルを利用）
+	//		_henshineffectHandle = em->LoadEffect("res/Effect/hennsin.efkefc", 100.0f);
+	//		// 読み込み失敗時は -1 のまま
+	//		if(_henshineffectHandle == -1)
+	//		{
+	//			// ロード失敗時のログ（必要なら追加）
+	//		}
+	//	}
+	//}
 
+	// Effekseer 初期化
+	EffekseerManager::GetInstance()->Initialize();
+	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -157,10 +182,10 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Terminate();
-	}
+	}*/
 	
 	for(auto& charaShadow : _charaShadow)
 	{
@@ -194,6 +219,29 @@ bool ModeGame::Terminate()
 		_bgmChenge = nullptr;
 		_isChengeBgm = false;
 	}
+
+	if(_henshineffectHandle != -1)
+	{
+		auto em = EffekseerManager::GetInstance();
+		if(em)
+		{
+			em->DeleteEffect(_henshineffectHandle);
+			_henshineffectHandle = -1;
+		}
+	}
+
+	// Effekseer の終了（Initialize で起動していれば）
+	if(_effekseerLaunched)
+	{
+		auto em = EffekseerManager::GetInstance();
+		if(em)
+		{
+			em->Terminate();
+			_effekseerLaunched = false;
+		}
+	}
+
+
 	return true;
 }
 
@@ -228,7 +276,7 @@ bool ModeGame::LoadStageData()
 			enemy->SetJsonDataUE(object);
 
 			// JSONのrotateは「向きベクトル」ではないので、センサー用に方向ベクトルを入れる
-			enemy->SetDir(vec3::VGet(0.0f, 0.0f, -1.0f));
+			//enemy->SetDir());
 
 			// ここで「マーカー位置」を初期位置として確定
 			enemy->CaptureInitialTransform();
@@ -296,11 +344,29 @@ bool ModeGame::Process()
 
 	AnimationManager::GetInstance()->Update(1.0f);
 
-	PlayerTransform();
-	ObjectProcess();
+	// Effekseer 更新
+	EffekseerManager::GetInstance()->Update();
 
-	// 先に検知（このフレームの isChasing を確定させる）
-	CheckAllDetections();
+	PlayerTransform(); // プレイヤー変身処理
+	ObjectProcess();   // オブジェクト処理
+	
+	// キャラクターの影処理
+	for (auto& shadow : _charaShadow)
+	{
+		if (shadow)
+		{
+			shadow->Process();
+		}
+	}
+
+	// 敵との当たり判定処理（生存している敵のみ）
+	// 	...
+	// 当たり判定の処理をここに書く
+	if(_d_use_collision)
+	{
+		CheckAllDetections();
+	}
+
 
 	// 敵AI（追跡/移動はここで実行される）
 	for(auto& enemy : _enemy)
@@ -310,38 +376,37 @@ bool ModeGame::Process()
 			enemy->Process();
 		}
 	}
-
-	for(auto enemy : _enemy)
-	{
-		IsPlayerAttack(_player.get(), { enemy.get() });
-	}
-
-	// プレイヤー押し出し
+	
+	
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else
 	{
 		EscapeCollision(_player.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
 	}
 	// 敵押し出し（移動後にやる）
 	for(auto enemy : _enemy)
 	{
-		EscapeCollision(enemy.get(), _map.get());
+		//EscapeCollision(enemy.get(), _map.get());
 
-		// 床に乗せる（最終座標確定後）
-		float floorY = 0.0f;
-		auto sensor = enemy->GetEnemySensor();
-		if(sensor && sensor->GetFloorYCollision(enemy->GetPos(), enemy->GetColSubY(), floorY))
-		{
-			vec::Vec3 pos = enemy->GetPos();
-			pos.y = floorY;
-			enemy->SetPos(pos);
-			enemy->SetLand(true);
-		}
+		//// 床に乗せる（最終座標確定後）
+		//float floorY = 0.0f;
+		//auto sensor = enemy->GetEnemySensor();
+		//if(sensor && sensor->GetFloorYCollision(enemy->GetPos(), enemy->GetColSubY(), floorY))
+		//{
+		//	vec::Vec3 pos = enemy->GetPos();
+		//	pos.y = floorY;
+		//	enemy->SetPos(pos);
+		//	enemy->SetLand(true);
+		//}
 	}
 
 	// プレイヤー vs 敵 の当たり判定（押し出し）
@@ -373,6 +438,27 @@ bool ModeGame::Process()
 		}
 	}
 
+	at::vec<Enemy*> enemy;
+	enemy.reserve(_enemy.size());
+	for(auto& e : _enemy)
+	{
+		enemy.push_back(e.get());
+	}
+
+	// デバック用タイマー（転ばせる）
+	if(_showKnockdownMessage)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_knockdownMessageSec -= dt;
+		if(_knockdownMessageSec <= 0.0f)
+		{
+			_showKnockdownMessage = false;
+			_knockdownMessageSec = 0.0f;
+		}
+	}
+
+	IsPlayerAttack(_player.get(), enemy);
+
 	ChangeBGM();
 	return true;
 }
@@ -388,6 +474,16 @@ bool ModeGame::Render()
 	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);
 	SetupCamera_Perspective(fov_rad);
+
+	EffekseerManager::GetInstance()->Render();
+
+	//if(_henshineffectHandle != -1)
+	//{
+	//	if(!EffekseerManager::GetInstance()->IsPlayingEffect(_henshineffectHandle))
+	//	{
+	//		_henshineffectHandle = -1;
+	//	}
+	//}
 
 	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
@@ -413,11 +509,11 @@ bool ModeGame::Render()
 		object->Render();
 	}
 
-	// 宝箱を描画
-	for(auto& treasure : _treasure)
-	{
-		treasure->Render();
-	}
+	//// 宝箱を描画
+	//for(auto& treasure : _treasure)
+	//{
+	//	treasure->Render();
+	//}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
 	for(auto & player_base : _playerBase)
@@ -437,6 +533,15 @@ bool ModeGame::Render()
 			}
 		}
 	}
+	// キャラクターの影描画
+	for (auto& shadow : _charaShadow)
+	{
+		if (shadow)
+		{
+			shadow->Render();
+		}
+	}
+
 
 
 	// UIを描画
@@ -447,26 +552,26 @@ bool ModeGame::Render()
 
 	DebugRender();// デバック描画処理
 
-	// 敵のHP情報を画面に表示（生存している敵のみ）
-	int y_offset = 100; // 画面上部からのオフセット
-	int alive_count = 0; // 生存している敵のカウント用
-	for(int i = 0; i < _enemy.size(); i++)
-	{
-		auto& enemy = _enemy[i];
-		if(enemy->IsAlive())
-		{
-			DrawFormatString(10, y_offset + (alive_count * 20), GetColor(255, 0, 0), 
-				"Enemy[%d] HP: %.1f / MaxHP: %.1f", 
-				i, 
-				enemy->GetHP(), 
-				enemy->GetHP()); // 最大HPが分からないので現在HPを表示
-			alive_count++;
-		}
-	}
+	//// 敵のHP情報を画面に表示（生存している敵のみ）
+	//int y_offset = 100; // 画面上部からのオフセット
+	//int alive_count = 0; // 生存している敵のカウント用
+	//for(int i = 0; i < _enemy.size(); i++)
+	//{
+	//	auto& enemy = _enemy[i];
+	//	if(enemy->IsAlive())
+	//	{
+	//		DrawFormatString(10, y_offset + (alive_count * 20), GetColor(255, 0, 0), 
+	//			"Enemy[%d] HP: %.1f / MaxHP: %.1f", 
+	//			i, 
+	//			enemy->GetHP(), 
+	//			enemy->GetHP()); // 最大HPが分からないので現在HPを表示
+	//		alive_count++;
+	//	}
+	//}
 
 	// プレイヤーのHP情報も表示
-	DrawFormatString(10, 50, GetColor(0, 255, 0), 
-		"Player HP: %.1f", _player->GetHP());
+	//DrawFormatString(10, 50, GetColor(0, 255, 0), 
+	//	"Player HP: %.1f", _player->GetHP());
 
 	// 索敵システムの描画
 	if (_enemySensor)
@@ -500,6 +605,32 @@ bool ModeGame::Render()
 		}
 	}
 
+	
+	// HP情報を画面に表示（生存している敵のみ）
+	//int ey_offset = 100; // 画面上部からのオフセット
+	//int live_count = 0; // 生存している敵のカウント用
+	//for(int i = 0; i < _enemy.size(); i++)
+	//{
+	//	auto& enemy = _enemy[i];
+	//	if(enemy->IsAlive())
+	//	{
+	//		const vec::Vec3 p = enemy->GetPos();
+	//		const vec::Vec3 m = enemy->GetInitialPosition(); // マーカー座標（初期位置）
+	//
+	//		DrawFormatString(
+	//			10,
+	//			ey_offset + (live_count * 20),
+	//			GetColor(255, 0, 0),
+	//			"Enemy[%d] Pos:(%.1f,%.1f,%.1f)  Marker:(%.1f,%.1f,%.1f)",
+	//			i,
+	//			p.x, p.y, p.z,
+	//			m.x, m.y, m.z
+	//		);
+	//
+	//		live_count++;
+	//	}
+	//}
+
 
 	//if(_player)
 	//{
@@ -523,6 +654,24 @@ bool ModeGame::Render()
 	//	float hp = _player->GetHP();
 
 	//}
+
+	// 宝箱を開けているメッセージ表示
+	if (_isOpeningTreasure)
+	{
+		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
+		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
+		const char* msg = "お宝を開けています...(Aを押し続けてください)";
+		int color = GetColor(255, 0, 0); // 黄色
+		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
+		DrawString(900, 500, msg, color);
+	}
+
+	// 敵を転ばせたメッセージ表示
+	if(_showKnockdownMessage)
+	{
+		const char* msg = "敵を転ばせた";
+		DrawString(900, 500, msg, GetColor(255, 255, 255));
+	}
 
 	return true;
 }
@@ -580,7 +729,6 @@ bool ModeGame::CheckAllDetections()
 		{
 			return false;
 		}
-
 
 		const bool detected = sensor->CheckPlayerDetection(player);
 

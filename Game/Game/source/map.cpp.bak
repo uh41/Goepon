@@ -123,7 +123,6 @@ bool Map::Initialize()
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
-	
 	// コリジョン情報の生成
 	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
 	// コリジョンのフレームを描画しない設定
@@ -222,7 +221,11 @@ bool Map::Process()
 	if(_iHandleSkySphere >= 0)
 	{
 		// 例：200倍（必要な値に調整）
+<<<<<<< HEAD
+		constexpr float kSkySphereScale = 200.0f;
+=======
 		float kSkySphereScale = 200.0f;
+>>>>>>> SuzukiYuuki
 		MV1SetScale(_iHandleSkySphere, VGet(kSkySphereScale, kSkySphereScale, kSkySphereScale));
 
 		// 原点固定だと移動で端が見えるので、カメラに追従させる（推奨）

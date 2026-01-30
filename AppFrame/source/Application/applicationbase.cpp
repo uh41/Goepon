@@ -40,6 +40,8 @@ bool ApplicationBase::Initialize(HINSTANCE hInstance)
 	// Effekseerを使用するには必ず設定する。
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
 
+	SetZBufferBitDepth(32);// Zバッファのビット深度を32ビットに設定
+
 	// アプリ側でDXLib_Init()前にやりたい処理を呼ぶ
 	if(!BeforeDXLib_Init())
 	{

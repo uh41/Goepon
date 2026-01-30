@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "appframe.h"
 #include "objectbase.h"
 
@@ -7,29 +7,57 @@ class Treasure : public ObjectBase
 	typedef ObjectBase base;
 public:
 
-	// •ó” ‚Ìó‘Ô
+
 	enum class OBJSTATUS
 	{
-		NONE, 
+		NONE,
 		NOMAR,
 		OPEN,
 	};
-	OBJSTATUS _objStatus;
+	OBJSTATUS _objStatus;// ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®çŠ¶æ…‹ç®¡ç†ç”¨
 
-	// Šî‘bˆ—
-	bool Initialize() override; // ‰Šú‰»
-	bool Terminate()  override; // I—¹
-	bool Process()    override; // ŒvZˆ—
-	bool Render()     override; // •`‰æˆ—
 
-	// •ó” ‚ªŠJ‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©æ“¾Eİ’è
+	bool Initialize() override; // åˆæœŸåŒ–
+	bool Terminate()  override; // çµ‚äº†
+	bool Process()    override; // å‡¦ç†
+	bool Render()     override; // æç”»
+
+	auto GetPos() const { return _vPos; }
+
+	auto GetHitCollisionFrame() const { return _hitCollisionFrame; }
+
+	auto GetOpenCollisionFrame() const { return _openCollisionFrame; }
+
+	auto GetModelHandle() const { return _handle; }
+
+
 	bool IsOpen() const { return _isOpen; }
-	void SetOpen(bool isOpen) { _isOpen = isOpen; }
+	// å®Ÿè£…ã¯ã“ã£ã¡
+	//void SetOpen(bool isOpen) { _isOpen = isOpen; }
+	// ãƒ‡ãƒãƒƒã‚¯ã¨ã—ã¦ã“ã¡ã‚‰ã‚’ä»Šä½¿ã£ã¦ã„ã‚‹
+	void SetOpen(bool isOpen)
+	{
+		_isOpen = isOpen;
 
+		// ã“ã“ã‚’è¿½åŠ ï¼šé–‹ã„ãŸã‚‰è¦‹ãŸç›®ã‚’æ¶ˆã™
+		if (_isOpen)
+		{
+			_isVisible = false;
+		}
+	}
+
+	// ãƒ‡ãƒãƒƒã‚¯ç”¨(ãƒ¢ãƒ‡ãƒ«ã‚’è¡¨ç¤º/éè¡¨ç¤º)
+	bool IsVisible() const { return _isVisible; }
+
+
+	MATRIX MakeModelMatrix() const;
 
 protected:
-	//int _handle;      // ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
-	int _attachIndex; // ƒAƒ^ƒbƒ`ƒAƒjƒ[ƒVƒ‡ƒ“ƒCƒ“ƒfƒbƒNƒX
-	bool _isOpen;	  // •ó” ‚ªŠJ‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	int _handle;                
+	int _hitCollisionFrame;     
+	int _openCollisionFrame;    
+	int _attachIndex;           
+	bool _isOpen;	             
+	bool _isVisible;             // è¡¨ç¤ºãƒ•ãƒ©ã‚°
 };
 

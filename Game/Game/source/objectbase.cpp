@@ -54,26 +54,38 @@ void ObjectBase::SetJsonDataUE(nlohmann::json j)
 		-1.0f * j.at("translate").at("y").get<float>()
 	};
 
-	vec::Vec3 dir =
-	{
-		j.at("rotate").at("x").get<float>(),
-		j.at("rotate").at("z").get<float>(),
-		j.at("rotate").at("y").get<float>()
-	};
+	// UE rotate（度）を取得（既存の並びを踏襲）
+	float rotXDeg = j.at("rotate").at("x").get<float>();
+	float rotYDeg = j.at("rotate").at("z").get<float>(); // 水平回転(Yaw)として扱う
+	float rotZDeg = j.at("rotate").at("y").get<float>();
+
+	// スケール
 	SetScale(vec::Vec3
-	{
-		j.at("scale").at("x").get<float>(),
-		j.at("scale").at("z").get<float>(),
-		j.at("scale").at("y").get<float>()
-	});
+		{
+			j.at("scale").at("x").get<float>(),
+			j.at("scale").at("z").get<float>(),
+			j.at("scale").at("y").get<float>()
+		});
+
+	// 見た目の回転（モデル行列用）も入れるなら Euler に入れる（度→ラジアン）
+	// ※ ObjectBase::ModelMatrixSetUp() は _vEulerAngle を使う
+	SetEulerAngleDeg(vec::Vec3{ rotXDeg, rotYDeg, rotZDeg });
 	ModelMatrixSetUp();
 
+	// Dir（向きベクトル）は yaw から生成（-Z が forward 基準）
+	float yaw = DEG2RAD(rotYDeg);
+	vec::Vec3 dir = vec::Vec3
+	{
+		sinf(yaw),
+		0.0f,
+		-cosf(yaw)
+	};
 
-	// ObjectBase の位置も更新
+	// ObjectBase の位置・向き更新
 	SetPos(newPos);
 	SetDir(dir);
 
-	// CharaBase を継承している派生クラスなら、そちらの位置も更新する
+	// CharaBase を継承している派生クラスなら、そちらの位置・向きも更新
 	if(auto ch = dynamic_cast<CharaBase*>(this))
 	{
 		ch->SetPos(newPos);

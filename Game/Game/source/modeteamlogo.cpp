@@ -19,7 +19,7 @@ ModeTeamLogo::~ModeTeamLogo()
 
 bool ModeTeamLogo::Initialize()
 {
-	_handle = LoadGraph(img::Logo);
+	_handle = LoadGraph(img::teamlogo);
 	_isWait = false;
 	return true;
 }

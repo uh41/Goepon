@@ -1,24 +1,75 @@
-#include "Treasure.h"
+ï»¿#include "Treasure.h"
 
-// ‰Šú‰»
+
+namespace
+{
+
+	inline void ApplyMatrixAndRefreshCollInfo(int handle, int hitFrame, int openFrame, const MATRIX& m)
+	{
+
+		if(handle < 0)
+		{
+			return;
+		}
+
+
+		MV1SetMatrix(handle, m);
+
+
+		if(hitFrame >= 0)
+		{
+			MV1RefreshCollInfo(handle, hitFrame);
+		}
+		if(openFrame >= 0)
+		{
+			MV1RefreshCollInfo(handle, openFrame);
+		}
+	}
+}
+
 bool Treasure::Initialize()
 {
 	base::Initialize();
-	// ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
-	_handle = MV1LoadModel("res/Treasure/tuzura_02.mv1");
-	_attachIndex = -1;
-	// •ó” ‚Ìó‘Ô‚ğu–³‚µv‚Éİ’è
-	_objStatus = OBJSTATUS::NONE;
-	// •ó” ‚ÌˆÊ’uAŒü‚«‚Ì‰Šú‰»
-	_vPos = vec::Vec3{ 0.0f, 0.0f, 10.0f };
-	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
-	// •ó” ‚ÍÅ‰ŠJ‚¢‚Ä‚¢‚È‚¢
-	_isOpen = true;
 
+
+	_handle = MV1LoadModel("res/Treasure/tuzura_02.mv1");
+	if(_handle < 0) { DxLib::printfDx("Treasure model load failed\n"); return false; }
+
+
+	_hitCollisionFrame = MV1SearchFrame(_handle, "Collision_04");
+	_openCollisionFrame = MV1SearchFrame(_handle, "Collision_05");
+
+	if(_hitCollisionFrame < 0) { DxLib::printfDx("HitFrame not found\n"); return false; }
+
+	// if (_openCollisionFrame < 0) { DxLib::printfDx("OpenFrame not found\n"); }
+
+
+	_attachIndex = -1;
+
+	_objStatus = OBJSTATUS::NONE;
+
+	_vPos = vec::Vec3{ 714.0f, 0.0f, 5803.0f };
+	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
+
+
+	MV1SetupCollInfo(_handle, _hitCollisionFrame, 16, 16, 16);
+	MV1SetFrameVisible(_handle, _hitCollisionFrame, FALSE);
+
+	if(_openCollisionFrame >= 0)
+	{
+		MV1SetupCollInfo(_handle, _openCollisionFrame, 16, 16, 16);
+		MV1SetFrameVisible(_handle, _openCollisionFrame, FALSE);
+	}
+
+
+	_isOpen    = false;
+	_isVisible = true;
+
+	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
 	return true;
 }
 
-// I—¹
+
 bool Treasure::Terminate()
 {
 	MV1DeleteModel(_handle);
@@ -28,17 +79,17 @@ bool Treasure::Terminate()
 bool Treasure::Process()
 {
 	base::Process();
-	// •ó” ‚ÌŠJ•Âˆ—
+
+	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
+
+
 	if(!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
-		// •ó” ‚ğŠJ‚¯‚é
 		if(_attachIndex != -1)
 		{
 			MV1DetachAnim(_handle, _attachIndex);
 			_attachIndex = -1;
 		}
-		// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦
-		//_attachIndex = MV1AttachAnim(_handle, MV1GetAnimIndex(_handle, "open"), -1, FALSE);
 		_objStatus = OBJSTATUS::OPEN;
 	}
 	return true;
@@ -47,25 +98,33 @@ bool Treasure::Process()
 bool Treasure::Render()
 {
 	base::Render();
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1); // Ä¶ŠÔ‚ğƒZƒbƒg‚·‚é
-	// ƒ‚ƒfƒ‹‚ÌŒü‚«İ’è
-	MATRIX mRotY = MGetRotY(vorty); 
-	// •½sˆÚ“®s—ñ‚Ìæ“¾
-	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	// Šg‘åk¬s—ñ
-	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f));
-	// ƒ‚ƒfƒ‹s—ñ‚Ì‡¬
-	MATRIX m = MGetIdent();
 
-	// Šg‘åk¬A‰ñ“]A•½sˆÚ“®‚Ì‡‚Ås—ñ‚ğŠ|‚¯‡‚í‚¹‚é
+	// éè¡¨ç¤ºãªã‚‰æç”»ã—ãªã„ï¼ˆãƒ‡ãƒãƒƒã‚¯)
+	if (!_isVisible)
+	{
+		return true; 
+
+	}
+
+
+	if(_handle >= 0)
+	{
+		MV1DrawModel(_handle);
+	}
+
+	return true;
+}
+
+
+MATRIX Treasure::MakeModelMatrix() const
+{
+	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
+	MATRIX mRotY = MGetRotY(vorty);
+	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
+	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f));
+	MATRIX m = MGetIdent();
 	m = MMult(m, mScale);
 	m = MMult(m, mRotY);
 	m = MMult(m, mTrans);
-	// ƒ‚ƒfƒ‹‚És—ñ‚ğƒZƒbƒg
-	MV1SetMatrix(_handle, m);
-	 
-	// •`‰æ
-	MV1DrawModel(_handle);
-
-	return true;
+	return m;
 }

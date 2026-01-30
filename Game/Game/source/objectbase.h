@@ -90,7 +90,7 @@ protected:
 	//STATE _state;				//状態
 
 	Camera* _cam;
-	int _handle;             // モデルハンドル
+	int _handle;              // モデルハンドル
 	float _half_polygon_size; // 地面ポリゴンの半分のサイズ
 	COLOR_U8 _diffuse;        // 材質の色
 	COLOR_U8 _specular;       // 材質の鏡面反射色

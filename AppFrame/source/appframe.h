@@ -27,3 +27,4 @@
 #include "AnimationManager/animationmanager.h"
 #include "Resources.h"
 #include "manager/collisionmanager.h"
+#include "manager/effekseermanager.h"

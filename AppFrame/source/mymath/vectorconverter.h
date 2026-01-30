@@ -70,5 +70,17 @@ public:
 			VecToDxLib(max)
 		);
 	}
+
+	static MV1_COLL_RESULT_POLY_DIM HitCapsuleToCollision
+	(int modelHandle, int frameIndex, vec::Vec3 capTop, vec::Vec3 capBottom, float radius)
+	{
+		return MV1CollCheck_Capsule(
+			modelHandle,
+			frameIndex,
+			VecToDxLib(capTop),
+			VecToDxLib(capBottom),
+			radius
+		);
+	}
 	
 };

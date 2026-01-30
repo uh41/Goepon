@@ -38,6 +38,11 @@ bool ModeGame::ObjectInitialize()
 	//_enemy.emplace_back(std::make_shared<Enemy>());
 	//_chara.emplace_back(_enemy.back());
 
+	// 宝箱初期化
+	//_object.emplace_back(std::make_shared<Treasure>());
+	_treasure = std::make_shared<Treasure>();
+	_object.emplace_back(_treasure);
+
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();
 	_uiHp->SetPlayer(_player.get());
@@ -80,16 +85,29 @@ bool ModeGame::ShadowInitialize()
 		_charaShadow.emplace_back(shadow);
 	}
 
+
+	for(auto& e : _enemy)
+	{
+		if(!e)
+		{
+			continue;
+		}
+		// 敵は CharaBase を継承しているのでそのまま渡せる
+		auto shadow = std::make_shared<CharaShadow>();
+		shadow->SetTargetChara(e.get());
+		_charaShadow.emplace_back(shadow);
+	}
+
 	return true;
 }
 
 bool ModeGame::PlayerTransform()
 {
 	// 変身アニメ中の監視（タヌキ -> 人間）
-	if(_isTransformingToHuman)
+	if (_isTransformingToHuman)
 	{
 		// まだ再生中なら、タヌキ表示のまま継続
-		if(_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
+		if (_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
 		{
 			_playerTanuki->Process();
 			return true;
@@ -103,25 +121,37 @@ bool ModeGame::PlayerTransform()
 		_player->SetPos(_playerTanuki->GetPos());
 		_player->SetDir(_playerTanuki->GetDir());
 
+		// Effekseer のエフェクトを再生（タヌキ->人間 変身完了時）
+		if(_henshineffectHandle != -1)
+		{
+			// プレイヤー位置にエフェクトを出す（必要ならオフセットを調整）
+			EffekseerManager::GetInstance()->PlayEffect3DPos(_henshineffectHandle, _player->GetPos());
+		}
+
+		// ここが重要：影の追従先を「人間」に更新
+		if (!_charaShadow.empty())
+		{
+			auto& playerShadow = _charaShadow.front();
+			if (playerShadow)
+			{
+				playerShadow->SetTargetChara(_player.get());
+			}
+		}
+
 		_player->Process();
 		return true;
 	}
 
+	// （以下はそのまま）
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
 	// タヌキプレイヤー表示切替
-	if(trg & PAD_INPUT_4)
+	if (trg & PAD_INPUT_4)
 	{
-		// いまタヌキ表示なら「タヌキ -> 人間」はアニメを見せたいので即切替しない
-		if(_bShowTanuki)
+		if (_bShowTanuki)
 		{
-			_transformAnimId = _playerTanuki->PlayAnimation("hensin", false);
+			_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
 			_isTransformingToHuman = true;
-
-			if(_soundServer)
-			{
-				_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
-			}
 
 			// 変身中はタヌキのまま処理
 			_playerTanuki->Process();
@@ -129,36 +159,32 @@ bool ModeGame::PlayerTransform()
 		}
 		else
 		{
-
-			// 人間 -> タヌキ（こちらは今まで通り即切替）
 			_bShowTanuki = true;
 			_playerTanuki->SetPos(_player->GetPos());
 			_playerTanuki->SetDir(_player->GetDir());
-			_playerTanuki->PlayAnimation("hensin", false);
+			//_playerTanuki->PlayAnimation("hensin", false);
+
+			//_playerTanuki->PlayAnimation("gomepon_hensin", false);
 
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("taiki", true);
-		}
-
-
-		if(_soundServer)
-		{
-			_soundServer->Add(new soundserver::SoundItemOneShot("res/OneShot/7_01.mp3"));
+			_playerTanuki->PlayAnimation("goepon_idle", true);
 		}
 
 		// シャドウの追従キャラも切り替え
-		if(!_charaShadow.empty())
+		if (!_charaShadow.empty())
 		{
 			auto& playerShadow = _charaShadow.front();
-			if(playerShadow)
+			if (playerShadow)
 			{
-				playerShadow->SetTargetChara(static_cast<PlayerBase*>(_playerTanuki.get()));
+				playerShadow->SetTargetChara(_bShowTanuki ? static_cast<CharaBase*>(_playerTanuki.get())
+					: static_cast<CharaBase*>(_player.get()));
 			}
 		}
 	}
 
+
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
-	if(_bShowTanuki)
+	if (_bShowTanuki)
 	{
 		_playerTanuki->Process();
 	}
@@ -172,6 +198,14 @@ bool ModeGame::PlayerTransform()
 
 bool ModeGame::ObjectProcess()
 {
+
+
+	// オブジェクト処理
+	for(auto& object : _object)
+	{
+		object->Process();
+	}
+
 
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)
@@ -197,10 +231,10 @@ bool ModeGame::ObjectProcess()
 		object->Process();
 	}
 
-	for(auto& treasure : _treasure)
+	/*for(auto& treasure : _treasure)
 	{
 		treasure->Process();
-	}
+	}*/
 
 	// UI処理
 	for(auto& ui_base : _uiBase)
