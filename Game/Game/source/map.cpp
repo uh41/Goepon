@@ -115,18 +115,18 @@ bool Map::Initialize()
 				if(pos.collisionFrame < 0)
 				{
 					int frameNum = MV1GetFrameNum(pos.modelHandle);
-					DxLib::printfDx("Model '%s' has %d frames\n", pos.name.c_str(), frameNum);
+					//DxLib::printfDx("Model '%s' has %d frames\n", pos.name.c_str(), frameNum);
 					for(int fi = 0; fi < frameNum; ++fi)
 					{
 						const char* fname = MV1GetFrameName(pos.modelHandle, fi);
 						if(fname)
 						{
-							DxLib::printfDx("  frame[%d] = %s\n", fi, fname);
+							//DxLib::printfDx("  frame[%d] = %s\n", fi, fname);
 							std::string s(fname);
 							if(s.find("Collision") != std::string::npos || s.find("collision") != std::string::npos)
 							{
 								pos.collisionFrame = fi;
-								DxLib::printfDx("  -> selected collision frame %d ('%s') for model '%s'\n", fi, fname, pos.name.c_str());
+								//DxLib::printfDx("  -> selected collision frame %d ('%s') for model '%s'\n", fi, fname, pos.name.c_str());
 								break;
 							}
 						}
@@ -141,12 +141,12 @@ bool Map::Initialize()
 				}
 				else
 				{
-					DxLib::printfDx("Warning: Collision frame not found for model '%s' (handle=%d)\n", pos.name.c_str(), pos.modelHandle);
+					//DxLib::printfDx("Warning: Collision frame not found for model '%s' (handle=%d)\n", pos.name.c_str(), pos.modelHandle);
 				}
 			}
 			else
 			{
-				DxLib::printfDx("Warning: model handle invalid for '%s'\n", pos.name.c_str());
+				//DxLib::printfDx("Warning: model handle invalid for '%s'\n", pos.name.c_str());
 			}
 
 			// データをコンテナに追加（モデル番号があれば）

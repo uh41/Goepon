@@ -112,7 +112,7 @@ bool ModeGame::Initialize()
 	
 	// Effekseer 初期化
 	EffekseerManager::GetInstance()->Initialize();
-	//_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
+	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
