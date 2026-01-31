@@ -2,16 +2,6 @@
 
 bool EffekseerManager::Initialize()
 {
-	if(_initialize)
-	{
-		return true;
-	}
-
-	if(Effekseer_Init(20000) != 0)
-	{
-		return false;
-	}
-
 	_initialize = true;
 	return true;
 }

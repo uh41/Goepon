@@ -19,7 +19,7 @@ bool ModeGame::DebugInitialize()
 	_d_view_camera_info = true;
 	_d_view_shadow_map = false;
 
-	CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
+	//CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
 
 	return true;
 }
@@ -295,16 +295,16 @@ bool ModeGame::DebugRender()
 		_camera->Render();
 	}
 
-	//if(_d_view_collision)
-	//{
-	//	// CollisionManager 側のデバッグ描画（線やマーカー）
-	//	CollisionManager::GetInstance()->SetDebugDraw(true);
-	//	CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
-	//}
-	//else
-	//{
-	//	CollisionManager::GetInstance()->SetDebugDraw(false);
-	//}
+	if(_d_view_collision)
+	{
+		// CollisionManager 側のデバッグ描画（線やマーカー）
+		CollisionManager::GetInstance()->SetDebugDraw(true);
+		CollisionManager::GetInstance()->RenderDebug(0, 255, 255);
+	}
+	else
+	{
+		CollisionManager::GetInstance()->SetDebugDraw(false);
+	}
 
 	
 	return true;
