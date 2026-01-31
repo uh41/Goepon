@@ -86,6 +86,11 @@ bool PlayerTanuki::Process()
 
 		_vInput = vec3::VGet(moveX, 0.0f, moveZ);
 
+		if(vec3::VSize(_vInput) > 0.0f)
+		{
+			_vInput = vec3::VNorm(_vInput);
+		}
+
 		localRad = atan2f(moveZ, moveX);
 
 		float speed = _fMvSpeed;
