@@ -333,7 +333,7 @@ bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
 			position,
 			block.modelHandle,
-			_map->GetFrameMapCollision(),
+			block.collisionFrame,
 			kColSubY,
 			hitPos))
 		{
@@ -376,7 +376,7 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 		if(!CollisionManager::GetInstance()->CheckPositionToMV1Collision(
 			position,
 			block.modelHandle,
-			_map->GetFrameMapCollision(),
+			block.collisionFrame,
 			colSubY,
 			hitPos))
 		{
