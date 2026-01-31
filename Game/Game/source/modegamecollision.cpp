@@ -11,7 +11,6 @@
 #include "modegame.h"
 #include "appframe.h"
 
-// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
 bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 {
 	// プレイヤーが空中なら処理しない
@@ -20,23 +19,18 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		return false;
 	}
 
-	// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
 	float escapeTbl[] =
 	{
 		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
 	};
 
-	// 角度を変えて回避を試みるループ
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
-		// 移動前の位置を保存
-		vec::Vec3 oldvPos = chara->GetPos();   // 移動前の位置を保存
-		vec::Vec3 v = chara->GetInputVector(); // 移動量ベクトル
-		vec::Vec3 oldv = v;					   // 移動量ベクトル保存
+		vec::Vec3 oldvPos = chara->GetPos();
+		vec::Vec3 v = chara->GetInputVector();
 
-		// マップの情報
-		auto handleMap = obj->GetModelHandleMap().begin()->second;
-		auto frameMapCollision = obj->GetFrameMapCollision();
+		// マップの情報（obj が Map なら取得、なければ ModeGame::_map を使う）
+		Map* map = dynamic_cast<Map*>(obj);
 
 		float rad = atan2((float)v.z, (float)v.x);
 		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
@@ -44,52 +38,79 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		float sz = _camera->_vPos.z - _camera->_vTarget.z;
 		float camrad = atan2(sz, sx);
 
-		// escapeTbl[i]の分だけ移動量v回転
 		float escape_rad = DEG2RAD(escapeTbl[i]);
-		v.x = cos(rad + camrad + escape_rad) * length;
-		v.z = sin(rad + camrad + escape_rad) * length;
+		// 回転を適用した移動ベクトル（ワールド空間）
+		vec::Vec3 triedV;
+		triedV.x = cos(rad + camrad + escape_rad) * length;
+		triedV.z = sin(rad + camrad + escape_rad) * length;
+		triedV.y = 0.0f;
 
-		// vの分移動
-		chara->SetPos(vec3::VAdd(chara->GetPos(), v));
+		// 移動（試行）
+		chara->SetPos(vec3::VAdd(chara->GetPos(), triedV));
 
-		// コリジョン処理しないならループから抜ける
+		// 早期脱出フラグ
 		if(!_d_use_collision)
 		{
-			//カメラも移動する
 			break;
 		}
 
-		// 主人公の腰位置から下方向への直線
-		// 直接Dxlibを呼んでいた箇所を CollisionManager に置き換え
+		// 当たり判定（Map がある場合は各ブロックの collisionFrame を使う）
 		vec::Vec3 hitPos;
-		bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
-			chara->GetPos(),
-			handleMap,
-			frameMapCollision,
-			chara->GetColSubY(),
-			hitPos
-		);
+		bool hit = false;
+
+		if(map)
+		{
+			auto& list = map->GetBlockPosList();
+
+			for(size_t bi = 0; bi < list.size(); ++bi)
+			{
+				auto& block = list[bi];
+
+				// Checkするループ内、ブロック情報を出力する箇所を拡張
+				if(block.modelHandle >= 0)
+				{
+					// transform を確実に適用
+					MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+					MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+					MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+					MV1RefreshCollInfo(block.modelHandle, block.collisionFrame);
+				}
+
+				// 必要な条件を満たさない場合はスキップ
+				if(block.modelHandle < 0) continue;
+				if(block.collisionFrame < 0) continue;
+
+				if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+					chara->GetPos(),
+					block.modelHandle,
+					block.collisionFrame,
+					chara->GetColSubY(),
+					hitPos))
+				{
+					hit = true;
+					break;
+				}
+			}
+		}
+
 		if(hit)
 		{
-			// 当たった
-			// 当たったY位置をキャラ座標にする
 			vec::Vec3 tmpPos = chara->GetPos();
 			tmpPos.y = hitPos.y;
 			chara->SetPos(tmpPos);
 
-			// キャラが上下に移動した量だけ、移動量を修正
-			v.y += chara->GetPos().y - oldvPos.y;
+			// Y変化を移動ベクトルに反映（必要なら）
+			triedV.y += chara->GetPos().y - oldvPos.y;
 
-			// ループiから抜ける
 			break;
 		}
 		else
 		{
 			// 当たらなかった。元の座標に戻す
 			chara->SetPos(oldvPos);
-			//v = oldv;
 		}
 	}
+
 	return true;
 }
 
