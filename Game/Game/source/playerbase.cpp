@@ -37,14 +37,49 @@ bool PlayerBase::Process()
 
 	// アナログスティックの状態取得
 	{
-		DINPUT_JOYSTATE di;
-		GetJoypadDirectInputState(DX_INPUT_PAD1, &di);
-		if (GetJoypadDirectInputState(DX_INPUT_PAD1, &di) == 0)
+		// まずはゼロクリア（未接続時も値が残らないようにする）
+		fLx = 0.0f;
+		fLz = 0.0f;
+		fRx = 0.0f;
+		fRy = 0.0f;
+
+		// ジョイパッドがあればジョイパッド優先
+		if(GetJoypadNum() > 0)
 		{
-			fLx = (float)di.X / 1000.f;
-			fLz = (float)di.Y / 1000.f;
-			fRx = (float)di.Z / 1000.f;
-			fRy = (float)di.Rz / 1000.f;
+			DINPUT_JOYSTATE di;
+			if(GetJoypadDirectInputState(DX_INPUT_PAD1, &di) == 0)
+			{
+				fLx = (float)di.X / 1000.0f;
+				fLz = (float)di.Y / 1000.0f;
+				fRx = (float)di.Z / 1000.0f;
+				fRy = (float)di.Rz / 1000.0f;
+			}
+		}
+		else
+		{
+			// ジョイパッド無しならキーボード入力で左スティックを生成（矢印キー）
+			float x = 0.0f;
+			float z = 0.0f;
+
+			if(CheckHitKey(KEY_INPUT_LEFT))
+			{
+				x = -1.0f;
+			}
+			if(CheckHitKey(KEY_INPUT_RIGHT))
+			{
+				x = 1.0f;
+			}
+			if(CheckHitKey(KEY_INPUT_UP))
+			{
+				z = -1.0f;
+			}
+			if(CheckHitKey(KEY_INPUT_DOWN))
+			{
+				z = 1.0f;
+			}
+
+			fLx = x;
+			fLz = z;
 		}
 	}
 
