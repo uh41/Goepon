@@ -10,6 +10,7 @@
 
 #include "enemy.h"
 #include "enemysensor.h"
+#include "enemysoundsensor.h"
 
 // 初期化
 bool Enemy::Initialize()
@@ -93,6 +94,12 @@ void Enemy::ResetTeleport()
 void Enemy::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 {
 	_enemySensor = sensor;
+}
+
+// EnemySoundSensorを設定するメソッドを追加
+void Enemy::SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor)
+{
+	_enemySoundSensor = sensor;
 }
 
 // プレイヤーが検出された時の処理
@@ -416,6 +423,13 @@ bool Enemy::Process()
 					StartReturningToInitialPosition();
 				}
 			}
+		}
+
+		// EnemySoundSensorの位置も同期
+		if (_enemySoundSensor)
+		{
+			_enemySoundSensor->SetPos(_vPos);
+			_enemySoundSensor->SetDir(_vDir);
 		}
 	}
 

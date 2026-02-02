@@ -13,6 +13,7 @@
 
 // 前方宣言
 class EnemySensor;
+class EnemySoundSensor;
 class PlayerBase;
 
 class Enemy : public EnemyBase
@@ -26,6 +27,7 @@ public:
 	virtual bool Render();
 
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensorを設定
+	void SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor);
 	void OnPlayerDetected(const vec::Vec3& playerPos);			// プレイヤー検出時の処理
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
@@ -37,18 +39,19 @@ public:
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 
-public:
 	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
 	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
 
+	// 初期位置と向きをキャプチャ
 	void CaptureInitialTransform();
 
-public:
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
+	std::shared_ptr<EnemySoundSensor> GetEnemySoundSensor() const { return _enemySoundSensor; }
 
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
+	std::shared_ptr<EnemySoundSensor> _enemySoundSensor;
 	bool _detectedPlayer;	// プレイヤーを検出したか
 	vec::Vec3 _playerPos;	// 検出したプレイヤーの位置
 	float _rotationSpeed;	// 回転速度

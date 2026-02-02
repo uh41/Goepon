@@ -237,6 +237,9 @@
     <ClInclude Include="source\playermono.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\enemysoundsensor.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -334,6 +337,9 @@
     </ClCompile>
     <ClCompile Include="source\playermono.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemysoundsensor.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

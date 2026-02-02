@@ -258,6 +258,13 @@ bool ModeGame::LoadStageData()
 			sensor->SetMap(_map.get());
 
 			enemy->SetEnemySensor(sensor);
+			
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+			soundSensor->Initialize();
+			soundSensor->SetMap(_map.get());
+			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
+			soundSensor->SetPos(enemy->GetPos());
+			enemy->SetEnemySoundSensor(soundSensor);
 
 			_enemy.emplace_back(enemy);
 		}
@@ -536,6 +543,18 @@ bool ModeGame::Render()
 		_enemySensor->RenderDetectionUI();
 	}
 
+	// 各敵のセンサーを個別に描画
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive())
+		{
+			// 音センサーの描画
+			if (enemy->GetEnemySoundSensor())
+			{
+				enemy->GetEnemySoundSensor()->Render();
+			}
+		}
+	}
 
 	if(_d_view_collision)
 	{
@@ -620,6 +639,14 @@ bool ModeGame::CheckAllDetections()
 
 		// タイマー更新など
 		sensor->Process();
+
+		auto soundSensor = enemy->GetEnemySoundSensor();
+		if (soundSensor)
+		{
+			soundSensor->SetPos(enemy->GetPos());
+			soundSensor->Process();
+		}
+
 
 		// タヌキ状態の時のみ検知処理を実行
 		if (!_bShowTanuki)

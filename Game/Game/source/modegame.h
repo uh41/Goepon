@@ -21,6 +21,7 @@
 #include "map.h"
 #include "cube.h"
 #include "enemysensor.h"
+#include "enemysoundsensor.h"
 #include "uibase.h"
 #include "uihp.h"
 #include "charashadow.h"
