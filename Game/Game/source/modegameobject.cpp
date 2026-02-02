@@ -225,12 +225,6 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
-	// オブジェクト処理
-	for(auto& object : _object)
-	{
-		object->Process();
-	}
-
 	/*for(auto& treasure : _treasure)
 	{
 		treasure->Process();

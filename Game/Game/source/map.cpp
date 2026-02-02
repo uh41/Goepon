@@ -56,6 +56,16 @@ bool Map::Initialize()
 		for(auto& data : stage)
 		{
 			mymath::BLOCKPOS pos;
+
+			// 明示的に初期化しておく
+			pos.name.clear();
+			pos.x = pos.y = pos.z = 0.0f;
+			pos.rx = pos.ry = pos.rz = 0.0f;
+			pos.sx = pos.sy = pos.sz = 1.0f;
+			pos.modelHandle = -1;
+			pos.drawFrame = -1;
+			pos.collisionFrame = -1;
+
 			data.at("objectName").get_to(pos.name);
 			// UEは左手座標系/Zup →左手座標系/Yup に変換しつつ取得
 			data.at("translate").at("x").get_to(pos.x);
@@ -77,20 +87,67 @@ bool Map::Initialize()
 			{
 				// まだ読み込まれていない。読み込みを行う
 				std::string filename = _sPath + pos.name + ".mv1";
-				_mModelHandle[pos.name] = MV1LoadModel(filename.c_str());
+				int h = MV1LoadModel(filename.c_str());
+				_mModelHandle[pos.name] = h;
+				if(h < 0)
+				{
+					DxLib::printfDx("Failed to load model: %s (path=%s)\n", pos.name.c_str(), filename.c_str());
+				}
 			}
 			// 名前から使うモデルハンドル＆表示フレームを決める
 			if(_mModelHandle.count(pos.name) > 0)
 			{
 				pos.modelHandle = _mModelHandle[pos.name];
-				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
+				if(pos.modelHandle >= 0)
+				{
+					pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
+				}
 			}
 
-			_iFrameMapCollision = MV1SearchFrame(_mModelHandle[pos.name], "Collision_01");
+			// Collision フレームは各ブロックごとに求めて保存（グローバル変数を上書きしない）
+			pos.collisionFrame = -1;
+			if(pos.modelHandle >= 0)
+			{
+				// まずは想定名で検索
+				pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "Collision_01");
 
-			// コリジョン情報の生成
-			MV1SetupCollInfo(_mModelHandle[pos.name], _iFrameMapCollision, 16, 16, 16);
-			MV1SetFrameVisible(_mModelHandle[pos.name], _iFrameMapCollision, FALSE);
+				// 見つからなければモデル内フレームを列挙して "Collision" を含むものを探す
+				if(pos.collisionFrame < 0)
+				{
+					int frameNum = MV1GetFrameNum(pos.modelHandle);
+					//DxLib::printfDx("Model '%s' has %d frames\n", pos.name.c_str(), frameNum);
+					for(int fi = 0; fi < frameNum; ++fi)
+					{
+						const char* fname = MV1GetFrameName(pos.modelHandle, fi);
+						if(fname)
+						{
+							//DxLib::printfDx("  frame[%d] = %s\n", fi, fname);
+							std::string s(fname);
+							if(s.find("Collision") != std::string::npos || s.find("collision") != std::string::npos)
+							{
+								pos.collisionFrame = fi;
+								//DxLib::printfDx("  -> selected collision frame %d ('%s') for model '%s'\n", fi, fname, pos.name.c_str());
+								break;
+							}
+						}
+					}
+				}
+
+				// 見つかったらコリジョン情報を生成、見つからなければ警告
+				if(pos.collisionFrame >= 0)
+				{
+					MV1SetupCollInfo(pos.modelHandle, pos.collisionFrame, 16, 16, 16);
+					MV1SetFrameVisible(pos.modelHandle, pos.collisionFrame, FALSE);
+				}
+				else
+				{
+					//DxLib::printfDx("Warning: Collision frame not found for model '%s' (handle=%d)\n", pos.name.c_str(), pos.modelHandle);
+				}
+			}
+			else
+			{
+				//DxLib::printfDx("Warning: model handle invalid for '%s'\n", pos.name.c_str());
+			}
 
 			// データをコンテナに追加（モデル番号があれば）
 			if(pos.modelHandle != -1)
@@ -98,8 +155,6 @@ bool Map::Initialize()
 				_vBlockPos.push_back(pos);
 			}
 		}
-
-
 	}
 	else if(MAP_SELECT == 3)
 	{
@@ -123,11 +178,7 @@ bool Map::Initialize()
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 	}
-	// コリジョン情報の生成
-	MV1SetupCollInfo(_iHandleMap, _iFrameMapCollision, 16, 16, 16);// コリジョン情報を構築する(16以上は当たり判定を行う際に調べる区画の数が少なくなり、処理が速くなる)
-	// コリジョンのフレームを描画しない設定
-	MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
-
+	
 	// シャドウマップの生成
 	_iHandleShadowMap = MakeShadowMap(2048, 2048);
 

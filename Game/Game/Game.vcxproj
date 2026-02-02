@@ -43,6 +43,7 @@
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
+    <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\uibase.h" />
@@ -76,6 +77,7 @@
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
+    <ClCompile Include="source\playermono.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
     <ClCompile Include="source\uibase.cpp" />
