@@ -56,6 +56,10 @@ public:
 		return _mModelHandle;
 	}
 
+	auto GetMapNum() const
+	{
+		return stageNum;
+	}
 	void SetDir(const vec::Vec3& dir) { _vDir = dir; }
 
 	//回転縮小平行移動を計算し、モデルに適用する
@@ -86,7 +90,7 @@ protected:
 
 	//vec::Vec3 _vDir; // キャラの向き
 
-	//DamageData _damageData;		//ダメージデータ
+	//DamageData _damageData;	//ダメージデータ
 
 	//STATE _state;				//状態
 
@@ -99,6 +103,6 @@ protected:
 	// uvのテーブル
 	std::array<float, 4> _u_list;
 	std::array<float, 4> _v_list;
-
+	int stageNum;             // ステージ番号
 };
 

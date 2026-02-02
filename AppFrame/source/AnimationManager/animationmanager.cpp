@@ -200,6 +200,7 @@ bool AnimationManager::SetPlaying(int id, bool play)
 	return true;
 }
 
+// Ä¶’†‚©‚Ç‚¤‚©
 bool AnimationManager::IsPlaying(int id) const
 {
 	auto it = _animInstance.find(id);

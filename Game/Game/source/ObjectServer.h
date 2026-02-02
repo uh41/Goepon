@@ -41,12 +41,18 @@ public:
 	std::vector<class CharaBase*>& GetCharas() { return _charas; }
 	
 	// オブジェクトのレイアウトを読み込み、オブジェクトを生成
-	bool LoadDate(std::string stageName);
+	bool LoadDate(const std::string& layoutJsonPath);
 
 	//_objects _add _delete のコンテナが保持するアドレスをdelete、各コンテナのサイズを０にする
 	bool ClearObject();
 
 private:
+	// オブジェクト生成関数
+	ObjectBase* CreateByType(const std::string& type) const;
+	// Jsonからオブジェクト生成
+	bool SpawnFromJson(const nlohmann::json& objectJson);
+	// カテゴリからオブジェクト生成
+	bool SpawnFromCategory(const nlohmann::json& root, const char* category, const char* type);
 	// オブジェクト　
 	std::vector<class ObjectBase*> _objects;
 	// 追加するオブジェクトのアドレス
@@ -64,6 +70,10 @@ private:
 
 	// ModeGameが持つ機能や情報を利用するために、自身をnewしたModeGameクラスのアドレスと保持
 	class ModeGame* _game;
+
+	// オブジェクト生成用ファクトリマップ
+	using Factory = std::function<ObjectBase* ()>;
+	std::unordered_map<std::string, Factory> _factory; // 型名と生成関数のマップ
 };
 
 
