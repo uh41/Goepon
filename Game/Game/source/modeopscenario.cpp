@@ -22,16 +22,16 @@ bool ModeOpScenario::Initialize()
 
 	_page =
 	{
-		{ LoadGraph(img::Op1), "" },// 画像読み込み, 音声ファイル
-		{ LoadGraph(img::Op2), "" },
-		{ LoadGraph(img::Op3), "" },
-		{ LoadGraph(img::Op4), "" },
-		{ LoadGraph(img::Op5), "" },
-		{ LoadGraph(img::Op6), "" },
-		{ LoadGraph(img::Op7), "" },
-		{ LoadGraph(img::Op8), "" },
-		{ LoadGraph(img::Op9), "" },
-		{ LoadGraph(img::Op10), "" },
+		{ LoadGraph(img::scenario1), "" },// 画像読み込み, 音声ファイル
+		{ LoadGraph(img::scenario2), "" },
+		{ LoadGraph(img::scenario3), "" },
+		{ LoadGraph(img::scenario4), "" },
+		{ LoadGraph(img::scenario5), "" },
+		//{ LoadGraph(img::Op6), "" },
+		//{ LoadGraph(img::Op7), "" },
+		//{ LoadGraph(img::Op8), "" },
+		//{ LoadGraph(img::Op9), "" },
+		//{ LoadGraph(img::Op10), "" },
 	};
 	_pageNo = 0;
 

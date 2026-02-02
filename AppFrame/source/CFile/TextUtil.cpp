@@ -115,3 +115,38 @@ std::unordered_map<std::string, std::string> TextUtil::ParseKeyValueConfig(const
 	}
 	return result;
 }
+
+// 設定値用の関数
+bool TextUtil::GetConfig(const at::umss<std::string, std::string>& config, const std::string& key, float& value)
+{
+	auto it = config.find(ToLower(key));// 小文字化したkeyで検索
+	if(it == config.end())
+	{
+		it = config.find(key); // 元のkeyで再検索
+		if(it == config.end())
+		{
+			return false; // 見つからなかった
+		}
+	}
+
+	float val;
+	// 変換を試みる
+	if(!TryParseFloat(it->second, val))
+	{
+		return false; // 変換失敗
+	}
+
+	value = val;
+	return true;
+}
+
+// 1回ファイルを読み込み、文字列として返す
+at::umss<std::string, std::string> TextUtil::LoadConfigFile(const std::string& filename)
+{
+	CFile cfgFile(filename);
+	if(!cfgFile.Success())
+	{
+		return at::umss<std::string, std::string>();// 空のマップを返す
+	}
+	return ParseKeyValueConfig(cfgFile.DataStr());// パースして返す
+}

@@ -10,7 +10,6 @@
 
 #include "player.h"
 #include "appframe.h"
-#include "TextUtil.h"
 
 // 初期化
 bool Player::Initialize()
@@ -55,33 +54,33 @@ bool Player::Initialize()
 	// 初期体力設定
 	_fHp = 20.0f;
 
-	// 設定ファイルから上書き読み込み
-	CFile cfgFile("res/Player/player_config.txt");
-	if(cfgFile.Success())
-	{
-		auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
-		// 移動速度
-		auto it = config.find("speed");
-		if(it != config.end())
-		{
-			float val;
-			// 変換成功したら上書き
-			if(TextUtil::TryParseFloat(it->second, val))
-			{
-				_fMvSpeed = val;
-			}
-		}
-		// 体力
-		it = config.find("hp");
-		if(it != config.end())
-		{
-			float val;
-			if(TextUtil::TryParseFloat(it->second, val))
-			{
-				_fHp = val;
-			}
-		}
-	}
+	//// 設定ファイルから上書き読み込み
+	//CFile cfgFile("res/Player/player_config.txt");
+	//if(cfgFile.Success())
+	//{
+	//	auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
+	//	// 移動速度
+	//	auto it = config.find("speed");
+	//	if(it != config.end())
+	//	{
+	//		float val;
+	//		// 変換成功したら上書き
+	//		if(TextUtil::TryParseFloat(it->second, val))
+	//		{
+	//			_fMvSpeed = val;
+	//		}
+	//	}
+	//	// 体力
+	//	it = config.find("hp");
+	//	if(it != config.end())
+	//	{
+	//		float val;
+	//		if(TextUtil::TryParseFloat(it->second, val))
+	//		{
+	//			_fHp = val;
+	//		}
+	//	}
+	//}
 	return true;
 }
 

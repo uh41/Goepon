@@ -83,6 +83,8 @@ protected:
 	int _iHandleShadowMap;
 	at::mst<int> _mModelHandle;// マップ画像
 
+	at::umss<std::string, std::string> _config;
+
 	//vec::Vec3 _vDir; // キャラの向き
 
 	//DamageData _damageData;		//ダメージデータ
