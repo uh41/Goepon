@@ -251,22 +251,23 @@ bool ModeGame::LoadStageData()
 			//enemy->SetDir());
 
 			// ここで「マーカー位置」を初期位置として確定
-			enemy->CaptureInitialTransform();
+			enemy->CaptureInitialTransform();	// 敵の初期位置と向きをキャプチャ
 
-			auto sensor = std::make_shared<EnemySensor>();
+			auto sensor = std::make_shared<EnemySensor>();				// 索敵範囲生成
+			auto soundSensor = std::make_shared<EnemySoundSensor>();	// 音センサー生成
+
+			enemy->SetEnemySensor(sensor);				// 敵に索敵範囲をセット
+			enemy->SetEnemySoundSensor(soundSensor);	// 敵に音センサーをセット
+
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
 
-			enemy->SetEnemySensor(sensor);
+			soundSensor->Initialize();					// 音センサー初期化
+			soundSensor->SetMap(_map.get());			// マップ設定
+			soundSensor->SetSoundSensorArea(600.0f);	// 音センサー範囲
+			soundSensor->SetPos(enemy->GetPos());		// 敵の位置にセット
 			
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(_map.get());
-			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
-			soundSensor->SetPos(enemy->GetPos());
-			enemy->SetEnemySoundSensor(soundSensor);
-
-			_enemy.emplace_back(enemy);
+			_enemy.emplace_back(enemy);	// 敵リストに追加
 		}
 	}
 
@@ -627,6 +628,7 @@ bool ModeGame::CheckAllDetections()
 		}
 
 		auto sensor = enemy->GetEnemySensor();
+
 		if(!sensor)
 		{
 			continue;
@@ -640,7 +642,9 @@ bool ModeGame::CheckAllDetections()
 		// タイマー更新など
 		sensor->Process();
 
+		// 音センサー処理
 		auto soundSensor = enemy->GetEnemySoundSensor();
+
 		if (soundSensor)
 		{
 			soundSensor->SetPos(enemy->GetPos());
@@ -666,7 +670,8 @@ bool ModeGame::CheckAllDetections()
 			return true;
 		}
 
-		const bool detected = sensor->CheckPlayerDetection(player);
+		// プレイヤー検知チェック
+		const bool detected = sensor->CheckPlayerDetection(player);	
 
 		// プレイヤーとの距離を計算してデバッグ出力
 		if(detected)

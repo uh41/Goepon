@@ -96,7 +96,7 @@ void Enemy::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 	_enemySensor = sensor;
 }
 
-// EnemySoundSensorを設定するメソッドを追加
+// EnemySoundSensorを設定
 void Enemy::SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor)
 {
 	_enemySoundSensor = sensor;
