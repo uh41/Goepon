@@ -18,7 +18,9 @@ bool CharaBase::Initialize()
 	_iAttachIndex = -1;
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
+	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_vOldPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_vDir = vec3:: VGet(0.0f, 0.0f, 0.0f);
 	_fColSubY = 0.0f;
 	_fCollisionR = 0.0f;
 	_fCollisionWeight = 0.0f;
