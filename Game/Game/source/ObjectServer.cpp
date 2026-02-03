@@ -159,6 +159,7 @@ bool ObjectServer::ProcessInit()
 	}
 	_addObj.clear();
 
+	// 削除処理
 	for (auto&& deleteObj : _deleteObj)
 	{
 		auto iter = std::find(_objects.begin(), _objects.end(), deleteObj);
@@ -195,25 +196,31 @@ bool ObjectServer::SpawnFromJson(const nlohmann::json& objectJson)
 	std::string type = objectJson.value("type", "");
 	type = TrimCopy(type);
 
+	// type が無ければ失敗
 	if(type.empty())
 	{
 		return false;
 	}
 
+	// オブジェクト生成
 	ObjectBase* obj = CreateByType(type);
 	if(obj == nullptr)
 	{
 		return false;
 	}
 
+	// Jsonデータをセット
 	obj->SetJsonDataUE(objectJson);
 
+	// オブジェクト追加
 	AddObject(obj);
 
+	// 特定クラスの登録
 	if(auto ch = dynamic_cast<CharaBase*>(obj))
 	{
 		_charas.emplace_back(ch);
 	}
+	// プレイヤー登録
 	if(auto player = dynamic_cast<Player*>(obj))
 	{
 		_player = player;
