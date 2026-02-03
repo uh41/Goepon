@@ -39,6 +39,7 @@
     <ClInclude Include="source\modescenariobase.h" />
     <ClInclude Include="source\modeteamlogo.h" />
     <ClInclude Include="source\modetitle.h" />
+    <ClInclude Include="source\movepointcontroll.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
@@ -73,6 +74,7 @@
     <ClCompile Include="source\modescenariobase.cpp" />
     <ClCompile Include="source\modeteamlogo.cpp" />
     <ClCompile Include="source\modetitle.cpp" />
+    <ClCompile Include="source\movepointcontroll.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />

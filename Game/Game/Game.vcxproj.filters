@@ -237,6 +237,9 @@
     <ClInclude Include="source\playermono.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\movepointcontroll.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -333,6 +336,9 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\playermono.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\movepointcontroll.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

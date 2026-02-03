@@ -220,20 +220,48 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "marker0128.json";
+	std::string jsonFile = "marker0202.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
+	if(!ifs.is_open())
+	{
+		// ★★★ ファイルが開けない場合のエラー処理 ★★★
+		OutputDebugString("ERROR: marker0202.json が開けません\n");
+		return false;
+	}
 
 	nlohmann::json jsonData;
-
 	ifs >> jsonData;
 
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
+	// ★★★ S_MarkerR を収集 ★★★
+	at::vet<vec::Vec3> patrolPos;
+
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
+
+		// ★★★ S_MarkerR を検出（完全版） ★★★
+		if(name == "S_MarkerR")
+		{
+			vec::Vec3 pos;
+			// JSON から座標を取得
+			object.at("translate").at("x").get_to(pos.x);
+			object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
+			object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
+			pos.z *= -1.0f; // ★ Z軸反転
+
+			patrolPos.push_back(pos);
+
+			// ★★★ デバッグ出力 ★★★
+			char buf[256];
+			sprintf_s(buf, "S_MarkerR: (%.1f, %.1f, %.1f)\n", pos.x, pos.y, pos.z);
+			OutputDebugString(buf);
+
+			continue;
+		}
 
 		if(name == "S_MarkerA")
 		{
@@ -247,19 +275,42 @@ bool ModeGame::LoadStageData()
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 
-			// JSONのrotateは「向きベクトル」ではないので、センサー用に方向ベクトルを入れる
-			//enemy->SetDir());
-
-			// ここで「マーカー位置」を初期位置として確定
-			enemy->CaptureInitialTransform();
-
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
-
 			enemy->SetEnemySensor(sensor);
 
 			_enemy.emplace_back(enemy);
+		}
+	}
+
+	// ★★★ デバッグ：巡回ポイント数を確認 ★★★
+	char buf[256];
+	sprintf_s(buf, "巡回ポイント数: %d\n", patrolPos.size());
+	OutputDebugString(buf);
+
+	// ★★★ 全敵に巡回ポイントを設定 ★★★
+	if(!patrolPos.empty())
+	{
+		for(auto& enemy : _enemy)
+		{
+			if(enemy)
+			{
+				enemy->SetPatrolPoint(patrolPos);
+			}
+		}
+	}
+	else
+	{
+		OutputDebugString("警告: 巡回ポイントが見つかりません\n");
+	}
+
+	// ★★★ 巡回設定後に初期位置を保存 ★★★
+	for(auto& enemy : _enemy)
+	{
+		if(enemy)
+		{
+			enemy->CaptureInitialTransform();
 		}
 	}
 

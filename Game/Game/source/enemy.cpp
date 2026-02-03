@@ -63,7 +63,78 @@ bool Enemy::Initialize()
 	// 敵の向き変更タイマーの初期化
 	DirChangeTimer = DirChangeInterval;
 
+	_patroll = std::make_shared<MovePointControll>();
+	_isPatroll = false;
+	_patrolSpeed = 50.0f;
+	_patrolIndex = 0;
+	_savePatrolIndex = 0;
+
 	return true;
+}
+
+// 巡回ポイントの設定
+void Enemy::SetPatrolPoint(const at::vet<vec::Vec3>& point)
+{
+	if(point.size() < 2)
+	{
+		return; // 2点未満なら設定しない
+	}
+
+	_patroll->SetMovePoint(point);
+	_isPatroll = true;
+	_patrolIndex = 0;
+}
+
+// 巡回処理
+void Enemy::ProcessPatrol(float time)
+{
+	if(!_isPatroll || !_patroll->IsValid())
+	{
+		return;
+	}
+
+	// 現在の目標を取得
+	vec::Vec3 target = _patroll->GetTargetPoint();
+
+	// ★★★ デバッグ：移動前の位置 ★★★
+	char buf[512];
+	sprintf_s(buf, "[ProcessPatrol] 開始: pos=(%.1f, %.1f, %.1f), 目標=(%.1f, %.1f, %.1f), time=%.4f\n",
+		_vPos.x, _vPos.y, _vPos.z, target.x, target.y, target.z, time);
+	OutputDebugString(buf);
+
+	// 到着判定
+	if(_patroll->IsReachTarget(_vPos, 15.0f))
+	{
+		OutputDebugString("★ 目標到着！次のポイントへ\n");
+		_patroll->MoveToNextPoint();
+		_patrolIndex = (_patrolIndex + 1) % _patroll->GetMovePointCount();
+		target = _patroll->GetTargetPoint();
+	}
+
+	// 目標に向かって移動
+	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
+	toTarget.y = 0.0f;
+	float dist = vec3::VSize(toTarget);
+
+	sprintf_s(buf, "  距離: %.2f, 移動判定: %s\n", dist, (dist > 0.01f) ? "移動する" : "移動しない");
+	OutputDebugString(buf);
+
+	if(dist > 0.01f)
+	{
+		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _patrolSpeed * time);
+		
+		// ★★★ 移動前の位置を保存 ★★★
+		vec::Vec3 oldPos = _vPos;
+		
+		_vPos = vec3::VAdd(_vPos, dir);
+		_vDir = vec3::VNorm(toTarget);
+
+		// ★★★ デバッグ：移動後の位置 ★★★
+		sprintf_s(buf, "  移動: (%.1f, %.1f, %.1f) → (%.1f, %.1f, %.1f), 移動量=(%.2f, %.2f, %.2f)\n",
+			oldPos.x, oldPos.y, oldPos.z, _vPos.x, _vPos.y, _vPos.z,
+			dir.x, dir.y, dir.z);
+		OutputDebugString(buf);
+	}
 }
 
 void Enemy::CaptureInitialTransform()
@@ -115,6 +186,43 @@ void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 void Enemy::OnPlayerLost()
 {
 	_detectedPlayer = false;
+
+	_isReturningToInitialPos = true; // 初期位置に戻り始める
+	_isPatroll = false;		 // 巡回を停止
+}
+
+void Enemy::ProcessReturnToPatrolPoint(float time)
+{
+	if(!_isReturningToInitialPos)
+	{
+		return;
+	}
+
+	vec::Vec3 target = _savePoint;
+	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
+	toTarget.y = 0.0f; // 水平方向のみ
+
+	float distSq = toTarget.LengthSquare();
+	float threshold = 20.0f; // 到着判定の閾値
+
+	if(distSq < (threshold * threshold))
+	{
+		_isReturningToInitialPos = false;
+		_patroll->SetMovePointIndex(_savePatrolIndex);
+		_patrolIndex = _savePatrolIndex;
+		_isPatroll = true;
+		return;
+	}
+	
+	// 帰還移動
+	float dist = std::sqrt(distSq);
+	if(dist > 0.01f)
+	{
+		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed * time);
+		_vPos = vec3::VAdd(_vPos, dir);
+		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+	}
+
 }
 
 // プレイヤーの方向を向く処理（即座に向く）
@@ -347,37 +455,48 @@ bool Enemy::Process()
 	{
 		_enemySensor->SetPos(_vPos);
 		_enemySensor->SetDir(_vDir);
+	}
+	float deltaTime = 1.0f; // ★ 60FPS想定のフレーム時間に修正
 
-		// 追跡処理
+	// 優先順位: 追跡　> 帰還 > 巡回
+	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		_status = STATUS::WALK;
 		UpdateChasing();
-
-		// プレイヤーを検出している、または追跡中の場合のみWALKに設定
-		if (_detectedPlayer || _enemySensor->IsChasing())
+		_isReturningToInitialPos = false;
+		_isPatroll = false;		// 巡回停止
+	}
+	else if(_isReturningToInitialPos)
+	{
+		if(_waitingForTeleport)
 		{
-			_status = STATUS::WALK;
-
-			// プレイヤーを検出中は初期位置に戻るのを停止
-			_isReturningToInitialPos = false;
-
-			// テレポート関連をリセット
-			//ResetTeleport();
-		}
-		else if (_isReturningToInitialPos)
-		{
-			// 初期位置に戻り中
-			_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
-			UpdateReturningToInitialPosition();
+			_status = STATUS::WAIT;
 		}
 		else
 		{
-			// 追跡も初期位置への復帰もしていない場合
-			_status = STATUS::WAIT;
+			_status = STATUS::WALK;
+		}
+		ProcessReturnToPatrolPoint(deltaTime);
+	}
+	else if(_isPatroll)
+	{
+		_status = STATUS::WALK;
+		ProcessPatrol(deltaTime);
+	}
+	else
+	{
+		_status = STATUS::WAIT;
 
-			// 追跡が終了して初期位置にいない場合、初期位置に戻り始める
-			if (!_enemySensor->IsChasing() && !IsAtInitialPosition())
-			{
-				StartReturningToInitialPosition();
-			}
+		// ★ 初期位置にいる場合は巡回を開始
+		if(IsAtInitialPosition() && !_isPatroll)
+		{
+			_isPatroll = true;
+			OutputDebugString("★ 初期位置到着：巡回を再開\n");
+		}
+
+		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPosition())
+		{
+			StartReturningToInitialPosition();
 		}
 	}
 

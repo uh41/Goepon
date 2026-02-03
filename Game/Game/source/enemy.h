@@ -10,6 +10,8 @@
 
 #pragma once
 #include "enemybase.h"
+#include "appframe.h"
+#include "movepointcontroll.h"
 
 // 前方宣言
 class EnemySensor;
@@ -37,14 +39,21 @@ public:
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 
-public:
 	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
 	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
 
 	void CaptureInitialTransform();
 
-public:
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
+
+	// 巡回ルートの設定
+	void SetPatrolPoint(const at::vet<vec::Vec3>& point);
+	void ProcessPatrol(float time);
+	void ProcessReturnToPatrolPoint(float time);
+
+	bool IsPatrolling() const {
+		return _isPatroll;
+	}
 
 protected:
 	// センサー関連
@@ -57,6 +66,13 @@ protected:
 	float _moveSpeed;			// 移動速度
 	vec::Vec3 _targetPosition;	// 目標位置（追跡時の移動先）
 	bool _isMoving;				// 移動中かどうか
+
+	// 巡回ルート関連
+	at::spc<MovePointControll> _patroll;// 巡回ポイント管理クラス
+	bool _isPatroll;					// 巡回中かどうか
+	float _patrolSpeed;					// 巡回速度
+	int _patrolIndex;				// 現在の巡回ポイントのインデックス
+	int _savePatrolIndex;			// 戻る前の巡回ポイントのインデックス
 
 	// プレイヤーの方向を向く処理
 	void LookAtPlayer();			// 即座にプレイヤーの方向を向く
@@ -71,6 +87,7 @@ protected:
 	vec::Vec3 _initialDirection;	// 初期向き
 	bool _isReturningToInitialPos;	// 初期位置に戻り中かどうか
 	float _returnSpeed;				// 初期位置に戻る速度
+	vec::Vec3 _savePoint;			// 戻る前の位置を保存
 
 	// 初期位置に戻る処理
 	void UpdateReturningToInitialPosition();	// 初期位置に戻る更新処理

@@ -306,7 +306,23 @@ bool ModeGame::DebugRender()
 		CollisionManager::GetInstance()->SetDebugDraw(false);
 	}
 
-	
+		int y = 100;
+	for(size_t i = 0; i < _enemy.size(); i++)
+	{
+		auto& enemy = _enemy[i];
+		if(enemy && enemy->IsAlive())
+		{
+			DrawFormatString(10, y, GetColor(255, 255, 0),
+				"Enemy[%d] Patrol:%d Pos:(%.0f, %.0f, %.0f)",
+				i,
+				enemy->IsPatrolling(), // ★ getter 追加必要
+				enemy->GetPos().x,
+				enemy->GetPos().y,
+				enemy->GetPos().z);
+			y += 20;
+		}
+	}
+
 	return true;
 }
 
