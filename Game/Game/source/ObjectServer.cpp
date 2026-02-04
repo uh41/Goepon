@@ -159,8 +159,8 @@ bool ObjectServer::ProcessInit()
 bool ObjectServer::LoadDate(std::string stageName)
 {
 	// マップ読み込み
-	_sPath = "res/map/";
-	_sJsonFile = "marker0127_2.json";
+	_sPath           = "res/map/";
+	_sJsonFile       = "marker0127_2.json";
 	_sJsonObjectName = "stage";
 
 	// ファイルオープン
@@ -191,25 +191,8 @@ bool ObjectServer::LoadDate(std::string stageName)
 		{
 			continue;
 		}
-
-		// モデル読み込み
-		const std::string filename = _sPath + name + ".mv1";
-		const int handle = MV1LoadModel(filename.c_str());
-		if(handle < 0)
-		{
-			continue;
-		}
-
 		// マップクラスにハンドルとJSONデータを設定
 		_map->SetJsonDataUE(data);
-
-		// コリジョン情報の生成
-		const int frameIndex = MV1SearchFrame(handle, "Collision_01");
-		if(frameIndex >= 0)
-		{
-			MV1SetupCollInfo(handle, frameIndex, 16, 16, 16);
-			MV1SetFrameVisible(handle, frameIndex, FALSE);
-		}
 	}
 
 	return true;
