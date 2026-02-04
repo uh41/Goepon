@@ -15,22 +15,22 @@ struct SoundSensorArea
 // 音の波紋エフェクト用構造体
 struct SoundWave
 {
-	vec::Vec3 origin;     // 発生源
-	float currentRadius;  // 現在の半径
-	float maxRadius;      // 最大半径
-	float expandSpeed;    // 拡大速度
-	bool isActive;        // アクティブフラグ
-	float alpha;          // 透明度（0.0 ～ 1.0）
-	int soundLevel;
+	vec::Vec3 origin;		// 発生源
+	float currentRadius;	// 現在の半径
+	float maxRadius;		// 最大半径
+	float expandSpeed;		// 拡大速度
+	bool isActive;			// アクティブフラグ
+	float alpha;			// 透明度（0.0 ～ 1.0）
+	int soundLevel;			// 音レベル
 };
 
 // 検出状態の情報
 struct SoundDectionInfo
 {
-	bool isDetected;        // 検出されているか
-	float timer;            // 検出表示タイマー
+	bool isDetected;				// 検出されているか
+	float timer;					// 検出表示タイマー
 	vec::Vec3 soundSourcePosition;  // 音源の位置を追加
-	int detectedSoundLevel;  // 検知した音レベルを追加
+	int detectedSoundLevel;			// 検知した音レベルを追加
 };
 
 class EnemySoundSensor : public EnemyBase
@@ -43,14 +43,11 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	
 	void SetMap(Map* map) { _map = map; }
-
-	// サウンドセンサー範囲の設定
 	void SetSoundSensorArea(float radius);	// 半径
-
 	void SetSoundLevel(int level);
 
-	// 音検知情報を取得するゲッターを追加
 	const SoundDectionInfo& GetDetectionInfo() const { return _sounddetectionInfo; }
 
 	// 音の波紋を発生させる
@@ -75,6 +72,6 @@ protected:
 	// 音を検知したときの処理
 	void OnSoundDetected(const vec::Vec3& soundOrigin);
 
-	int _soundLevel;
+	int _soundLevel;// 音レベル
 };
 

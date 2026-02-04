@@ -64,6 +64,7 @@ bool Enemy::Initialize()
 	// 敵の向き変更タイマーの初期化
 	DirChangeTimer = DirChangeInterval;
 
+	// 検知終了後の待機処理の初期化
 	_waitingBeforeReturn = false;
 	_returnWaitTimer = 0.0f;
 
