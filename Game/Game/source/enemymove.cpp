@@ -1,5 +1,4 @@
-﻿
-/*********************************************************************/
+﻿/*********************************************************************/
 // * \file   enemy.cpp
 // * \brief  エネミークラス
 // *
@@ -56,7 +55,7 @@ bool EnemyMove::Initialize()
 	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
 
 	// 移動関連の初期化
-	_moveSpeed = 2.0f;								// 移動速度（調整可能）
+	_moveSpeed = 5.0f;								// 移動速度（調整可能）
 	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	// 目標位置の初期化
 	_isMoving = false;								// 移動中フラグの初期化
 
@@ -77,7 +76,7 @@ bool EnemyMove::Initialize()
 
 	_patroll = std::make_shared<MovePointControll>();
 	_isPatroll = false;
-	_patrolSpeed = 15.0f;
+	_patrolSpeed = 5.0f;
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 
@@ -116,10 +115,15 @@ void EnemyMove::ProcessPatrol()
 
 	// 到着判定（移動前）
 	const float reachThreshold = 15.0f;
-	if(dist >= reachThreshold)
+	// NOTE:
+	// 到着判定は「距離が閾値以下」で到着とみなすべきなので <= に変更。
+	// また、MoveToNextPoint() は MovePointControll 側でインデックスを
+	// 進めるため、ここで別途 +1 するべきではない。
+	if(dist <= reachThreshold)
 	{
 		_patroll->MoveToNextPoint();
-		_patrolIndex = (_patrolIndex + 1) % _patroll->GetMovePointCount();
+		// MovePointControll 側のインデックスを反映する（重複インクリメントの防止）
+		_patrolIndex = _patroll->GetMovePointIndex();
 		target = _patroll->GetTargetPoint();
 		// 目標更新
 		toTarget = vec3::VSub(target, _vPos);
@@ -145,7 +149,7 @@ void EnemyMove::ProcessPatrol()
 		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
 		{
 			_patroll->MoveToNextPoint();
-			_patrolIndex = (_patrolIndex + 1) % _patroll->GetMovePointCount();
+			_patrolIndex = _patroll->GetMovePointIndex();
 		}
 	}
 }
@@ -492,4 +496,3 @@ bool EnemyMove::Render()
 
 	return true;
 }
-

@@ -274,9 +274,9 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			auto enemy = std::make_shared<Enemy>();
-			enemy->Initialize();
-			enemy->SetJsonDataUE(object);
+			//auto enemy = std::make_shared<Enemy>();
+			//enemy->Initialize();
+			//enemy->SetJsonDataUE(object);
 
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
@@ -285,10 +285,10 @@ bool ModeGame::LoadStageData()
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
-			enemy->SetEnemySensor(sensor);
+			//enemy->SetEnemySensor(sensor);
 			enemyMove->SetEnemySensor(sensor);
 
-			_enemy.emplace_back(enemy);
+			//_enemy.emplace_back(enemy);
 			_enemyMove.emplace_back(enemyMove);
 		}
 	}
@@ -449,6 +449,27 @@ bool ModeGame::Process()
 				CharaToCharaCollision(player, enemy.get());
 			}
 
+		}
+
+		// 巡回系エネミー（EnemyMove）も同様に判定
+		for(auto& enemyMove : _enemyMove)
+		{
+			if(!enemyMove || !enemyMove->IsAlive())
+			{
+				continue;
+			}
+
+			// 軽量な早期判定（XZ円）
+			if(IsHitCircle(player, enemyMove.get()))
+			{
+				// 実際の押し出し（カプセル）
+				if(!enemyMove->IsShowingYouDiedMessage())
+				{
+					enemyMove->TriggerYouDiedMessage();
+				}
+
+				CharaToCharaCollision(player, enemyMove.get());
+			}
 		}
 	}
 
@@ -690,7 +711,6 @@ bool ModeGame::CheckAllDetections()
 	auto processContainer = [&](auto& container) -> bool {
 		for(auto& item : container)
 		{
-			// Enemy と EnemyMove はどちらも EnemyBase を継承しているため EnemyBase* にキャスト可能
 			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
 			if(!eb || !eb->IsAlive())
 			{
@@ -703,38 +723,23 @@ bool ModeGame::CheckAllDetections()
 				continue;
 			}
 
-			// センサーを敵に同期
 			sensor->SetPos(eb->GetPos());
 			sensor->SetDir(eb->GetDir());
 			sensor->SetMap(_map.get());
 
-			// タイマー更新など
 			sensor->Process();
 
-			// タヌキ状態の時のみ検知処理を実行
+			// プレイヤーがタヌキでない（＝player状態）のときは
+			// 「敵を強制的に見失わせて戻らせる」処理を行わない。
+			// センサー情報だけリセットして巡回を維持する。
 			if(!_bShowTanuki)
 			{
-				// 人間状態では検知されない -> 全敵の検知をリセットして見失い処理
-				for(auto& e : _enemy)
-				{
-					if(e->IsAlive() && e->GetEnemySensor())
-					{
-						e->GetEnemySensor()->ResetDetection();
-						e->OnPlayerLost();
-					}
-				}
-				for(auto& em : _enemyMove)
-				{
-					if(em->IsAlive() && em->GetEnemySensor())
-					{
-						em->GetEnemySensor()->ResetDetection();
-						em->OnPlayerLost();
-					}
-				}
-				return true; // 処理終了（人間では検知処理しない）
+				sensor->ResetDetection();
+				// ここで eb->OnPlayerLost() を呼ぶと敵が帰還モードになり巡回を止めるため呼ばない
+				continue;
 			}
 
-			const bool detected = sensor->CheckPlayerDetection(player);
+			bool detected = sensor->CheckPlayerDetection(player);
 
 			if(detected)
 			{
@@ -743,7 +748,6 @@ bool ModeGame::CheckAllDetections()
 			}
 			else
 			{
-				// 追跡中なら見失い扱いにしない（追跡を継続）
 				if(!sensor->IsChasing())
 				{
 					eb->OnPlayerLost();
@@ -753,9 +757,8 @@ bool ModeGame::CheckAllDetections()
 		return false;
 		};
 
-	// 通常エネミーと巡回系を順にチェック
-	if(processContainer(_enemy)) return true;
-	if(processContainer(_enemyMove)) return true;
+	processContainer(_enemy);
+	processContainer(_enemyMove);
 
 	return anyDetected;
 }

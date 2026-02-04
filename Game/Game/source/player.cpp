@@ -17,7 +17,7 @@ bool Player::Initialize()
 	if(!base::Initialize()) { return false; }
 	_handle = MV1LoadModel(mv1::SK_tanuhuman_multimotion);
 	_iAttachIndex = -1;
-    _animId = -1;
+	_animId = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
 	// 再生時間の初期化
@@ -45,12 +45,8 @@ bool Player::Initialize()
 	_camOffset = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_camTargetOffset = vec3::VGet(0.0f, 0.0f, 0.0f);
 
-	// 円形移動用パラメータ初期化
-	_arc_pivot_dist = 50.0f;    // 回転中心までの距離（調整可）
-	_arc_turn_speed = 1.0f;     // 円形移動速度係数（調整可）
-	
 	_bLand = true;
-	
+
 	// 初期体力設定
 	_fHp = 20.0f;
 
@@ -99,14 +95,14 @@ bool Player::Process()
 
 	base::Process();
 
-	// 処理前の位置を保存
+	// 処理前の位置を保存（他の当たり判定で参照するため）
 	_vOldPos = _vPos;
 
 	// 処理前のステータスを保存しておく
 	CharaBase::STATUS old_status = _status;
 	// 移動方向を決める
-    _v = { 0,0,0 };
-	
+	_v = { 0,0,0 };
+
 	// カメラの向いている角度を取得
 	float sx = _cam->_vPos.x - _cam->_vTarget.x;
 	float sz = _cam->_vPos.z - _cam->_vTarget.z;
@@ -114,40 +110,40 @@ bool Player::Process()
 	float rad = 0.0f;
 
 	//左スティック値
-    lStickX = fLx;
-    lStickZ = fLz;
+	lStickX = fLx;
+	lStickZ = fLz;
 
-	// ローカル入力ベクトル
+	// ローカル入力ベクトル（キーボード）
 	vec3::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 	if((key & (PAD_INPUT_7 | PAD_INPUT_8)) == 0)
 	{
 		// キャラ移動(カメラ設定に合わせて)
 
-	    // 操作
-		if (CheckHitKey(KEY_INPUT_UP))
-		{
-			inputLocal.z = -1.0f;
-		}
-		if (CheckHitKey(KEY_INPUT_DOWN))
-		{
-			inputLocal.z = 1.0f;
-		}
-		if (CheckHitKey(KEY_INPUT_LEFT))
-		{
-			inputLocal.x = -1.0f;
-		}
-		if (CheckHitKey(KEY_INPUT_RIGHT))
+		// 操作（キーボード）
+		if(CheckHitKey(KEY_INPUT_UP))
 		{
 			inputLocal.x = 1.0f;
 		}
+		if(CheckHitKey(KEY_INPUT_DOWN))
+		{
+			inputLocal.x = -1.0f;
+		}
+		if(CheckHitKey(KEY_INPUT_LEFT))
+		{
+			inputLocal.z = 1.0f;
+		}
+		if(CheckHitKey(KEY_INPUT_RIGHT))
+		{
+			inputLocal.z = -1.0f;
+		}
 
-		// ローカル入力ベクトルを計算
+		// アナログ入力の長さ/角度
 		float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-		float rad = atan2(lStickX, lStickZ);
+		float radStick = atan2(lStickX, lStickZ);
 
 		// アナログ左スティック用
-		if (length < _fAnalogDeadZone)
+		if(length < _fAnalogDeadZone)
 		{
 			// 入力が小さかったら動かなかったことにする
 			length = 0.f;
@@ -157,18 +153,27 @@ bool Player::Process()
 			length = _fMvSpeed;
 		}
 
-		// vをrad分回転させる
-		if (vec3::VSize(_v) > 0.f) { length = _fMvSpeed; }
-		_v.x = cos(rad + camrad) * length;
-		_v.z = sin(rad + camrad) * length;
+		// World-space の移動ベクトル（アニメ/向き用）
+		_v.x = cos(radStick + camrad) * length;
+		_v.z = sin(radStick + camrad) * length;
 
-		// 処理前の位置を保存
-		_vOldPos = _vPos;
+		// 重要：ここで直接 _vPos に加算しない。
+		// 移動（位置更新）と床判定は ModeGame::EscapeCollision に委ねる。
+		// 代わりに入力ベクトルを保存して、EscapeCollision が使えるようにする。
 
-		// vの分移動
-		_vPos = vec3::VAdd(_vPos, _v);
+		// 優先順：アナログ > キーボード
+		if(length > 0.0f)
+		{
+			_vInput = vec3::VGet(lStickZ, 0.0f, lStickX);
+			if(vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
+		}
+		else
+		{
+			_vInput = inputLocal;
+			if(vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
+		}
 
-        // 十字キー保持での軸ロック開始判定
+		// 十字キー保持での軸ロック開始判定
 		if(key & PAD_INPUT_6)
 		{
 			_iAxisHoldCount++;
@@ -178,7 +183,7 @@ bool Player::Process()
 				if(!_bAxisUseLock)
 				{
 					_bAxisUseLock = true;
-					
+
 					// 現在の向きをロック方向として保存
 					_vAxisLockDir = _vDir;
 					_vAxisLockDir.y = 0.0f;
@@ -207,26 +212,26 @@ bool Player::Process()
 			vec::Vec3 axis_lock_input = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 			// 軸ロック専用の入力を取得
-			if(key & PAD_INPUT_DOWN) 
+			if(key & PAD_INPUT_DOWN)
 			{
 				axis_lock_input.x = 0.5f;
 			}
-			if(key & PAD_INPUT_UP) 
+			if(key & PAD_INPUT_UP)
 			{
 				axis_lock_input.x = -0.5f;
 			}
-			if(key & PAD_INPUT_LEFT) 
+			if(key & PAD_INPUT_LEFT)
 			{
 				axis_lock_input.z = -0.5f;
 			}
-			if(key & PAD_INPUT_RIGHT) 
+			if(key & PAD_INPUT_RIGHT)
 			{
 				axis_lock_input.z = 0.5f;
 			}
 
-			_vInput = axis_lock_input;
+			_vInput = axis_lock_input; // 上書き（軸ロック優先）
 
-			// 入力があれば軸ロック移動を計算
+			// 入力があれば軸ロック移動を計算（アニメ用 _v は更新）
 			if(vec3::VSize(axis_lock_input) > 0.0f)
 			{
 				vec::Vec3 forward = _vAxisLockDir;
@@ -236,7 +241,7 @@ bool Player::Process()
 					forward = vec3::VNorm(forward);
 				}
 				// 右ベクトル（XZ平面で前方の90度回転）
-				VECTOR right = VGet(forward.z, 0.0f, -forward.x);
+//				VECTOR right = VGet(forward.z, 0.0f, -forward.x);
 
 				// ローカル入力 axis_lock_input.x = 前後(UP/DOWN), axis_lock_input.z = 左右(LEFT/RIGHT)
 				float forwardInput = -axis_lock_input.x; // UP = 前進, DOWN = 後退
@@ -244,10 +249,13 @@ bool Player::Process()
 
 				// 移動ベクトルを計算（前方向 + 横方向）
 				vec::Vec3 moveDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+				// right ベクトルを直接計算して組み合わせる
+				vec::Vec3 right = vec3::VGet(forward.z, 0.0f, -forward.x);
+
 				moveDir.x = forward.x * forwardInput + right.x * sideInput;
 				moveDir.z = forward.z * forwardInput + right.z * sideInput;
 
-				// 移動ベクトルを正規化してから速度を掛ける
+				// 移動ベクトルを正規化してから速度を掛ける（アニメ向け）
 				if(vec3::VSize(moveDir) > 0.0f)
 				{
 					moveDir = vec3::VNorm(moveDir);
@@ -255,28 +263,34 @@ bool Player::Process()
 					_v.z = moveDir.z * _fMvSpeed;
 				}
 
-
 				// 向きは固定
 				_vDir = forward;
 			}
 
 		}
-        else
-        {
-            // 通常：カメラ方向に合わせて回転して移動（inputLocal はローカル入力）
-            // vをrad分回転させる（ローカル入力の角度）
-            if(vec3::VSize(inputLocal) > 0.0f)
-            {
-                length = _fMvSpeed;
-                float localRad = atan2(inputLocal.z, inputLocal.x);
-                _v.x = cos(localRad + camrad) * length;
-                _v.z = sin(localRad + camrad) * length;
-            }
+		else
+		{
+			// 通常：カメラ方向に合わせて回転して移動（inputLocal はローカル入力）
+			// vをrad分回転させる（ローカル入力の角度）
+			if(vec3::VSize(inputLocal) > 0.0f)
+			{
+				float lengthLocal = _fMvSpeed;
+				float localRad = atan2(inputLocal.z, inputLocal.x);
+				_v.x = cos(localRad + camrad) * lengthLocal;
+				_v.z = sin(localRad + camrad) * lengthLocal;
 
-        }
+				// キーボード入力の場合、_vInput を上書き（アナログ優先だが無ければキーボードを使用）
+				if(vec3::VSize(_vInput) == 0.0f)
+				{
+					_vInput = inputLocal;
+					if(vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
+				}
+			}
+
+		}
 	}
 
-	// 地上移動
+	// 地上移動（アニメ・向き更新のみ。実際の座標更新は ModeGame::EscapeCollision に任せる）
 	if(vec3::VSize(_v) > 0.0f)
 	{
 		if(_bAxisUseLock)
@@ -337,40 +351,40 @@ bool Player::Process()
 	}
 	else
 	{
-        if(_animId != -1)
-        {
-            AnimationManager::GetInstance()->Stop(_animId);
-            _animId = -1;
-        }
+		if(_animId != -1)
+		{
+			AnimationManager::GetInstance()->Stop(_animId);
+			_animId = -1;
+		}
 
-        std::string anim_name;
-        switch(_status)
-        {
-        case STATUS::WAIT:
-            anim_name = "mot_attack_charge_loop";
-            break;
-        case STATUS::WALK:
-            anim_name = "mot_move_run";
-            break;
-        default:
-            anim_name.clear();
-        }
+		std::string anim_name;
+		switch(_status)
+		{
+		case STATUS::WAIT:
+			anim_name = "idle_kari";
+			break;
+		case STATUS::WALK:
+			anim_name = "walk";
+			break;
+		default:
+			anim_name.clear();
+		}
 
-        if(!anim_name.empty())
-        {
-            _animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-            _fPlayTime = 0.0f;
-            switch(_status)
-            {
-                case STATUS::WAIT:
-                    _fPlayTime += rand() % 30;
-                    break;
-            }
-            if(_animId != -1)
-            {
-                AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
-            }
-        }
+		if(!anim_name.empty())
+		{
+			_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
+			_fPlayTime = 0.0f;
+			switch(_status)
+			{
+			case STATUS::WAIT:
+				_fPlayTime += rand() % 30;
+				break;
+			}
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			}
+		}
 	}
 	if(_fPlayTime >= _fTotalTime)
 	{
@@ -386,7 +400,7 @@ bool Player::Render()
 	base::Render();
 	// 再生時間をセットする
 	//MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
-	
+
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
 	MATRIX mRotY = MGetRotY(vorty);
