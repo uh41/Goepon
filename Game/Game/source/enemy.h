@@ -47,7 +47,7 @@ public:
 
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
 	std::shared_ptr<EnemySoundSensor> GetEnemySoundSensor() const { return _enemySoundSensor; }
-
+	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー

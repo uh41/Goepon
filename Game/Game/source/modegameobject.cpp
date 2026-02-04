@@ -128,6 +128,14 @@ bool ModeGame::PlayerTransform()
 			EffekseerManager::GetInstance()->PlayEffect3DPos(_henshineffectHandle, _player->GetPos());
 		}
 
+		for (auto& enemy : _enemy)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
+			}
+		}
+
 		// ここが重要：影の追従先を「人間」に更新
 		if (!_charaShadow.empty())
 		{

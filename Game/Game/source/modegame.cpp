@@ -264,7 +264,7 @@ bool ModeGame::LoadStageData()
 
 			soundSensor->Initialize();					// 音センサー初期化
 			soundSensor->SetMap(_map.get());			// マップ設定
-			soundSensor->SetSoundSensorArea(600.0f);	// 音センサー範囲
+			soundSensor->SetSoundSensorArea(250.0f);	// 音センサー範囲
 			soundSensor->SetPos(enemy->GetPos());		// 敵の位置にセット
 			
 			_enemy.emplace_back(enemy);	// 敵リストに追加
@@ -667,7 +667,7 @@ bool ModeGame::CheckAllDetections()
 			// 人間状態では変身キャンセル不要
 			_bTransCancel = false;
 
-			return true;
+			continue; // この敵の処理をスキップして次の敵へ
 		}
 
 		// プレイヤー検知チェック
