@@ -25,6 +25,7 @@
 #include "uihp.h"
 #include "charashadow.h"
 #include "ObjectServer.h"
+#include "Goal.h"
 
 
 

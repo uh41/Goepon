@@ -71,8 +71,11 @@ public:
 	//回転縮小平行移動を計算し、モデルに適用する
 	void ModelMatrixSetUp();
 
+	//モデル読み込み
 	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
 
+	//当たり判定用フレームに行列を適用し、当たり判定情報を更新する
+	void ApplyMatrixAndRefreshCollInfo(int handle, int hitFrame, int openFrame, const MATRIX& m);
 protected:
 
 	//モデルの当たり判定用フレームのアタッチ番号

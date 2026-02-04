@@ -154,6 +154,12 @@
     <Filter Include="ソース ファイル\モードゲーム\ゲームクリア">
       <UniqueIdentifier>{f2beb217-a4bf-4dc5-9c76-c8b430793ee7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\ゴール">
+      <UniqueIdentifier>{c72ab0a9-c393-4cf2-82a7-8e3ddd5debd0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\ゴール">
+      <UniqueIdentifier>{ffa257a0-c579-48b4-ac77-bc11ba8c3ef4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\modeeffekseer.h">
@@ -245,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="source\ModeGameClear.h">
       <Filter>ヘッダー ファイル\ゲームクリア</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Goal.h">
+      <Filter>ヘッダー ファイル\モードゲーム\ゴール</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -346,6 +355,9 @@
     </ClCompile>
     <ClCompile Include="source\ModeGameClear.cpp">
       <Filter>ソース ファイル\モードゲーム\ゲームクリア</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Goal.cpp">
+      <Filter>ソース ファイル\モードゲーム\ゴール</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

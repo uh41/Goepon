@@ -1,32 +1,6 @@
 ﻿#include "Treasure.h"
 
 
-namespace
-{
-
-	inline void ApplyMatrixAndRefreshCollInfo(int handle, int hitFrame, int openFrame, const MATRIX& m)
-	{
-
-		if(handle < 0)
-		{
-			return;
-		}
-
-
-		MV1SetMatrix(handle, m);
-
-
-		if(hitFrame >= 0)
-		{
-			MV1RefreshCollInfo(handle, hitFrame);
-		}
-		if(openFrame >= 0)
-		{
-			MV1RefreshCollInfo(handle, openFrame);
-		}
-	}
-}
-
 bool Treasure::Initialize()
 {
 	base::Initialize();
