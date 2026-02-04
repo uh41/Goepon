@@ -44,35 +44,52 @@ void EnemySoundSensor::SetSoundSensorArea(float radius)
 	_soundsensorarea.radius = radius;
 }
 
+void EnemySoundSensor::SetSoundLevel(int level)
+{
+	_soundLevel = level; 
+}
+
+// 音の波紋を発生させる
 void EnemySoundSensor::TriggerSoundWave(const vec::Vec3& origin, float maxRadius, float speed)
 {
 	// 既存の非アクティブな波紋を再利用、またはベクターに追加
 	SoundWave* wave = nullptr;
-	for (auto& w : _soundWaves) {
-		if (!w.isActive) {
+
+	// 既存の非アクティブな波紋を探す
+	for (auto& w : _soundWaves)
+	{
+		if (!w.isActive) 
+		{
 			wave = &w;
 			break;
 		}
 	}
 
-	if (!wave && _soundWaves.size() < MAX_SOUND_WAVES) {
+	// 新しい波紋を追加
+	if (!wave && _soundWaves.size() < MAX_SOUND_WAVES)
+	{
 		_soundWaves.emplace_back();
 		wave = &_soundWaves.back();
 	}
 
-	if (wave) {
+	// 波紋の初期化
+	if (wave) 
+	{
 		wave->origin = origin;
 		wave->currentRadius = 0.0f;
 		wave->maxRadius = maxRadius;
 		wave->expandSpeed = speed;
 		wave->isActive = true;
 		wave->alpha = 1.0f;
+		wave->soundLevel = _soundLevel;
 	}
 }
 
+// 音の波紋の更新
 void EnemySoundSensor::UpdateSoundWaves()
 {
-	for (auto& wave : _soundWaves) {
+	for (auto& wave : _soundWaves) 
+	{
 		if (!wave.isActive) continue;
 
 		// 半径を拡大
@@ -82,13 +99,15 @@ void EnemySoundSensor::UpdateSoundWaves()
 		wave.alpha = 1.0f - (wave.currentRadius / wave.maxRadius);
 
 		// ★ 音の波紋とサウンドセンサーの当たり判定
-		if (CheckSoundWaveCollision(wave)) {
+		if (CheckSoundWaveCollision(wave))
+		{
 			// 音を検知した場合の処理
 			OnSoundDetected(wave.origin);
 		}
 
 		// 最大半径に達したら非アクティブに
-		if (wave.currentRadius >= wave.maxRadius) {
+		if (wave.currentRadius >= wave.maxRadius)
+		{
 			wave.isActive = false;
 		}
 	}
@@ -98,7 +117,8 @@ void EnemySoundSensor::UpdateSoundWaves()
 bool EnemySoundSensor::CheckSoundWaveCollision(const SoundWave& wave) const
 {
 	// サウンドセンサーが無効または半径が未設定の場合は判定しない
-	if (_soundsensorarea.radius <= 0.0f) {
+	if (_soundsensorarea.radius <= 0.0f) 
+	{
 		return false;
 	}
 
@@ -116,14 +136,16 @@ bool EnemySoundSensor::CheckSoundWaveCollision(const SoundWave& wave) const
 	float radiusSum = wave.currentRadius + _soundsensorarea.radius;
 
 	// 波紋がセンサー範囲に到達または重なっている場合
-	if (centerDistance <= radiusSum) {
+	if (centerDistance <= radiusSum) 
+	{
 		// さらに、波紋がセンサー範囲の外側から来ている場合のみ検知
 		// （センサー内部で発生した音は除外する場合）
 		float prevRadius = wave.currentRadius - wave.expandSpeed;
 		float prevRadiusSum = prevRadius + _soundsensorarea.radius;
 
 		// 前フレームでは接触していなかったが、今フレームで接触した場合
-		if (prevRadiusSum < centerDistance) {
+		if (prevRadiusSum < centerDistance) 
+		{
 			return true;
 		}
 	}
@@ -140,16 +162,21 @@ void EnemySoundSensor::OnSoundDetected(const vec::Vec3& soundOrigin)
 		return;
 	}
 
-	// 検知状態を設定
-	_sounddetectionInfo.isDetected = true;
-	_sounddetectionInfo.timer = 2.0f; // 例: 2秒間検知状態を維持
-
-	
+	// 音レベルが5の場合のみ反応
+	if (_soundLevel == 5)
+	{
+		// 検知状態を設定
+		_sounddetectionInfo.isDetected = true;
+		_sounddetectionInfo.timer = 2.0f; // 例: 2秒間検知状態を維持
+		_sounddetectionInfo.soundSourcePosition = soundOrigin;  // 音源の位置を保存
+		_sounddetectionInfo.detectedSoundLevel = _soundLevel;  // 音レベルを保存
+	}
 }
 
 void EnemySoundSensor::RenderSoundWaves()
 {
-	for (const auto& wave : _soundWaves) {
+	for (const auto& wave : _soundWaves) 
+	{
 		if (!wave.isActive) continue;
 
 		// 円の分割数
@@ -164,7 +191,8 @@ void EnemySoundSensor::RenderSoundWaves()
 		// 円を線分で描画（3D空間でのY座標は地面+少し上）
 		float y = wave.origin.y + 0.5f;  // 地面より少し浮かせる
 
-		for (int i = 0; i < segments; ++i) {
+		for (int i = 0; i < segments; ++i) 
+		{
 			float angle1 = angleStep * i;
 			float angle2 = angleStep * (i + 1);
 

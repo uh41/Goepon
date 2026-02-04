@@ -67,6 +67,18 @@ bool Enemy::Initialize()
 	_waitingBeforeReturn = false;
 	_returnWaitTimer = 0.0f;
 
+	// 音検知による移動の初期化
+	_isMovingToSound = false;
+	_soundSourcePosition = vec3::VGet(0.0f, 0.0f, 0.0f);
+
+	// 音源到達後の待機処理の初期化
+	_waitingAtSound = false;
+	_soundWaitTimer = 0.0f;
+
+	// 音検知からの経過時間管理の初期化
+	_soundDetectionActive = false;
+	_soundDetectionTimer = 0.0f;
+
 	return true;
 }
 
@@ -119,6 +131,15 @@ void Enemy::OnPlayerDetected(const vec::Vec3& playerPos)
 
 	// テレポート関連をリセット
 	ResetTeleport();
+
+	// 音源への移動と待機を中断
+	_isMovingToSound = false;
+	_waitingAtSound = false;
+	_soundWaitTimer = 0.0f;
+
+	// 音検知タイマーをリセット
+	_soundDetectionActive = false;
+	_soundDetectionTimer = 0.0f;
 }
 
 // プレイヤーが検出範囲外になった時の処理
@@ -247,6 +268,15 @@ void Enemy::StartReturningToInitialPosition()
 		{
 			_enemySensor->ResetDetection();
 		}
+
+		// 音源への移動と待機を中断
+		_isMovingToSound = false;
+		_waitingAtSound = false;
+		_soundWaitTimer = 0.0f;
+
+		// 音検知タイマーをリセット
+		_soundDetectionActive = false;
+		_soundDetectionTimer = 0.0f;
 	}
 }
 
@@ -355,6 +385,130 @@ void Enemy::UpdateReturningToInitialPosition()
 	_detectedPlayer = false;
 }
 
+// 音源に向かって移動する処理
+void Enemy::UpdateMovingToSound()
+{
+	if (!_isMovingToSound) return;
+
+	// 音源までの距離を計算
+	vec::Vec3 toSound = vec3::VSub(_soundSourcePosition, _vPos);
+	toSound.y = 0.0f; // Y軸は無視
+
+	float distance = vec3::VSize(toSound);
+
+	// 音源に十分近づいたら移動を停止
+	const float arrivalDistance = 50.0f;
+	if (distance < arrivalDistance)
+	{
+		_isMovingToSound = false;
+		_waitingAtSound = true;
+		//_soundWaitTimer = SOUND_WAIT_TIME;
+		_status = STATUS::WAIT;
+		return;
+	}
+
+	// 音源の方向を向く
+	vec::Vec3 soundDir = vec3::VNorm(toSound);
+	float currentAngle = atan2f(_vDir.x, _vDir.z);
+	float targetAngle = atan2f(soundDir.x, soundDir.z);
+
+	// 角度差を計算（-π から π の範囲に正規化）
+	float angleDiff = targetAngle - currentAngle;
+	while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+	while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+	// 回転速度を制限
+	if (abs(angleDiff) > _rotationSpeed)
+	{
+		angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
+	}
+
+	// 新しい角度を計算
+	float newAngle = currentAngle + angleDiff;
+	_vDir.x = sin(newAngle);
+	_vDir.z = cos(newAngle);
+
+	// 音源に向かって移動（壁回避機能を使用）
+	// 壁回避を試行する角度テーブル（度数）
+	static const float wallAvoidanceAngles[] = {
+		0.0f,     // 直進
+		-30.0f,   // 左30度
+		30.0f,    // 右30度
+		-60.0f,   // 左60度
+		60.0f,    // 右60度
+		-90.0f,   // 左90度
+		90.0f,    // 右90度
+	};
+
+	vec::Vec3 finalMovement;
+	bool validMovementFound = false;
+
+	// 各角度で移動可能かチェック
+	for (int i = 0; i < sizeof(wallAvoidanceAngles) / sizeof(wallAvoidanceAngles[0]); i++)
+	{
+		float angleRad = DEG2RAD(wallAvoidanceAngles[i]);
+
+		// 音源への方向を指定角度分回転
+		vec::Vec3 testDirection;
+		testDirection.x = soundDir.x * cos(angleRad) - soundDir.z * sin(angleRad);
+		testDirection.y = 0.0f;
+		testDirection.z = soundDir.x * sin(angleRad) + soundDir.z * cos(angleRad);
+
+		// 移動量を計算
+		vec::Vec3 testMovement = vec3::VScale(testDirection, _moveSpeed);
+
+		// テスト移動後の位置を計算
+		vec::Vec3 testPos = vec3::VAdd(_vPos, testMovement);
+
+		// 床の存在を確認
+		if (CheckFloorExistence(testPos))
+		{
+			finalMovement = testMovement;
+			validMovementFound = true;
+
+			// 直進以外の方向で移動する場合、その方向を向く
+			if (i > 0)
+			{
+				// 移動方向に徐々に向きを変更
+				float testAngle = atan2f(testDirection.x, testDirection.z);
+				float testAngleDiff = testAngle - currentAngle;
+				while (testAngleDiff > DX_PI_F) testAngleDiff -= 2.0f * DX_PI_F;
+				while (testAngleDiff < -DX_PI_F) testAngleDiff += 2.0f * DX_PI_F;
+
+				// 回転速度を制限
+				float maxRotation = _rotationSpeed * 1.5f;
+				if (abs(testAngleDiff) > maxRotation)
+				{
+					testAngleDiff = (testAngleDiff > 0) ? maxRotation : -maxRotation;
+				}
+
+				// 新しい角度を適用
+				float adjustedAngle = currentAngle + testAngleDiff;
+				_vDir.x = sin(adjustedAngle);
+				_vDir.z = cos(adjustedAngle);
+			}
+			break;
+		}
+	}
+
+	// 移動可能な方向が見つからない場合は初期位置に戻る
+	if (!validMovementFound)
+	{
+		_isMovingToSound = false;
+		_waitingAtSound = false;
+		_soundDetectionActive = false;
+		_soundDetectionTimer = 0.0f;
+		StartReturningToInitialPosition();
+		return;
+	}
+
+	// 実際に移動を実行
+	_vPos = vec3::VAdd(_vPos, finalMovement);
+
+	// 移動中はWALKステータスに設定
+	_status = STATUS::WALK;
+}
+
 // 計算処理
 bool Enemy::Process()
 {
@@ -366,6 +520,63 @@ bool Enemy::Process()
 	if (_status == STATUS::NONE)
 	{
 		_status = STATUS::WAIT;
+	}
+
+	// 音検知タイマーの更新（音検知が有効な場合）
+	if (_soundDetectionActive)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_soundDetectionTimer += dt;
+
+		// 10秒経過したら初期位置への帰還を開始
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		{
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			_isMovingToSound = false;
+			_waitingAtSound = false;
+			StartReturningToInitialPosition();
+		}
+	}
+
+	// 音源到達後の待機処理
+	if (_waitingAtSound)
+	{
+		// 待機中はWAITステータスに設定
+		_status = STATUS::WAIT;
+
+		// 待機中はプレイヤー検出されたら割り込み可能
+		// この処理は下のEnemySensorの処理で行われる
+	}
+
+	// EnemySoundSensorから音の検知情報を取得
+	if (_enemySoundSensor)
+	{
+		// 音レベル5の音を検知したかチェック
+		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
+		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		{
+			// プレイヤーを検出中または追跡中でなければ、音源に向かって移動開始
+			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			{
+				_isMovingToSound = true;
+				_soundSourcePosition = detectionInfo.soundSourcePosition;
+
+				// 音検知タイマーを開始
+				_soundDetectionActive = true;
+				_soundDetectionTimer = 0.0f;
+
+				// 初期位置への帰還を中断
+				_waitingBeforeReturn = false;
+				_returnWaitTimer = 0.0f;
+			}
+		}
+	}
+
+	// 音源への移動処理（プレイヤー検出より優先度は低い）
+	if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	{
+		UpdateMovingToSound();
 	}
 
 	// 検知終了後の待機処理
@@ -405,6 +616,14 @@ bool Enemy::Process()
 
 				// プレイヤーを検出中は初期位置に戻るのを停止
 				_isReturningToInitialPos = false;
+
+				// 音源への移動と待機を中断
+				_isMovingToSound = false;
+				_waitingAtSound = false;
+				_soundWaitTimer = 0.0f;
+				// 音検知タイマーをリセット
+				_soundDetectionActive = false;
+				_soundDetectionTimer = 0.0f;
 			}
 			else if (_isReturningToInitialPos)
 			{
@@ -412,13 +631,19 @@ bool Enemy::Process()
 				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
 				UpdateReturningToInitialPosition();
 			}
+			else if (_isMovingToSound)
+			{
+				// 音源に向かって移動中（この条件を追加）
+				_status = STATUS::WALK;
+			}
 			else
 			{
 				// 追跡も初期位置への復帰もしていない場合
 				_status = STATUS::WAIT;
 
 				// 追跡が終了して初期位置にいない場合、初期位置に戻り始める
-				if (!_enemySensor->IsChasing() && !IsAtInitialPosition())
+				// 音源移動中や音源待機中は初期位置への帰還を開始しない
+				if (!_enemySensor->IsChasing() && !IsAtInitialPosition() && !_isMovingToSound && !_waitingAtSound)
 				{
 					StartReturningToInitialPosition();
 				}
@@ -581,6 +806,14 @@ void Enemy::UpdateChasing()
 
 		// 初期位置に戻るのを停止
 		_isReturningToInitialPos = false;
+
+		// 音源への移動を中断
+		_isMovingToSound = false;
+
+		// 音源への移動と待機を中断
+		_isMovingToSound = false;
+		_waitingAtSound = false;
+		_soundWaitTimer = 0.0f;
 	}
 	else
 	{

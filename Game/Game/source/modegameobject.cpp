@@ -133,6 +133,7 @@ bool ModeGame::PlayerTransform()
 			if (enemy->IsAlive())
 			{
 				enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
+				enemy->GetSoundSensor()->SetSoundLevel(5);
 			}
 		}
 

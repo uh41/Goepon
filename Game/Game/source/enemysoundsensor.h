@@ -5,6 +5,7 @@
 // 前方宣言
 class Map;
 
+// サウンドセンサー範囲の情報を格納する構造体
 struct SoundSensorArea
 {
 	vec::Vec3 center;   // センサーの中心点（敵の位置）
@@ -20,13 +21,16 @@ struct SoundWave
 	float expandSpeed;    // 拡大速度
 	bool isActive;        // アクティブフラグ
 	float alpha;          // 透明度（0.0 ～ 1.0）
+	int soundLevel;
 };
 
+// 検出状態の情報
 struct SoundDectionInfo
 {
 	bool isDetected;        // 検出されているか
 	float timer;            // 検出表示タイマー
-	
+	vec::Vec3 soundSourcePosition;  // 音源の位置を追加
+	int detectedSoundLevel;  // 検知した音レベルを追加
 };
 
 class EnemySoundSensor : public EnemyBase
@@ -44,6 +48,11 @@ public:
 	// サウンドセンサー範囲の設定
 	void SetSoundSensorArea(float radius);	// 半径
 
+	void SetSoundLevel(int level);
+
+	// 音検知情報を取得するゲッターを追加
+	const SoundDectionInfo& GetDetectionInfo() const { return _sounddetectionInfo; }
+
 	// 音の波紋を発生させる
 	void TriggerSoundWave(const vec::Vec3& origin, float maxRadius, float speed);
 
@@ -60,10 +69,12 @@ protected:
 	void RenderSoundWaves();
 	void UpdateSoundWaves();
 
-	// ★ 新規追加：音の波紋とサウンドセンサーの当たり判定
+	// 音の波紋とサウンドセンサーの当たり判定
 	bool CheckSoundWaveCollision(const SoundWave& wave) const;
 
-	// ★ 新規追加：音を検知したときの処理
+	// 音を検知したときの処理
 	void OnSoundDetected(const vec::Vec3& soundOrigin);
+
+	int _soundLevel;
 };
 
