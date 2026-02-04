@@ -69,21 +69,26 @@ bool ObjectServer::Render()
 
 void ObjectServer::AddObject(ObjectBase* obj)
 {
-	// 既に追加されているか
-	auto iter = std::find(_deleteObj.begin(), _deleteObj.end(), obj);
-	if(iter != _deleteObj.end())
-	{
-		return;
-	}
-	// まだ、追加されていないだけで予約は入っているのでは？
-	iter = std::find(_addObj.begin(), _addObj.end(), obj);
-	if(iter != _addObj.end())
+	if(obj == nullptr) { return; }
+
+	// 既に本登録されている
+	if(std::find(_objects.begin(), _objects.end(), obj) != _objects.end())
 	{
 		return;
 	}
 
-	// 初期化
-	obj->Initialize();
+	// 既に追加予約されている
+	if(std::find(_addObj.begin(), _addObj.end(), obj) != _addObj.end())
+	{
+		return;
+	}
+
+	// 削除予約されている（＝追加しない）
+	if(std::find(_deleteObj.begin(), _deleteObj.end(), obj) != _deleteObj.end())
+	{
+		return;
+	}
+
 	_addObj.emplace_back(obj);
 }
 
@@ -91,7 +96,8 @@ void ObjectServer::DeleteObject(ObjectBase* obj)
 {
 	//既に削除予約されているか
 	auto iter = std::find(_deleteObj.begin(), _deleteObj.end(), obj);
-	if (iter != _deleteObj.end()) {
+	if (iter != _deleteObj.end()) 
+	{
 		return;
 	}
 
@@ -152,69 +158,59 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(std::string stageName)
 {
-	// マップクラスの取得
+	// マップ読み込み
 	_sPath = "res/map/";
 	_sJsonFile = "marker0127_2.json";
 	_sJsonObjectName = "stage";
 
-	// ファイルの読み込み
+	// ファイルオープン
 	_iFile.open(_sPath + _sJsonFile);
-	// Jsonがなかったらfalseを返す
 	if(!_iFile) { return false; }
-	// Json
+
+	// JSON読み込み
 	nlohmann::json jsonData;
 	_iFile >> jsonData;
 
-	// Map が未生成なら生成（必要なら）
+	// マップオブジェクト生成
 	if(_map == nullptr)
 	{
 		_map = new Map();
 		AddObject(_map);
 	}
-	// Jsonデータの取得
+
+	// JSONデータからステージ情報を取得
 	nlohmann::json stage = jsonData.at(_sJsonObjectName);
-	// Jsonデータからステージ名と同じデータを探す
+	// マップモデル読み込み
 	for(auto& data : stage)
 	{
+		// objectName を取得
 		const std::string name = data.at("objectName").get<std::string>();
 
-		// 名前がstageでなければスキップ
-		if(name != "stage")
+		// 引数 stageName と一致する objectName だけ処理
+		if(name != stageName)
 		{
 			continue;
 		}
+
 		// モデル読み込み
 		const std::string filename = _sPath + name + ".mv1";
-		const int handle = 
+		const int handle = MV1LoadModel(filename.c_str());
+		if(handle < 0)
+		{
+			continue;
+		}
 
-		
+		// マップクラスにハンドルとJSONデータを設定
+		_map->SetJsonDataUE(data);
+
+		// コリジョン情報の生成
+		const int frameIndex = MV1SearchFrame(handle, "Collision_01");
+		if(frameIndex >= 0)
+		{
+			MV1SetupCollInfo(handle, frameIndex, 16, 16, 16);
+			MV1SetFrameVisible(handle, frameIndex, FALSE);
+		}
 	}
-	//std::string stage = stageName.substr(0, 1);
-	//std::string area = stageName.substr(2, 1);
 
-	////ファイルのパス
-	//std::string filePath = "res/stage/stage" + stage + "/" + area + "/";
-
-	////ファイルの読み込み
-	//std::ifstream layoutFile(filePath + "Layout.json");
-
-	////Json
-	//nlohmann::json layoutJson;
-
-	////シリアライズ
-	//if (!layoutFile) { return false; }
-	//layoutFile >> layoutJson;
-
-	////プレイヤーの読み込み
-	//for (auto&& object : layoutJson.at("player"))
-	//{
-	//	std::string name = object.at("objectName");
-	//	if(name == "marker1")
-	//	{
-	//		Player* player = new Player();
-	//		player->SetJsonDataUE(object);
-	//	}
-	//}
-	
 	return true;
 }

@@ -37,7 +37,9 @@ public:
 	void SetEulerAngle(const vec::Vec3& set) { _vEulerAngle = set; }
 	void SetEulerAngleDeg(const vec::Vec3& set) { _vEulerAngle = { DEG2RAD(set.x), DEG2RAD(set.y), DEG2RAD(set.z) }; }
 	void SetScale(const vec::Vec3& set) { _vScale = set; }
+	void SetHandle(int handle) { _handle = handle; }
 
+	// ゲッター
 	auto& GetHandleMap()
 	{
 		return _iHandleMap;
@@ -61,16 +63,15 @@ public:
 		return _mModelHandle;
 	}
 
-	// モデルのマップハンドルを設定
-	void SetModelHandleMap(const at::mst<int>& handle)
-	{
-		_mModelHandle = handle;
-	}
+	int GetHandle() const { return _handle; }
 
+	// 向きベクトルのセッター
 	void SetDir(const vec::Vec3& dir) { _vDir = dir; }
 
 	//回転縮小平行移動を計算し、モデルに適用する
 	void ModelMatrixSetUp();
+
+	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
 
 protected:
 

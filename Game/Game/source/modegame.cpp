@@ -29,6 +29,10 @@ bool ModeGame::Initialize()
 	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
+	// オブジェクトサーバー初期化
+	_objectServer = new ObjectServer(this);
+	_objectServer->LoadDate("stage");
+
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -133,6 +137,10 @@ bool ModeGame::Initialize()
 bool ModeGame::Terminate()
 {
 	base::Terminate();
+
+	delete _objectServer;
+	_objectServer = nullptr;
+
 	// キャラ
 	for(auto& chara : _chara)
 	{

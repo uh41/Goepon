@@ -24,6 +24,7 @@
 #include "uibase.h"
 #include "uihp.h"
 #include "charashadow.h"
+#include "ObjectServer.h"
 
 
 
@@ -133,6 +134,8 @@ protected:
 	at::spc<UiHp> _uiHp;
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
+	// オブジェクトサーバー
+	class ObjectServer* _objectServer;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
