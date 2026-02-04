@@ -34,6 +34,9 @@ bool ModeGame::ObjectInitialize()
 	// タヌキプレイヤーも_playerBaseで管理
 	_playerBase.emplace_back(_playerTanuki);
 
+	_playerMono = std::make_shared<PlayerMono>();
+	_playerBase.emplace_back(_playerMono);
+
 	// 敵初期化
 	//_enemy.emplace_back(std::make_shared<Enemy>());
 	//_chara.emplace_back(_enemy.back());
@@ -57,7 +60,11 @@ bool ModeGame::ShadowInitialize()
 {
 	auto charaShadow = std::make_shared<CharaShadow>();
 	// 初期ターゲットはフラグに応じて設定
-	if(_bShowTanuki)
+	if(_showMonoPlayer)
+	{
+		charaShadow->SetTargetChara(_playerMono.get());
+	}
+	else if(_bShowTanuki)
 	{
 		charaShadow->SetTargetChara(_playerTanuki.get());
 	}
@@ -74,7 +81,7 @@ bool ModeGame::ShadowInitialize()
 			continue;
 		}
 		// プレイヤー（通常）とタヌキを除外
-		if(c.get() == _player.get() || c.get() == _playerTanuki.get())
+		if(c.get() == _player.get() || c.get() == _playerTanuki.get() || c.get() == _playerMono.get())
 		{
 			continue;
 		}
@@ -145,6 +152,62 @@ bool ModeGame::PlayerTransform()
 	// （以下はそのまま）
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
+	if(trg & PAD_INPUT_3)
+	{
+		// タヌキ表示中ならモノに切り替え（既存処理）
+		if(_bShowTanuki)
+		{
+			_bShowTanuki = false;
+			_showMonoPlayer = true;
+
+			_playerMono->SetPos(_playerTanuki->GetPos());
+			_playerMono->SetDir(_playerTanuki->GetDir());
+			_playerMono->_status = CharaBase::STATUS::WAIT;
+			_playerMono->PlayAnimation("idle_kari", true);
+
+			// 影の追従先をモノに更新
+			if(!_charaShadow.empty())
+			{
+				auto& playerShadow = _charaShadow.front();
+				if(playerShadow)
+				{
+					playerShadow->SetTargetChara(_playerMono.get());
+				}
+			}
+
+			// モノ表示中はその処理のみ行って終了させる
+			_playerMono->Process();
+			return true;
+		}
+		// 既にモノ表示中なら PAD_INPUT_3 でモノ->タヌキへ戻す
+		else if(_showMonoPlayer)
+		{
+			// フラグ更新
+			_showMonoPlayer = false;
+			_bShowTanuki = true;
+
+			// 位置・向きをモノからタヌキへ同期
+			_playerTanuki->SetPos(_playerMono->GetPos());
+			_playerTanuki->SetDir(_playerMono->GetDir());
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("goepon_idle", true);
+
+			// 影の追従先をタヌキに戻す
+			if(!_charaShadow.empty())
+			{
+				auto& playerShadow = _charaShadow.front();
+				if(playerShadow)
+				{
+					playerShadow->SetTargetChara(_playerTanuki.get());
+				}
+			}
+
+			// タヌキの処理を行って終了
+			_playerTanuki->Process();
+			return true;
+		}
+	}
+
 	// タヌキプレイヤー表示切替
 	if (trg & PAD_INPUT_4)
 	{
@@ -187,6 +250,10 @@ bool ModeGame::PlayerTransform()
 	if (_bShowTanuki)
 	{
 		_playerTanuki->Process();
+	}
+	else if(_showMonoPlayer)
+	{
+		_playerMono->Process();
 	}
 	else
 	{

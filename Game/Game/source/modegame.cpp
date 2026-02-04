@@ -94,6 +94,7 @@ bool ModeGame::Initialize()
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
+	_playerMono->SetCamera(_camera);
 
 	//InitHpBlock();// ブロック初期化
 
@@ -220,31 +221,38 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "marker0202.json";
+	std::string jsonFile = "marker0204_2.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
-	if(!ifs.is_open())
-	{
-		// ★★★ ファイルが開けない場合のエラー処理 ★★★
-		OutputDebugString("ERROR: marker0202.json が開けません\n");
-		return false;
-	}
 
 	nlohmann::json jsonData;
 	ifs >> jsonData;
 
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	// ★★★ S_MarkerR を収集 ★★★
 	at::vet<vec::Vec3> patrolPos;
 
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
 
-		// ★★★ S_MarkerR を検出（完全版） ★★★
-		if(name == "S_MarkerR")
+		//// ★★★ S_MarkerR を検出（完全版） ★★★
+		//if(name == "S_MarkerR")
+		//{
+		//	vec::Vec3 pos;
+		//	// JSON から座標を取得
+		//	object.at("translate").at("x").get_to(pos.x);
+		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
+		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
+		//	pos.z *= -1.0f; // ★ Z軸反転
+
+		//	patrolPos.push_back(pos);
+
+		//	continue;
+		//}
+
+		if(name == "S_MarkerRX")
 		{
 			vec::Vec3 pos;
 			// JSON から座標を取得
@@ -254,11 +262,6 @@ bool ModeGame::LoadStageData()
 			pos.z *= -1.0f; // ★ Z軸反転
 
 			patrolPos.push_back(pos);
-
-			// ★★★ デバッグ出力 ★★★
-			char buf[256];
-			sprintf_s(buf, "S_MarkerR: (%.1f, %.1f, %.1f)\n", pos.x, pos.y, pos.z);
-			OutputDebugString(buf);
 
 			continue;
 		}
@@ -284,11 +287,6 @@ bool ModeGame::LoadStageData()
 		}
 	}
 
-	// ★★★ デバッグ：巡回ポイント数を確認 ★★★
-	char buf[256];
-	sprintf_s(buf, "巡回ポイント数: %d\n", patrolPos.size());
-	OutputDebugString(buf);
-
 	// ★★★ 全敵に巡回ポイントを設定 ★★★
 	if(!patrolPos.empty())
 	{
@@ -300,12 +298,7 @@ bool ModeGame::LoadStageData()
 			}
 		}
 	}
-	else
-	{
-		OutputDebugString("警告: 巡回ポイントが見つかりません\n");
-	}
 
-	// ★★★ 巡回設定後に初期位置を保存 ★★★
 	for(auto& enemy : _enemy)
 	{
 		if(enemy)
@@ -407,6 +400,13 @@ bool ModeGame::Process()
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
+	}
+	else if(_showMonoPlayer)
+	{
+		EscapeCollision(_playerMono.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_playerMono.get(), _treasure.get());
+		PlayerCameraInfo(_playerMono.get());
 	}
 	else
 	{
@@ -523,11 +523,18 @@ bool ModeGame::Render()
 	//}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto & player_base : _playerBase)
+	for(auto& player_base : _playerBase)
 	{
 		if(_bShowTanuki)
 		{
 			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
+			{
+				player_base->Render();
+			}
+		}
+		else if(_showMonoPlayer)
+		{
+			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
 			{
 				player_base->Render();
 			}

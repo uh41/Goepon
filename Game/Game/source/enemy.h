@@ -48,8 +48,8 @@ public:
 
 	// 巡回ルートの設定
 	void SetPatrolPoint(const at::vet<vec::Vec3>& point);
-	void ProcessPatrol(float time);
-	void ProcessReturnToPatrolPoint(float time);
+	void ProcessPatrol();
+	void ProcessReturnToPatrolPoint();
 
 	bool IsPatrolling() const {
 		return _isPatroll;

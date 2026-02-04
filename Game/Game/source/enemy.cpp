@@ -86,7 +86,8 @@ void Enemy::SetPatrolPoint(const at::vet<vec::Vec3>& point)
 }
 
 // 巡回処理
-void Enemy::ProcessPatrol(float time)
+// 巡回処理
+void Enemy::ProcessPatrol()
 {
 	if(!_isPatroll || !_patroll->IsValid())
 	{
@@ -96,24 +97,44 @@ void Enemy::ProcessPatrol(float time)
 	// 現在の目標を取得
 	vec::Vec3 target = _patroll->GetTargetPoint();
 
-	// 到着判定
-	if(_patroll->IsReachTarget(_vPos, 15.0f))
-	{
-		_patroll->MoveToNextPoint();
-		_patrolIndex = (_patrolIndex + 1) % _patroll->GetMovePointCount(); // インデックス更新
-		target = _patroll->GetTargetPoint();
-	}
-
-	// 目標に向かって移動
+	// 移動先ベクトル（水平のみ）
 	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
 	toTarget.y = 0.0f; // 水平方向のみ
 	float dist = vec3::VSize(toTarget);
 
+	// 到着判定（移動前）
+	const float reachThreshold = 15.0f;
+	if(dist >= reachThreshold)
+	{
+		_patroll->MoveToNextPoint();
+		_patrolIndex = (_patrolIndex + 1) % _patroll->GetMovePointCount();
+		target = _patroll->GetTargetPoint();
+		// 目標更新
+		toTarget = vec3::VSub(target, _vPos);
+		toTarget.y = 0.0f;
+		dist = vec3::VSize(toTarget);
+	}
+
+	// 目標に向かって移動（オーバーシュート防止）
 	if(dist > 0.01f)
 	{
-		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _patrolSpeed * time);
+		// 1フレームでの移動量（step）
+		float step = _patrolSpeed;
+		// 残距離より大きければクランプ
+		if(step > dist) step = dist;
+
+		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), step);
 		_vPos = vec3::VAdd(_vPos, dir);
 		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+
+		// 移動後の到着判定（念のため）
+		vec::Vec3 afterToTarget = vec3::VSub(target, _vPos);
+		afterToTarget.y = 0.0f;
+		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
+		{
+			_patroll->MoveToNextPoint();
+			_patrolIndex = (_patrolIndex + 1) % _patroll->GetMovePointCount();
+		}
 	}
 }
 
@@ -167,11 +188,10 @@ void Enemy::OnPlayerLost()
 {
 	_detectedPlayer = false;
 
-	_isReturningToInitialPos = true; // 初期位置に戻り始める
-	_isPatroll = false;		 // 巡回を停止
+	StartReturningToInitialPosition();
 }
 
-void Enemy::ProcessReturnToPatrolPoint(float time)
+void Enemy::ProcessReturnToPatrolPoint()
 {
 	if(!_isReturningToInitialPos)
 	{
@@ -198,7 +218,7 @@ void Enemy::ProcessReturnToPatrolPoint(float time)
 	float dist = std::sqrt(distSq);
 	if(dist > 0.01f)
 	{
-		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed * time);
+		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed);
 		_vPos = vec3::VAdd(_vPos, dir);
 		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
 	}
@@ -292,24 +312,22 @@ void Enemy::UpdateRotationToPlayer()
 // 初期位置に戻る処理を開始
 void Enemy::StartReturningToInitialPosition()
 {
-	// 既に初期位置にいる場合は何もしない
-	if (!IsAtInitialPosition())
+	// 現在の巡回インデックスを保存（復帰時に使う）
+	_savePatrolIndex = _patrolIndex;
+
+	// 戻る目標点を決定：
+	// 巡回ルートが有効なら現在の巡回ターゲットへ、さもなくば初期位置へ戻す
+	if(_patroll && _patroll->IsValid())
 	{
-		_isReturningToInitialPos = true; // 初期位置に戻り始める
-		_isMoving = false;				 // 他の移動を停止
-
-		// テレポート関連をリセット
-		//ResetTeleport();
-
-		// 初期位置に戻り始める際に検出状態をリセット
-		_detectedPlayer = false;
-
-		// EnemySensorの検出状態もリセット
-		if (_enemySensor)
-		{
-			_enemySensor->ResetDetection();
-		}
+		_savePoint = _patroll->GetTargetPoint();
 	}
+	else
+	{
+		_savePoint = _initialPosition;
+	}
+
+	_isPatroll = false;
+	_isReturningToInitialPos = true;
 }
 
 // 初期位置にいるかどうかをチェック
@@ -488,12 +506,12 @@ bool Enemy::Process()
 		{
 			_status = STATUS::WALK;
 		}
-		ProcessReturnToPatrolPoint(deltaTime);
+		ProcessReturnToPatrolPoint();
 	}
 	else if(_isPatroll)
 	{
 		_status = STATUS::WALK;
-		ProcessPatrol(deltaTime);
+		ProcessPatrol();
 	}
 	else
 	{

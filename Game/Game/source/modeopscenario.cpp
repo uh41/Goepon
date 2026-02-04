@@ -76,8 +76,6 @@ bool ModeOpScenario::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-
-
 	// サウンド更新
 	_soundServer->Update();
 
