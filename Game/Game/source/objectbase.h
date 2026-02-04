@@ -28,7 +28,6 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
 	virtual void SetCamera(Camera* cam) { _cam = cam; }
 	//jsonデータの格納
 	virtual void SetJsonDataUE(nlohmann::json j);
@@ -39,27 +38,35 @@ public:
 	void SetEulerAngleDeg(const vec::Vec3& set) { _vEulerAngle = { DEG2RAD(set.x), DEG2RAD(set.y), DEG2RAD(set.z) }; }
 	void SetScale(const vec::Vec3& set) { _vScale = set; }
 
-	auto& GetHandleMap() {
+	auto& GetHandleMap()
+	{
 		return _iHandleMap;
 	}
-	auto GetHandleSkySphere() const {
+	auto GetHandleSkySphere() const
+	{
 		return _iHandleSkySphere;
 	}
-	auto GetFrameMapCollision() const {
+	auto GetFrameMapCollision() const
+	{
 		return _iFrameMapCollision;
 	}
-	auto GetHandleShadowMap() const {
+	auto GetHandleShadowMap() const
+	{
 		return _iHandleShadowMap;
 	}
 
-	auto GetModelHandleMap() {
+	// モデルのマップハンドルを取得
+	auto GetModelHandleMap()
+	{
 		return _mModelHandle;
 	}
 
-	auto GetMapNum() const
+	// モデルのマップハンドルを設定
+	void SetModelHandleMap(const at::mst<int>& handle)
 	{
-		return stageNum;
+		_mModelHandle = handle;
 	}
+
 	void SetDir(const vec::Vec3& dir) { _vDir = dir; }
 
 	//回転縮小平行移動を計算し、モデルに適用する
@@ -90,19 +97,17 @@ protected:
 
 	//vec::Vec3 _vDir; // キャラの向き
 
-	//DamageData _damageData;	//ダメージデータ
+	//DamageData _damageData;		//ダメージデータ
 
 	//STATE _state;				//状態
 
 	Camera* _cam;
 	int _handle;              // モデルハンドル
-	int attachIndex;          // アタッチフレームインデックス
 	float _half_polygon_size; // 地面ポリゴンの半分のサイズ
 	COLOR_U8 _diffuse;        // 材質の色
 	COLOR_U8 _specular;       // 材質の鏡面反射色
 	// uvのテーブル
 	std::array<float, 4> _u_list;
 	std::array<float, 4> _v_list;
-	int stageNum;             // ステージ番号
 };
 
