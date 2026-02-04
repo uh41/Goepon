@@ -148,6 +148,12 @@
     <Filter Include="Python">
       <UniqueIdentifier>{c292204e-bbf2-4b9d-ab91-4cf0aad432a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\ゲームクリア">
+      <UniqueIdentifier>{b2f0f4fb-1a8a-47ff-aa05-20eccc9f33c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\ゲームクリア">
+      <UniqueIdentifier>{f2beb217-a4bf-4dc5-9c76-c8b430793ee7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\modeeffekseer.h">
@@ -236,6 +242,9 @@
     </ClInclude>
     <ClInclude Include="source\playermono.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeGameClear.h">
+      <Filter>ヘッダー ファイル\ゲームクリア</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -334,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="source\playermono.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGameClear.cpp">
+      <Filter>ソース ファイル\モードゲーム\ゲームクリア</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
