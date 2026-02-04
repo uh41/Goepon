@@ -16,7 +16,9 @@
 #include "playerbase.h"
 #include "player.h"
 #include "playertanuki.h"
+#include "enemybase.h"
 #include "enemy.h"
+#include "enemymove.h"
 #include "treasure.h"
 #include "map.h"
 #include "cube.h"
@@ -24,6 +26,8 @@
 #include "uibase.h"
 #include "uihp.h"
 #include "charashadow.h"
+#include "playermono.h"
+
 
 
 
@@ -116,8 +120,10 @@ protected:
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;
 	at::vspc<PlayerBase> _playerBase;
+	at::vspc<EnemyBase> _enemyBase;
 	at::spc<Player> _player;
 	at::spc<PlayerTanuki> _playerTanuki;
+	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
 	at::spc<Treasure> _treasure;
 	//at::vspc<Treasure> _treasure;
@@ -128,6 +134,7 @@ protected:
 	at::spc<Cube> _cube;
 	// 敵
 	at::vspc<Enemy> _enemy;
+	at::vspc<EnemyMove> _enemyMove;
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
@@ -147,15 +154,11 @@ protected:
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+	bool _showMonoPlayer;// モノプレイヤー表示フラグ
 	bool _isTransformingToHuman = false;
 	int _transformAnimId = -1;
 	bool _isTanukiAttackPlaying = false;
 	int _tanukiAttackAnimId = -1;
-
-	int _iBlocks;	// ブロック数
-	std::vector<float> _vBlockFill; // 表示用現在値(0..1)
-	std::vector<float> _vBlockTarget; // 目標値(0..1)
-	float _fBlockAnimSpeed; // ブロックアニメーション速度
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;

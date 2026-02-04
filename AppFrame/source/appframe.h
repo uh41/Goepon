@@ -28,4 +28,4 @@
 #include "Resources.h"
 #include "manager/collisionmanager.h"
 #include "manager/effekseermanager.h"
-#include "ResourceServer.h"
+#include "CFile/TextUtil.h"

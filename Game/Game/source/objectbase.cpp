@@ -23,6 +23,8 @@ bool ObjectBase::Initialize()
 	_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 	_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 
+	_config = TextUtil::GetInstance()->LoadConfigFile("res/Player/player_config.txt");// 共通設定読み込み
+
 	return true;
 }
 

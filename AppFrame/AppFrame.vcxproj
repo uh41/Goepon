@@ -163,6 +163,7 @@
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
+    <ClInclude Include="source\CFile\TextUtil.h" />
     <ClInclude Include="source\container.h" />
     <ClInclude Include="source\fade\fade.h" />
     <ClInclude Include="source\gameconfig.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\CFile\TextUtil.cpp" />
     <ClCompile Include="source\fade\fade.cpp" />
     <ClCompile Include="source\manager\collisionmanager.cpp" />
     <ClCompile Include="source\manager\effekseermanager.cpp">

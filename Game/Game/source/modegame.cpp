@@ -94,6 +94,7 @@ bool ModeGame::Initialize()
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
+	_playerMono->SetCamera(_camera);
 
 	//InitHpBlock();// ブロック初期化
 
@@ -220,20 +221,50 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "marker0128.json";
+	std::string jsonFile = "marker0204_2.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
 
 	nlohmann::json jsonData;
-
 	ifs >> jsonData;
 
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
+	at::vet<vec::Vec3> patrolPos;
+
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
+
+		//// ★★★ S_MarkerR を検出（完全版） ★★★
+		//if(name == "S_MarkerR")
+		//{
+		//	vec::Vec3 pos;
+		//	// JSON から座標を取得
+		//	object.at("translate").at("x").get_to(pos.x);
+		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
+		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
+		//	pos.z *= -1.0f; // ★ Z軸反転
+
+		//	patrolPos.push_back(pos);
+
+		//	continue;
+		//}
+
+		if(name == "S_MarkerRX")
+		{
+			vec::Vec3 pos;
+			// JSON から座標を取得
+			object.at("translate").at("x").get_to(pos.x);
+			object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
+			object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
+			pos.z *= -1.0f; // ★ Z軸反転
+
+			patrolPos.push_back(pos);
+
+			continue;
+		}
 
 		if(name == "S_MarkerA")
 		{
@@ -243,23 +274,43 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			auto enemy = std::make_shared<Enemy>();
-			enemy->Initialize();
-			enemy->SetJsonDataUE(object);
+			//auto enemy = std::make_shared<Enemy>();
+			//enemy->Initialize();
+			//enemy->SetJsonDataUE(object);
 
-			// JSONのrotateは「向きベクトル」ではないので、センサー用に方向ベクトルを入れる
-			//enemy->SetDir());
-
-			// ここで「マーカー位置」を初期位置として確定
-			enemy->CaptureInitialTransform();
+			auto enemyMove = std::make_shared<EnemyMove>();
+			enemyMove->Initialize();
+			enemyMove->SetJsonDataUE(object);
 
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
+			//enemy->SetEnemySensor(sensor);
+			enemyMove->SetEnemySensor(sensor);
 
-			enemy->SetEnemySensor(sensor);
+			//_enemy.emplace_back(enemy);
+			_enemyMove.emplace_back(enemyMove);
+		}
+	}
 
-			_enemy.emplace_back(enemy);
+	// ★★★ 全敵に巡回ポイントを設定 ★★★
+	if(!patrolPos.empty())
+	{
+		for(auto& enemyMove : _enemyMove)
+		{
+			if(enemyMove)
+			{
+				enemyMove->SetPatrolPoint(patrolPos);
+				enemyMove->CaptureInitialTransform();
+			}
+		}
+	}
+
+	for(auto& enemy : _enemy)
+	{
+		if(enemy)
+		{
+			enemy->CaptureInitialTransform();
 		}
 	}
 
@@ -357,6 +408,13 @@ bool ModeGame::Process()
 		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
+	else if(_showMonoPlayer)
+	{
+		EscapeCollision(_playerMono.get(), _map.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure.get());
+		CharaToTreasureOpenCollision(_playerMono.get(), _treasure.get());
+		PlayerCameraInfo(_playerMono.get());
+	}
 	else
 	{
 		EscapeCollision(_player.get(), _map.get());
@@ -391,6 +449,27 @@ bool ModeGame::Process()
 				CharaToCharaCollision(player, enemy.get());
 			}
 
+		}
+
+		// 巡回系エネミー（EnemyMove）も同様に判定
+		for(auto& enemyMove : _enemyMove)
+		{
+			if(!enemyMove || !enemyMove->IsAlive())
+			{
+				continue;
+			}
+
+			// 軽量な早期判定（XZ円）
+			if(IsHitCircle(player, enemyMove.get()))
+			{
+				// 実際の押し出し（カプセル）
+				if(!enemyMove->IsShowingYouDiedMessage())
+				{
+					enemyMove->TriggerYouDiedMessage();
+				}
+
+				CharaToCharaCollision(player, enemyMove.get());
+			}
 		}
 	}
 
@@ -459,6 +538,15 @@ bool ModeGame::Render()
 		}
 	}
 
+	// 巡回系エネミー（EnemyMove）を個別に描画
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove && enemyMove->IsAlive())
+		{
+			enemyMove->Render();
+		}
+	}
+
 	// オブジェクトを描画
 	for(auto& object : _object)
 	{
@@ -472,11 +560,18 @@ bool ModeGame::Render()
 	//}
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto & player_base : _playerBase)
+	for(auto& player_base : _playerBase)
 	{
 		if(_bShowTanuki)
 		{
 			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
+			{
+				player_base->Render();
+			}
+		}
+		else if(_showMonoPlayer)
+		{
+			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
 			{
 				player_base->Render();
 			}
@@ -552,12 +647,30 @@ bool ModeGame::Render()
 		}
 	}
 
+	// 巡回系エネミーのセンサー描画
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove->IsAlive() && enemyMove->GetEnemySensor())
+		{
+			enemyMove->GetEnemySensor()->Render();
+			enemyMove->GetEnemySensor()->RenderDetectionUI();
+		}
+	}
+
 	// YouDiedメッセージの描画（最前面に表示）
 	for (auto& enemy : _enemy)
 	{
 		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
 		{
 			enemy->RenderYouDiedMessage();
+		}
+	}
+
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove->IsAlive() && enemyMove->IsShowingYouDiedMessage())
+		{
+			enemyMove->RenderYouDiedMessage();
 		}
 	}
 
@@ -594,64 +707,58 @@ bool ModeGame::CheckAllDetections()
 
 	bool anyDetected = false;
 
-	for(auto& enemy : _enemy)
-	{
-		if(!enemy->IsAlive())
+	// ヘルパーで各コンテナを処理するラムダ
+	auto processContainer = [&](auto& container) -> bool {
+		for(auto& item : container)
 		{
-			continue;
-		}
-
-		auto sensor = enemy->GetEnemySensor();
-		if(!sensor)
-		{
-			continue;
-		}
-
-		// センサーを敵に同期
-		sensor->SetPos(enemy->GetPos());
-		sensor->SetDir(enemy->GetDir());
-		sensor->SetMap(_map.get());
-
-		// タイマー更新など
-		sensor->Process();
-
-		// タヌキ状態の時のみ検知処理を実行
-		if (!_bShowTanuki)
-		{
-			// 人間状態では検知されない
-			for (auto& enemy : _enemy)
+			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
+			if(!eb || !eb->IsAlive())
 			{
-				if (enemy->IsAlive() && enemy->GetEnemySensor())
+				continue;
+			}
+
+			auto sensor = eb->GetEnemySensor();
+			if(!sensor)
+			{
+				continue;
+			}
+
+			sensor->SetPos(eb->GetPos());
+			sensor->SetDir(eb->GetDir());
+			sensor->SetMap(_map.get());
+
+			sensor->Process();
+
+			// プレイヤーがタヌキでない（＝player状態）のときは
+			// 「敵を強制的に見失わせて戻らせる」処理を行わない。
+			// センサー情報だけリセットして巡回を維持する。
+			if(!_bShowTanuki)
+			{
+				sensor->ResetDetection();
+				// ここで eb->OnPlayerLost() を呼ぶと敵が帰還モードになり巡回を止めるため呼ばない
+				continue;
+			}
+
+			bool detected = sensor->CheckPlayerDetection(player);
+
+			if(detected)
+			{
+				anyDetected = true;
+				eb->OnPlayerDetected(player->GetPos());
+			}
+			else
+			{
+				if(!sensor->IsChasing())
 				{
-					enemy->GetEnemySensor()->ResetDetection();
-					enemy->OnPlayerLost();
+					eb->OnPlayerLost();
 				}
 			}
-			return true;
 		}
+		return false;
+		};
 
-		PlayerBase* currentPlayer = _playerTanuki.get();
-		if (!currentPlayer)
-		{
-			return false;
-		}
-
-		const bool detected = sensor->CheckPlayerDetection(player);
-
-		if(detected)
-		{
-			anyDetected = true;
-			enemy->OnPlayerDetected(player->GetPos());
-		}
-		else
-		{
-			// 追跡中なら見失い扱いにしない（追跡を継続）
-			if(!sensor->IsChasing())
-			{
-				enemy->OnPlayerLost();
-			}
-		}
-	}
+	processContainer(_enemy);
+	processContainer(_enemyMove);
 
 	return anyDetected;
 }
