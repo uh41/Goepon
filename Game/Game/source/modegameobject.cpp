@@ -105,6 +105,20 @@ bool ModeGame::ShadowInitialize()
 		_charaShadow.emplace_back(shadow);
 	}
 
+	// 敵(巡回)に対するシャドウ（別々に管理）
+	for(auto& em : _enemyMove)
+	{
+		if(!em)
+		{
+			continue;
+		}
+		auto shadow = std::make_shared<CharaShadow>();
+		// EnemyMove は EnemyBase を継承しているのでそのまま渡せる
+		shadow->SetTargetChara(em.get());
+		_charaShadow.emplace_back(shadow);
+	}
+
+
 	return true;
 }
 
@@ -289,6 +303,15 @@ bool ModeGame::ObjectProcess()
 		if(enemy->IsAlive())
 		{
 			enemy->Process();
+		}
+	}
+
+	// エネミーの処理 - 巡回系（EnemyMove）を別ループで処理
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove && enemyMove->IsAlive())
+		{
+			enemyMove->Process();
 		}
 	}
 

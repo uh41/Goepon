@@ -278,23 +278,30 @@ bool ModeGame::LoadStageData()
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 
+			auto enemyMove = std::make_shared<EnemyMove>();
+			enemyMove->Initialize();
+			enemyMove->SetJsonDataUE(object);
+
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
 			enemy->SetEnemySensor(sensor);
+			enemyMove->SetEnemySensor(sensor);
 
 			_enemy.emplace_back(enemy);
+			_enemyMove.emplace_back(enemyMove);
 		}
 	}
 
 	// ★★★ 全敵に巡回ポイントを設定 ★★★
 	if(!patrolPos.empty())
 	{
-		for(auto& enemy : _enemy)
+		for(auto& enemyMove : _enemyMove)
 		{
-			if(enemy)
+			if(enemyMove)
 			{
-				enemy->SetPatrolPoint(patrolPos);
+				enemyMove->SetPatrolPoint(patrolPos);
+				enemyMove->CaptureInitialTransform();
 			}
 		}
 	}
@@ -510,6 +517,15 @@ bool ModeGame::Render()
 		}
 	}
 
+	// 巡回系エネミー（EnemyMove）を個別に描画
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove && enemyMove->IsAlive())
+		{
+			enemyMove->Render();
+		}
+	}
+
 	// オブジェクトを描画
 	for(auto& object : _object)
 	{
@@ -610,12 +626,30 @@ bool ModeGame::Render()
 		}
 	}
 
+	// 巡回系エネミーのセンサー描画
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove->IsAlive() && enemyMove->GetEnemySensor())
+		{
+			enemyMove->GetEnemySensor()->Render();
+			enemyMove->GetEnemySensor()->RenderDetectionUI();
+		}
+	}
+
 	// YouDiedメッセージの描画（最前面に表示）
 	for (auto& enemy : _enemy)
 	{
 		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
 		{
 			enemy->RenderYouDiedMessage();
+		}
+	}
+
+	for(auto& enemyMove : _enemyMove)
+	{
+		if(enemyMove->IsAlive() && enemyMove->IsShowingYouDiedMessage())
+		{
+			enemyMove->RenderYouDiedMessage();
 		}
 	}
 
@@ -652,64 +686,76 @@ bool ModeGame::CheckAllDetections()
 
 	bool anyDetected = false;
 
-	for(auto& enemy : _enemy)
-	{
-		if(!enemy->IsAlive())
+	// ヘルパーで各コンテナを処理するラムダ
+	auto processContainer = [&](auto& container) -> bool {
+		for(auto& item : container)
 		{
-			continue;
-		}
-
-		auto sensor = enemy->GetEnemySensor();
-		if(!sensor)
-		{
-			continue;
-		}
-
-		// センサーを敵に同期
-		sensor->SetPos(enemy->GetPos());
-		sensor->SetDir(enemy->GetDir());
-		sensor->SetMap(_map.get());
-
-		// タイマー更新など
-		sensor->Process();
-
-		// タヌキ状態の時のみ検知処理を実行
-		if (!_bShowTanuki)
-		{
-			// 人間状態では検知されない
-			for (auto& enemy : _enemy)
+			// Enemy と EnemyMove はどちらも EnemyBase を継承しているため EnemyBase* にキャスト可能
+			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
+			if(!eb || !eb->IsAlive())
 			{
-				if (enemy->IsAlive() && enemy->GetEnemySensor())
+				continue;
+			}
+
+			auto sensor = eb->GetEnemySensor();
+			if(!sensor)
+			{
+				continue;
+			}
+
+			// センサーを敵に同期
+			sensor->SetPos(eb->GetPos());
+			sensor->SetDir(eb->GetDir());
+			sensor->SetMap(_map.get());
+
+			// タイマー更新など
+			sensor->Process();
+
+			// タヌキ状態の時のみ検知処理を実行
+			if(!_bShowTanuki)
+			{
+				// 人間状態では検知されない -> 全敵の検知をリセットして見失い処理
+				for(auto& e : _enemy)
 				{
-					enemy->GetEnemySensor()->ResetDetection();
-					enemy->OnPlayerLost();
+					if(e->IsAlive() && e->GetEnemySensor())
+					{
+						e->GetEnemySensor()->ResetDetection();
+						e->OnPlayerLost();
+					}
+				}
+				for(auto& em : _enemyMove)
+				{
+					if(em->IsAlive() && em->GetEnemySensor())
+					{
+						em->GetEnemySensor()->ResetDetection();
+						em->OnPlayerLost();
+					}
+				}
+				return true; // 処理終了（人間では検知処理しない）
+			}
+
+			const bool detected = sensor->CheckPlayerDetection(player);
+
+			if(detected)
+			{
+				anyDetected = true;
+				eb->OnPlayerDetected(player->GetPos());
+			}
+			else
+			{
+				// 追跡中なら見失い扱いにしない（追跡を継続）
+				if(!sensor->IsChasing())
+				{
+					eb->OnPlayerLost();
 				}
 			}
-			return true;
 		}
+		return false;
+		};
 
-		PlayerBase* currentPlayer = _playerTanuki.get();
-		if (!currentPlayer)
-		{
-			return false;
-		}
-
-		const bool detected = sensor->CheckPlayerDetection(player);
-
-		if(detected)
-		{
-			anyDetected = true;
-			enemy->OnPlayerDetected(player->GetPos());
-		}
-		else
-		{
-			// 追跡中なら見失い扱いにしない（追跡を継続）
-			if(!sensor->IsChasing())
-			{
-				enemy->OnPlayerLost();
-			}
-		}
-	}
+	// 通常エネミーと巡回系を順にチェック
+	if(processContainer(_enemy)) return true;
+	if(processContainer(_enemyMove)) return true;
 
 	return anyDetected;
 }

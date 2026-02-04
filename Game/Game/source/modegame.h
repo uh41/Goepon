@@ -16,7 +16,9 @@
 #include "playerbase.h"
 #include "player.h"
 #include "playertanuki.h"
+#include "enemybase.h"
 #include "enemy.h"
+#include "enemymove.h"
 #include "treasure.h"
 #include "map.h"
 #include "cube.h"
@@ -25,6 +27,7 @@
 #include "uihp.h"
 #include "charashadow.h"
 #include "playermono.h"
+
 
 
 
@@ -117,6 +120,7 @@ protected:
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;
 	at::vspc<PlayerBase> _playerBase;
+	at::vspc<EnemyBase> _enemyBase;
 	at::spc<Player> _player;
 	at::spc<PlayerTanuki> _playerTanuki;
 	at::spc<PlayerMono> _playerMono;
@@ -130,6 +134,7 @@ protected:
 	at::spc<Cube> _cube;
 	// 敵
 	at::vspc<Enemy> _enemy;
+	at::vspc<EnemyMove> _enemyMove;
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
