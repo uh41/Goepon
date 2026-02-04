@@ -125,10 +125,10 @@ bool ModeGame::ShadowInitialize()
 bool ModeGame::PlayerTransform()
 {
 	// 変身アニメ中の監視（タヌキ -> 人間）
-	if (_isTransformingToHuman)
+	if(_isTransformingToHuman)
 	{
 		// まだ再生中なら、タヌキ表示のまま継続
-		if (_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
+		if(_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
 		{
 			_playerTanuki->Process();
 			return true;
@@ -150,10 +150,10 @@ bool ModeGame::PlayerTransform()
 		}
 
 		// ここが重要：影の追従先を「人間」に更新
-		if (!_charaShadow.empty())
+		if(!_charaShadow.empty())
 		{
 			auto& playerShadow = _charaShadow.front();
-			if (playerShadow)
+			if(playerShadow)
 			{
 				playerShadow->SetTargetChara(_player.get());
 			}
@@ -166,102 +166,120 @@ bool ModeGame::PlayerTransform()
 	// （以下はそのまま）
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
+	// PAD_INPUT_3: タヌキ <-> モノ 切替
 	if(trg & PAD_INPUT_3)
 	{
-		// タヌキ表示中ならモノに切り替え（既存処理）
-		if(_bShowTanuki)
+		// 無効化：現在「プレイヤー（人間）」表示中なら PAD_INPUT_3 は何もしない
+		// （プレイヤー＝_bShowTanuki==false && _showMonoPlayer==false）
+		if(!_bShowTanuki && !_showMonoPlayer)
 		{
-			_bShowTanuki = false;
-			_showMonoPlayer = true;
-
-			_playerMono->SetPos(_playerTanuki->GetPos());
-			_playerMono->SetDir(_playerTanuki->GetDir());
-			_playerMono->_status = CharaBase::STATUS::WAIT;
-			_playerMono->PlayAnimation("idle_kari", true);
-
-			// 影の追従先をモノに更新
-			if(!_charaShadow.empty())
-			{
-				auto& playerShadow = _charaShadow.front();
-				if(playerShadow)
-				{
-					playerShadow->SetTargetChara(_playerMono.get());
-				}
-			}
-
-			// モノ表示中はその処理のみ行って終了させる
-			_playerMono->Process();
-			return true;
-		}
-		// 既にモノ表示中なら PAD_INPUT_3 でモノ->タヌキへ戻す
-		else if(_showMonoPlayer)
-		{
-			// フラグ更新
-			_showMonoPlayer = false;
-			_bShowTanuki = true;
-
-			// 位置・向きをモノからタヌキへ同期
-			_playerTanuki->SetPos(_playerMono->GetPos());
-			_playerTanuki->SetDir(_playerMono->GetDir());
-			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("goepon_idle", true);
-
-			// 影の追従先をタヌキに戻す
-			if(!_charaShadow.empty())
-			{
-				auto& playerShadow = _charaShadow.front();
-				if(playerShadow)
-				{
-					playerShadow->SetTargetChara(_playerTanuki.get());
-				}
-			}
-
-			// タヌキの処理を行って終了
-			_playerTanuki->Process();
-			return true;
-		}
-	}
-
-	// タヌキプレイヤー表示切替
-	if (trg & PAD_INPUT_4)
-	{
-		if (_bShowTanuki)
-		{
-			_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
-			_isTransformingToHuman = true;
-
-			// 変身中はタヌキのまま処理
-			_playerTanuki->Process();
-			return true;
+			// プレイヤー（人間）時は無効化、何もしない
 		}
 		else
 		{
-			_bShowTanuki = true;
-			_playerTanuki->SetPos(_player->GetPos());
-			_playerTanuki->SetDir(_player->GetDir());
-			//_playerTanuki->PlayAnimation("hensin", false);
-
-			//_playerTanuki->PlayAnimation("gomepon_hensin", false);
-
-			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("goepon_idle", true);
-		}
-
-		// シャドウの追従キャラも切り替え
-		if (!_charaShadow.empty())
-		{
-			auto& playerShadow = _charaShadow.front();
-			if (playerShadow)
+			// タヌキ表示中ならモノに切り替え
+			if(_bShowTanuki)
 			{
-				playerShadow->SetTargetChara(_bShowTanuki ? static_cast<CharaBase*>(_playerTanuki.get())
-					: static_cast<CharaBase*>(_player.get()));
+				_bShowTanuki = false;
+				_showMonoPlayer = true;
+
+				_playerMono->SetPos(_playerTanuki->GetPos());
+				_playerMono->SetDir(_playerTanuki->GetDir());
+				_playerMono->_status = CharaBase::STATUS::WAIT;
+				_playerMono->PlayAnimation("idle_kari", true);
+
+				// 影の追従先をモノに更新
+				if(!_charaShadow.empty())
+				{
+					auto& playerShadow = _charaShadow.front();
+					if(playerShadow)
+					{
+						playerShadow->SetTargetChara(_playerMono.get());
+					}
+				}
+
+				// モノ表示中はその処理のみ行って終了させる
+				_playerMono->Process();
+				return true;
+			}
+			// 既にモノ表示中なら PAD_INPUT_3 でモノ->タヌキへ戻す
+			else if(_showMonoPlayer)
+			{
+				// フラグ更新
+				_showMonoPlayer = false;
+				_bShowTanuki = true;
+
+				// 位置・向きをモノからタヌキへ同期
+				_playerTanuki->SetPos(_playerMono->GetPos());
+				_playerTanuki->SetDir(_playerMono->GetDir());
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				_playerTanuki->PlayAnimation("goepon_idle", true);
+
+				// 影の追従先をタヌキに戻す
+				if(!_charaShadow.empty())
+				{
+					auto& playerShadow = _charaShadow.front();
+					if(playerShadow)
+					{
+						playerShadow->SetTargetChara(_playerTanuki.get());
+					}
+				}
+
+				// タヌキの処理を行って終了
+				_playerTanuki->Process();
+				return true;
+			}
+		}
+	}
+
+	// PAD_INPUT_4: タヌキ -> 人間 の変身（無効化：モノ表示時は変身不可）
+	if(trg & PAD_INPUT_4)
+	{
+		// 無効化：現在「モノ」表示中なら PAD_INPUT_4 を無効化する
+		if(_showMonoPlayer)
+		{
+			// モノ時は変身不可、何もしない
+		}
+		else
+		{
+			if(_bShowTanuki)
+			{
+				_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
+				_isTransformingToHuman = true;
+
+				// 変身中はタヌキのまま処理
+				_playerTanuki->Process();
+				return true;
+			}
+			else
+			{
+				_bShowTanuki = true;
+				_playerTanuki->SetPos(_player->GetPos());
+				_playerTanuki->SetDir(_player->GetDir());
+				//_playerTanuki->PlayAnimation("hensin", false);
+
+				//_playerTanuki->PlayAnimation("gomepon_hensin", false);
+
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				_playerTanuki->PlayAnimation("goepon_idle", true);
+			}
+
+			// シャドウの追従キャラも切り替え
+			if(!_charaShadow.empty())
+			{
+				auto& playerShadow = _charaShadow.front();
+				if(playerShadow)
+				{
+					playerShadow->SetTargetChara(_bShowTanuki ? static_cast<CharaBase*>(_playerTanuki.get())
+						: static_cast<CharaBase*>(_player.get()));
+				}
 			}
 		}
 	}
 
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
-	if (_bShowTanuki)
+	if(_bShowTanuki)
 	{
 		_playerTanuki->Process();
 	}

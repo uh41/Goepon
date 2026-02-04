@@ -155,14 +155,9 @@ bool Map::Initialize()
 				_vBlockPos.push_back(pos);
 			}
 		}
-	}
-	else if(MAP_SELECT == 3)
-	{
-		// 地面を使うパターン（モデルは読み込まない）
-		_iHandleMap = -1;
-		_iFrameMapCollision = -1;
 
-		_ground_handle = LoadGraph("res/Texture/Groundplants1_D.jpg");
+
+		_ground_handle = LoadGraph(img::BG_stone);
 		// 以降の初期化（省略せず元の処理を入れてください）
 		_half_polygon_size = GROUND_POLYGON_SIZE * 0.5f;
 		_start_x = -_half_polygon_size * static_cast<float>(GROUND_X);
@@ -170,13 +165,20 @@ bool Map::Initialize()
 		_ground_normal = VGet(0.0f, 1.0f, 0.0f);
 		_diffuse = GetColorU8(255, 255, 255, 255);
 		_specular = GetColorU8(0, 0, 0, 0);
-		_ground_pos_0 = VGet(0.0f, 0.0f, 0.0f);
-		_ground_pos_1 = VGet(0.0f, 0.0f, GROUND_POLYGON_SIZE);
-		_ground_pos_2 = VGet(GROUND_POLYGON_SIZE, 0.0f, 0.0f);
-		_ground_pos_3 = VGet(GROUND_POLYGON_SIZE, 0.0f, GROUND_POLYGON_SIZE);
+		_ground_pos_0 = VGet(0.0f, -20.0f, 0.0f);
+		_ground_pos_1 = VGet(0.0f, -20.0f, GROUND_POLYGON_SIZE);
+		_ground_pos_2 = VGet(GROUND_POLYGON_SIZE, -20.0f, 0.0f);
+		_ground_pos_3 = VGet(GROUND_POLYGON_SIZE, -20.0f, GROUND_POLYGON_SIZE);
 		_ground_pos_list = { _ground_pos_0, _ground_pos_1, _ground_pos_2, _ground_pos_3 };
 		_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 		_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
+	}
+	else if(MAP_SELECT == 3)
+	{
+		// 地面を使うパターン（モデルは読み込まない）
+		_iHandleMap = -1;
+		_iFrameMapCollision = -1;
+
 	}
 	
 	// シャドウマップの生成
