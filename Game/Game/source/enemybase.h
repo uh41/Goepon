@@ -62,6 +62,8 @@ public:
 
 	void CaptureInitialTransform();
 
+
+
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
 
 protected:

@@ -78,6 +78,8 @@ public:
 	// コリジョンマネージャーを使って床のY座標を取得する関数
 	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
 
+	void ForceChaseTo(const vec::Vec3& playerPos); // 強制的に追跡状態にする
+
 
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲

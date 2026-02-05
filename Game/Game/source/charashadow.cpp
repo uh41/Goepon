@@ -3,6 +3,7 @@
 CharaShadow::CharaShadow()
 {
 	_Chara = nullptr;
+	_target = nullptr;
 	_handle = -1;
 	_fScale = 1.0f;
 }
@@ -35,6 +36,11 @@ bool CharaShadow::Terminate()
 	return true;
 }
 
+void CharaShadow::SetTargetChara(at::fc<CharaBase* ()> chara)
+{
+	_Chara = std::move(chara);// キャラ設定 右辺値参照という型に強制的に変換する
+}
+
 bool CharaShadow::Process()
 {
 	if (!base::Process())
@@ -42,15 +48,13 @@ bool CharaShadow::Process()
 		return false;
 	}
 
-	// キャラがいなければ何もしない
-	if(!_Chara)
+	if(_Chara)
 	{
-		return true;
+		_target = _Chara();
 	}
-
 	// シャドウの位置をキャラの位置に合わせる
-	vec::Vec3 pos = _Chara->GetPos();
-	pos.y += _fColSubY;
+	vec::Vec3 pos = _target->GetPos();
+	pos.y = _target->GetColSubY();
 	_vPos = pos;
 
 	return true;
@@ -69,7 +73,7 @@ bool CharaShadow::Render()
 	}
 	
 		// キャラが存在しない場合は描画しない
-	if(!_Chara->IsAlive())
+	if(!_target->IsAlive())
 	{
 		return false;
 	}
@@ -79,9 +83,9 @@ bool CharaShadow::Render()
 		return false;
 	}
 	// キャラの足元位置を計算
-	vec::Vec3 pos = _Chara->GetPos();
+	vec::Vec3 pos = _target->GetPos();
 
-	pos.y = _Chara->GetColSubY();
+	pos.y = _target->GetColSubY();
 
 	VECTOR vpos = DxlibConverter::VecToDxLib(pos);
 

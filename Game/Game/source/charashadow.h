@@ -16,13 +16,14 @@ public:
 	virtual bool Render() override;
 
 	// ‰e‚ğ’Ç]‚³‚¹‚éƒLƒƒƒ‰‚ğİ’è
-	void SetTargetChara(CharaBase* chara) { _Chara = chara; }
+	void SetTargetChara(at::fc<CharaBase* () > chara);
 
 	// ‰e‚ÌƒXƒP[ƒ‹‚ğ’²®
 	void SetScale(float scale) { _fScale = scale; }
 
 protected:
-	CharaBase* _Chara;
+	at::fc<CharaBase*()> _Chara;
+	CharaBase* _target;
 	float _fScale;
 };
 

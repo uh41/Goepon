@@ -385,7 +385,7 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 	return true;
 }
 
-bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
+bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 {
 	// 攻撃アニメ再生中なら入力を受け付けない（終了したら解除）
 	if(_isTanukiAttackPlaying)

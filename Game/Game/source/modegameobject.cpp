@@ -16,33 +16,19 @@
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
 {
-	// キューブ初期化
-	/*_cube = std::make_shared<Cube>();
-	_object.emplace_back(_cube);*/
-
 	// マップ初期化
 	_map = std::make_shared<Map>();
 	_object.emplace_back(_map);
 
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
-	// プレイヤーは描画・処理を_playerBaseで管理するので_charaには追加しない
 	_playerBase.emplace_back(_player);
-
-	// タヌキプレイヤー初期化
 	_playerTanuki = std::make_shared<PlayerTanuki>();
-	// タヌキプレイヤーも_playerBaseで管理
 	_playerBase.emplace_back(_playerTanuki);
-
 	_playerMono = std::make_shared<PlayerMono>();
 	_playerBase.emplace_back(_playerMono);
 
-	// 敵初期化
-	//_enemy.emplace_back(std::make_shared<Enemy>());
-	//_chara.emplace_back(_enemy.back());
-
 	// 宝箱初期化
-	//_object.emplace_back(std::make_shared<Treasure>());
 	_treasure = std::make_shared<Treasure>();
 	_object.emplace_back(_treasure);
 
@@ -51,73 +37,46 @@ bool ModeGame::ObjectInitialize()
 	_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
-	
-	
+	// エフェクト初期化
+	_treasureEffect = std::make_shared<TreasureEffect>();
+	_effectBase.emplace_back(_treasureEffect);
+
 	return true;
 }
 
 bool ModeGame::ShadowInitialize()
 {
 	auto charaShadow = std::make_shared<CharaShadow>();
-	// 初期ターゲットはフラグに応じて設定
-	if(_showMonoPlayer)
-	{
-		charaShadow->SetTargetChara(_playerMono.get());
-	}
-	else if(_bShowTanuki)
-	{
-		charaShadow->SetTargetChara(_playerTanuki.get());
-	}
-	else
-	{
-		charaShadow->SetTargetChara(_player.get());
-	}
+	// プレイヤーに対するシャドウ
+	charaShadow->SetTargetChara([this]() -> CharaBase*
+		{
+			if(_showMonoPlayer)
+			{
+				return _playerMono.get();
+			}
+			else if(_bShowTanuki)
+			{
+				return _playerTanuki.get();
+			}
+			else
+			{
+				return _player.get();
+			}
+		});
 	_charaShadow.emplace_back(charaShadow);
 
-	for(auto& c : _chara)
+	// 敵のシャドウは実際に処理されるコンテナ（_enemyBase）を参照するように変更
+	for(auto& eb : _enemyBase)
 	{
-		if(!c)
-		{
-			continue;
-		}
-		// プレイヤー（通常）とタヌキを除外
-		if(c.get() == _player.get() || c.get() == _playerTanuki.get() || c.get() == _playerMono.get())
-		{
-			continue;
-		}
-
-		auto shadow = std::make_shared<CharaShadow>();
-		// Scaleも調整可能
-		shadow->SetTargetChara(c.get());
-		_charaShadow.emplace_back(shadow);
-	}
-
-
-	for(auto& e : _enemy)
-	{
-		if(!e)
-		{
-			continue;
-		}
-		// 敵は CharaBase を継承しているのでそのまま渡せる
-		auto shadow = std::make_shared<CharaShadow>();
-		shadow->SetTargetChara(e.get());
-		_charaShadow.emplace_back(shadow);
-	}
-
-	// 敵(巡回)に対するシャドウ（別々に管理）
-	for(auto& em : _enemyMove)
-	{
-		if(!em)
+		if(!eb)
 		{
 			continue;
 		}
 		auto shadow = std::make_shared<CharaShadow>();
-		// EnemyMove は EnemyBase を継承しているのでそのまま渡せる
-		shadow->SetTargetChara(em.get());
+		// eb をキャプチャして EnemyBase* を返すラムダを渡す
+		shadow->SetTargetChara([eb]() -> CharaBase* { return static_cast<CharaBase*>(eb.get()); });
 		_charaShadow.emplace_back(shadow);
 	}
-
 
 	return true;
 }
@@ -148,17 +107,6 @@ bool ModeGame::PlayerTransform()
 			// プレイヤー位置にエフェクトを出す（必要ならオフセットを調整）
 			EffekseerManager::GetInstance()->PlayEffect3DPos(_henshineffectHandle, _player->GetPos());
 		}
-
-		// ここが重要：影の追従先を「人間」に更新
-		if(!_charaShadow.empty())
-		{
-			auto& playerShadow = _charaShadow.front();
-			if(playerShadow)
-			{
-				playerShadow->SetTargetChara(_player.get());
-			}
-		}
-
 		_player->Process();
 		return true;
 	}
@@ -187,45 +135,18 @@ bool ModeGame::PlayerTransform()
 				_playerMono->SetDir(_playerTanuki->GetDir());
 				_playerMono->_status = CharaBase::STATUS::WAIT;
 				_playerMono->PlayAnimation("idle_kari", true);
-
-				// 影の追従先をモノに更新
-				if(!_charaShadow.empty())
-				{
-					auto& playerShadow = _charaShadow.front();
-					if(playerShadow)
-					{
-						playerShadow->SetTargetChara(_playerMono.get());
-					}
-				}
-
-				// モノ表示中はその処理のみ行って終了させる
 				_playerMono->Process();
 				return true;
 			}
-			// 既にモノ表示中なら PAD_INPUT_3 でモノ->タヌキへ戻す
 			else if(_showMonoPlayer)
 			{
 				// フラグ更新
 				_showMonoPlayer = false;
 				_bShowTanuki = true;
-
-				// 位置・向きをモノからタヌキへ同期
 				_playerTanuki->SetPos(_playerMono->GetPos());
 				_playerTanuki->SetDir(_playerMono->GetDir());
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 				_playerTanuki->PlayAnimation("goepon_idle", true);
-
-				// 影の追従先をタヌキに戻す
-				if(!_charaShadow.empty())
-				{
-					auto& playerShadow = _charaShadow.front();
-					if(playerShadow)
-					{
-						playerShadow->SetTargetChara(_playerTanuki.get());
-					}
-				}
-
-				// タヌキの処理を行って終了
 				_playerTanuki->Process();
 				return true;
 			}
@@ -246,8 +167,6 @@ bool ModeGame::PlayerTransform()
 			{
 				_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
 				_isTransformingToHuman = true;
-
-				// 変身中はタヌキのまま処理
 				_playerTanuki->Process();
 				return true;
 			}
@@ -256,23 +175,8 @@ bool ModeGame::PlayerTransform()
 				_bShowTanuki = true;
 				_playerTanuki->SetPos(_player->GetPos());
 				_playerTanuki->SetDir(_player->GetDir());
-				//_playerTanuki->PlayAnimation("hensin", false);
-
-				//_playerTanuki->PlayAnimation("gomepon_hensin", false);
-
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 				_playerTanuki->PlayAnimation("goepon_idle", true);
-			}
-
-			// シャドウの追従キャラも切り替え
-			if(!_charaShadow.empty())
-			{
-				auto& playerShadow = _charaShadow.front();
-				if(playerShadow)
-				{
-					playerShadow->SetTargetChara(_bShowTanuki ? static_cast<CharaBase*>(_playerTanuki.get())
-						: static_cast<CharaBase*>(_player.get()));
-				}
 			}
 		}
 	}
@@ -297,14 +201,11 @@ bool ModeGame::PlayerTransform()
 
 bool ModeGame::ObjectProcess()
 {
-
-
 	// オブジェクト処理
 	for(auto& object : _object)
 	{
 		object->Process();
 	}
-
 
 	// キャラ処理（生存しているもののみ）
 	for(auto& chara : _chara)
@@ -315,8 +216,8 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
-	// エネミーの処理
-	for(auto& enemy : _enemy)
+	// 敵（追跡/移動はここで実行される）
+	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive())
 		{
@@ -324,24 +225,26 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
-	// エネミーの処理 - 巡回系（EnemyMove）を別ループで処理
-	for(auto& enemyMove : _enemyMove)
+
+	// キャラクターの影処理
+	for(auto& shadow : _charaShadow)
 	{
-		if(enemyMove && enemyMove->IsAlive())
+		if(shadow)
 		{
-			enemyMove->Process();
+			shadow->Process();
 		}
 	}
-
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Process();
-	}*/
 
 	// UI処理
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Process();
+	}
+
+	// エフェクト処理
+	for(auto& effect_base : _effectBase)
+	{
+		effect_base->Process();
 	}
 	return true;
 }
@@ -349,10 +252,10 @@ bool ModeGame::ObjectProcess()
 bool ModeGame::ChangeBGM()
 {
 	bool isChase = false;
-	//if(_enemySensor)
-	//{
-	//	isChase = _enemySensor->IsChasing();
-	//}
+	if(_enemySensor)
+	{
+		isChase = _enemySensor->IsChasing();
+	}
 
 	// BGMチェンジ処理
 	if(!_isChengeBgm && isChase)

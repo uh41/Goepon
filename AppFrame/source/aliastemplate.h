@@ -51,4 +51,7 @@ namespace at
 
 	template<typename T>
 	using vet = std::vector<T>;					// ベクターとテンプレート(型)
+
+	template<typename C>
+	using fc = std::function<C>;				// ファンクションとクラス
 }

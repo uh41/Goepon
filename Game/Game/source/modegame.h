@@ -27,6 +27,8 @@
 #include "uihp.h"
 #include "charashadow.h"
 #include "playermono.h"
+#include "effectbase.h"
+#include "treasureeffect.h"
 
 
 
@@ -69,7 +71,7 @@ public:
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
 
 	// 索敵範囲の当たり判定
-	bool IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy);
+	bool IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy);
 	
 	// デバック関数
 	bool DebugInitialize();
@@ -140,6 +142,10 @@ protected:
 	at::spc<UiHp> _uiHp;
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
+
+	// エフェクト
+	at::vspc<EffectBase> _effectBase;
+	at::spc<TreasureEffect> _treasureEffect;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
