@@ -50,33 +50,14 @@ bool Player::Initialize()
 	// 初期体力設定
 	_fHp = 20.0f;
 
-	//// 設定ファイルから上書き読み込み
-	//CFile cfgFile("res/Player/player_config.txt");
-	//if(cfgFile.Success())
-	//{
-	//	auto config = TextUtil::ParseKeyValueConfig(cfgFile.DataStr());
-	//	// 移動速度
-	//	auto it = config.find("speed");
-	//	if(it != config.end())
-	//	{
-	//		float val;
-	//		// 変換成功したら上書き
-	//		if(TextUtil::TryParseFloat(it->second, val))
-	//		{
-	//			_fMvSpeed = val;
-	//		}
-	//	}
-	//	// 体力
-	//	it = config.find("hp");
-	//	if(it != config.end())
-	//	{
-	//		float val;
-	//		if(TextUtil::TryParseFloat(it->second, val))
-	//		{
-	//			_fHp = val;
-	//		}
-	//	}
-	//}
+	_tailCollisionFrame = MV1SearchFrame(_handle, "tailcolishon");
+
+	if(_tailCollisionFrame >= 0)
+	{
+		// コリジョン情報生成（必要に応じて分解能を調整）
+		MV1SetupCollInfo(_handle, _tailCollisionFrame, 8, 8, 8);
+		MV1SetFrameVisible(_handle, _tailCollisionFrame, FALSE);
+	}
 	return true;
 }
 
