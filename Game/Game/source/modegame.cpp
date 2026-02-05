@@ -243,22 +243,8 @@ bool ModeGame::LoadStageData()
 	{
 		const std::string& name = object.at("objectName");
 
-		//// ★★★ S_MarkerR を検出（完全版） ★★★
-		//if(name == "S_MarkerR")
-		//{
-		//	vec::Vec3 pos;
-		//	// JSON から座標を取得
-		//	object.at("translate").at("x").get_to(pos.x);
-		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-		//	pos.z *= -1.0f; // ★ Z軸反転
-
-		//	patrolPos.push_back(pos);
-
-		//	continue;
-		//}
-
-		if(name == "S_MarkerRX")
+		// ★★★ S_MarkerR を検出（完全版） ★★★
+		if(name == "S_MarkerR")
 		{
 			vec::Vec3 pos;
 			// JSON から座標を取得
@@ -506,14 +492,6 @@ bool ModeGame::Render()
 	SetupCamera_Perspective(fov_rad);
 
 	EffekseerManager::GetInstance()->Render();
-
-	//if(_henshineffectHandle != -1)
-	//{
-	//	if(!EffekseerManager::GetInstance()->IsPlayingEffect(_henshineffectHandle))
-	//	{
-	//		_henshineffectHandle = -1;
-	//	}
-	//}
 
 	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
