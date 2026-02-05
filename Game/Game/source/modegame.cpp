@@ -199,26 +199,26 @@ bool ModeGame::Terminate()
 		_isChengeBgm = false;
 	}
 
-	if(_henshineffectHandle != -1)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->DeleteEffect(_henshineffectHandle);
-			_henshineffectHandle = -1;
-		}
-	}
+	//if(_henshineffectHandle != -1)
+	//{
+	//	auto em = EffekseerManager::GetInstance();
+	//	if(em)
+	//	{
+	//		em->DeleteEffect(_henshineffectHandle);
+	//		_henshineffectHandle = -1;
+	//	}
+	//}
 
-	// Effekseer の終了（Initialize で起動していれば）
-	if(_effekseerLaunched)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->Terminate();
-			_effekseerLaunched = false;
-		}
-	}
+	//// Effekseer の終了（Initialize で起動していれば）
+	//if(_effekseerLaunched)
+	//{
+	//	auto em = EffekseerManager::GetInstance();
+	//	if(em)
+	//	{
+	//		em->Terminate();
+	//		_effekseerLaunched = false;
+	//	}
+	//}
 
 
 	return true;
@@ -510,11 +510,7 @@ bool ModeGame::Render()
 		}
 	}
 
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
-	}
+
 	// オブジェクトを描画
 	for(auto& object : _object)
 	{
@@ -555,7 +551,11 @@ bool ModeGame::Render()
 		}
 	}
 
-
+	// エフェクト
+	for(auto& effectBase : _effectBase)
+	{
+		effectBase->Render();
+	}
 
 	// UIを描画
 	for(auto& ui_base : _uiBase)
