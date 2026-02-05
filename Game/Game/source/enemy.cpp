@@ -10,7 +10,7 @@
 
 #include "enemy.h"
 #include "enemysensor.h"
-//#include "enemysoundsensor.h"
+#include "enemysoundsensor.h"
 
 // 初期化
 bool Enemy::Initialize()
@@ -75,6 +75,64 @@ bool Enemy::Process()
 		_status = STATUS::WAIT;
 	}
 
+	// 音検知タイマーの更新（音検知が有効な場合）
+	if (_soundDetectionActive)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_soundDetectionTimer += dt;
+
+		// 10秒経過したら初期位置への帰還を開始
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		{
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			_isMovingToSound = false;
+			_waitingAtSound = false;
+
+			StartReturningToInitialPosition();
+		}
+	}
+
+	// 音源到達後の待機処理
+	if (_waitingAtSound)
+	{
+		// 待機中はWAITステータスに設定
+		_status = STATUS::WAIT;
+
+		// 待機中はプレイヤー検出されたら割り込み可能
+		// この処理は下のEnemySensorの処理で行われる
+	}
+
+	// EnemySoundSensorから音の検知情報を取得
+	if (_enemySoundSensor)
+	{
+		// 音レベル5の音を検知したかチェック
+		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
+		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		{
+			// プレイヤーを検出中または追跡中でなければ、音源に向かって移動開始
+			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			{
+				_isMovingToSound = true;
+				_soundSourcePosition = detectionInfo.soundSourcePosition;
+
+				// 音検知タイマーを開始
+				_soundDetectionActive = true;
+				_soundDetectionTimer = 0.0f;
+
+				// 初期位置への帰還を中断
+				_waitingBeforeReturn = false;
+				_returnWaitTimer = 0.0f;
+			}
+		}
+	}
+
+	// 音源への移動処理（プレイヤー検出より優先度は低い）
+	if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	{
+		UpdateMovingToSound();
+	}
+
 	// 検知終了後の待機処理（共通フラグを参照）
 	if(_waitingBeforeReturn)
 	{
@@ -84,6 +142,7 @@ bool Enemy::Process()
 		if(_returnWaitTimer <= 0.0f)
 		{
 			_waitingBeforeReturn = false;
+
 			// 初期位置へ戻る処理は base 実装を使う
 			StartReturningToInitialPosition();
 		}
@@ -106,16 +165,33 @@ bool Enemy::Process()
 			{
 				_status = STATUS::WALK;
 				_isReturningToInitialPos = false;
+
+				// 音源への移動と待機を中断
+				_isMovingToSound = false;
+				_waitingAtSound = false;
+				_soundWaitTimer = 0.0f;
+
+				// 音検知タイマーをリセット
+				_soundDetectionActive = false;
+				_soundDetectionTimer = 0.0f;
 			}
-			else if(_isReturningToInitialPos)
+			else if (_isReturningToInitialPos)	// 初期位置に戻り中
 			{
 				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
+
 				UpdateReturningToInitialPosition();
 			}
-			else
+			else if (_isMovingToSound)	// 音源に向かって移動中
+			{
+				// 音源に向かって移動中
+				_status = STATUS::WALK;
+			}
+			else // 通常待機状態
 			{
 				_status = STATUS::WAIT;
-				if(!_enemySensor->IsChasing() && !IsAtInitialPosition())
+
+				// 音源移動中や音源待機中は初期位置への帰還を開始しない
+				if (!_enemySensor->IsChasing() && !IsAtInitialPosition() && !_isMovingToSound && !_waitingAtSound)
 				{
 					StartReturningToInitialPosition();
 				}

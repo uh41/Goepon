@@ -288,6 +288,13 @@ bool ModeGame::LoadStageData()
 			//enemy->SetEnemySensor(sensor);
 			enemyMove->SetEnemySensor(sensor);
 
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+			soundSensor->Initialize();
+			soundSensor->SetMap(_map.get());
+			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
+			soundSensor->SetPos(enemyMove->GetPos());
+			enemyMove->SetEnemySoundSensor(soundSensor);
+
 			//_enemy.emplace_back(enemy);
 			_enemyMove.emplace_back(enemyMove);
 		}
@@ -538,6 +545,19 @@ bool ModeGame::Render()
 		}
 	}
 
+	// 各敵のセンサーを個別に描画
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive())
+		{
+			// 音センサーの描画
+			if (enemy->GetEnemySoundSensor())
+			{
+				enemy->GetEnemySoundSensor()->Render();
+			}
+		}
+	}
+
 	// 巡回系エネミー（EnemyMove）を個別に描画
 	for(auto& enemyMove : _enemyMove)
 	{
@@ -631,7 +651,6 @@ bool ModeGame::Render()
 		_enemySensor->RenderDetectionUI();
 	}
 
-
 	if(_d_view_collision)
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
@@ -654,6 +673,32 @@ bool ModeGame::Render()
 		{
 			enemyMove->GetEnemySensor()->Render();
 			enemyMove->GetEnemySensor()->RenderDetectionUI();
+		}
+	}
+
+	// 各敵のセンサーを個別に描画
+	for (auto& enemy : _enemy)
+	{
+		if (enemy->IsAlive())
+		{
+			// 音センサーの描画
+			if (enemy->GetEnemySoundSensor())
+			{
+				enemy->GetEnemySoundSensor()->Render();
+			}
+		}
+	}
+
+	// 巡回系エネミーの音センサー描画
+	for (auto& enemyMove : _enemyMove)
+	{
+		if (enemyMove && enemyMove->IsAlive())
+		{
+			// 音センサーの描画
+			if (enemyMove->GetEnemySoundSensor())
+			{
+				enemyMove->GetEnemySoundSensor()->Render();
+			}
 		}
 	}
 
@@ -692,6 +737,13 @@ bool ModeGame::Render()
 		DrawString(900, 500, msg, GetColor(255, 255, 255));
 	}
 
+	if (anyDetected)
+	{
+		const char* alertMsg = "敵に発見された！変身できない！";
+		// 座標は適宜調整（ここでは画面中央上部に仮配置）
+		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
+	}
+
 	return true;
 }
 
@@ -705,7 +757,8 @@ bool ModeGame::CheckAllDetections()
 		return false;
 	}
 
-	bool anyDetected = false;
+	anyDetected = false;
+
 
 	// ヘルパーで各コンテナを処理するラムダ
 	auto processContainer = [&](auto& container) -> bool {
@@ -729,6 +782,13 @@ bool ModeGame::CheckAllDetections()
 
 			sensor->Process();
 
+			auto soundSensor = eb->GetEnemySoundSensor();
+			if (soundSensor)
+			{
+				soundSensor->SetPos(eb->GetPos());
+				soundSensor->Process();
+			}
+
 			// プレイヤーがタヌキでない（＝player状態）のときは
 			// 「敵を強制的に見失わせて戻らせる」処理を行わない。
 			// センサー情報だけリセットして巡回を維持する。
@@ -739,12 +799,16 @@ bool ModeGame::CheckAllDetections()
 				continue;
 			}
 
+			// 人間状態では変身キャンセル不要
+			_bTransCancel = false;
+
 			bool detected = sensor->CheckPlayerDetection(player);
 
 			if(detected)
 			{
 				anyDetected = true;
 				eb->OnPlayerDetected(player->GetPos());
+				_bTransCancel = true;
 			}
 			else
 			{
@@ -759,6 +823,9 @@ bool ModeGame::CheckAllDetections()
 
 	processContainer(_enemy);
 	processContainer(_enemyMove);
+
+	// 変身キャンセルフラグを検知結果に基づいて更新
+	_bTransCancel = anyDetected;
 
 	return anyDetected;
 }

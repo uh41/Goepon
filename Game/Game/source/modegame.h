@@ -23,6 +23,7 @@
 #include "map.h"
 #include "cube.h"
 #include "enemysensor.h"
+#include "enemysoundsensor.h"
 #include "uibase.h"
 #include "uihp.h"
 #include "charashadow.h"
@@ -149,7 +150,8 @@ protected:
 	// メニューから切り替える「カメラ操作モード」フラグ
 	bool _bCameraControlMode;
 	
-
+	bool anyDetected;	// プレイヤー検出フラグ
+	bool _bTransCancel;	// 変身キャンセルフラグ
 	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
 	bool _bLandedOnUp;// 上方向に着地したかどうか
 

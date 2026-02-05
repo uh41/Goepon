@@ -15,7 +15,7 @@
 
 // 前方宣言
 class EnemySensor;
-//class EnemySoundSensor;
+class EnemySoundSensor;
 class PlayerBase;
 
 class Enemy : public EnemyBase

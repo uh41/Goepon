@@ -14,6 +14,7 @@
 
 // 前方宣言
 class EnemySensor;
+class EnemySoundSensor;
 class PlayerBase;
 
 class EnemyBase : public CharaBase
@@ -26,7 +27,9 @@ public:
 	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
+
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensorを設定
+	void SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor);
 	void OnPlayerDetected(const vec::Vec3& playerPos);			// プレイヤー検出時の処理
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
@@ -63,10 +66,14 @@ public:
 	void CaptureInitialTransform();
 
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
+	std::shared_ptr<EnemySoundSensor> GetEnemySoundSensor() const { return _enemySoundSensor; }
+	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
 
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
+	std::shared_ptr<EnemySoundSensor> _enemySoundSensor;
+
 	bool _detectedPlayer;	// プレイヤーを検出したか
 	vec::Vec3 _playerPos;	// 検出したプレイヤーの位置
 	float _rotationSpeed;	// 回転速度
@@ -82,26 +89,37 @@ protected:
 	bool _isReturningToInitialPos;	// 初期位置に戻り中かどうか
 	float _returnSpeed;				// 初期位置に戻る速度
 
-
-
 	// 検知終了後の待機処理用
 	bool _waitingBeforeReturn;     // 帰還前の待機中フラグ
 	float _returnWaitTimer;        // 帰還前の待機タイマー
-	static constexpr float RETURN_WAIT_TIME = 3.0f; // 待機時間（3秒）
+	static constexpr float RETURN_WAIT_TIME = 3.0f; // 待機時間
 
 	// YouDiedメッセージ表示関連
 	bool _showYouDiedMessage;
 	float _youDiedMessageTimer;
-	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間（秒）
+	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間
 
 	// 敵の向き変更タイマー
 	float DirChangeTimer;
-	static constexpr float DirChangeInterval = 15.0f; // 向き変更の間隔（秒）
-
-
+	static constexpr float DirChangeInterval = 15.0f; // 向き変更の間隔
 
 	// テレポート関連
 	bool _waitingForTeleport;		// テレポート待機中フラグ
 	float _teleportTimer;			// テレポートまでの待機時間
-	static constexpr float TELEPORT_WAIT_TIME = 3.0f; // テレポートまでの待機時間（秒）
+	static constexpr float TELEPORT_WAIT_TIME = 3.0f; // テレポートまでの待機時間
+
+	// 音検知による移動関連
+	bool _isMovingToSound;			// 音源に向かって移動中かどうか
+	vec::Vec3 _soundSourcePosition;	// 検知した音源の位置
+	void UpdateMovingToSound();		// 音源に向かって移動する処理
+
+	// 音源到達後の待機処理
+	bool _waitingAtSound;			// 音源到達後の待機中フラグ
+	float _soundWaitTimer;			// 音源到達後の待機タイマー
+	static constexpr float SOUND_WAIT_TIME = 3.0f; // 音源到達後の待機時間
+
+	// 音検知からの経過時間管理
+	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
+	float _soundDetectionTimer;		// 音検知からの経過時間
+	static constexpr float SOUND_RETURN_TIME = 10.0f; // 音検知から初期位置に戻るまでの時間
 };
