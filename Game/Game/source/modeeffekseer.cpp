@@ -19,7 +19,7 @@ bool ModeEffekseer::Initialize()
 
 	// エフェクトリソースを読み込む。
 	// 読み込む時に大きさを指定する。
-	_iEffectResourceHandle = LoadEffekseerEffect("res/Effect/hennsin.efkefc", 1.0f);
+	_iEffectResourceHandle = LoadEffekseerEffect("res/Effect/EF_Tresure.efkefc", 1.0f);
 
 	_vPos = VGet(0.0f, 200.0f, 1000.0f);
 
