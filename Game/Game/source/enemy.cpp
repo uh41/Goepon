@@ -43,6 +43,7 @@ bool Enemy::Initialize()
 	return true;
 }
 
+// 初期位置と向きをキャプチャ
 void Enemy::CaptureInitialTransform()
 {
 	_initialPosition = _vPos;
