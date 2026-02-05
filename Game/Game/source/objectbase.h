@@ -72,6 +72,8 @@ public:
 	//回転縮小平行移動を計算し、モデルに適用する
 	void ModelMatrixSetUp();
 
+	bool LoadModel(std::string fileName, std::string attachFrameName);
+
 protected:
 
 	//モデルの当たり判定用フレームのアタッチ番号

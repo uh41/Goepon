@@ -25,6 +25,7 @@
 #include "sound/sounditemvoice.h"
 #include "fade/fade.h"
 #include "AnimationManager/animationmanager.h"
+#include "ResourceServer.h"
 #include "Resources.h"
 #include "manager/collisionmanager.h"
 #include "manager/effekseermanager.h"

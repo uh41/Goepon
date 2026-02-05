@@ -185,9 +185,7 @@ bool ObjectServer::LoadDate(std::string stageName)
 		}
 		// ƒ‚ƒfƒ‹“Ç‚İ‚İ
 		const std::string filename = _sPath + name + ".mv1";
-		const int handle = 
-
-		
+		/*const int handle = */
 	}
 	//std::string stage = stageName.substr(0, 1);
 	//std::string area = stageName.substr(2, 1);
