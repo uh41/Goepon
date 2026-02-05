@@ -107,6 +107,7 @@ bool ModeGame::PlayerTransform()
 			// プレイヤー位置にエフェクトを出す（必要ならオフセットを調整）
 			EffekseerManager::GetInstance()->PlayEffect3DPos(_henshineffectHandle, _player->GetPos());
 		}
+
 		_player->Process();
 		return true;
 	}
@@ -154,32 +155,38 @@ bool ModeGame::PlayerTransform()
 	}
 
 	// PAD_INPUT_4: タヌキ -> 人間 の変身（無効化：モノ表示時は変身不可）
-	if(trg & PAD_INPUT_4)
+	if(!_bTransCancel)
 	{
-		// 無効化：現在「モノ」表示中なら PAD_INPUT_4 を無効化する
-		if(_showMonoPlayer)
+		if(trg & PAD_INPUT_4)
 		{
-			// モノ時は変身不可、何もしない
-		}
-		else
-		{
-			if(_bShowTanuki)
+			// 無効化：現在「モノ」表示中なら PAD_INPUT_4 を無効化する
+			if(_showMonoPlayer)
 			{
-				_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
-				_isTransformingToHuman = true;
-				_playerTanuki->Process();
-				return true;
+				// モノ時は変身不可、何もしない
 			}
 			else
 			{
-				_bShowTanuki = true;
-				_playerTanuki->SetPos(_player->GetPos());
-				_playerTanuki->SetDir(_player->GetDir());
-				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				_playerTanuki->PlayAnimation("goepon_idle", true);
+				if(_bShowTanuki)
+				{
+					_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
+					_isTransformingToHuman = true;
+
+					// 変身中はタヌキのまま処理
+					_playerTanuki->Process();
+					return true;
+				}
+				else
+				{
+					_bShowTanuki = true;
+					_playerTanuki->SetPos(_player->GetPos());
+					_playerTanuki->SetDir(_player->GetDir());
+					_playerTanuki->_status = CharaBase::STATUS::WAIT;
+					_playerTanuki->PlayAnimation("goepon_idle", true);
+				}
 			}
 		}
 	}
+
 
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）

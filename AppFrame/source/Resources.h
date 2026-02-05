@@ -83,8 +83,10 @@ namespace ef
 {
   inline constexpr const char* EF_Tresure = "res/Effect/EF_Tresure.efkefc";
   inline constexpr const char* EF_ase = "res/Effect/EF_ase.efkefc";
+  inline constexpr const char* EF_doya = "res/Effect/EF_doya.efkefc";
   inline constexpr const char* EF_find = "res/Effect/EF_find.efkefc";
   inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
+  inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
   inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
   inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
 }

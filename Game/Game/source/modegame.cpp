@@ -315,7 +315,7 @@ bool ModeGame::LoadStageData()
 			enemyMove->SetEnemySoundSensor(soundSensor);
 
 			//_enemy.emplace_back(enemy);
-			_enemyMove.emplace_back(enemyMove);
+			_enemyBase.emplace_back(enemyMove);
 		}
 	}
 
@@ -487,7 +487,7 @@ bool ModeGame::Process()
 		}
 	}
 
-	IsPlayerAttack(_player.get(), enemy);
+	IsPlayerAttack(_player.get(), _enemyBase);
 
 	ChangeBGM();
 	return true;
@@ -524,7 +524,7 @@ bool ModeGame::Render()
 		}
 	}
 
-for(auto& enemy : _enemyBase)
+	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive())
 		{
@@ -597,6 +597,18 @@ for(auto& enemy : _enemyBase)
 	if(_d_view_collision)
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
+	}
+
+	for(auto& enemy : _enemyBase)
+	{
+		if(enemy->IsAlive())
+		{
+			// 音センサーの描画
+			if(enemy->GetEnemySoundSensor())
+			{
+				enemy->GetEnemySoundSensor()->Render();
+			}
+		}
 	}
 	
 	// 各敵のセンサーを個別に描画
@@ -687,14 +699,11 @@ bool ModeGame::CheckAllDetections()
 
 			sensor->Process();
 
-			// 変更点:
-			// 変身アニメ再生中は即座に検出をクリアしない（敵は最後に見た位置を追跡させる）。
-			// これにより、プレイヤーが変身した瞬間に敵が即巡回に戻るのを防ぎます。
-			if(_isTransformingToHuman)
+			auto soundSensor = eb->GetEnemySoundSensor();
+			if(soundSensor)
 			{
-				// 変身中なら何もしない（センサーはそのまま動作させる）。
-				// 追跡中であれば、Sensor の chaseTimer によって自然に追跡が解除されます。
-				continue;
+				soundSensor->SetPos(eb->GetPos());
+				soundSensor->Process();
 			}
 
 			// プレイヤーがタヌキでない（＝player状態）のときは
@@ -731,6 +740,8 @@ bool ModeGame::CheckAllDetections()
 		return false;
 		};
 	processContainer(_enemyBase);
+
+	_bTransCancel = anyDetected;
 
 	return anyDetected;
 }
