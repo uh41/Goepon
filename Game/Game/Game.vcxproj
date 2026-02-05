@@ -25,6 +25,7 @@
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemysensor.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
     <ClInclude Include="source\Treasure.h" />
+    <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
   </ItemGroup>
@@ -59,6 +61,7 @@
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
@@ -86,6 +89,7 @@
     <ClCompile Include="source\playermono.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
+    <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
   </ItemGroup>

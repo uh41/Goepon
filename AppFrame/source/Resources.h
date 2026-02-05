@@ -79,6 +79,16 @@ namespace mv1
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
 }
 
+namespace ef
+{
+  inline constexpr const char* EF_Tresure = "res/Effect/EF_Tresure.efkefc";
+  inline constexpr const char* EF_ase = "res/Effect/EF_ase.efkefc";
+  inline constexpr const char* EF_find = "res/Effect/EF_find.efkefc";
+  inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
+  inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
+  inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
+}
+
 namespace mp3
 {
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";

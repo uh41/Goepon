@@ -66,8 +66,7 @@ public:
 	// センサーの有効/無効状態
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
-
-	// Mapクラスへの参照を設定
+// Mapクラスへの参照を設定
 	void SetMap(Map* map) { _map = map; }
 
 	// 床の存在を確認する関数
@@ -104,4 +103,6 @@ protected:
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
 	Map* _map;	// マップへの参照
+
+
 };

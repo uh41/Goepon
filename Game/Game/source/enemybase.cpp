@@ -82,6 +82,12 @@ bool EnemyBase::Terminate()
 	return true;
 }
 
+void EnemyBase::CaptureInitialTransform()
+{
+	_initialPosition = _vPos;
+	_initialDirection = _vDir;
+}
+
 // テレポート状態のリセット
 void EnemyBase::ResetTeleport()
 {

@@ -28,6 +28,16 @@ def generate_header():
                 lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
     lines.append("}\n\n")
 
+    lines.append("namespace ef\n{\n")
+    for root, _, files in os.walk(IMG_DIR):
+        for file in sorted(files):
+            if file.endswith(".efkefc"):
+                name_base = os.path.splitext(file)[0]
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
+                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
+    lines.append("}\n\n")
+
     lines.append("namespace mp3\n{\n")
     for root, _, files in os.walk(IMG_DIR):
         for file in sorted(files):

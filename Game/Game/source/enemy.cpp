@@ -17,7 +17,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
+	_handle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;

@@ -240,6 +240,20 @@ void EnemySensor::UpdateDetectionTimer()
 	}
 }
 
+// 追加実装（適当な位置、例えば ResetDetection の後に追加）
+void EnemySensor::ForceChaseTo(const vec::Vec3& playerPos)
+{
+	// 検出表示（found）を有効にする
+	_detectionInfo.isDetected = true;
+	_detectionInfo.timer = DETECTION_DISPLAY_TIME;
+	_detectionInfo.detectorPos = _vPos;
+
+	// 追跡状態を設定し、最後に確認したプレイヤー位置とタイマーを更新
+	_detectionInfo.isChasing = true;
+	_detectionInfo.lastKnownPlayerPos = playerPos;
+	_detectionInfo.chaseTimer = CHASE_TIME;
+}
+
 // 索敵範囲の設定
 void EnemySensor::SetDetectionSector(float radius, float angle)
 {
