@@ -6,7 +6,7 @@
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::SK_goepon_multimotion);
+	LoadModel(mv1::SK_goepon_multimotion);
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;

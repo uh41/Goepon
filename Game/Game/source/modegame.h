@@ -28,7 +28,6 @@
 #include "Goal.h"
 
 
-
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -65,6 +64,11 @@ public:
 	// 当たり判定処理
 	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
+    // キャラと宝箱の当たり判定処理
+	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
+	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
+	// プレイヤーとゴールの当たり判定
+	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
 
 	// 索敵範囲の当たり判定
 	bool IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy);
@@ -101,9 +105,6 @@ public:
 
 	bool LoadStageData();
 
-	// キャラと宝箱の当たり判定処理
-	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
-	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
 
@@ -128,6 +129,8 @@ protected:
 	at::spc<Map> _map;
 	// キューブ
 	at::spc<Cube> _cube;
+	// ゴール
+	at::spc<Goal> _goal;
 	// 敵
 	at::vspc<Enemy> _enemy;
 	// UI
@@ -137,6 +140,7 @@ protected:
 	at::vspc<CharaShadow> _charaShadow;
 	// オブジェクトサーバー
 	class ObjectServer* _objectServer;
+
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -186,5 +190,12 @@ protected:
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;
 	float _knockdownMessageSec = 0.0f;
+
+	// ゲームクリア処理
+	bool _isGameClear;
+
+	// ゲーム開始時刻（ms）・クリア表示済みフラグ
+	unsigned long _gameStartMs = 0;
+	bool _gameClearShown = false;
 };
 

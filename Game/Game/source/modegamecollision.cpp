@@ -453,3 +453,36 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vec<Enemy*> enemy)
 
 	return false;
 }
+
+bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
+{
+	
+	// 無効チェック
+	if(!player || !goal)
+	{
+		return false;
+	}
+	// 空中なら処理しない（設計に合わせて維持）
+	if(!player->GetLand())
+	{
+		return false;
+	}
+	// プレイヤーの座標
+	auto playerPos = player->GetPos();
+	auto playerColY = player->GetColSubY();
+	// ゴールの指定フレームで判定
+	const auto handleGoal = goal->GetModelHandle();
+	const auto frameGoal  = goal->GetFrameMapCollision();
+
+	// プレイヤーと指定したコリジョンフレームで当たり判定
+	vec::Vec3 hitPos;
+	const bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision
+	(
+		playerPos,
+		handleGoal,
+		frameGoal,
+		playerColY,
+		hitPos
+	);
+	return hit;
+}

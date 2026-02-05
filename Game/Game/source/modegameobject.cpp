@@ -43,16 +43,19 @@ bool ModeGame::ObjectInitialize()
 	_treasure = std::make_shared<Treasure>();
 	_object.emplace_back(_treasure);
 
+	// ゴール初期化
+	_goal = std::make_shared<Goal>();
+	_object.emplace_back(_goal);
+
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();
 	_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
-	
-	
 	return true;
 }
 
+// 影の初期化
 bool ModeGame::ShadowInitialize()
 {
 	auto charaShadow = std::make_shared<CharaShadow>();
@@ -101,6 +104,7 @@ bool ModeGame::ShadowInitialize()
 	return true;
 }
 
+// プレイヤー変身処理
 bool ModeGame::PlayerTransform()
 {
 	// 変身アニメ中の監視（タヌキ -> 人間）
@@ -196,6 +200,7 @@ bool ModeGame::PlayerTransform()
 	return true;
 }
 
+// オブジェクト処理
 bool ModeGame::ObjectProcess()
 {
 
@@ -238,6 +243,7 @@ bool ModeGame::ObjectProcess()
 	return true;
 }
 
+// BGMチェンジ処理
 bool ModeGame::ChangeBGM()
 {
 	bool isChase = false;

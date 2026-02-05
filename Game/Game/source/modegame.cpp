@@ -12,7 +12,7 @@
 #include "modegame.h"
 #include "applicationmain.h"
 #include "modeeffekseer.h"
-
+#include "ModeGameClear.h"
 
 
 // 初期化
@@ -22,8 +22,7 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
-	//_treasure.push_back(std::make_shared<Treasure>());
-	//_object.emplace_back(_treasure.back());
+
 	_camera->Initialize();
 
 	_bShowTanuki = true;
@@ -62,6 +61,10 @@ bool ModeGame::Initialize()
 	{
 		ui_base->Initialize();
 	}
+
+
+	// ゴール初期化
+	_isGameClear = false;
 
 	//// シャドウ
 	//for(auto& charaShadow : _charaShadow)
@@ -358,6 +361,7 @@ bool ModeGame::Process()
 	}
 	
 	
+
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _map.get());
@@ -419,6 +423,38 @@ bool ModeGame::Process()
 			_showKnockdownMessage = false;
 			_knockdownMessageSec = 0.0f;
 		}
+	}
+
+	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
+	{
+		_isGameClear = true;
+
+		// ゲームクリア画面を最前面に積む（layer は最上位推奨）
+		unsigned long now = GetNowCount();
+		if(!_gameClearShown && now - _gameStartMs >= 60000)
+		{
+			_gameClearShown = true;
+			// 高レイヤーで追加してオーバーレイ表示
+			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+		}
+		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+		return true;
+	}
+	if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
+	{
+		_isGameClear = true;
+
+		// ゲームクリア画面を最前面に積む（layer は最上位推奨）
+		unsigned long now = GetNowCount();
+		if(!_gameClearShown && now - _gameStartMs >= 60000)
+		{
+			_gameClearShown = true;
+			// 高レイヤーで追加してオーバーレイ表示
+			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+		}
+
+		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+		return true;
 	}
 
 	IsPlayerAttack(_player.get(), enemy);

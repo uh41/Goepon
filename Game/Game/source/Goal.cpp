@@ -1,19 +1,28 @@
+/*********************************************************************/
+// * \file   Goal.cpp
+// * \brief  ゴール(ゲームクリアチップ)クラス
+// *
+// * \author 石森虹大
+// * \date   2026/2/5
+// * \作業内容: 新規作成 石森虹大 2026/2/5
+//			 
+/*********************************************************************/
 #include "Goal.h"
 
 bool Goal::Initialize()
 {
 	base::Initialize();
-	_handle = LoadModel("res/Goal/Goal.mv1", "Collision");
+	LoadModel(mv1::Goal);
 	if(_handle < 0) { return false; }
 
 	// 当たり判定用フレームの取得
 	_hitCollisionFrame = MV1SearchFrame(_handle, "Collision");
 
-	if(_hitCollisionFrame < 0) { return false; }
+ 	if(_hitCollisionFrame < 0) { return false; }
 
 	_attachIndex = -1;
 
-	_vPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
+	_vPos = vec::Vec3{ 389.0f, 0.0f, 2050.0f };
 	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 
 	MV1SetupCollInfo(_handle, _hitCollisionFrame, 16, 16, 16);
@@ -46,12 +55,12 @@ bool Goal::Render()
 {
 	base::Render();
 
-	// 非表示なら描画しない（デバック)
-	if(!_isVisible)
-	{
-		return true;
+	//// 非表示なら描画しない（デバック)
+	//if(!_isVisible)
+	//{
+	//	return true;
 
-	}
+	//}
 
 	if(_handle >= 0)
 	{

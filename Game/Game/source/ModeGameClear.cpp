@@ -19,7 +19,7 @@ bool ModeGameClear::Process()
 	base::Process();
 	// 下のレイヤーを動かさない(メニューと同様)
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
-
+	
 	// キー取得
 	int key = ApplicationMain::GetInstance()->GetKey();
 	int trg = ApplicationMain::GetInstance()->GetTrg();

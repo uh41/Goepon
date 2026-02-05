@@ -1,3 +1,12 @@
+/*********************************************************************/
+// * \file   Goal.h
+// * \brief  ゴール(ゲームクリアチップ)クラス
+// *
+// * \author 石森虹大
+// * \date   2026/2/5
+// * \作業内容: 新規作成 石森虹大 2026/2/5
+//			 
+/*********************************************************************/
 #pragma once
 #include "objectbase.h"
 class Goal :public ObjectBase
@@ -24,7 +33,6 @@ public:
 	MATRIX MakeModelMatrix() const;
 
 protected:
-	int _handle;            // モデルハンドル
 	int _hitCollisionFrame; // 当たり判定用フレーム
 	int _attachIndex;       // モデルの当たり判定用フレームのアタッチ番号
 	bool _isVisible;        // 表示フラグ

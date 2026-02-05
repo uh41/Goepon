@@ -1,12 +1,20 @@
-﻿#include "Treasure.h"
-
+﻿/*********************************************************************/
+// * \file   treasure.cpp
+// * \brief  お宝クラス
+// *
+// * \author 石森虹大
+// * \date   2026/1/25
+// * \作業内容: 新規作成 石森虹大 2026/1/25
+//			 
+/*********************************************************************/
+#include "Treasure.h"
 
 bool Treasure::Initialize()
 {
 	base::Initialize();
 
 
-	_handle = MV1LoadModel("res/Treasure/tuzura_02.mv1");
+	LoadModel("res/Treasure/tuzura_02.mv1");
 	if(_handle < 0) { DxLib::printfDx("Treasure model load failed\n"); return false; }
 
 

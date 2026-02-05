@@ -1,4 +1,13 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   treasure.h
+// * \brief  お宝クラス
+// *
+// * \author 石森虹大
+// * \date   2026/1/25
+// * \作業内容: 新規作成 石森虹大 2026/1/25
+//			 
+/*********************************************************************/
+#pragma once
 #include "appframe.h"
 #include "objectbase.h"
 
@@ -52,8 +61,7 @@ public:
 
 	MATRIX MakeModelMatrix() const;
 
-protected:
-	int _handle;                
+protected:    
 	int _hitCollisionFrame;     
 	int _openCollisionFrame;    
 	int _attachIndex;           
