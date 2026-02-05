@@ -10,6 +10,7 @@
 
 #include "player.h"
 #include "appframe.h"
+#include "map.h"
 
 // 初期化
 bool Player::Initialize()
@@ -77,6 +78,16 @@ bool Player::Initialize()
 	//		}
 	//	}
 	//}
+
+	_tailCollisionFrame = MV1SearchFrame(_handle, "tailcolishon");
+
+	if (_tailCollisionFrame >= 0)
+	{
+		// コリジョン情報生成（必要に応じて分解能を調整）
+		MV1SetupCollInfo(_handle, _tailCollisionFrame, 8, 8, 8);
+		MV1SetFrameVisible(_handle, _tailCollisionFrame, FALSE);
+	}
+
 	return true;
 }
 

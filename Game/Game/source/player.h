@@ -40,5 +40,6 @@ protected:
 	vec::Vec3 _camOffset;
 	vec::Vec3 _camTargetOffset;
 
+	int _tailCollisionFrame;
 };
 
