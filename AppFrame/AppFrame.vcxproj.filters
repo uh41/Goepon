@@ -142,6 +142,27 @@
     <Filter Include="ヘッダー ファイル\フェード">
       <UniqueIdentifier>{ce897302-3a05-4277-8c32-f14f4ec8748b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\アニメーション管理">
+      <UniqueIdentifier>{2e5f8ae8-c73e-46b2-bc23-c1d5b7ffd5dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\当たり判定管理">
+      <UniqueIdentifier>{f396830d-dada-4f71-b300-a5ec4ecec96e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\エフェクト管理">
+      <UniqueIdentifier>{d63a552e-313b-4bf6-b49d-f850d86e1b97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\数学">
+      <UniqueIdentifier>{ea3c64ed-d3ad-4da6-808a-411bddde7771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\アニメーション管理">
+      <UniqueIdentifier>{b24b8d2b-a588-49da-9e6d-62ac0a9b16a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\当たり判定管理">
+      <UniqueIdentifier>{f5bdcb0a-5a69-4ee6-899f-ec6a4f9967b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\エフェクト管理">
+      <UniqueIdentifier>{e19e1b89-dc0f-4ab9-8fd4-bad1bce06e3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\winmain.cpp">
@@ -174,23 +195,23 @@
     <ClCompile Include="source\fade\fade.cpp">
       <Filter>ソース ファイル\フェード</Filter>
     </ClCompile>
-    <ClCompile Include="source\mymath.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\AnimationManager\animationmanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\manager\collisionmanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\manager\effekseermanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\TextUtil.cpp">
+    <ClCompile Include="source\CFile\TextUtil.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\ResourceServer.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AnimationManager\animationmanager.cpp">
+      <Filter>ソース ファイル\アニメーション管理</Filter>
+    </ClCompile>
+    <ClCompile Include="source\manager\collisionmanager.cpp">
+      <Filter>ソース ファイル\当たり判定管理</Filter>
+    </ClCompile>
+    <ClCompile Include="source\manager\effekseermanager.cpp">
+      <Filter>ソース ファイル\エフェクト管理</Filter>
+    </ClCompile>
+    <ClCompile Include="source\mymath.cpp">
+      <Filter>ソース ファイル\数学</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -272,26 +293,26 @@
     <ClInclude Include="source\fade\fade.h">
       <Filter>ヘッダー ファイル\フェード</Filter>
     </ClInclude>
-    <ClInclude Include="source\AnimationManager\animationmanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\Resources.h">
       <Filter>リソース ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\manager\collisionmanager.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\gameconfig.h">
       <Filter>リソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\manager\effekseermanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\TextUtil.h">
+    <ClInclude Include="source\CFile\TextUtil.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\ResourceServer.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\AnimationManager\animationmanager.h">
+      <Filter>ヘッダー ファイル\アニメーション管理</Filter>
+    </ClInclude>
+    <ClInclude Include="source\manager\collisionmanager.h">
+      <Filter>ヘッダー ファイル\当たり判定管理</Filter>
+    </ClInclude>
+    <ClInclude Include="source\manager\effekseermanager.h">
+      <Filter>ヘッダー ファイル\エフェクト管理</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

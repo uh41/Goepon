@@ -71,6 +71,8 @@ public:
 	//回転縮小平行移動を計算し、モデルに適用する
 	void ModelMatrixSetUp();
 
+	bool LoadModel(std::string fileName, std::string attachFrameName);
+
 	//モデル読み込み
 	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
 
@@ -98,6 +100,8 @@ protected:
 	int _iHandleSkySphere;
 	int _iHandleShadowMap;
 	at::mst<int> _mModelHandle;// マップ画像
+
+	at::umss<std::string, std::string> _config;
 
 	//vec::Vec3 _vDir; // キャラの向き
 

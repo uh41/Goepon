@@ -26,6 +26,10 @@ bool CharaBase::Initialize()
 	_fCollisionWeight = 0.0f;
 	_status = STATUS::NONE;
 	_bIsAlive = true; // 生存フラグを初期化
+
+	TextUtil::GetInstance()->GetConfig(_config, "HP", _fHp);// 初期体力設定
+	TextUtil::GetInstance()->GetConfig(_config, "speed", _fMvSpeed);// 移動速度設定
+
 	return true;
 }
 

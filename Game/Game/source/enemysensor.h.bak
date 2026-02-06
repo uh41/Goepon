@@ -38,7 +38,7 @@ public:
 	virtual bool Render();
 
 	// 索敵範囲の設定
-	void SetDetectionSector(float radius, float angle);
+	void SetDetectionSector(float radius, float angle);	// 半径、角度
 
 	// プレイヤーが索敵範囲内にいるかチェック
 	bool IsPlayerInDetectionRange(const vec::Vec3& playerPos) const;
@@ -66,7 +66,8 @@ public:
 	// センサーの有効/無効状態
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
-// Mapクラスへの参照を設定
+
+	// Mapクラスへの参照を設定
 	void SetMap(Map* map) { _map = map; }
 
 	// 床の存在を確認する関数
@@ -74,6 +75,21 @@ public:
 
 	// 視線チェック - 指定した2点間で床なしの地点があるかチェック
 	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
+
+	// コリジョンマネージャーを使って床のY座標を取得する関数
+	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
+
+<<<<<<< HEAD
+	// カプセルを使った索敵範囲内判定
+	bool IsPlayerInDetectionRangeWithCapsule(
+		const vec::Vec3& playerPos,
+		const vec::Vec3& playerCapsuleTop,
+		const vec::Vec3& playerCapsuleBottom,
+		float playerCapsuleRadius) const;
+=======
+	void ForceChaseTo(const vec::Vec3& playerPos); // 強制的に追跡状態にする
+
+>>>>>>> SuzukiYuuki
 
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲

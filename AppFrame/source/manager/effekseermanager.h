@@ -102,7 +102,7 @@ public:
 private:
 
 	EffekseerManager() { _initialize = false; }
-	~EffekseerManager() {};
+	~EffekseerManager() = default;
 
 	EffekseerManager(const EffekseerManager&) = delete;
 	EffekseerManager& operator=(const EffekseerManager&) = delete;
