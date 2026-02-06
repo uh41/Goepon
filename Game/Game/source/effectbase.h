@@ -1,5 +1,6 @@
 #pragma once
 #include "charabase.h"
+#include "appframe.h"
 
 class EffectBase : public CharaBase
 {

@@ -1,14 +1,12 @@
 #pragma once
 #include "effectbase.h"
-#include "appframe.h"
-
 
 class WalkEffect : public EffectBase
 {
 	typedef EffectBase base;
 public:
 	WalkEffect();
-	virtual ~WalkEffect();
+	virtual ~WalkEffect() = default;
 	virtual bool Initialize()override;
 	virtual bool Terminate()override;
 	virtual bool Process()override;
