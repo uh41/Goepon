@@ -108,6 +108,16 @@ bool ModeGame::PlayerTransform()
 			EffekseerManager::GetInstance()->PlayEffect3DPos(_henshineffectHandle, _player->GetPos());
 		}
 
+		// タヌキから人間への変身完了時に音波を発生
+		for (auto& enemy : _enemyBase)
+		{
+			if (enemy->IsAlive())
+			{
+				enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
+				enemy->GetSoundSensor()->SetSoundLevel(5);
+			}
+		}
+
 		_player->Process();
 		return true;
 	}
