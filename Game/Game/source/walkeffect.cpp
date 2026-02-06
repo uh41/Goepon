@@ -5,11 +5,6 @@ WalkEffect::WalkEffect()
 	Initialize();
 }
 
-WalkEffect::~WalkEffect()
-{
-	
-}
-
 bool WalkEffect::Initialize()
 {
 	base::Initialize();

@@ -1,6 +1,5 @@
 #pragma once
 #include "effectbase.h"
-#include "appframe.h"
 
 class Treasure;
 

@@ -18,6 +18,5 @@ public:
 
 protected:
 	EnemyBase* _enemy;
-
 };
 

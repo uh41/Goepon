@@ -1,5 +1,5 @@
 #include "effectbase.h"
-#include "appframe.h"
+
 
 EffectBase::EffectBase()
 {
