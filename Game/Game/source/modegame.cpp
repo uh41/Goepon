@@ -280,26 +280,27 @@ bool ModeGame::LoadStageData()
 		if(name == "S_MarkerB")
 		{
 			//auto enemy = std::make_shared<Enemy>();
+			auto enemyMove = std::make_shared<EnemyMove>();
+			auto sensor = std::make_shared<EnemySensor>();
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+
 			//enemy->Initialize();
 			//enemy->SetJsonDataUE(object);
+			//enemy->SetEnemySensor(sensor);
 
-			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
-
-			auto sensor = std::make_shared<EnemySensor>();
+			enemyMove->SetEnemySensor(sensor);
+			enemyMove->SetEnemySoundSensor(soundSensor);
+			
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
-			//enemy->SetEnemySensor(sensor);
-			enemyMove->SetEnemySensor(sensor);
-
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
+						
 			soundSensor->Initialize();
 			soundSensor->SetMap(_map.get());
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 			soundSensor->SetPos(enemyMove->GetPos());
-			enemyMove->SetEnemySoundSensor(soundSensor);
-
+			
 			//_enemy.emplace_back(enemy);
 			_enemyBase.emplace_back(enemyMove);
 		}
@@ -638,8 +639,24 @@ bool ModeGame::Render()
 
 bool ModeGame::CheckAllDetections()
 {
-	PlayerBase* player = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get())
-		: static_cast<PlayerBase*>(_player.get());
+	/*PlayerBase* player = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get())
+		: static_cast<PlayerBase*>(_player.get());*/
+
+	PlayerBase* player = nullptr;
+
+	if (_bShowTanuki)
+	{
+		player = static_cast<PlayerBase*>(_playerTanuki.get());
+	}
+	else if (_showMonoPlayer)
+	{
+		player = static_cast<PlayerBase*>(_playerMono.get());
+	}
+	else
+	{
+		player = static_cast<PlayerBase*>(_player.get());
+	}
+
 
 	if(!player)
 	{
@@ -654,9 +671,9 @@ bool ModeGame::CheckAllDetections()
 	//[&x]変数 x を参照で使う（読み書き可能）
 	//[=]スコープ内のすべての変数をコピーして使う（読み取り専用に近い）
 	//[&]スコープ内のすべての変数を参照で使う（読み書き可能）
-	//						[キャプチャ](引数) -> 戻り値の型 { 処理内容 };
+	//[キャプチャ](引数) -> 戻り値の型 { 処理内容 };
 	auto processContainer = [&](auto& container) -> bool
-		{
+	{
 		for(auto& item : container)
 		{
 			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
@@ -716,7 +733,7 @@ bool ModeGame::CheckAllDetections()
 			}
 		}
 		return false;
-		};
+	};
 	processContainer(_enemyBase);
 
 	_bTransCancel = anyDetected;
