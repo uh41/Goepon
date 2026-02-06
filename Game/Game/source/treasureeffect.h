@@ -20,7 +20,6 @@ public:
 
 protected:
 	Treasure* _treasure;
-	int _playHandle;
 
 };
 

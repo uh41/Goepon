@@ -15,6 +15,7 @@ public:
 
 protected:
 	bool _effekseerLaunche;
+	int _playHandle;
 
 };
 

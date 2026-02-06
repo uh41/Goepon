@@ -16,6 +16,7 @@ bool EffectBase::Initialize()
 	base::Initialize();
 	EffekseerManager::GetInstance()->Initialize();
 	_effekseerLaunche = false;
+	_playHandle = -1;
 
 	return true;
 }

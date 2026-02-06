@@ -31,6 +31,7 @@
 #include "effectbase.h"
 #include "treasureeffect.h"
 #include "hensineffect.h"
+#include "walkeffect.h"
 
 class ModeGame : public ModeBase
 {
@@ -149,6 +150,7 @@ protected:
 	at::vspc<EffectBase> _effectBase;
 	at::spc<TreasureEffect> _treasureEffect;
 	at::spc<HensinEffect> _hensinEffect;
+	at::spc<WalkEffect> _walkEffect;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

@@ -30,6 +30,9 @@ bool ModeGame::Initialize()
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasure.get());
+	//_walkEffect->SetPlayerPos(_player.get());
+	_walkEffect->SetPlayerPos(_playerTanuki.get());
+	//_walkEffect->SetPlayerPos(_playerMono.get());
 
 	DebugInitialize();// デバック初期化
 	ShadowInitialize();// シャドウ生成
@@ -178,29 +181,29 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			//auto enemy = std::make_shared<Enemy>();
-			//enemy->Initialize();
-			//enemy->SetJsonDataUE(object);
+			auto enemy = std::make_shared<Enemy>();
+			enemy->Initialize();
+			enemy->SetJsonDataUE(object);
 
-			auto enemyMove = std::make_shared<EnemyMove>();
-			enemyMove->Initialize();
-			enemyMove->SetJsonDataUE(object);
+			//auto enemyMove = std::make_shared<EnemyMove>();
+			//enemyMove->Initialize();
+			//enemyMove->SetJsonDataUE(object);
 
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
-			//enemy->SetEnemySensor(sensor);
-			enemyMove->SetEnemySensor(sensor);
+			enemy->SetEnemySensor(sensor);
+			//enemyMove->SetEnemySensor(sensor);
 
 			auto soundSensor = std::make_shared<EnemySoundSensor>();
 			soundSensor->Initialize();
 			soundSensor->SetMap(_map.get());
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
-			soundSensor->SetPos(enemyMove->GetPos());
-			enemyMove->SetEnemySoundSensor(soundSensor);
+			//soundSensor->SetPos(enemyMove->GetPos());
+			//enemyMove->SetEnemySoundSensor(soundSensor);
 
 			//_enemy.emplace_back(enemy);
-			_enemyBase.emplace_back(enemyMove);
+			_enemyBase.emplace_back(enemy);
 		}
 	}
 

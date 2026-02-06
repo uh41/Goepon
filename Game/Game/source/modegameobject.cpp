@@ -46,6 +46,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_treasureEffect);
 	_hensinEffect = std::make_shared<HensinEffect>();
 	_effectBase.emplace_back(_hensinEffect);
+	_walkEffect = std::make_shared<WalkEffect>();
+	_effectBase.emplace_back(_walkEffect);
 
 	// キャラ
 	for(auto& chara : _chara)
