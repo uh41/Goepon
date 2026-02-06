@@ -297,6 +297,9 @@
     <ClInclude Include="source\enemysoundsensor.h">
       <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
     </ClInclude>
+    <ClInclude Include="source\hensineffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -409,6 +412,9 @@
     </ClCompile>
     <ClCompile Include="source\enemysoundsensor.cpp">
       <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\hensineffect.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

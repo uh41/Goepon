@@ -20,100 +20,25 @@ bool ModeGame::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	// カメラ初期化
-	_camera = new Camera();
-	//_treasure.push_back(std::make_shared<Treasure>());
-	//_object.emplace_back(_treasure.back());
-	_camera->Initialize();
-
 	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
-	// キャラ
-	for(auto& chara : _chara)
-	{
-		chara->Initialize();
-	}
-
-	// プレイヤー
-	for(auto& player_base : _playerBase)
-	{
-		player_base->Initialize();
-	}
-
-	// オブジェクトの初期化
-	for(auto& object : _object)
-	{
-		object->Initialize();
-	}
-
 	LoadStageData();// ステージデータ読み込み
-
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Initialize();
-	}*/
-	// UI
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Initialize();
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Initialize();
-	}
-
-	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
-	if(_camera != nullptr)
-	{
-		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
-		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
-
-		// 初期表示プレイヤー（タヌキ／人間）に合わせる
-		PlayerBase* startPlayer = nullptr;
-		if(_bShowTanuki)
-		{
-			startPlayer = _playerTanuki.get();
-		}
-		else
-		{
-			startPlayer = _player.get();
-		}
-
-		if(startPlayer != nullptr)
-		{
-			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
-			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			_camera->_vTarget = target;
-			_camera->_vPos = vec3::VAdd(target, camDelta);
-		}
-	}
 
 	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasure.get());
-	//InitHpBlock();// ブロック初期化
 
 	DebugInitialize();// デバック初期化
 	ShadowInitialize();// シャドウ生成
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
-	}
+	CameraInfoInitialize();// カメラ情報初期化
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
-
-	
-	// Effekseer 初期化
-	//EffekseerManager::GetInstance()->Initialize();
-	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -155,10 +80,6 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Terminate();
-	}*/
 	
 	for(auto& charaShadow : _charaShadow)
 	{
@@ -198,28 +119,6 @@ bool ModeGame::Terminate()
 		_bgmChenge = nullptr;
 		_isChengeBgm = false;
 	}
-
-	//if(_henshineffectHandle != -1)
-	//{
-	//	auto em = EffekseerManager::GetInstance();
-	//	if(em)
-	//	{
-	//		em->DeleteEffect(_henshineffectHandle);
-	//		_henshineffectHandle = -1;
-	//	}
-	//}
-
-	//// Effekseer の終了（Initialize で起動していれば）
-	//if(_effekseerLaunched)
-	//{
-	//	auto em = EffekseerManager::GetInstance();
-	//	if(em)
-	//	{
-	//		em->Terminate();
-	//		_effekseerLaunched = false;
-	//	}
-	//}
-
 
 	return true;
 }
@@ -305,7 +204,7 @@ bool ModeGame::LoadStageData()
 		}
 	}
 
-	// ★★★ 全敵に巡回ポイントを設定 ★★★
+	// 動く敵に巡回ポイントを設定
 	if(!patrolPos.empty())
 	{
 		for(auto& enemyBase : _enemyBase)
@@ -376,13 +275,8 @@ bool ModeGame::Process()
 	DebugProcess();
 	DebugCameraControl();
 
-	if(_soundServer)
-	{
-		_soundServer->Update();
-	}
-
+	_soundServer->Update();
 	AnimationManager::GetInstance()->Update(1.0f);
-
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
 
@@ -452,28 +346,12 @@ bool ModeGame::Process()
 				{
 					enemy->TriggerYouDiedMessage();
 				}
-
-				//CharaToCharaCollision(playerBase, enemy.get());
 			}
 		}
 	}
 
 	// 攻撃判定にはアクティブな PlayerBase* を渡す
 	IsPlayerAttack(playerBase, _enemyBase);
-
-	// デバック用タイマー（転ばせる）
-	if(_showKnockdownMessage)
-	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
-		_knockdownMessageSec -= dt;
-		if(_knockdownMessageSec <= 0.0f)
-		{
-			_showKnockdownMessage = false;
-			_knockdownMessageSec = 0.0f;
-		}
-	}
-
-	IsPlayerAttack(_player.get(), _enemyBase);
 
 	ChangeBGM();
 	return true;
@@ -493,233 +371,14 @@ bool ModeGame::Render()
 
 	EffekseerManager::GetInstance()->Render();
 
-	// キャラを描画（生存しているもののみ、プレイヤーは除外）
-	for(auto& chara : _chara)
-	{
-		if(chara->IsAlive())
-		{
-			chara->Render();
-		}
-	}
-
-	for(auto& enemy : _enemyBase)
-	{
-		if(enemy->IsAlive())
-		{
-			enemy->Render();
-		}
-	}
-
-
-	// オブジェクトを描画
-	for(auto& object : _object)
-	{
-		object->Render();
-	}
-
-	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto& player_base : _playerBase)
-	{
-		if(_bShowTanuki)
-		{
-			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else if(_showMonoPlayer)
-		{
-			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else
-		{
-			if(player_base.get() == _player.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-	}
-	// キャラクターの影描画
-	for (auto& shadow : _charaShadow)
-	{
-		if (shadow)
-		{
-			shadow->Render();
-		}
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
-	}
-
-	// UIを描画
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Render();
-	}
-
+	ObjectRender();// オブジェクト描画処理
 	DebugRender();// デバック描画処理
-	// 索敵システムの描画
-	if (_enemySensor)
-	{
-		_enemySensor->Render();
-		_enemySensor->RenderDetectionUI();
-	}
-
 
 	if(_d_view_collision)
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
 
-	for(auto& enemy : _enemyBase)
-	{
-		if(enemy->IsAlive())
-		{
-			// 音センサーの描画
-			if(enemy->GetEnemySoundSensor())
-			{
-				enemy->GetEnemySoundSensor()->Render();
-			}
-		}
-	}
-	
-	// 各敵のセンサーを個別に描画
-	for (auto& enemy : _enemyBase)
-	{
-		if (enemy->IsAlive() && enemy->GetEnemySensor())
-		{
-			enemy->GetEnemySensor()->Render();
-			enemy->GetEnemySensor()->RenderDetectionUI();
-		}
-	}
-
-	// YouDiedメッセージの描画（最前面に表示）
-	for (auto& enemy : _enemyBase)
-	{
-		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
-		{
-			enemy->RenderYouDiedMessage();
-		}
-	}
-
-
-	// 宝箱を開けているメッセージ表示
-	if (_isOpeningTreasure)
-	{
-		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
-		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
-		const char* msg = "お宝を開けています...(Aを押し続けてください)";
-		int color = GetColor(255, 0, 0); // 黄色
-		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
-		DrawString(900, 500, msg, color);
-	}
-
-	// 敵を転ばせたメッセージ表示
-	if(_showKnockdownMessage)
-	{
-		const char* msg = "敵を転ばせた";
-		DrawString(900, 500, msg, GetColor(255, 255, 255));
-	}
-
-	if (anyDetected)
-	{
-		const char* alertMsg = "敵に発見された！変身できない！";
-		// 座標は適宜調整（ここでは画面中央上部に仮配置）
-		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
-	}
 	return true;
 }
 
-bool ModeGame::CheckAllDetections()
-{
-	PlayerBase* player = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get())
-		: static_cast<PlayerBase*>(_player.get());
-
-	if(!player)
-	{
-		return false;
-	}
-
-	bool anyDetected = false;
-
-	// ヘルパーで各コンテナを処理するラムダ
-
-	//[x]変数 x をコピーして使う（読み取り専用に近い）
-	//[&x]変数 x を参照で使う（読み書き可能）
-	//[=]スコープ内のすべての変数をコピーして使う（読み取り専用に近い）
-	//[&]スコープ内のすべての変数を参照で使う（読み書き可能）
-	//						[キャプチャ](引数) -> 戻り値の型 { 処理内容 };
-	auto processContainer = [&](auto& container) -> bool
-		{
-		for(auto& item : container)
-		{
-			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
-			if(!eb || !eb->IsAlive())
-			{
-				continue;
-			}
-
-			auto sensor = eb->GetEnemySensor();
-			if(!sensor)
-			{
-				continue;
-			}
-
-			sensor->SetPos(eb->GetPos());
-			sensor->SetDir(eb->GetDir());
-			sensor->SetMap(_map.get());
-
-			sensor->Process();
-
-			auto soundSensor = eb->GetEnemySoundSensor();
-			if(soundSensor)
-			{
-				soundSensor->SetPos(eb->GetPos());
-				soundSensor->Process();
-			}
-
-			// プレイヤーがタヌキでない（＝player状態）のときは
-			// 「敵を強制的に見失わせて戻らせる」処理を行わない。
-			// センサー情報だけリセットして巡回を維持する。
-			if(!_bShowTanuki)
-			{
-
-
-				// 変身が完了しており、かつ意図的に「人間表示」にして敵を完全に無視したい場合のみ
-				// リセットする（従来の挙動）。必要なければこのブロック自体を削除してください。
-				sensor->ResetDetection();
-				if(eb)
-				{
-					eb->OnPlayerLost(); // 追跡フラグをクリアし、待機→帰還の処理を開始させる
-				}
-				continue;
-			}
-			bool detected = sensor->CheckPlayerDetection(player);	// 索敵判定
-
-			if(detected)
-			{
-				anyDetected = true;
-				eb->OnPlayerDetected(player->GetPos());
-			}
-			else
-			{
-				if(!sensor->IsChasing())
-				{
-					eb->OnPlayerLost();
-				}
-			}
-		}
-		return false;
-		};
-	processContainer(_enemyBase);
-
-	_bTransCancel = anyDetected;
-
-	return anyDetected;
-}

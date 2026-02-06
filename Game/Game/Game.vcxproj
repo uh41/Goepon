@@ -30,6 +30,7 @@
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\hensineffect.h" />
     <ClInclude Include="source\modeinit.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
@@ -66,6 +67,7 @@
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
+    <ClCompile Include="source\hensineffect.cpp" />
     <ClCompile Include="source\modeinit.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
