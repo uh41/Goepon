@@ -554,6 +554,9 @@ bool ModeGame::CheckAllDetections()
 		return false;
 	}
 
+	// 人状態かどうかを判定
+	bool isHumanForm = (!_bShowTanuki && !_showMonoPlayer);
+
 	bool anyDetected = false;
 
 	auto processContainer = [&](auto& container) -> bool
@@ -589,8 +592,18 @@ bool ModeGame::CheckAllDetections()
 				}
 
 				// プレイヤーを使用して索敵判定を行う（表示中のプレイヤーが対象）
-				bool detected = sensor->CheckPlayerDetection(player);
+				//bool detected = sensor->CheckPlayerDetection(player);
+				
+				// 視覚検知判定は人状態では無効化
+				bool detected = false;
 
+				// 人状態でなければ通常の検出処理を行う
+				if (!isHumanForm)
+				{
+					detected = sensor->CheckPlayerDetection(player);
+				}
+
+				// 検出結果に応じた処理
 				if(detected)
 				{
 					anyDetected = true;
