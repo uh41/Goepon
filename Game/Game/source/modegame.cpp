@@ -202,7 +202,7 @@ bool ModeGame::LoadStageData()
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 			//soundSensor->SetPos(enemyMove->GetPos());
 			//enemyMove->SetEnemySoundSensor(soundSensor);
-
+			enemy->SetEnemySoundSensor(soundSensor);
 			//_enemy.emplace_back(enemy);
 			_enemyBase.emplace_back(enemy);
 		}
