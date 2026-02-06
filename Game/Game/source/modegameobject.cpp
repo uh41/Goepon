@@ -193,6 +193,16 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_player->SetPos(_playerTanuki->GetPos());
 			_player->SetDir(_playerTanuki->GetDir());
 			_hensinEffect->PlayEffect(_player->GetPos());
+
+			// タヌキから人間への変身完了時に音波を発生
+			for(auto& enemy : _enemyBase)
+			{
+				if(enemy->IsAlive())
+				{
+					enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
+					enemy->GetSoundSensor()->SetSoundLevel(5);
+				}
+			}
 			_player->Process(); // 変身直後の一フレーム更新
 			return true;
 		}
@@ -216,23 +226,20 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = true;
 			_playerMono->SetPos(_playerTanuki->GetPos());
 			_playerMono->SetDir(_playerTanuki->GetDir());
+			// タヌキから人間への変身完了時に音波を発生
+			for(auto& enemy : _enemyBase)
+			{
+				if(enemy->IsAlive())
+				{
+					enemy->GetSoundSensor()->TriggerSoundWave(_playerMono->GetPos(), 500.0f, 10.0f);
+					enemy->GetSoundSensor()->SetSoundLevel(5);
+				}
+			}
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			return true;
 		}
 	}
-	
-			// タヌキから人間への変身完了時に音波を発生
-		for (auto& enemy : _enemyBase)
-		{
-			if (enemy->IsAlive())
-			{
-				enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
-				enemy->GetSoundSensor()->SetSoundLevel(5);
-			}
-		}
-
-		_player->Process();
 
 	// 変身開始も変身中でもない場合は false を返し、呼び出し元で通常処理に進むようにする
 	return false;
