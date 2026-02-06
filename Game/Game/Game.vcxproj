@@ -30,6 +30,8 @@
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\findeffect.h" />
+    <ClInclude Include="source\hensineffect.h" />
     <ClInclude Include="source\modeinit.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
@@ -53,6 +55,7 @@
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
+    <ClInclude Include="source\walkeffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\applicationglobal.cpp" />
@@ -66,6 +69,8 @@
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
+    <ClCompile Include="source\findeffect.cpp" />
+    <ClCompile Include="source\hensineffect.cpp" />
     <ClCompile Include="source\modeinit.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
@@ -92,6 +97,7 @@
     <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
+    <ClCompile Include="source\walkeffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

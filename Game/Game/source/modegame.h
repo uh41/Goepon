@@ -30,9 +30,9 @@
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
-
-
-
+#include "hensineffect.h"
+#include "walkeffect.h"
+#include "findeffect.h"
 
 class ModeGame : public ModeBase
 {
@@ -80,14 +80,17 @@ public:
 	bool DebugRender();
 
 	// カメラ情報
+	bool CameraInfoInitialize();
 	bool PlayerCameraInfo(PlayerBase* player);// プレイヤーのカメラ情報表示
 
 	// オブジェクト関数
 	bool ObjectInitialize();
 	bool ObjectProcess();
+	bool ObjectRender();
 
 	// プレイヤー変身関数
 	bool PlayerTransform();
+	bool PlayerTransformToTanuki(bool player);
 
 	// 影関数
 	bool ShadowInitialize();
@@ -147,6 +150,9 @@ protected:
 	// エフェクト
 	at::vspc<EffectBase> _effectBase;
 	at::spc<TreasureEffect> _treasureEffect;
+	at::spc<HensinEffect> _hensinEffect;
+	at::spc<WalkEffect> _walkEffect;
+	at::spc<FindEffect> _findEffect;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -163,7 +169,8 @@ protected:
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
 	bool _showMonoPlayer;// モノプレイヤー表示フラグ
-	bool _isTransformingToHuman = false;
+	bool _isTransformToHuman = false;
+	bool _isTransformToMono = false;
 	int _transformAnimId = -1;
 	bool _isTanukiAttackPlaying = false;
 	int _tanukiAttackAnimId = -1;
@@ -178,7 +185,6 @@ protected:
 	at::spc<soundserver::SoundItemBase> _bgmInitialize;
 	at::spc<soundserver::SoundItemBase> _bgmChenge;
 
-	int _henshineffectHandle = -1;
 	bool _isChengeBgm;
 
 	// 索敵関連の処理（簡略化）

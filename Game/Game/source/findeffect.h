@@ -1,24 +1,22 @@
 #pragma once
 #include "effectbase.h"
 
-class Treasure;
+class EnemyBase;
 
-class TreasureEffect : public EffectBase
+class FindEffect : public EffectBase
 {
 	typedef EffectBase base;
 public:
-	TreasureEffect();
-	virtual ~TreasureEffect() = default;
-
+	FindEffect();
+	virtual ~FindEffect() = default;
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasure(Treasure* treasure) { _treasure = treasure; }
+	void SetEnemy(at::vspc<EnemyBase> enemy) { _enemy = enemy; }
 
 protected:
-	Treasure* _treasure;
-
+	at::vspc<EnemyBase> _enemy;
 };
 

@@ -261,38 +261,6 @@ bool EnemyMove::Process()
 	{
 		_enemySensor->SetPos(_vPos);
 		_enemySensor->SetDir(_vDir);
-
-		//// 追跡処理
-		//UpdateChasing();
-
-		//// プレイヤーを検出している、または追跡中の場合のみWALKに設定
-		//if (_detectedPlayer || _enemySensor->IsChasing())
-		//{
-		//	_status = STATUS::WALK;
-
-		//	// プレイヤーを検出中は初期位置に戻るのを停止
-		//	_isReturningToInitialPos = false;
-
-		//	// テレポート関連をリセット
-		//	//ResetTeleport();
-		//}
-		//else if (_isReturningToInitialPos)
-		//{
-		//	// 初期位置に戻り中
-		//	_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
-		//	UpdateReturningToInitialPosition();
-		//}
-		//else
-		//{
-		//	// 追跡も初期位置への復帰もしていない場合
-		//	_status = STATUS::WAIT;
-
-		//	// 追跡が終了して初期位置にいない場合、初期位置に戻り始める
-		//	if (!_enemySensor->IsChasing() && !IsAtInitialPosition())
-		//	{
-		//		StartReturningToInitialPosition();
-		//	}
-		//}
 	}
 
 	// 優先順位: 追跡　> 帰還 > 巡回

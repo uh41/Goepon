@@ -50,24 +50,15 @@ bool TreasureEffect::Process()
 	if(_treasure->IsVisible())
 	{
 		// エフェクトのハンドルが有効なら位置更新、無ければ再生開始
-		if(_handle != -1)
+		if(_handle != -1 && _playHandle == -1)
 		{
-			if(_playHandle == -1)
-			{
-				// 再生開始（初回）
-				_playHandle = em->PlayEffect3DPos(_handle, _treasure->GetPos());
-			}
-			else
-			{
-				// 既に再生中のインスタンスなら位置を毎フレーム更新して追従させる
-				em->SetPosEffect(_playHandle, _treasure->GetPos());
-
-				// 再生が終了している場合はハンドルをリセットして再生可能にする
-				if(!em->IsPlayingEffect(_playHandle))
-				{
-					_playHandle = -1;
-				}
-			}
+			// 再生開始（初回）
+			_playHandle = em->PlayEffect3DPos(_handle, _treasure->GetPos());
+		}
+		else
+		{
+			// 既に再生中のインスタンスなら位置を毎フレーム更新して追従させる
+			em->SetPosEffect(_playHandle, _treasure->GetPos());
 		}
 	}
 	else
