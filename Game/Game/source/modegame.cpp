@@ -502,6 +502,7 @@ bool ModeGame::Process()
 	}
 
 	IsPlayerAttack(_player.get(), _enemyBase);
+	// ゴールとの当たり判定
 	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
 	{
 		_isGameClear = true;

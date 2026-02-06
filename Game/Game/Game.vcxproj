@@ -30,6 +30,7 @@
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
     <ClInclude Include="source\modeinit.h" />
@@ -68,6 +69,7 @@
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\Goal.cpp" />
+    <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
     <ClCompile Include="source\modeinit.cpp" />
