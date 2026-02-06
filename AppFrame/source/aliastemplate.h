@@ -31,6 +31,9 @@ namespace at
 	template<typename T, typename U>
 	using umtt = std::unordered_map<T, U>;	// アンオーダードマップとテンプレート(型)
 
+	template<typename T, typename U>
+	using umss = std::unordered_map<std::string, std::string>; // アンオーダードマップとストリングとストリング 
+
 	template<typename C, size_t s>
 	using arc = std::array<C, s>;					// アレイとクラス
 
@@ -48,4 +51,7 @@ namespace at
 
 	template<typename T>
 	using vet = std::vector<T>;					// ベクターとテンプレート(型)
+
+	template<typename C>
+	using fc = std::function<C>;				// ファンクションとクラス
 }

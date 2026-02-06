@@ -1,10 +1,10 @@
 /*********************************************************************/
 // * \file   ObjectServer.cpp
-// * \brief  ƒIƒuƒWƒFƒNƒgƒT[ƒo[ƒNƒ‰ƒX
+// * \brief  ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Tï¿½[ï¿½oï¿½[ï¿½Nï¿½ï¿½ï¿½X
 // *
-// * \author ÎX“ø‘å
+// * \author ï¿½ÎXï¿½ï¿½ï¿½ï¿½
 // * \date   2026/1/5
-// * \ì‹Æ“à—e: V‹Kì¬ ÎX“ø‘å@2026/1/5
+// * \ï¿½ï¿½Æ“ï¿½e: ï¿½Vï¿½Kï¿½ì¬ ï¿½ÎXï¿½ï¿½ï¿½ï¿½@2026/1/5
 /*********************************************************************/
 
 
@@ -32,14 +32,14 @@ bool ObjectServer::Intialize()
 
 bool ObjectServer::Terminate()
 {
-	//ŠÇ—‚µ‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ğ‚·‚×‚Äíœ
+	//ï¿½Ç—ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½×‚Äíœ
 	ClearObject();
 	return true;
 }
 
 bool ObjectServer::Process()
 {
-	// ƒIƒuƒWƒFƒNƒg‚ğ„‰ñˆ—
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ñˆ—ï¿½
 	for(auto iter = _objects.begin(); iter != _objects.end(); ++iter)
 	{
 		if((*iter)->Process())
@@ -56,7 +56,7 @@ bool ObjectServer::Process()
 
 bool ObjectServer::Render()
 {
-	// ƒIƒuƒWƒFƒNƒg‚ğ„‰ñ•`‰æ
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½
 	for(int i = 0; i < _objects.size(); ++i)
 	{
 		if(!_objects[i]->Render())
@@ -71,19 +71,19 @@ void ObjectServer::AddObject(ObjectBase* obj)
 {
 	if(obj == nullptr) { return; }
 
-	// Šù‚É–{“o˜^‚³‚ê‚Ä‚¢‚é
+	// ï¿½ï¿½ï¿½É–{ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 	if(std::find(_objects.begin(), _objects.end(), obj) != _objects.end())
 	{
 		return;
 	}
 
-	// Šù‚É’Ç‰Á—\–ñ‚³‚ê‚Ä‚¢‚é
+	// ï¿½ï¿½ï¿½É’Ç‰ï¿½ï¿½\ï¿½ñ‚³‚ï¿½Ä‚ï¿½ï¿½ï¿½
 	if(std::find(_addObj.begin(), _addObj.end(), obj) != _addObj.end())
 	{
 		return;
 	}
 
-	// íœ—\–ñ‚³‚ê‚Ä‚¢‚éi’Ç‰Á‚µ‚È‚¢j
+	// ï¿½íœï¿½\ï¿½ñ‚³‚ï¿½Ä‚ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½j
 	if(std::find(_deleteObj.begin(), _deleteObj.end(), obj) != _deleteObj.end())
 	{
 		return;
@@ -94,7 +94,7 @@ void ObjectServer::AddObject(ObjectBase* obj)
 
 void ObjectServer::DeleteObject(ObjectBase* obj)
 {
-	//Šù‚Éíœ—\–ñ‚³‚ê‚Ä‚¢‚é‚©
+	//ï¿½ï¿½ï¿½Éíœï¿½\ï¿½ñ‚³‚ï¿½Ä‚ï¿½ï¿½é‚©
 	auto iter = std::find(_deleteObj.begin(), _deleteObj.end(), obj);
 	if (iter != _deleteObj.end()) 
 	{
@@ -132,10 +132,10 @@ bool ObjectServer::ClearObject()
 
 bool ObjectServer::ProcessInit()
 {
-	// „‰ñˆ—‚ğ‚·‚é‘O‚ÉƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á‚Æíœ‚ğ‚µ‚Ä‚¨‚­
+	// ï¿½ï¿½ï¿½ñˆ—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ÉƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì’Ç‰ï¿½ï¿½Æíœï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 	for(auto && addObj : _addObj)
 	{
-		//ÀÛ‚É’Ç‰Á‚³‚ê‚Ä‚©‚çA‰Šú‰»‚·‚é
+		//ï¿½ï¿½ï¿½Û‚É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		addObj->Initialize();
 		_objects.emplace_back(addObj);
 	}
@@ -158,41 +158,44 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(std::string stageName)
 {
-	// ƒ}ƒbƒv“Ç‚İ‚İ
+	// ï¿½}ï¿½bï¿½vï¿½Ç‚İï¿½ï¿½ï¿½
 	_sPath           = "res/map/";
 	_sJsonFile       = "marker0127_2.json";
 	_sJsonObjectName = "stage";
 
-	// ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	// ï¿½tï¿½@ï¿½Cï¿½ï¿½ï¿½Iï¿½[ï¿½vï¿½ï¿½
 	_iFile.open(_sPath + _sJsonFile);
 	if(!_iFile) { return false; }
 
-	// JSON“Ç‚İ‚İ
+	// JSONï¿½Ç‚İï¿½ï¿½ï¿½
 	nlohmann::json jsonData;
 	_iFile >> jsonData;
 
-	// ƒ}ƒbƒvƒIƒuƒWƒFƒNƒg¶¬
+	// ï¿½}ï¿½bï¿½vï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½
 	if(_map == nullptr)
 	{
 		_map = new Map();
 		AddObject(_map);
 	}
 
-	// JSONƒf[ƒ^‚©‚çƒXƒe[ƒWî•ñ‚ğæ“¾
+	// JSONï¿½fï¿½[ï¿½^ï¿½ï¿½ï¿½ï¿½Xï¿½eï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½æ“¾
 	nlohmann::json stage = jsonData.at(_sJsonObjectName);
-	// ƒ}ƒbƒvƒ‚ƒfƒ‹“Ç‚İ‚İ
+	// ï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
 	for(auto& data : stage)
 	{
-		// objectName ‚ğæ“¾
+		// objectName ï¿½ï¿½æ“¾
 		const std::string name = data.at("objectName").get<std::string>();
 
-		// ˆø” stageName ‚Æˆê’v‚·‚é objectName ‚¾‚¯ˆ—
+		// ï¿½ï¿½ï¿½ï¿½ stageName ï¿½Æˆï¿½vï¿½ï¿½ï¿½ï¿½ objectName ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		if(name != stageName)
 		{
 			continue;
 		}
-		// ƒ}ƒbƒvƒNƒ‰ƒX‚Éƒnƒ“ƒhƒ‹‚ÆJSONƒf[ƒ^‚ğİ’è
+		// ï¿½}ï¿½bï¿½vï¿½Nï¿½ï¿½ï¿½Xï¿½Éƒnï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½JSONï¿½fï¿½[ï¿½^ï¿½ï¿½İ’ï¿½
 		_map->SetJsonDataUE(data);
+		// ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
+		const std::string filename = _sPath + name + ".mv1";
+		/*const int handle = */
 	}
 
 	return true;

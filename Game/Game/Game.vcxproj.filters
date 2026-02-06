@@ -159,6 +159,50 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\モードゲーム\ゴール">
       <UniqueIdentifier>{ffa257a0-c579-48b4-ac77-bc11ba8c3ef4}</UniqueIdentifier>
+    <Filter Include="ソース ファイル\モードゲーム\影">
+      <UniqueIdentifier>{6dada12c-fd9f-4dd9-b6e8-48bc658dcc9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\敵ベース\動く敵">
+      <UniqueIdentifier>{51bc7b43-d81a-4e33-82be-de3980a822be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シナリオベース">
+      <UniqueIdentifier>{26aaeb6b-037e-4d32-a641-9f84bf82c741}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\シナリオベース\オープニングシナリオ">
+      <UniqueIdentifier>{799bcad6-36ed-43b3-9565-431bd0166666}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\チームロゴ">
+      <UniqueIdentifier>{95f0478f-c1bf-437c-ab13-a78d583eeee4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\タイトル">
+      <UniqueIdentifier>{a24f149f-d4e2-40e8-a31a-d6d4da977838}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\巡回ルート">
+      <UniqueIdentifier>{af8215cd-1940-48c6-801a-a276e79a3f8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\モノタヌキ">
+      <UniqueIdentifier>{7132a5b3-ceef-4ecf-85ff-6e1e86d3289f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\影">
+      <UniqueIdentifier>{098ee33d-2e1a-4a4c-948d-5c6fbcba6bed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\動く敵">
+      <UniqueIdentifier>{e5fcf2c9-fd14-40e3-9646-e80ecc26f40f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\シナリオベース">
+      <UniqueIdentifier>{3136849e-434c-4a4e-945e-0aa276ce8939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\シナリオベース\オープニングシナリオ">
+      <UniqueIdentifier>{c7090160-4cb0-4405-9e90-5590539e9693}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\チームロゴ">
+      <UniqueIdentifier>{086246c5-9286-46ca-aa90-d7df75bcc9a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\巡回ルート">
+      <UniqueIdentifier>{1579ad2f-c368-42b3-b531-2828d1e9320b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ">
+      <UniqueIdentifier>{8160a9b0-941f-45bd-952c-ada34648ad14}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -225,28 +269,37 @@
     <ClInclude Include="source\menuitembase.h">
       <Filter>ヘッダー ファイル\メニュー\デバックメニュー</Filter>
     </ClInclude>
-    <ClInclude Include="source\charashadow.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modetitle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\modeinit.h">
       <Filter>ヘッダー ファイル\ロゴ</Filter>
     </ClInclude>
     <ClInclude Include="source\Treasure.h">
       <Filter>ヘッダー ファイル\モードゲーム\お宝</Filter>
     </ClInclude>
-    <ClInclude Include="source\modeteamlogo.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\charashadow.h">
+      <Filter>ヘッダー ファイル\モードゲーム\影</Filter>
     </ClInclude>
-    <ClInclude Include="source\modeopscenario.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\enemymove.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\動く敵</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modetitle.h">
+      <Filter>ヘッダー ファイル\タイトル</Filter>
     </ClInclude>
     <ClInclude Include="source\modescenariobase.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\シナリオベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeopscenario.h">
+      <Filter>ヘッダー ファイル\シナリオベース\オープニングシナリオ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeteamlogo.h">
+      <Filter>ヘッダー ファイル\チームロゴ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\movepointcontroll.h">
+      <Filter>ヘッダー ファイル\巡回ルート</Filter>
     </ClInclude>
     <ClInclude Include="source\playermono.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\effectbase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\ModeGameClear.h">
@@ -254,6 +307,11 @@
     </ClInclude>
     <ClInclude Include="source\Goal.h">
       <Filter>ヘッダー ファイル\モードゲーム\ゴール</Filter>
+    <ClInclude Include="source\treasureeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemysoundsensor.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -329,28 +387,37 @@
     <ClCompile Include="source\Light.cpp">
       <Filter>ソース ファイル\モードゲーム\ライト</Filter>
     </ClCompile>
-    <ClCompile Include="source\charashadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\modeinit.cpp">
       <Filter>ソース ファイル\ロゴ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modetitle.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\Treasure.cpp">
       <Filter>ソース ファイル\モードゲーム\お宝</Filter>
     </ClCompile>
-    <ClCompile Include="source\modeteamlogo.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="source\charashadow.cpp">
+      <Filter>ソース ファイル\モードゲーム\影</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemymove.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\動く敵</Filter>
     </ClCompile>
     <ClCompile Include="source\modeopscenario.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\シナリオベース\オープニングシナリオ</Filter>
     </ClCompile>
     <ClCompile Include="source\modescenariobase.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\シナリオベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeteamlogo.cpp">
+      <Filter>ソース ファイル\チームロゴ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modetitle.cpp">
+      <Filter>ソース ファイル\タイトル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\movepointcontroll.cpp">
+      <Filter>ソース ファイル\モードゲーム\巡回ルート</Filter>
     </ClCompile>
     <ClCompile Include="source\playermono.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\effectbase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\ModeGameClear.cpp">
@@ -358,6 +425,11 @@
     </ClCompile>
     <ClCompile Include="source\Goal.cpp">
       <Filter>ソース ファイル\モードゲーム\ゴール</Filter>
+    <ClCompile Include="source\treasureeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemysoundsensor.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

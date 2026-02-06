@@ -32,10 +32,7 @@ protected:
 
 	vec::Vec3 _vAxisLockDir;
 
-	// 円形移動用パラメータ
-	float _arc_pivot_dist;		// 回転中心までの距離
-	float _arc_turn_speed;		// 円形移動時の回転速度係数
-
+	int _tailCollisionFrame;
 	// カメラ追従用オフセット（カメラ位置 = _vPos + _camOffset）
 	vec::Vec3 _camOffset;
 	vec::Vec3 _camTargetOffset;

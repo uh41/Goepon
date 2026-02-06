@@ -78,6 +78,12 @@ public:
 	// コリジョンマネージャーを使って床のY座標を取得する関数
 	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
 
+	// カプセルを使った索敵範囲内判定
+	bool IsPlayerInDetectionRangeWithCapsule(
+		const vec::Vec3& playerPos,
+		const vec::Vec3& playerCapsuleTop,
+		const vec::Vec3& playerCapsuleBottom,
+		float playerCapsuleRadius) const;
 
 protected:
 	DetectionSector _detectionSector;  // 索敵範囲

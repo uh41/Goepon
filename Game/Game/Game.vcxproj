@@ -25,11 +25,13 @@
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\Goal.h" />
     <ClInclude Include="source\ModeGameClear.h" />
+    <ClInclude Include="source\enemysoundsensor.h" />
     <ClInclude Include="source\modeinit.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
@@ -41,6 +43,8 @@
     <ClInclude Include="source\modescenariobase.h" />
     <ClInclude Include="source\modeteamlogo.h" />
     <ClInclude Include="source\modetitle.h" />
+    <ClInclude Include="source\enemymove.h" />
+    <ClInclude Include="source\movepointcontroll.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
@@ -48,6 +52,7 @@
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
     <ClInclude Include="source\Treasure.h" />
+    <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
   </ItemGroup>
@@ -58,11 +63,13 @@
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\Goal.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
+    <ClCompile Include="source\enemysoundsensor.cpp" />
     <ClCompile Include="source\modeinit.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
@@ -77,6 +84,8 @@
     <ClCompile Include="source\modescenariobase.cpp" />
     <ClCompile Include="source\modeteamlogo.cpp" />
     <ClCompile Include="source\modetitle.cpp" />
+    <ClCompile Include="source\enemymove.cpp" />
+    <ClCompile Include="source\movepointcontroll.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />
@@ -84,6 +93,7 @@
     <ClCompile Include="source\playermono.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
+    <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
   </ItemGroup>

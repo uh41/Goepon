@@ -163,6 +163,7 @@
     <ClInclude Include="source\Application\applicationbase.h" />
     <ClInclude Include="source\Application\utilmacro.h" />
     <ClInclude Include="source\CFile\cfile.h" />
+    <ClInclude Include="source\CFile\TextUtil.h" />
     <ClInclude Include="source\container.h" />
     <ClInclude Include="source\fade\fade.h" />
     <ClInclude Include="source\gameconfig.h" />
@@ -194,13 +195,13 @@
     <ClInclude Include="source\Sound\sounditemstream.h" />
     <ClInclude Include="source\Sound\sounditemvoice.h" />
     <ClInclude Include="source\Sound\soundserver.h" />
-    <ClInclude Include="source\TextUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\AnimationManager\animationmanager.cpp" />
     <ClCompile Include="source\Application\applicationbase.cpp" />
     <ClCompile Include="source\Application\winmain.cpp" />
     <ClCompile Include="source\CFile\cfile.cpp" />
+    <ClCompile Include="source\CFile\TextUtil.cpp" />
     <ClCompile Include="source\fade\fade.cpp" />
     <ClCompile Include="source\manager\collisionmanager.cpp" />
     <ClCompile Include="source\manager\effekseermanager.cpp">
@@ -217,7 +218,6 @@
     <ClCompile Include="source\ResourceServer.cpp" />
     <ClCompile Include="source\Sound\sounditembase.cpp" />
     <ClCompile Include="source\Sound\soundserver.cpp" />
-    <ClCompile Include="source\TextUtil.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,6 +3,7 @@
 namespace img
 {
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
+  inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* Logo = "res/Logo.png";
   inline constexpr const char* Op1 = "res/Op1.png";
   inline constexpr const char* Op10 = "res/Op10.png";
@@ -15,6 +16,11 @@ namespace img
   inline constexpr const char* Op8 = "res/Op8.png";
   inline constexpr const char* Op9 = "res/Op9.png";
   inline constexpr const char* cursor = "res/cursor.png";
+  inline constexpr const char* scenario1 = "res/scenario1.png";
+  inline constexpr const char* scenario2 = "res/scenario2.png";
+  inline constexpr const char* scenario3 = "res/scenario3.png";
+  inline constexpr const char* scenario4 = "res/scenario4.png";
+  inline constexpr const char* scenario5 = "res/scenario5.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* teamlogo = "res/teamlogo.png";
   inline constexpr const char* title = "res/title.png";
@@ -64,6 +70,7 @@ namespace mv1
   inline constexpr const char* goepon_busi_03 = "res/PoorEnemyMelee/goepon_busi_03.mv1";
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
+  inline constexpr const char* SK_tanuhuman_multimotion = "res/Tanuhuman/SK_tanuhuman_multimotion.mv1";
   inline constexpr const char* TanuHuman = "res/Tanuhuman/TanuHuman.mv1";
   inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
   inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
@@ -71,6 +78,18 @@ namespace mv1
   inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
+}
+
+namespace ef
+{
+  inline constexpr const char* EF_Tresure = "res/Effect/EF_Tresure.efkefc";
+  inline constexpr const char* EF_ase = "res/Effect/EF_ase.efkefc";
+  inline constexpr const char* EF_doya = "res/Effect/EF_doya.efkefc";
+  inline constexpr const char* EF_find = "res/Effect/EF_find.efkefc";
+  inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
+  inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
+  inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
+  inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
 }
 
 namespace mp3
