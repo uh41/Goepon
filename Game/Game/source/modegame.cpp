@@ -505,36 +505,21 @@ bool ModeGame::Process()
 	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
 	{
 		_isGameClear = true;
-
-		// ゲームクリア画面を最前面に積む（layer は最上位推奨）
-		unsigned long now = GetNowCount();
-		if(!_gameClearShown && now - _gameStartMs >= 60000)
-		{
-			_gameClearShown = true;
-			// 高レイヤーで追加してオーバーレイ表示
-			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-		}
+		// 高レイヤーで追加してオーバーレイ表示
+		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
 		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
 		return true;
 	}
 	if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
 	{
 		_isGameClear = true;
-
-		// ゲームクリア画面を最前面に積む（layer は最上位推奨）
-		unsigned long now = GetNowCount();
-		if(!_gameClearShown && now - _gameStartMs >= 60000)
-		{
-			_gameClearShown = true;
-			// 高レイヤーで追加してオーバーレイ表示
-			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-		}
-
+		// 高レイヤーで追加してオーバーレイ表示
+		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
 		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
 		return true;
 	}
 
-	IsPlayerAttack(_player.get(), enemy);
+	IsPlayerAttack(_player.get(), _enemyBase);
 
 	ChangeBGM();
 	return true;

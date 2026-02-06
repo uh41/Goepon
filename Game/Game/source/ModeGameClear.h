@@ -12,5 +12,6 @@ public:
 
 private:
 	int _fontSize;
+	int _treasureTakenCount;
 };
 

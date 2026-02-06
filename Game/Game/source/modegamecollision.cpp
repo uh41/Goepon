@@ -484,5 +484,6 @@ bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
 		playerColY,
 		hitPos
 	);
+
 	return hit;
 }
