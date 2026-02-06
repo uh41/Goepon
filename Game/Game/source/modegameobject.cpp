@@ -48,6 +48,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_hensinEffect);
 	_walkEffect = std::make_shared<WalkEffect>();
 	_effectBase.emplace_back(_walkEffect);
+	_findEffect = std::make_shared<FindEffect>();
+	_effectBase.emplace_back(_findEffect);
 
 	// キャラ
 	for(auto& chara : _chara)

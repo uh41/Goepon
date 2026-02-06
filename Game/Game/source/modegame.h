@@ -32,6 +32,7 @@
 #include "treasureeffect.h"
 #include "hensineffect.h"
 #include "walkeffect.h"
+#include "findeffect.h"
 
 class ModeGame : public ModeBase
 {
@@ -151,6 +152,7 @@ protected:
 	at::spc<TreasureEffect> _treasureEffect;
 	at::spc<HensinEffect> _hensinEffect;
 	at::spc<WalkEffect> _walkEffect;
+	at::spc<FindEffect> _findEffect;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
