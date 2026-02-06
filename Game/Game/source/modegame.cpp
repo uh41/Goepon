@@ -182,29 +182,30 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			auto enemy = std::make_shared<Enemy>();
-			enemy->Initialize();
-			enemy->SetJsonDataUE(object);
-
-			//auto enemyMove = std::make_shared<EnemyMove>();
-			//enemyMove->Initialize();
-			//enemyMove->SetJsonDataUE(object);
-
+			//auto enemy = std::make_shared<Enemy>();
+			auto enemyMove = std::make_shared<EnemyMove>();
 			auto sensor = std::make_shared<EnemySensor>();
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+
+			//enemy->Initialize();
+			//enemy->SetJsonDataUE(object);
+			//enemy->SetEnemySensor(sensor);
+
+			enemyMove->Initialize();
+			enemyMove->SetJsonDataUE(object);
+			enemyMove->SetEnemySensor(sensor);
+			enemyMove->SetEnemySoundSensor(soundSensor);
+
 			sensor->Initialize();
 			sensor->SetMap(_map.get());
-			enemy->SetEnemySensor(sensor);
-			//enemyMove->SetEnemySensor(sensor);
 
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
 			soundSensor->Initialize();
 			soundSensor->SetMap(_map.get());
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
-			//soundSensor->SetPos(enemyMove->GetPos());
-			//enemyMove->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemyMove->GetPos());
 
 			//_enemy.emplace_back(enemy);
-			_enemyBase.emplace_back(enemy);
+			_enemyBase.emplace_back(enemyMove);
 		}
 	}
 
