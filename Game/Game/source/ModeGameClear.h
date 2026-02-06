@@ -1,9 +1,9 @@
 #pragma once
 #include "modegame.h"
 #include "appframe.h"
-class ModeGameClear :public ModeGame
+class ModeGameClear :public ModeBase
 {
-	typedef ModeGame base;
+	typedef ModeBase base;
 public:
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
@@ -12,6 +12,5 @@ public:
 
 private:
 	int _fontSize;
-	int _treasureTakenCount;
 };
 

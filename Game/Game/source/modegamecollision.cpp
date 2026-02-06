@@ -472,7 +472,7 @@ bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
 	auto playerColY = player->GetColSubY();
 	// ゴールの指定フレームで判定
 	const auto handleGoal = goal->GetModelHandle();
-	const auto frameGoal  = goal->GetFrameMapCollision();
+	const auto frameGoal  = goal->GetHitCollisionFrame();
 
 	// プレイヤーと指定したコリジョンフレームで当たり判定
 	vec::Vec3 hitPos;

@@ -1,5 +1,7 @@
 #include "ModeGameClear.h"
 #include "ApplicationMain.h"
+#include "modegame.h"
+#include "modeteamlogo.h"
 
 bool ModeGameClear::Initialize()
 {
@@ -17,17 +19,16 @@ bool ModeGameClear::Terminate()
 bool ModeGameClear::Process()
 {
 	base::Process();
-	// 下のレイヤーを動かさない(メニューと同様)
+	// クリア画面が出ている間は「下のレイヤー(ゲーム本編)」を止める（描画は止めない）
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	
 	// キー取得
-	int key = ApplicationMain::GetInstance()->GetKey();
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
 	// パッド1のボタンが押されたらモード削除
 	if(trg & PAD_INPUT_1)
 	{
 		ModeServer::GetInstance()->Del(this);
+		ModeServer::GetInstance()->Add(new ModeGame(), 0, "ModeTeamLogo");
 	}
 	return true;
 }
