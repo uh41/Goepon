@@ -130,7 +130,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maker_otocheck.json";
+	std::string jsonFile = "marker0206.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -145,6 +145,14 @@ bool ModeGame::LoadStageData()
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
+
+		auto sensor = std::make_shared<EnemySensor>();
+		sensor->Initialize();
+		sensor->SetMap(_map.get());
+		auto soundSensor = std::make_shared<EnemySoundSensor>();
+		soundSensor->Initialize();
+		soundSensor->SetMap(_map.get());
+		soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 
 		// ★★★ S_MarkerR を検出（完全版） ★★★
 		if(name == "S_MarkerR")
@@ -161,19 +169,17 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-		//if(name == "S_MarkerRX")
-		//{
-		//	vec::Vec3 pos;
-		//	// JSON から座標を取得
-		//	object.at("translate").at("x").get_to(pos.x);
-		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-		//	pos.z *= -1.0f; // ★ Z軸反転
-
-		//	patrolPos.push_back(pos);
-
-		//	continue;
-		//}
+		if(name == "S_MarkerRX")
+		{
+			auto enemy = std::make_shared<Enemy>();
+			enemy->Initialize();
+			enemy->SetJsonDataUE(object);
+			enemy->SetEnemySensor(sensor);
+			enemy->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemy->GetPos());
+			_enemyBase.emplace_back(enemy);
+			continue;
+		}
 		if(name == "S_MarkerA")
 		{
 			_playerTanuki->SetJsonDataUE(object);
@@ -182,29 +188,13 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			//auto enemy = std::make_shared<Enemy>();
+
 			auto enemyMove = std::make_shared<EnemyMove>();
-			auto sensor = std::make_shared<EnemySensor>();
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-
-			//enemy->Initialize();
-			//enemy->SetJsonDataUE(object);
-			//enemy->SetEnemySensor(sensor);
-
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
 			enemyMove->SetEnemySensor(sensor);
 			enemyMove->SetEnemySoundSensor(soundSensor);
-
-			sensor->Initialize();
-			sensor->SetMap(_map.get());
-
-			soundSensor->Initialize();
-			soundSensor->SetMap(_map.get());
-			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 			soundSensor->SetPos(enemyMove->GetPos());
-
-			//_enemy.emplace_back(enemy);
 			_enemyBase.emplace_back(enemyMove);
 		}
 	}
