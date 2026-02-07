@@ -33,6 +33,7 @@
 #include "hensineffect.h"
 #include "walkeffect.h"
 #include "findeffect.h"
+#include "hatenaeffect.h"
 
 class ModeGame : public ModeBase
 {
@@ -153,6 +154,7 @@ protected:
 	at::spc<HensinEffect> _hensinEffect;
 	at::spc<WalkEffect> _walkEffect;
 	at::spc<FindEffect> _findEffect;
+	at::spc<HatenaEffect> _hatenaEffect;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

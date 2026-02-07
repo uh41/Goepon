@@ -30,10 +30,9 @@ bool ModeGame::Initialize()
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasure.get());
-	_walkEffect->SetPlayerPos(_player.get());
 	_walkEffect->SetPlayerPos(_playerTanuki.get());
-	_walkEffect->SetPlayerPos(_playerMono.get());
 	_findEffect->SetEnemy(_enemyBase);
+	_hatenaEffect->Enemy(_enemyBase);
 
 	DebugInitialize();// デバック初期化
 	ShadowInitialize();// シャドウ生成
@@ -323,6 +322,7 @@ bool ModeGame::Process()
 	{
 		playerBase = _player.get();
 	}
+
 
 	if(playerBase && playerBase->IsAlive())
 	{

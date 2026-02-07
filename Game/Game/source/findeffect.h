@@ -18,5 +18,6 @@ public:
 
 protected:
 	at::vspc<EnemyBase> _enemy;
+	at::umtc<EnemyBase*, int> _playHandleMap;// 敵ごとのエフェクト
 };
 

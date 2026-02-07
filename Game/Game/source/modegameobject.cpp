@@ -50,6 +50,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_walkEffect);
 	_findEffect = std::make_shared<FindEffect>();
 	_effectBase.emplace_back(_findEffect);
+	_hatenaEffect = std::make_shared<HatenaEffect>();
+	_effectBase.emplace_back(_hatenaEffect);
 
 	// キャラ
 	for(auto& chara : _chara)
@@ -193,6 +195,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_player->SetPos(_playerTanuki->GetPos());
 			_player->SetDir(_playerTanuki->GetDir());
 			_hensinEffect->PlayEffect(_player->GetPos());
+			_walkEffect->SetPlayerPos(_player.get());
 
 			// タヌキから人間への変身完了時に音波を発生
 			for(auto& enemy : _enemyBase)
@@ -201,6 +204,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 				{
 					enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
 					enemy->GetSoundSensor()->SetSoundLevel(5);
+					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}
 			_player->Process(); // 変身直後の一フレーム更新
@@ -226,6 +230,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = true;
 			_playerMono->SetPos(_playerTanuki->GetPos());
 			_playerMono->SetDir(_playerTanuki->GetDir());
+			_hensinEffect->PlayEffect(_playerMono->GetPos());
+			_walkEffect->SetPlayerPos(_playerMono.get());
 			// タヌキから人間への変身完了時に音波を発生
 			for(auto& enemy : _enemyBase)
 			{
@@ -233,6 +239,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 				{
 					enemy->GetSoundSensor()->TriggerSoundWave(_playerMono->GetPos(), 500.0f, 10.0f);
 					enemy->GetSoundSensor()->SetSoundLevel(5);
+					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}
 			_playerMono->Process(); // 変身直後の一フレーム更新
@@ -303,6 +310,7 @@ bool ModeGame::PlayerTransform()
 				_playerTanuki->PlayAnimation("goepon_idle", true);
 				_playerTanuki->Process();
 				_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+				_walkEffect->SetPlayerPos(_playerTanuki.get());
 				return true;
 			}
 		}
@@ -332,6 +340,8 @@ bool ModeGame::PlayerTransform()
 					_bShowTanuki = true;
 					_playerTanuki->SetPos(_player->GetPos());
 					_playerTanuki->SetDir(_player->GetDir());
+					_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+					_walkEffect->SetPlayerPos(_playerTanuki.get());
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->PlayAnimation("goepon_idle", true);
 				}
@@ -608,12 +618,17 @@ bool ModeGame::CheckAllDetections()
 				{
 					anyDetected = true;
 					eb->OnPlayerDetected(player->GetPos());
+					_hatenaEffect->ResetEnemyEffect(eb);
 				}
 				else
 				{
 					// センサーが追跡状態でなければ失見処理
 					if(!sensor->IsChasing())
 					{
+						if(eb->IsDetectPlayer())
+						{
+							_hatenaEffect->PlayOnce(eb);
+						}
 						eb->OnPlayerLost();
 					}
 				}

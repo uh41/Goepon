@@ -1,5 +1,6 @@
 #pragma once
 #include "effectbase.h"
+#include "playerbase.h"
 
 class WalkEffect : public EffectBase
 {
@@ -12,10 +13,10 @@ public:
 	virtual bool Process()override;
 	virtual bool Render()override;
 
-	void SetPlayerPos(CharaBase* player) { _chara = player; }
+	void SetPlayerPos(PlayerBase* player) { _playerBase = player; }
 
 protected:
-	CharaBase* _chara;
+	PlayerBase* _playerBase;
 
 };
 
