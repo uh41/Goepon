@@ -1,6 +1,7 @@
 #pragma once
 #include "enemybase.h"
 #include "playerbase.h"
+#include "MapBase.h"
 
 class Map; // 前方宣言
 
@@ -67,7 +68,7 @@ public:
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
 // Mapクラスへの参照を設定
-	void SetMap(Map* map) { _map = map; }
+	void SetMap(MapBase* map) { _map = map; }
 
 	// 床の存在を確認する関数
 	bool CheckFloorExistence(const vec::Vec3& position) const;
@@ -102,7 +103,7 @@ protected:
 	void UpdateDetectionTimer();		  // 検出タイマーの更新
 	vec::Vec3 GetDetectionCenter() const; // 索敵範囲の中心位置を取得
 
-	Map* _map;	// マップへの参照
+	MapBase* _map;	// マップへの参照
 
 
 };

@@ -16,9 +16,9 @@
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
 {
-	// マップ初期化
-	_map = std::make_shared<Map>();
-	_object.emplace_back(_map);
+	//// マップ初期化
+	//_map = std::make_shared<Map>();
+	//_object.emplace_back(_map);
 
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();

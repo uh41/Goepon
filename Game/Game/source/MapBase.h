@@ -1,6 +1,9 @@
+#pragma once
 #include "objectbase.h"
-#include "Light.h"
 #include "appframe.h"
+#include "camera.h"
+#include "Light.h"
+
 class MapBase : public ObjectBase
 {
 	typedef ObjectBase base;

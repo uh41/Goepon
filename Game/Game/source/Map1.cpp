@@ -3,12 +3,16 @@
 // 初期化
 bool Map1::Initialize()
 {
-	if (!base::Initialize()) { return false; }
+	// 基底クラス初期化
+	if(!base::Initialize()) { return false; }
+
+	// スカイスフィア読み込み
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 	_sPath = "res/map/";
 	_sJsonFile = "marker0127_2.json";
 	_sJsonObjectName = "stage";
 
+	// JSONファイル読み込み
 	_iFile.open(_sPath + _sJsonFile);
 	nlohmann::json json;
 
@@ -168,7 +172,7 @@ bool Map1::Process()
 
 	auto offset_index = 0;
 	_ground_vertex.clear();
-	_ground_index.clear();
+	_ground_index .clear();
 	//_ground_vertex.reserve(static_cast<int>(GROUND_Z * GROUND_X) * 4);
 	//_ground_index.reserve(static_cast<int>(GROUND_Z * GROUND_X) * 6);
 

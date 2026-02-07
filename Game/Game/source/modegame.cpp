@@ -31,6 +31,7 @@ bool ModeGame::Initialize()
 	// オブジェクトサーバー初期化
 	_objectServer = new ObjectServer(this);
 	_objectServer->LoadDate("stage");
+	_objectServer->ProcessInit();
 
 	// キャラ
 	for(auto& chara : _chara)
@@ -103,7 +104,11 @@ bool ModeGame::Initialize()
 		}
 	}
 
-	_map->SetCamera(_camera);
+	// カメラセット
+	if (auto* map = _objectServer->GetMap())
+	{
+		map->SetCamera(_camera);
+	}
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
@@ -305,13 +310,13 @@ bool ModeGame::LoadStageData()
 
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
-			sensor->SetMap(_map.get());
+			sensor->SetMap(_objectServer->GetMap());
 			//enemy->SetEnemySensor(sensor);
 			enemyMove->SetEnemySensor(sensor);
 
 			auto soundSensor = std::make_shared<EnemySoundSensor>();
 			soundSensor->Initialize();
-			soundSensor->SetMap(_map.get());
+			soundSensor->SetMap(_objectServer->GetMap());
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEnemySoundSensor(soundSensor);
@@ -402,6 +407,9 @@ bool ModeGame::Process()
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
 
+	_objectServer->ProcessInit(); // 追加・削除予約の確定
+	_objectServer->Process();
+
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();   // オブジェクト処理
 	
@@ -427,21 +435,21 @@ bool ModeGame::Process()
 
 	if(_bShowTanuki)
 	{
-		EscapeCollision(_playerTanuki.get(), _map.get());
+		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else if(_showMonoPlayer)
 	{
-		EscapeCollision(_playerMono.get(), _map.get());
+		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_playerMono.get(), _treasure.get());
 		PlayerCameraInfo(_playerMono.get());
 	}
 	else
 	{
-		EscapeCollision(_player.get(), _map.get());
+		EscapeCollision(_player.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
@@ -563,6 +571,10 @@ bool ModeGame::Render()
 	{
 		object->Render();
 	}
+
+
+	// オブジェクトサーバーの描画
+	_objectServer->Render();
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
 	for(auto& player_base : _playerBase)
@@ -720,7 +732,7 @@ bool ModeGame::CheckAllDetections()
 
 			sensor->SetPos(eb->GetPos());
 			sensor->SetDir(eb->GetDir());
-			sensor->SetMap(_map.get());
+			sensor->SetMap(_objectServer->GetMap());
 
 			sensor->Process();
 

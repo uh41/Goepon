@@ -36,15 +36,13 @@ bool MapBase::LoadModel(std::string fileName, std::string attachFrameName)
 	}
 
 	// アタッチフレーム名が指定されていれば、アタッチフレームのインデックスを取得
-	if(!attachFrameName.empty())
+	_iFrameMapCollision = -1;
+	if (!attachFrameName.empty())
 	{
-		// アタッチフレームのインデックスを取得
-		_iFrameMapCollision = MV1SearchFrame(_handle, attachFrameName.c_str());
-		// アタッチフレームが見つからなかった場合はエラー
-		if(_iFrameMapCollision >= 0)
+		_iFrameMapCollision = MV1SearchFrame(_iHandleMap, attachFrameName.c_str());
+		if (_iFrameMapCollision >= 0)
 		{
-			// アタッチフレームを非表示にする
-			MV1SetFrameVisible(_handle, _iFrameMapCollision, FALSE);
+			MV1SetFrameVisible(_iHandleMap, _iFrameMapCollision, FALSE);
 		}
 	}
 	return true;

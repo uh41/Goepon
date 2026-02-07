@@ -30,6 +30,8 @@
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
+#include "MapBase.h"
+#include "Map1.h"
 
 
 #include "ObjectServer.h"
@@ -136,7 +138,13 @@ protected:
 	//at::vspc<Treasure> _treasure;
 
 	// マップ
-	at::spc<Map> _map;
+	//at::spc<Map> _map;
+
+	//ステージベース
+	at::vspc<MapBase> _mapBase;
+
+	// map1
+	at::spc<Map1> _map1;
 	// キューブ
 	at::spc<Cube> _cube;
 	// ゴール
