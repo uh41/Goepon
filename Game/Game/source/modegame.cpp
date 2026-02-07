@@ -131,43 +131,76 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "marker0206.json";
+	std::string jsonFile = "Route.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
-
 	nlohmann::json jsonData;
 	ifs >> jsonData;
-
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	at::vet<vec::Vec3> patrolPos;
+	// customId（文字列）ごとの巡回点リストを保持
+	std::unordered_map<std::string, at::vet<vec::Vec3>> patrolGroups;
+
+	// 敵の JSON を一時保存して後で巡回グループを割り当てる
+	std::vector<nlohmann::json> enemyObjects;
 
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
 
-		auto sensor = std::make_shared<EnemySensor>();
-		sensor->Initialize();
-		sensor->SetMap(_map.get());
-		auto soundSensor = std::make_shared<EnemySoundSensor>();
-		soundSensor->Initialize();
-		soundSensor->SetMap(_map.get());
-		soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
-
-		// ★★★ S_MarkerR を検出（完全版） ★★★
+		// ★ S_MarkerR を検出 — customId でグループ化
 		if(name == "S_MarkerR")
 		{
 			vec::Vec3 pos;
-			// JSON から座標を取得
 			object.at("translate").at("x").get_to(pos.x);
-			object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-			object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-			pos.z *= -1.0f; // ★ Z軸反転
+			object.at("translate").at("y").get_to(pos.z); // UE:y -> DXLib:z
+			object.at("translate").at("z").get_to(pos.y); // UE:z -> DXLib:y
+			pos.z *= -1.0f;
 
-			patrolPos.push_back(pos);
-
+			std::string gid = "";
+			if(object.contains("customId"))
+			{
+				object.at("customId").get_to(gid);
+			}
+			patrolGroups[gid].push_back(pos);
 			continue;
+		}
+
+		if(name == "S_MarkerA")
+		{
+			_playerTanuki->SetJsonDataUE(object);
+			continue;
+		}
+
+		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
+		if(name == "S_MarkerB" || name == "S_MarkerRX")
+		{
+			enemyObjects.push_back(object);
+			continue;
+		}
+	}
+
+	// 敵を生成して、customId にマッチする巡回点を割り当てる
+	for(auto& object : enemyObjects)
+	{
+		// センサー類の生成
+		auto sensor = std::make_shared<EnemySensor>();
+		sensor->Initialize();
+		sensor->SetMap(_map.get());
+
+		auto soundSensor = std::make_shared<EnemySoundSensor>();
+		soundSensor->Initialize();
+		soundSensor->SetMap(_map.get());
+		soundSensor->SetSoundSensorArea(300.0f);
+
+		const std::string& name = object.at("objectName");
+
+		// customId を取得（無ければ空文字 "" を使う）
+		std::string gid = "";
+		if(object.contains("customId"))
+		{
+			object.at("customId").get_to(gid);
 		}
 
 		if(name == "S_MarkerRX")
@@ -181,48 +214,32 @@ bool ModeGame::LoadStageData()
 			_enemyBase.emplace_back(enemy);
 			continue;
 		}
-		if(name == "S_MarkerA")
-		{
-			_playerTanuki->SetJsonDataUE(object);
-			continue;
-		}
 
 		if(name == "S_MarkerB")
 		{
-
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
 			enemyMove->SetEnemySensor(sensor);
 			enemyMove->SetEnemySoundSensor(soundSensor);
 			soundSensor->SetPos(enemyMove->GetPos());
+
+			// グループに対応する巡回点があれば割り当てる
+			auto it = patrolGroups.find(gid);
+			if(it != patrolGroups.end() && !it->second.empty())
+			{
+				enemyMove->SetPatrolPoint(it->second);
+				enemyMove->CaptureInitialTransform();
+			}
+
 			_enemyBase.emplace_back(enemyMove);
 		}
 	}
 
-	// 動く敵に巡回ポイントを設定
-	if(!patrolPos.empty())
-	{
-		for(auto& enemyBase : _enemyBase)
-		{
-			if(!enemyBase)
-			{
-				continue;
-			}
-			if(auto em = dynamic_cast<EnemyMove*>(enemyBase.get()))
-			{
-				em->SetPatrolPoint(patrolPos);
-				em->CaptureInitialTransform();
-			}
-		}
-	}
-
+	// 互換のため全敵に初期トランスフォームを確実にキャプチャ
 	for(auto& enemy : _enemyBase)
 	{
-		if(enemy)
-		{
-			enemy->CaptureInitialTransform();
-		}
+		if(enemy) enemy->CaptureInitialTransform();
 	}
 
 	return true;

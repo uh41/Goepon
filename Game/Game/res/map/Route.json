@@ -1,0 +1,196 @@
+{
+	"Lighting": [
+		{
+			"objectName": "SM_SkySphere",
+			"translate": {
+				"x": -300,
+				"y": 0,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"scale": {
+				"x": 400.3274,
+				"y": 400,
+				"z": 400
+			},
+			"customId": ""
+		}
+	],
+	"stage": [
+		{
+			"objectName": "S_MarkerB",
+			"translate": {
+				"x": 377,
+				"y": -2165,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "2"
+		},
+		{
+			"objectName": "S_MarkerR",
+			"translate": {
+				"x": 960,
+				"y": -2840,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": -90
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "1"
+		},
+		{
+			"objectName": "S_MarkerR",
+			"translate": {
+				"x": 250,
+				"y": -2840,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": -180
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "1"
+		},
+		{
+			"objectName": "S_MarkerA",
+			"translate": {
+				"x": 60,
+				"y": 70,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": ""
+		},
+		{
+			"objectName": "S_MarkerR",
+			"translate": {
+				"x": 250,
+				"y": -2410,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 90
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "1"
+		},
+		{
+			"objectName": "S_MarkerR",
+			"translate": {
+				"x": 940,
+				"y": -2410,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "1"
+		},
+		{
+			"objectName": "S_MarkerB",
+			"translate": {
+				"x": 337,
+				"y": -2855,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 0
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "1"
+		},
+		{
+			"objectName": "S_MarkerR",
+			"translate": {
+				"x": 370,
+				"y": -1720,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 90
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "2"
+		},
+		{
+			"objectName": "S_MarkerR",
+			"translate": {
+				"x": 380,
+				"y": -990,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 90
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": "2"
+		}
+	]
+}
