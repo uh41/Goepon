@@ -1,10 +1,10 @@
 /*********************************************************************/
 // * \file   ObjectServer.cpp
-// * \brief  ƒIƒuƒWƒFƒNƒgƒT[ƒo[ƒNƒ‰ƒX
+// * \brief  ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Tï¿½[ï¿½oï¿½[ï¿½Nï¿½ï¿½ï¿½X
 // *
-// * \author ÎX“ø‘å
+// * \author ï¿½ÎXï¿½ï¿½ï¿½ï¿½
 // * \date   2026/1/5
-// * \ì‹Æ“à—e: V‹Kì¬ ÎX“ø‘å@2026/1/5
+// * \ï¿½ï¿½Æ“ï¿½e: ï¿½Vï¿½Kï¿½ì¬ ï¿½ÎXï¿½ï¿½ï¿½ï¿½@2026/1/5
 /*********************************************************************/
 
 
@@ -13,9 +13,13 @@
 #include"ModeGame.h"
 #include<algorithm>
 #include<fstream>
+#include "Map1.h"
+
 
 ObjectServer::ObjectServer(ModeGame* game)
-:_game(game)
+	: _player(nullptr)
+	, _game(game)
+	, _map(nullptr) 
 {
 	Intialize();
 }
@@ -32,14 +36,14 @@ bool ObjectServer::Intialize()
 
 bool ObjectServer::Terminate()
 {
-	//ŠÇ—‚µ‚Ä‚¢‚éƒIƒuƒWƒFƒNƒg‚ğ‚·‚×‚Äíœ
+	//ï¿½Ç—ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½×‚Äíœ
 	ClearObject();
 	return true;
 }
 
 bool ObjectServer::Process()
 {
-	// ƒIƒuƒWƒFƒNƒg‚ğ„‰ñˆ—
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ñˆ—ï¿½
 	for(auto iter = _objects.begin(); iter != _objects.end(); ++iter)
 	{
 		if((*iter)->Process())
@@ -56,7 +60,7 @@ bool ObjectServer::Process()
 
 bool ObjectServer::Render()
 {
-	// ƒIƒuƒWƒFƒNƒg‚ğ„‰ñ•`‰æ
+	// ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½ï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½
 	for(int i = 0; i < _objects.size(); ++i)
 	{
 		if(!_objects[i]->Render())
@@ -69,29 +73,35 @@ bool ObjectServer::Render()
 
 void ObjectServer::AddObject(ObjectBase* obj)
 {
-	// Šù‚É’Ç‰Á‚³‚ê‚Ä‚¢‚é‚©
-	auto iter = std::find(_deleteObj.begin(), _deleteObj.end(), obj);
-	if(iter != _deleteObj.end())
-	{
-		return;
-	}
-	// ‚Ü‚¾A’Ç‰Á‚³‚ê‚Ä‚¢‚È‚¢‚¾‚¯‚Å—\–ñ‚Í“ü‚Á‚Ä‚¢‚é‚Ì‚Å‚ÍH
-	iter = std::find(_addObj.begin(), _addObj.end(), obj);
-	if(iter != _addObj.end())
+	if(obj == nullptr) { return; }
+
+	// ï¿½ï¿½ï¿½É–{ï¿½oï¿½^ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
+	if(std::find(_objects.begin(), _objects.end(), obj) != _objects.end())
 	{
 		return;
 	}
 
-	// ‰Šú‰»
-	obj->Initialize();
+	// ï¿½ï¿½ï¿½É’Ç‰ï¿½ï¿½\ï¿½ñ‚³‚ï¿½Ä‚ï¿½ï¿½ï¿½
+	if(std::find(_addObj.begin(), _addObj.end(), obj) != _addObj.end())
+	{
+		return;
+	}
+
+	// ï¿½íœï¿½\ï¿½ñ‚³‚ï¿½Ä‚ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½È‚ï¿½ï¿½j
+	if(std::find(_deleteObj.begin(), _deleteObj.end(), obj) != _deleteObj.end())
+	{
+		return;
+	}
+
 	_addObj.emplace_back(obj);
 }
 
 void ObjectServer::DeleteObject(ObjectBase* obj)
 {
-	//Šù‚Éíœ—\–ñ‚³‚ê‚Ä‚¢‚é‚©
+	//ï¿½ï¿½ï¿½Éíœï¿½\ï¿½ñ‚³‚ï¿½Ä‚ï¿½ï¿½é‚©
 	auto iter = std::find(_deleteObj.begin(), _deleteObj.end(), obj);
-	if (iter != _deleteObj.end()) {
+	if (iter != _deleteObj.end()) 
+	{
 		return;
 	}
 
@@ -126,10 +136,10 @@ bool ObjectServer::ClearObject()
 
 bool ObjectServer::ProcessInit()
 {
-	// „‰ñˆ—‚ğ‚·‚é‘O‚ÉƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á‚Æíœ‚ğ‚µ‚Ä‚¨‚­
+	// ï¿½ï¿½ï¿½ñˆ—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ÉƒIï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½Ì’Ç‰ï¿½ï¿½Æíœï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½
 	for(auto && addObj : _addObj)
 	{
-		//ÀÛ‚É’Ç‰Á‚³‚ê‚Ä‚©‚çA‰Šú‰»‚·‚é
+		//ï¿½ï¿½ï¿½Û‚É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Aï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		addObj->Initialize();
 		_objects.emplace_back(addObj);
 	}
@@ -152,67 +162,41 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(std::string stageName)
 {
-	// ƒ}ƒbƒvƒNƒ‰ƒX‚Ìæ“¾
+	// ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿èª­ã¿è¾¼ã¿
 	_sPath = "res/map/";
 	_sJsonFile = "marker0127_2.json";
 	_sJsonObjectName = "stage";
 
-	// ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
-	_iFile.open(_sPath + _sJsonFile);
-	// Json‚ª‚È‚©‚Á‚½‚çfalse‚ğ•Ô‚·
-	if(!_iFile) { return false; }
-	// Json
-	nlohmann::json jsonData;
-	_iFile >> jsonData;
+	// JSONãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+	const std::string jsonPath = _sPath + _sJsonFile;
+	std::ifstream file(jsonPath);
+	if(!file) { return false; }
 
-	// Map ‚ª–¢¶¬‚È‚ç¶¬i•K—v‚È‚çj
+	// JSONãƒ‡ãƒ¼ã‚¿è§£æ
+	nlohmann::json jsonData;
+	file >> jsonData;
+
+	// ãƒãƒƒãƒ—ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆç”Ÿæˆ
 	if(_map == nullptr)
 	{
-		_map = new Map();
+		_map = new Map1();
 		AddObject(_map);
 	}
-	// Jsonƒf[ƒ^‚Ìæ“¾
-	nlohmann::json stage = jsonData.at(_sJsonObjectName);
-	// Jsonƒf[ƒ^‚©‚çƒXƒe[ƒW–¼‚Æ“¯‚¶ƒf[ƒ^‚ğ’T‚·
-	for(auto& data : stage)
+
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿æ¤œç´¢ãƒ»è¨­å®š
+	if (!jsonData.contains(_sJsonObjectName)) { return false; } // ã‚­ãƒ¼å­˜åœ¨ç¢ºèª
+	const auto& stage = jsonData.at(_sJsonObjectName);          // ã‚¹ãƒ†ãƒ¼ã‚¸ãƒ‡ãƒ¼ã‚¿å–å¾—
+
+	for(const auto& data : stage)
 	{
-		const std::string name = data.at("objectName").get<std::string>();
+		const std::string name = data.at("objectName").get<std::string>(); // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåå–å¾—
+		if(name != stageName) { continue; }
 
-		// –¼‘O‚ªstage‚Å‚È‚¯‚ê‚ÎƒXƒLƒbƒv
-		if(name != "stage")
-		{
-			continue;
-		}
-		// ƒ‚ƒfƒ‹“Ç‚İ‚İ
-		const std::string filename = _sPath + name + ".mv1";
-		/*const int handle = */
+		// ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿è¨­å®š
+		_map->SetJsonDataUE(data); 
+		break;
 	}
-	//std::string stage = stageName.substr(0, 1);
-	//std::string area = stageName.substr(2, 1);
 
-	////ƒtƒ@ƒCƒ‹‚ÌƒpƒX
-	//std::string filePath = "res/stage/stage" + stage + "/" + area + "/";
-
-	////ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
-	//std::ifstream layoutFile(filePath + "Layout.json");
-
-	////Json
-	//nlohmann::json layoutJson;
-
-	////ƒVƒŠƒAƒ‰ƒCƒY
-	//if (!layoutFile) { return false; }
-	//layoutFile >> layoutJson;
-
-	////ƒvƒŒƒCƒ„[‚Ì“Ç‚İ‚İ
-	//for (auto&& object : layoutJson.at("player"))
-	//{
-	//	std::string name = object.at("objectName");
-	//	if(name == "marker1")
-	//	{
-	//		Player* player = new Player();
-	//		player->SetJsonDataUE(object);
-	//	}
-	//}
-	
 	return true;
+
 }

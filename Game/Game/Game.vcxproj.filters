@@ -201,6 +201,48 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\applicationglobal.h" />
+    <ClInclude Include="source\applicationmain.h" />
+    <ClInclude Include="source\camera.h" />
+    <ClInclude Include="source\charabase.h" />
+    <ClInclude Include="source\charashadow.h" />
+    <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\effectbase.h" />
+    <ClInclude Include="source\enemy.h" />
+    <ClInclude Include="source\enemybase.h" />
+    <ClInclude Include="source\enemysensor.h" />
+    <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\ModeGameClear.h" />
+    <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\modeinit.h" />
+    <ClInclude Include="source\Light.h" />
+    <ClInclude Include="source\map.h" />
+    <ClInclude Include="source\menuitembase.h" />
+    <ClInclude Include="source\modeeffekseer.h" />
+    <ClInclude Include="source\modegame.h" />
+    <ClInclude Include="source\modemenu.h" />
+    <ClInclude Include="source\modeopscenario.h" />
+    <ClInclude Include="source\modescenariobase.h" />
+    <ClInclude Include="source\modeteamlogo.h" />
+    <ClInclude Include="source\modetitle.h" />
+    <ClInclude Include="source\enemymove.h" />
+    <ClInclude Include="source\movepointcontroll.h" />
+    <ClInclude Include="source\objectbase.h" />
+    <ClInclude Include="source\ObjectServer.h" />
+    <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\playerbase.h" />
+    <ClInclude Include="source\playermono.h" />
+    <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\Treasure.h" />
+    <ClInclude Include="source\treasureeffect.h" />
+    <ClInclude Include="source\uibase.h" />
+    <ClInclude Include="source\uihp.h" />
+    <ClInclude Include="source\MapBase.h" />
+    <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\ModeGoalConfirm.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource.py" />
     <ClInclude Include="source\modeeffekseer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

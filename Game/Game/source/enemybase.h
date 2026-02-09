@@ -11,6 +11,7 @@
 #include "charabase.h"
 #include "appframe.h"
 #include "movepointcontroll.h"
+#include "effectbase.h"
 
 // 前方宣言
 class EnemySensor;
@@ -71,6 +72,8 @@ public:
 	std::shared_ptr<EnemySoundSensor> GetEnemySoundSensor() const { return _enemySoundSensor; }
 	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
 
+	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
+
 protected:
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
@@ -124,4 +127,6 @@ protected:
 	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
 	float _soundDetectionTimer;		// 音検知からの経過時間
 	static constexpr float SOUND_RETURN_TIME = 10.0f; // 音検知から初期位置に戻るまでの時間
+
+	at::spc<EffectBase> _effect;
 };

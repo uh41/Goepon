@@ -132,3 +132,27 @@ bool ObjectBase::LoadModel(std::string fileName, std::string attachFrameName)
 	}
 	return true;
 }
+
+// 当たり判定用フレームに行列を適用し、当たり判定情報を更新する
+void ObjectBase::ApplyMatrixAndRefreshCollInfo(int handle, int hitFrame, int openFrame, const MATRIX& m)
+{
+	// ハンドルがないなら処理しない
+	if(handle < 0)
+	{
+		return;
+	}
+
+	// 行列をセット
+	MV1SetMatrix(handle, m);
+
+	// 当たり判定情報を更新
+	if(hitFrame >= 0)
+	{
+		MV1RefreshCollInfo(handle, hitFrame);
+	}
+	// 開閉用フレームの当たり判定情報を更新
+	if(openFrame >= 0)
+	{
+		MV1RefreshCollInfo(handle, openFrame);
+	}
+}

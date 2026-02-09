@@ -1,7 +1,7 @@
 #pragma once
 #include "enemybase.h"
 #include "playerbase.h"
-
+#include "MapBase.h"
 // ‘O•ûéŒ¾
 class Map;
 
@@ -43,7 +43,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	void SetMap(Map* map) { _map = map; }
+	void SetMap(MapBase* map) { _map = map; }
 	void SetSoundLevel(int level);
 	const SoundDectionInfo& GetDetectionInfo() const { return _sounddetectionInfo; }	// ŒŸoî•ñ‚Ìæ“¾
 	void SetSoundSensorArea(float radius);	
@@ -54,7 +54,7 @@ public:
 protected:
 	SoundSensorArea _soundsensorarea;
 	SoundDectionInfo _sounddetectionInfo;
-	Map* _map;
+	MapBase* _map;
 
 	std::vector<SoundWave> _soundWaves;
 	static constexpr int MAX_SOUND_WAVES = 10;  

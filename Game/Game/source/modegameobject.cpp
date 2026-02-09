@@ -16,13 +16,16 @@
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
 {
+	//// マップ初期化
+	//_map = std::make_shared<Map>();
+	//_object.emplace_back(_map);
 	// カメラ初期化
 	_camera = new Camera();
 	_camera->Initialize();
 
-	// マップ初期化
-	_map = std::make_shared<Map>();
-	_object.emplace_back(_map);
+	//// マップ初期化
+	//_map = std::make_shared<Map>();
+	//_object.emplace_back(_map);
 
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
@@ -35,6 +38,10 @@ bool ModeGame::ObjectInitialize()
 	// 宝箱初期化
 	_treasure = std::make_shared<Treasure>();
 	_object.emplace_back(_treasure);
+
+	// ゴール初期化
+	_goal = std::make_shared<Goal>();
+	_object.emplace_back(_goal);
 
 	// ui初期化
 	_uiHp = std::make_shared<UiHp>();
@@ -98,6 +105,7 @@ bool ModeGame::ObjectInitialize()
 	return true;
 }
 
+// 影の初期化
 bool ModeGame::ShadowInitialize()
 {
 	auto charaShadow = std::make_shared<CharaShadow>();
@@ -135,6 +143,7 @@ bool ModeGame::ShadowInitialize()
 	return true;
 }
 
+// プレイヤー変身処理
 bool ModeGame::CameraInfoInitialize()
 {
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
@@ -375,6 +384,8 @@ bool ModeGame::PlayerTransform()
 
 	return true;
 }
+
+// オブジェクト処理
 bool ModeGame::ObjectProcess()
 {
 	// オブジェクト処理
@@ -424,6 +435,7 @@ bool ModeGame::ObjectProcess()
 	return true;
 }
 
+// BGMチェンジ処理
 bool ModeGame::ObjectRender()
 {
 	for(auto& chara : _chara)
@@ -599,7 +611,7 @@ bool ModeGame::CheckAllDetections()
 				// センサーに必要な情報をセット
 				sensor->SetPos(eb->GetPos());
 				sensor->SetDir(eb->GetDir());
-				sensor->SetMap(_map.get());
+				sensor->SetMap(_objectServer->GetMap());
 
 				// センサー処理（追跡タイマー更新など）
 				sensor->Process();

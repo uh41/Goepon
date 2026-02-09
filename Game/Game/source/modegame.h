@@ -30,6 +30,13 @@
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
+#include "MapBase.h"
+#include "Map1.h"
+
+
+#include "ObjectServer.h"
+#include "Goal.h"
+
 #include "hensineffect.h"
 #include "walkeffect.h"
 #include "findeffect.h"
@@ -74,6 +81,11 @@ public:
 	// 当たり判定処理
 	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
+    // キャラと宝箱の当たり判定処理
+	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
+	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
+	// プレイヤーとゴールの当たり判定
+	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
 
 	// 索敵範囲の当たり判定
 	bool IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy);
@@ -113,9 +125,6 @@ public:
 
 	bool LoadStageData();
 
-	// キャラと宝箱の当たり判定処理
-	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
-	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
 
@@ -139,9 +148,17 @@ protected:
 	//at::vspc<Treasure> _treasure;
 
 	// マップ
-	at::spc<Map> _map;
+	//at::spc<Map> _map;
+
+	//ステージベース
+	at::vspc<MapBase> _mapBase;
+
+	// map1
+	at::spc<Map1> _map1;
 	// キューブ
 	at::spc<Cube> _cube;
+	// ゴール
+	at::spc<Goal> _goal;
 	// 敵
 	at::vspc<Enemy> _enemy;
 	at::vspc<EnemyMove> _enemyMove;
@@ -154,6 +171,9 @@ protected:
 	// エフェクト
 	at::vspc<EffectBase> _effectBase;
 	at::spc<TreasureEffect> _treasureEffect;
+	// オブジェクトサーバー
+	class ObjectServer* _objectServer;
+
 	at::spc<HensinEffect> _hensinEffect;
 	at::spc<WalkEffect> _walkEffect;
 	at::spc<FindEffect> _findEffect;
@@ -207,5 +227,12 @@ protected:
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;
 	float _knockdownMessageSec = 0.0f;
+
+	// ゲームクリア処理
+	bool _isGameClear;
+
+	// ゲーム開始時刻（ms）・クリア表示済みフラグ
+	unsigned long _gameStartMs = 0;
+	bool _gameClearShown = false;
 };
 

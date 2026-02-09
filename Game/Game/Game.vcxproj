@@ -32,7 +32,12 @@
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemydog.h" />
     <ClInclude Include="source\enemysensor.h" />
+    <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\MapBase.h" />
+    <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\ModeGoalConfirm.h" />
     <ClInclude Include="source\findeffect.h" />
     <ClInclude Include="source\hatenaeffect.h" />
     <ClInclude Include="source\hensineffect.h" />
@@ -76,7 +81,12 @@
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemydog.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
+    <ClCompile Include="source\Goal.cpp" />
+    <ClCompile Include="source\Map1.cpp" />
+    <ClCompile Include="source\MapBase.cpp" />
+    <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
+    <ClCompile Include="source\ModeGoalConfirm.cpp" />
     <ClCompile Include="source\findeffect.cpp" />
     <ClCompile Include="source\hatenaeffect.cpp" />
     <ClCompile Include="source\hensineffect.cpp" />
