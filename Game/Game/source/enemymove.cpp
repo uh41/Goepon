@@ -10,6 +10,7 @@
 
 #include "enemymove.h"
 #include "enemysensor.h"
+#include "enemysoundsensor.h"
 
 EnemyMove::EnemyMove()
 {
@@ -101,6 +102,12 @@ void EnemyMove::SetPatrolPoint(const at::vet<vec::Vec3>& point)
 void EnemyMove::ProcessPatrol()
 {
 	if(!_isPatroll || !_patroll->IsValid())
+	{
+		return;
+	}
+
+	// 音源へ移動中は巡回処理で向きを上書きしない
+	if (_isMovingToSound)
 	{
 		return;
 	}
@@ -321,6 +328,72 @@ bool EnemyMove::Process()
 		_enemySensor->SetDir(_vDir);
 	}
 
+	// 音検知タイマーの更新（音検知が有効な場合）
+	if (_soundDetectionActive)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_soundDetectionTimer += dt;
+
+		// 指定時間を越えたら初期位置への帰還を開始
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		{
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			_isMovingToSound = false;
+			_waitingAtSound = false;
+
+			StartReturningToInitialPosition();
+		}
+	}
+
+	// 音源到達後の待機中はWAITステータス（プレイヤー検知で割り込み可）
+	if (_waitingAtSound)
+	{
+		_status = STATUS::WAIT;
+	}
+
+	// EnemySoundSensorから音の検知情報を取得
+	if (_enemySoundSensor)
+	{
+		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
+		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		{
+			// プレイヤー検出や追跡中でなければ音源へ移動開始
+			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			{
+				// 巡回を止めて現在の巡回インデックスを保存し、音へ移動
+				_savePatrolIndex = _patrolIndex;
+				_isPatroll = false;
+
+				_isMovingToSound = true;
+				_soundSourcePosition = detectionInfo.soundSourcePosition;
+
+				// ここで即座に音源方向を向かせる（巡回方向が残っているケース対策）
+				{
+					vec::Vec3 toSoundInit = vec3::VSub(_soundSourcePosition, _vPos);
+					toSoundInit.y = 0.0f;
+					if (vec3::VSize(toSoundInit) > 0.001f)
+					{
+						_vDir = vec3::VNorm(toSoundInit);
+					}
+				}
+				// 音検知タイマー開始
+				_soundDetectionActive = true;
+				_soundDetectionTimer = 0.0f;
+
+				// 初期位置への帰還待機は中断
+				_waitingBeforeReturn = false;
+				_returnWaitTimer = 0.0f;
+			}
+		}
+	}
+
+	// 音源への移動処理（プレイヤー検出より優先度は低い）
+	if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	{
+		UpdateMovingToSound();
+	}
+
 	// 優先順位: 追跡　> 帰還 > 巡回
 	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{
@@ -464,7 +537,7 @@ bool EnemyMove::Process()
 		DirChangeTimer = 15.0f;
 
 		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
-		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
 		{
 			// 回転先の方向を計算
 			float currentAngle = atan2f(_vDir.x, _vDir.z);

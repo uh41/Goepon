@@ -193,6 +193,12 @@
     <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ">
       <UniqueIdentifier>{8160a9b0-941f-45bd-952c-ada34648ad14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵2_犬">
+      <UniqueIdentifier>{12c9cefa-6d92-4544-992b-e1a241746e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵2_犬">
+      <UniqueIdentifier>{a7e3b9fb-2268-4dfa-9994-3f31292ad769}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\modeeffekseer.h">
@@ -317,6 +323,9 @@
     </ClInclude>
     <ClInclude Include="source\nakieffect.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemydog.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -451,6 +460,9 @@
     </ClCompile>
     <ClCompile Include="source\nakieffect.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemydog.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -18,6 +18,7 @@ public:
 	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
+
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensor‚ğİ’è
 	void OnPlayerLost();										// ƒvƒŒƒCƒ„[Œ©¸‚¢‚Ìˆ—
 
