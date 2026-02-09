@@ -114,7 +114,6 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
-	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
@@ -280,11 +279,11 @@ bool ModeGame::LoadStageData()
 		// センサー類の生成
 		auto sensor = std::make_shared<EnemySensor>();
 		sensor->Initialize();
-		sensor->SetMap(_map.get());
+		sensor->SetMap(_objectServer->GetMap());
 
 		auto soundSensor = std::make_shared<EnemySoundSensor>();
 		soundSensor->Initialize();
-		soundSensor->SetMap(_map.get());
+		soundSensor->SetMap(_objectServer->GetMap());
 		soundSensor->SetSoundSensorArea(300.0f);
 
 		const std::string& name = object.at("objectName");
@@ -623,92 +622,4 @@ bool ModeGame::Render()
 	}
 
 	return true;
-}
-
-bool ModeGame::CheckAllDetections()
-{
-	PlayerBase* player = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get())
-		: static_cast<PlayerBase*>(_player.get());
-
-	if(!player)
-	{
-		return false;
-	}
-
-	bool anyDetected = false;
-
-	// ヘルパーで各コンテナを処理するラムダ
-
-	//[x]変数 x をコピーして使う（読み取り専用に近い）
-	//[&x]変数 x を参照で使う（読み書き可能）
-	//[=]スコープ内のすべての変数をコピーして使う（読み取り専用に近い）
-	//[&]スコープ内のすべての変数を参照で使う（読み書き可能）
-	//						[キャプチャ](引数) -> 戻り値の型 { 処理内容 };
-	auto processContainer = [&](auto& container) -> bool
-		{
-		for(auto& item : container)
-		{
-			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
-			if(!eb || !eb->IsAlive())
-			{
-				continue;
-			}
-
-			auto sensor = eb->GetEnemySensor();
-			if(!sensor)
-			{
-				continue;
-			}
-
-			sensor->SetPos(eb->GetPos());
-			sensor->SetDir(eb->GetDir());
-			sensor->SetMap(_objectServer->GetMap());
-
-			sensor->Process();
-
-			auto soundSensor = eb->GetEnemySoundSensor();
-			if(soundSensor)
-			{
-				soundSensor->SetPos(eb->GetPos());
-				soundSensor->Process();
-			}
-
-			// プレイヤーがタヌキでない（＝player状態）のときは
-			// 「敵を強制的に見失わせて戻らせる」処理を行わない。
-			// センサー情報だけリセットして巡回を維持する。
-			if(!_bShowTanuki)
-			{
-
-
-				// 変身が完了しており、かつ意図的に「人間表示」にして敵を完全に無視したい場合のみ
-				// リセットする（従来の挙動）。必要なければこのブロック自体を削除してください。
-				sensor->ResetDetection();
-				if(eb)
-				{
-					eb->OnPlayerLost(); // 追跡フラグをクリアし、待機→帰還の処理を開始させる
-				}
-				continue;
-			}
-			bool detected = sensor->CheckPlayerDetection(player);	// 索敵判定
-
-			if(detected)
-			{
-				anyDetected = true;
-				eb->OnPlayerDetected(player->GetPos());
-			}
-			else
-			{
-				if(!sensor->IsChasing())
-				{
-					eb->OnPlayerLost();
-				}
-			}
-		}
-		return false;
-		};
-	processContainer(_enemyBase);
-
-	_bTransCancel = anyDetected;
-
-	return anyDetected;
 }

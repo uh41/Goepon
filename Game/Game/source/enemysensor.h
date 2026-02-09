@@ -53,7 +53,7 @@ public:
 	// ���o��Ԃ̃��Z�b�g
 	void ResetDetection();
 
-	// �ǐՋ@�\
+	// 
 	bool IsChasing() const { return _detectionInfo.isChasing; }
 	vec::Vec3 GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
@@ -69,9 +69,6 @@ public:
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
 // Map�N���X�ւ̎Q�Ƃ�ݒ�
 	void SetMap(MapBase* map) { _map = map; }
-
-	// Map�N���X�ւ̎Q�Ƃ�ݒ�
-	void SetMap(Map* map) { _map = map; }
 
 	// ���̑��݂�m�F����֐�
 	bool CheckFloorExistence(const vec::Vec3& position) const;
@@ -107,7 +104,4 @@ protected:
 	vec::Vec3 GetDetectionCenter() const; // ���G�͈͂̒��S�ʒu��擾
 
 	MapBase* _map;	// �}�b�v�ւ̎Q��
-
-
-	Map* _map;	// �}�b�v�ւ̎Q��
 };

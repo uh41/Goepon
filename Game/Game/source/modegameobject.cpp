@@ -23,9 +23,9 @@ bool ModeGame::ObjectInitialize()
 	_camera = new Camera();
 	_camera->Initialize();
 
-	// マップ初期化
-	_map = std::make_shared<Map>();
-	_object.emplace_back(_map);
+	//// マップ初期化
+	//_map = std::make_shared<Map>();
+	//_object.emplace_back(_map);
 
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
@@ -144,7 +144,6 @@ bool ModeGame::ShadowInitialize()
 }
 
 // プレイヤー変身処理
-bool ModeGame::PlayerTransform()
 bool ModeGame::CameraInfoInitialize()
 {
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
@@ -612,7 +611,7 @@ bool ModeGame::CheckAllDetections()
 				// センサーに必要な情報をセット
 				sensor->SetPos(eb->GetPos());
 				sensor->SetDir(eb->GetDir());
-				sensor->SetMap(_map.get());
+				sensor->SetMap(_objectServer->GetMap());
 
 				// センサー処理（追跡タイマー更新など）
 				sensor->Process();
