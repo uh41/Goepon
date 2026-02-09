@@ -283,7 +283,6 @@ bool ModeGame::PlayerTransform()
 		}
 	}
 
-	// --- 以下、既存の入力処理（変更なし） ---
 	// PAD_INPUT_3: タヌキ <-> モノ 切替
 	if(trg & PAD_INPUT_3)
 	{

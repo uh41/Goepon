@@ -40,6 +40,7 @@ bool WalkEffect::Process()
 	}
 
 	vec::Vec3 charaPos = _playerBase->GetPos();
+	vec::Vec3 charaDir = _playerBase->GetDir();
 	// プレイヤーが歩行中のときのみエフェクトを再生／更新する
 	if(_playerBase->_status == CharaBase::STATUS::WALK)
 	{
@@ -52,15 +53,20 @@ bool WalkEffect::Process()
 				_playHandle = -1;
 			}
 
+			float yaw = atan2(charaDir.x, charaDir.z);
+			vec::Vec3 rot = vec::Vec3(0.0f, yaw, 0.0f);
+
 			if(_playHandle == -1)
 			{
 				// 再生開始（初回・または終了後の再生）
 				_playHandle = em->PlayEffect3DPos(_handle, charaPos);
+				em->SetRotationEffect(_playHandle, rot);
 			}
 			else
 			{
 				// 既に再生中なら位置を毎フレーム更新して追従させる
 				em->SetPosEffect(_playHandle, charaPos);
+				em->SetRotationEffect(_playHandle, rot);
 			}
 		}
 	}

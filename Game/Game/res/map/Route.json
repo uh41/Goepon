@@ -40,6 +40,44 @@
 			},
 			"customId": "2"
 		},
+{
+			"objectName": "S_MarkerRX",
+			"translate": {
+				"x": 600,
+				"y": -660,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": -90
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": ""
+		},
+		{
+			"objectName": "S_MarkerRX",
+			"translate": {
+				"x": 60,
+				"y": -1800,
+				"z": 0
+			},
+			"rotate": {
+				"x": 0,
+				"y": 0,
+				"z": 90
+			},
+			"scale": {
+				"x": 1,
+				"y": 1,
+				"z": 1
+			},
+			"customId": ""
+		},
 		{
 			"objectName": "S_MarkerR",
 			"translate": {
