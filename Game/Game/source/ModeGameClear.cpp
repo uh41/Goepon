@@ -21,6 +21,7 @@ bool ModeGameClear::Process()
 	base::Process();
 	// クリア画面が出ている間は「下のレイヤー(ゲーム本編)」を止める（描画は止めない）
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	// キー取得
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 

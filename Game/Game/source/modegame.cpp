@@ -143,6 +143,8 @@ bool ModeGame::Initialize()
 
 	_isChengeBgm = false;
 
+	_goalConfirmOpened = false;
+	_goalConfirmResult = ModeGoalConfirm::Result::None;
 	//_bgmInitialize->Play();
 
 	return true;
@@ -501,25 +503,12 @@ bool ModeGame::Process()
 	}
 
 	IsPlayerAttack(_player.get(), _enemyBase);
-	// ゴールとの当たり判定
-	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
-	{
-		_isGameClear = true;
-		// 高レイヤーで追加してオーバーレイ表示
-		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
-		return true;
-	}
-	if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
-	{
-		_isGameClear = true;
-		// 高レイヤーで追加してオーバーレイ表示
-		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
-		return true;
-	}
 
-	IsPlayerAttack(_player.get(), _enemyBase);
+	// ゴールとの当たり判定
+	if(UpdateGoalConfirm(playerBase))
+	{
+		return true;
+	}
 
 	ChangeBGM();
 	return true;
@@ -622,4 +611,40 @@ bool ModeGame::Render()
 	}
 
 	return true;
+}
+
+bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
+{
+	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
+	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
+
+	 // 踏んだ瞬間に確認モードを開く
+	if(hitGoal && !_goalConfirmOpened)
+	{
+		_goalConfirmOpened = true;
+		_goalConfirmResult = ModeGoalConfirm::Result::None;
+
+		ModeServer::GetInstance()->Add(new ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
+		return true;
+	}
+
+	// 確認結果を受けて処理を行う
+	if(_goalConfirmOpened)
+	{
+		if(_goalConfirmResult == ModeGoalConfirm::Result::Yes)
+		{
+			_goalConfirmOpened = false;
+			_goalConfirmResult = ModeGoalConfirm::Result::None;
+
+			_isGameClear = true;
+			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");	
+			return true;
+		}
+		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
+		{
+			_goalConfirmOpened = false;
+			_goalConfirmResult = ModeGoalConfirm::Result::None;
+		}
+		
+	}
 }

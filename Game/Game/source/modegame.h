@@ -36,6 +36,7 @@
 
 #include "ObjectServer.h"
 #include "Goal.h"
+#include "ModeGoalConfirm.h"
 
 #include "hensineffect.h"
 #include "walkeffect.h"
@@ -234,5 +235,11 @@ protected:
 	// ゲーム開始時刻（ms）・クリア表示済みフラグ
 	unsigned long _gameStartMs = 0;
 	bool _gameClearShown = false;
+
+	// ゴール確認モード関連
+	bool _goalConfirmOpened;
+	ModeGoalConfirm::Result _goalConfirmResult;
+	// ゴール確認処理
+	bool UpdateGoalConfirm(PlayerBase* player);
 };
 
