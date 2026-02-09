@@ -72,6 +72,8 @@ bool EnemyBase::Initialize()
 	_soundDetectionActive = false;
 	_soundDetectionTimer = 0.0f;
 
+	_effect = nullptr;
+
 	return true;
 }
 
@@ -185,6 +187,8 @@ void EnemyBase::StartReturningToInitialPosition()
 		// 音検知タイマーをリセット
 		_soundDetectionActive = false;
 		_soundDetectionTimer = 0.0f;
+
+		_effect->PlayEffect(_vPos); // 戻り始める位置でエフェクトを再生
 	}
 }
 
@@ -299,11 +303,13 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		if(_teleportTimer <= 0.0f)
 		{
 			// 3秒経過したので初期位置にテレポート
+			_effect->PlayEffect(_vPos); // テレポート前のエフェクト
 			_vPos = _initialPosition;
 			_vDir = _initialDirection;
 			_isReturningToInitialPos = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
+			_effect->PlayEffect(_vPos); // テレポート後のエフェクト
 		}
 		return;
 	}

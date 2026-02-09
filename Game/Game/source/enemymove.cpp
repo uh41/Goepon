@@ -195,6 +195,30 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		return;
 	}
 
+	// テレポート待機中の処理（床がないためテレポート待ち）
+	if(_waitingForTeleport)
+	{
+		// カウントダウン
+		_teleportTimer -= 1.0f / 60.0f; // 60FPS 前提
+		if(_teleportTimer <= 0.0f)
+		{
+			// タイマー経過でセーブポイントへ瞬間移動
+			_effect->PlayEffect(_vPos);
+			_vPos = _savePoint;
+			_vDir = _initialDirection; // 向きは初期向きに戻す（必要なら変更可）
+			_isReturningToInitialPos = false;
+			_waitingForTeleport = false;
+			_teleportTimer = 0.0f;
+			_effect->PlayEffect(_vPos);
+
+			// 巡回インデックス復帰
+			_patroll->SetMovePointIndex(_savePatrolIndex);
+			_patrolIndex = _savePatrolIndex;
+			_isPatroll = true;
+		}
+		return;
+	}
+
 	vec::Vec3 target = _savePoint;
 	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
 	toTarget.y = 0.0f; // 水平方向のみ
@@ -208,6 +232,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		_patroll->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
 		_isPatroll = true;
+		ResetTeleport();
 		return;
 	}
 
@@ -216,8 +241,21 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 	if(dist > 0.01f)
 	{
 		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed);
-		_vPos = vec3::VAdd(_vPos, dir);
-		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+		vec::Vec3 newPos = vec3::VAdd(_vPos, dir);
+
+		// 移動先に床が存在するか確認
+		if(CheckFloorExistence(newPos))
+		{
+			_vPos = newPos;
+			_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+		}
+		else
+		{
+			// 床がない → テレポート待機を開始
+			_waitingForTeleport = true;
+			_teleportTimer = TELEPORT_WAIT_TIME;
+			// 状態は待機にしてアニメ等を止める（Process 内で反映される）
+		}
 	}
 
 }
@@ -241,6 +279,9 @@ void EnemyMove::StartReturningToInitialPosition()
 
 	_isPatroll = false;
 	_isReturningToInitialPos = true;
+
+	// 念のためテレポート状態をリセットしておく
+	ResetTeleport();
 }
 
 // 計算処理
