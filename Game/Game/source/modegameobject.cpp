@@ -577,7 +577,8 @@ bool ModeGame::CheckAllDetections()
 	// 人状態かどうかを判定
 	bool isHumanForm = (!_bShowTanuki && !_showMonoPlayer);
 
-	bool anyDetected = false;
+	bool anyDetected = false;	// いずれかの敵が検知したかどうか
+	bool reEffect;				// エフェクト再設定フラグ
 
 	auto processContainer = [&](auto& container) -> bool
 		{
@@ -676,11 +677,15 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
 							_playerTanuki->PlayAnimation("goepon_idle", true);
 							_playerTanuki->Process();
+							reEffect = true;
 
 							// 変身エフェクト等を再設定
-							if (_hensinEffect) _hensinEffect->PlayEffect(_playerTanuki->GetPos());
-							if (_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
-							if (_aseEffect) _aseEffect->SetPlayer(_playerTanuki.get());
+							if (reEffect)
+							{
+								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+								_walkEffect->SetPlayerPos(_playerTanuki.get());
+								_aseEffect->SetPlayer(_playerTanuki.get());
+							}
 						}
 					}
 				}
@@ -705,6 +710,7 @@ bool ModeGame::CheckAllDetections()
 	if(!anyDetected && _nakiEffect)
 	{
 		_nakiEffect->ResetEffect();
+		reEffect = false;
 	}
 
 	_bTransCancel = anyDetected;
