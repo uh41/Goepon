@@ -100,13 +100,18 @@ bool Treasure::Render()
 
 MATRIX Treasure::MakeModelMatrix() const
 {
+	const float rotXRad = 12.0f;
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
+	const float tiltX = DX_PI_F * (rotXRad) / 180.0f; // 10度前傾
+
 	MATRIX mRotY = MGetRotY(vorty);
+	MATRIX mRotX = MGetRotX(tiltX);
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f));
 	MATRIX m = MGetIdent();
 	m = MMult(m, mScale);
 	m = MMult(m, mRotY);
+	m = MMult(m, mRotX);
 	m = MMult(m, mTrans);
 	return m;
 }
