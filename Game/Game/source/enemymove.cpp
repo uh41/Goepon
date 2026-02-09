@@ -203,21 +203,28 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		{
 			// タイマー切れで目標地点へテレポート
 			_vPos = _savePoint;
+
 			// 向きは目標方向に合わせる（可能なら）
 			vec::Vec3 toTargetDir = vec3::VSub(_savePoint, _vPos);
 			toTargetDir.y = 0.0f;
+
+			// 方向ベクトルが有効なら向きを設定
 			if (vec3::VSize(toTargetDir) > 0.001f)
 			{
 				_vDir = vec3::VNorm(toTargetDir);
 			}
+
 			// 帰還完了処理（巡回復帰）
 			_isReturningToInitialPos = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
+
+			// 巡回復帰
 			if (_patroll)
 			{
 				_patroll->SetMovePointIndex(_savePatrolIndex);
 			}
+
 			_patrolIndex = _savePatrolIndex;
 			_isPatroll = true;
 		}
@@ -231,6 +238,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 	float distSq = toTarget.LengthSquare();
 	float threshold = 20.0f; // 到着判定の閾値
 
+	// 到着判定
 	if(distSq < (threshold * threshold))
 	{
 		_isReturningToInitialPos = false;
@@ -240,7 +248,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		return;
 	}
 
-	// 帰還移動（床確認を行う）
+	// 帰還移動
 	float dist = std::sqrt(distSq);
 	if (dist > 0.01f)
 	{
@@ -262,7 +270,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		}
 		else
 		{
-			// 床がない場合はテレポート待機開始（初回のみタイマー設定）
+			// 床がない場合はテレポート待機開始
 			if (!_waitingForTeleport)
 			{
 				_waitingForTeleport = true;

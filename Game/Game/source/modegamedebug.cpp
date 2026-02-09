@@ -307,7 +307,7 @@ bool ModeGame::DebugRender()
 		CollisionManager::GetInstance()->SetDebugDraw(false);
 	}
 
-	// YouDiedメッセージの描画（最前面に表示）
+	// デバッグ用：YouDiedメッセージの描画（最前面に表示）
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive() && enemy->IsShowingYouDiedMessage())

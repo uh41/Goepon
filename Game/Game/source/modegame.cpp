@@ -356,6 +356,8 @@ bool ModeGame::Process()
 			if(CharaToCharaCollision(playerBase, enemy.get()))
 			{
 				// 実際の押し出し（カプセル）
+				// 敵に接触したときに実際に行う処理はここで記入
+				// デバッグ用：メッセージ表示
 				if(!enemy->IsShowingYouDiedMessage())
 				{
 					enemy->TriggerYouDiedMessage();

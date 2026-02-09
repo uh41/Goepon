@@ -611,16 +611,46 @@ bool ModeGame::CheckAllDetections()
 					soundSensor->Process();
 				}
 
-				// プレイヤーを使用して索敵判定を行う（表示中のプレイヤーが対象）
-				//bool detected = sensor->CheckPlayerDetection(player);
-				
-				// 視覚検知判定は人状態では無効化
+				// 視覚検知判定
 				bool detected = false;
 
-				// 人状態でなければ通常の検出処理を行う
 				if (!isHumanForm)
 				{
+					// 非人状態：既存の通常判定をそのまま使用
 					detected = sensor->CheckPlayerDetection(player);
+				}
+				else
+				{
+					// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
+					// 敵から見てプレイヤーが索敵範囲内か
+					if (sensor->IsPlayerInDetectionRange(player->GetPos()))
+					{
+						// 敵がプレイヤーの「後方」にいるかチェック
+						vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
+						toEnemy.y = 0.0f;
+						if (vec3::VSize(toEnemy) > 0.0001f)
+						{
+							vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
+
+							vec::Vec3 playerForward = player->GetDir();
+							playerForward.y = 0.0f;
+							if (vec3::VSize(playerForward) > 0.0001f)
+							{
+								playerForward = vec3::VNorm(playerForward);
+
+								// 内積によって後方かどうかを判定
+								// playerForward と toEnemyNorm が一直線で逆向きなら内積 = -1
+								// threshold を 0 にすると、正面90度以外が後方扱いになる
+								const float backDotThreshold = 0.0f; //負の値が大きいほど範囲が狭くなる
+								float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
+								if (dot <= backDotThreshold)
+								{
+									// 実際の検知処理（副作用：検出情報の更新など）
+									detected = sensor->CheckPlayerDetection(player);
+								}
+							}
+						}
+					}
 				}
 
 				// 検出結果に応じた処理
