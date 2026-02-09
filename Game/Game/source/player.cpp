@@ -390,7 +390,7 @@ bool Player::Render()
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
-	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
+	MATRIX mScale = MGetScale(VGet(1.4f, 1.4f, 1.4f));
 
 	MATRIX m = MGetIdent();
 

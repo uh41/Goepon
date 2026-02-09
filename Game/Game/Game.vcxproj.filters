@@ -87,5 +87,267 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
+    <ClInclude Include="source\modeeffekseer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\cube.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ObjectServer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\applicationglobal.h">
+      <Filter>ヘッダー ファイル\非同期読み込み</Filter>
+    </ClInclude>
+    <ClInclude Include="source\applicationmain.h">
+      <Filter>ヘッダー ファイル\アプリケーションメイン</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegame.h">
+      <Filter>ヘッダー ファイル\モードゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="source\camera.h">
+      <Filter>ヘッダー ファイル\モードゲーム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charabase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\キャラベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemybase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemy.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵1</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemysensor.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\map.h">
+      <Filter>ヘッダー ファイル\モードゲーム\テストマップ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\objectbase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\オブジェクトベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playerbase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\player.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playertanuki.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\uibase.h">
+      <Filter>ヘッダー ファイル\モードゲーム\UIベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\uihp.h">
+      <Filter>ヘッダー ファイル\モードゲーム\UIベース\HPバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Light.h">
+      <Filter>ヘッダー ファイル\モードゲーム\ライト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modemenu.h">
+      <Filter>ヘッダー ファイル\メニュー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\menuitembase.h">
+      <Filter>ヘッダー ファイル\メニュー\デバックメニュー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeinit.h">
+      <Filter>ヘッダー ファイル\ロゴ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Treasure.h">
+      <Filter>ヘッダー ファイル\モードゲーム\お宝</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charashadow.h">
+      <Filter>ヘッダー ファイル\モードゲーム\影</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemymove.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\動く敵</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modetitle.h">
+      <Filter>ヘッダー ファイル\タイトル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modescenariobase.h">
+      <Filter>ヘッダー ファイル\シナリオベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeopscenario.h">
+      <Filter>ヘッダー ファイル\シナリオベース\オープニングシナリオ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeteamlogo.h">
+      <Filter>ヘッダー ファイル\チームロゴ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\movepointcontroll.h">
+      <Filter>ヘッダー ファイル\巡回ルート</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playermono.h">
+      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\effectbase.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\treasureeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemysoundsensor.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\hensineffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\walkeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\findeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\hatenaeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\aseeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\doyaeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\nakieffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\modeeffekseer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cube.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ObjectServer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\applicationglobal.cpp">
+      <Filter>ソース ファイル\非同期読み込み</Filter>
+    </ClCompile>
+    <ClCompile Include="source\applicationmain.cpp">
+      <Filter>ソース ファイル\アプリケーションメイン</Filter>
+    </ClCompile>
+    <ClCompile Include="source\camera.cpp">
+      <Filter>ソース ファイル\モードゲーム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegame.cpp">
+      <Filter>ソース ファイル\モードゲーム</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charabase.cpp">
+      <Filter>ソース ファイル\モードゲーム\キャラベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemybase.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemy.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵1</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemysensor.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegamecollision.cpp">
+      <Filter>ソース ファイル\モードゲーム\コリジョン</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegamedebug.cpp">
+      <Filter>ソース ファイル\モードゲーム\デバック</Filter>
+    </ClCompile>
+    <ClCompile Include="source\map.cpp">
+      <Filter>ソース ファイル\モードゲーム\テストマップ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegameobject.cpp">
+      <Filter>ソース ファイル\モードゲーム\クラス読み込み</Filter>
+    </ClCompile>
+    <ClCompile Include="source\objectbase.cpp">
+      <Filter>ソース ファイル\モードゲーム\オブジェクトベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\playerbase.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\player.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\playertanuki.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\uibase.cpp">
+      <Filter>ソース ファイル\モードゲーム\UIベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\uihp.cpp">
+      <Filter>ソース ファイル\モードゲーム\UIベース\HPバー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modemenu.cpp">
+      <Filter>ソース ファイル\メニュー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\menuitembase.cpp">
+      <Filter>ソース ファイル\メニュー\デバックメニュー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Light.cpp">
+      <Filter>ソース ファイル\モードゲーム\ライト</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeinit.cpp">
+      <Filter>ソース ファイル\ロゴ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Treasure.cpp">
+      <Filter>ソース ファイル\モードゲーム\お宝</Filter>
+    </ClCompile>
+    <ClCompile Include="source\charashadow.cpp">
+      <Filter>ソース ファイル\モードゲーム\影</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemymove.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\動く敵</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeopscenario.cpp">
+      <Filter>ソース ファイル\シナリオベース\オープニングシナリオ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modescenariobase.cpp">
+      <Filter>ソース ファイル\シナリオベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeteamlogo.cpp">
+      <Filter>ソース ファイル\チームロゴ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modetitle.cpp">
+      <Filter>ソース ファイル\タイトル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\movepointcontroll.cpp">
+      <Filter>ソース ファイル\モードゲーム\巡回ルート</Filter>
+    </ClCompile>
+    <ClCompile Include="source\playermono.cpp">
+      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\effectbase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\treasureeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemysoundsensor.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClCompile>
+    <ClCompile Include="source\hensineffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\walkeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\findeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\hatenaeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\aseeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\doyaeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\nakieffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource.py">
+      <Filter>Python</Filter>
+    </None>
   </ItemGroup>
 </Project>

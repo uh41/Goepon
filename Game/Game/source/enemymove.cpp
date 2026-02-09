@@ -195,6 +195,42 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		return;
 	}
 
+	// テレポート待機中の処理（タイマー減算とテレポート実行）
+	if (_waitingForTeleport)
+	{
+		_teleportTimer -= 1.0f / 60.0f; // 60FPS想定
+		if (_teleportTimer <= 0.0f)
+		{
+			// タイマー切れで目標地点へテレポート
+			_vPos = _savePoint;
+
+			// 向きは目標方向に合わせる（可能なら）
+			vec::Vec3 toTargetDir = vec3::VSub(_savePoint, _vPos);
+			toTargetDir.y = 0.0f;
+
+			// 方向ベクトルが有効なら向きを設定
+			if (vec3::VSize(toTargetDir) > 0.001f)
+			{
+				_vDir = vec3::VNorm(toTargetDir);
+			}
+
+			// 帰還完了処理（巡回復帰）
+			_isReturningToInitialPos = false;
+			_waitingForTeleport = false;
+			_teleportTimer = 0.0f;
+
+			// 巡回復帰
+			if (_patroll)
+			{
+				_patroll->SetMovePointIndex(_savePatrolIndex);
+			}
+
+			_patrolIndex = _savePatrolIndex;
+			_isPatroll = true;
+		}
+		return;
+	}
+
 	vec::Vec3 target = _savePoint;
 	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
 	toTarget.y = 0.0f; // 水平方向のみ
@@ -202,6 +238,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 	float distSq = toTarget.LengthSquare();
 	float threshold = 20.0f; // 到着判定の閾値
 
+	// 到着判定
 	if(distSq < (threshold * threshold))
 	{
 		_isReturningToInitialPos = false;
@@ -213,13 +250,34 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 
 	// 帰還移動
 	float dist = std::sqrt(distSq);
-	if(dist > 0.01f)
+	if (dist > 0.01f)
 	{
-		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed);
-		_vPos = vec3::VAdd(_vPos, dir);
-		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
-	}
+		vec::Vec3 moveDir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed);
+		vec::Vec3 testPos = vec3::VAdd(_vPos, moveDir);
 
+		// 床の存在を確認してから移動
+		if (CheckFloorExistence(testPos))
+		{
+			_vPos = testPos;
+			_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+
+			// 床が確認できたのでテレポート待機状態を解除
+			if (_waitingForTeleport)
+			{
+				_waitingForTeleport = false;
+				_teleportTimer = 0.0f;
+			}
+		}
+		else
+		{
+			// 床がない場合はテレポート待機開始
+			if (!_waitingForTeleport)
+			{
+				_waitingForTeleport = true;
+				_teleportTimer = TELEPORT_WAIT_TIME;
+			}
+		}
+	}
 }
 
 // 初期位置に戻る処理を開始
@@ -261,38 +319,6 @@ bool EnemyMove::Process()
 	{
 		_enemySensor->SetPos(_vPos);
 		_enemySensor->SetDir(_vDir);
-
-		//// 追跡処理
-		//UpdateChasing();
-
-		//// プレイヤーを検出している、または追跡中の場合のみWALKに設定
-		//if (_detectedPlayer || _enemySensor->IsChasing())
-		//{
-		//	_status = STATUS::WALK;
-
-		//	// プレイヤーを検出中は初期位置に戻るのを停止
-		//	_isReturningToInitialPos = false;
-
-		//	// テレポート関連をリセット
-		//	//ResetTeleport();
-		//}
-		//else if (_isReturningToInitialPos)
-		//{
-		//	// 初期位置に戻り中
-		//	_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
-		//	UpdateReturningToInitialPosition();
-		//}
-		//else
-		//{
-		//	// 追跡も初期位置への復帰もしていない場合
-		//	_status = STATUS::WAIT;
-
-		//	// 追跡が終了して初期位置にいない場合、初期位置に戻り始める
-		//	if (!_enemySensor->IsChasing() && !IsAtInitialPosition())
-		//	{
-		//		StartReturningToInitialPosition();
-		//	}
-		//}
 	}
 
 	// 優先順位: 追跡　> 帰還 > 巡回

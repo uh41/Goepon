@@ -1,24 +1,21 @@
 #pragma once
 #include "effectbase.h"
 
-class Treasure;
-
-class TreasureEffect : public EffectBase
+class NakiEffect : public EffectBase
 {
 	typedef EffectBase base;
 public:
-	TreasureEffect();
-	virtual ~TreasureEffect() = default;
-
+	NakiEffect();
+	~NakiEffect() = default;
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasure(Treasure* treasure) { _treasure = treasure; }
+	void PlayEffect(const vec::Vec3& pos);
+	void ResetEffect();
 
 protected:
-	Treasure* _treasure;
-
+	bool _isPlay;
 };
 

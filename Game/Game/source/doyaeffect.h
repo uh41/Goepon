@@ -1,24 +1,17 @@
 #pragma once
 #include "effectbase.h"
 
-class Treasure;
-
-class TreasureEffect : public EffectBase
+class DoyaEffect : public EffectBase
 {
 	typedef EffectBase base;
 public:
-	TreasureEffect();
-	virtual ~TreasureEffect() = default;
-
+	DoyaEffect();
+	~DoyaEffect() = default;
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasure(Treasure* treasure) { _treasure = treasure; }
-
-protected:
-	Treasure* _treasure;
-
+	void PlayEffect(const vec::Vec3& pos);
 };
 

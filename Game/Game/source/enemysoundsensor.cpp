@@ -133,6 +133,12 @@ bool EnemySoundSensor::CheckSoundWaveCollision(const SoundWave& wave) const
 	float dz = waveCenter.z - sensorCenter.z;
 	float centerDistance = sqrtf(dx * dx + dz * dz);
 
+	// 音波の中心がセンサー範囲内にある場合は即座に衝突とみなす
+	if (centerDistance <= _soundsensorarea.radius)
+	{
+		return true;
+	}
+
 	// 衝突判定
 	float radiusSum = wave.currentRadius + _soundsensorarea.radius;
 

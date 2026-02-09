@@ -60,6 +60,8 @@ public:
 	// スケール設定
 	bool SetScaleEffect(int handle, float scale);
 
+	bool SetEffectMatrix(int handle, const Effekseer::Matrix43& mat);
+
 	void Update();	// 更新
 	void Render();
 

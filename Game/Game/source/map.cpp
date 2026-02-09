@@ -157,7 +157,7 @@ bool Map::Initialize()
 		}
 
 
-		_ground_handle = LoadGraph(img::BG_stone);
+		_ground_handle = LoadGraph(img::BG_niwa);
 		// 以降の初期化（省略せず元の処理を入れてください）
 		_half_polygon_size = GROUND_POLYGON_SIZE * 0.5f;
 		_start_x = -_half_polygon_size * static_cast<float>(GROUND_X);

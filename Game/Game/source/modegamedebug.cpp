@@ -135,16 +135,17 @@ bool ModeGame::DebugProcess()
 			}
 	}
 
-	/*for(auto& t : _treasure)
+	// デバック用タイマー（転ばせる）
+	if(_showKnockdownMessage)
 	{
-		if(!t) continue;
-		int h = t->GetModelHandle();
-		int hf = t->GetHitCollisionFrame();
-		if(h >= 0 && hf >= 0)
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_knockdownMessageSec -= dt;
+		if(_knockdownMessageSec <= 0.0f)
 		{
-			MV1SetFrameVisible(h, hf, _d_view_collision ? TRUE : FALSE);
+			_showKnockdownMessage = false;
+			_knockdownMessageSec = 0.0f;
 		}
-	}*/
+	}
 
 	return true;
 }
@@ -309,24 +310,39 @@ bool ModeGame::DebugRender()
 		CollisionManager::GetInstance()->SetDebugDraw(false);
 	}
 
-		int y = 100;
-	//for(size_t i = 0; i < _enemy.size(); i++)
-	//{
-	//	auto& enemy = _enemy[i];
-	//	if(enemy && enemy->IsAlive())
-	//	{
-	//		DrawFormatString(10, y, GetColor(255, 255, 0),
-	//			"Enemy[%d] Patrol:%d Pos:(%.0f, %.0f, %.0f)",
-	//			i,
-	//			enemy->IsPatrolling(), // ★ getter 追加必要
-	//			enemy->GetPos().x,
-	//			enemy->GetPos().y,
-	//			enemy->GetPos().z);
-	//		y += 20;
-	//	}
-	//}
+	// デバッグ用：YouDiedメッセージの描画（最前面に表示）
+	for(auto& enemy : _enemyBase)
+	{
+		if(enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
+		{
+			enemy->RenderYouDiedMessage();
+		}
+	}
 
+	// 宝箱を開けているメッセージ表示
+	if(_isOpeningTreasure)
+	{
+		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
+		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
+		const char* msg = "お宝を開けています...(Aを押し続けてください)";
+		int color = GetColor(255, 0, 0); // 黄色
+		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
+		DrawString(900, 500, msg, color);
+	}
 
+	// 敵を転ばせたメッセージ表示
+	if(_showKnockdownMessage)
+	{
+		const char* msg = "敵を転ばせた";
+		DrawString(900, 500, msg, GetColor(255, 255, 255));
+	}
+
+	if(anyDetected)
+	{
+		const char* alertMsg = "敵に発見された！変身できない！";
+		// 座標は適宜調整（ここでは画面中央上部に仮配置）
+		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
+	}
 
 	return true;
 }

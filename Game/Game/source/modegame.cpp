@@ -109,28 +109,30 @@ bool ModeGame::Initialize()
 	{
 		map->SetCamera(_camera);
 	}
+	_bShowTanuki = true;
+	ObjectInitialize();	// オブジェクト初期化
+
+	LoadStageData();// ステージデータ読み込み
+
+	_map->SetCamera(_camera);
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasure.get());
-	//InitHpBlock();// ブロック初期化
+	_walkEffect->SetPlayerPos(_playerTanuki.get());
+	_findEffect->SetEnemy(_enemyBase);
+	_aseEffect->SetPlayer(_playerTanuki.get());
+	_hatenaEffect->Enemy(_enemyBase);
+	_aseEffect->SetEnemy(_enemyBase);
 
 	DebugInitialize();// デバック初期化
 	ShadowInitialize();// シャドウ生成
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
-	}
+	CameraInfoInitialize();// カメラ情報初期化
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
-
-	
-	// Effekseer 初期化
-	//EffekseerManager::GetInstance()->Initialize();
-	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
 
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	
@@ -176,10 +178,6 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Terminate();
-	}*/
 	
 	for(auto& charaShadow : _charaShadow)
 	{
@@ -220,90 +218,98 @@ bool ModeGame::Terminate()
 		_isChengeBgm = false;
 	}
 
-	//if(_henshineffectHandle != -1)
-	//{
-	//	auto em = EffekseerManager::GetInstance();
-	//	if(em)
-	//	{
-	//		em->DeleteEffect(_henshineffectHandle);
-	//		_henshineffectHandle = -1;
-	//	}
-	//}
-
-	//// Effekseer の終了（Initialize で起動していれば）
-	//if(_effekseerLaunched)
-	//{
-	//	auto em = EffekseerManager::GetInstance();
-	//	if(em)
-	//	{
-	//		em->Terminate();
-	//		_effekseerLaunched = false;
-	//	}
-	//}
-
-
 	return true;
 }
 
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maker_otocheck.json";
+	std::string jsonFile = "Route.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
-
 	nlohmann::json jsonData;
 	ifs >> jsonData;
-
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	at::vet<vec::Vec3> patrolPos;
+	// customId（文字列）ごとの巡回点リストを保持
+	std::unordered_map<std::string, at::vet<vec::Vec3>> patrolGroups;
+
+	// 敵の JSON を一時保存して後で巡回グループを割り当てる
+	std::vector<nlohmann::json> enemyObjects;
 
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
 
-		// ★★★ S_MarkerR を検出（完全版） ★★★
+		// ★ S_MarkerR を検出 — customId でグループ化
 		if(name == "S_MarkerR")
 		{
 			vec::Vec3 pos;
-			// JSON から座標を取得
 			object.at("translate").at("x").get_to(pos.x);
-			object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-			object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-			pos.z *= -1.0f; // ★ Z軸反転
+			object.at("translate").at("y").get_to(pos.z); // UE:y -> DXLib:z
+			object.at("translate").at("z").get_to(pos.y); // UE:z -> DXLib:y
+			pos.z *= -1.0f;
 
-			patrolPos.push_back(pos);
-
+			std::string gid = "";
+			if(object.contains("customId"))
+			{
+				object.at("customId").get_to(gid);
+			}
+			patrolGroups[gid].push_back(pos);
 			continue;
 		}
 
-		//if(name == "S_MarkerRX")
-		//{
-		//	vec::Vec3 pos;
-		//	// JSON から座標を取得
-		//	object.at("translate").at("x").get_to(pos.x);
-		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-		//	pos.z *= -1.0f; // ★ Z軸反転
-
-		//	patrolPos.push_back(pos);
-
-		//	continue;
-		//}
 		if(name == "S_MarkerA")
 		{
 			_playerTanuki->SetJsonDataUE(object);
 			continue;
 		}
 
+		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
+		if(name == "S_MarkerB" || name == "S_MarkerRX")
+		{
+			enemyObjects.push_back(object);
+			continue;
+		}
+	}
+
+	// 敵を生成して、customId にマッチする巡回点を割り当てる
+	for(auto& object : enemyObjects)
+	{
+		// センサー類の生成
+		auto sensor = std::make_shared<EnemySensor>();
+		sensor->Initialize();
+		sensor->SetMap(_map.get());
+
+		auto soundSensor = std::make_shared<EnemySoundSensor>();
+		soundSensor->Initialize();
+		soundSensor->SetMap(_map.get());
+		soundSensor->SetSoundSensorArea(300.0f);
+
+		const std::string& name = object.at("objectName");
+
+		// customId を取得（無ければ空文字 "" を使う）
+		std::string gid = "";
+		if(object.contains("customId"))
+		{
+			object.at("customId").get_to(gid);
+		}
+
+		if(name == "S_MarkerRX")
+		{
+			auto enemy = std::make_shared<Enemy>();
+			enemy->Initialize();
+			enemy->SetJsonDataUE(object);
+			enemy->SetEnemySensor(sensor);
+			enemy->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemy->GetPos());
+			_enemyBase.emplace_back(enemy);
+			continue;
+		}
+
 		if(name == "S_MarkerB")
 		{
-			//auto enemy = std::make_shared<Enemy>();
-			//enemy->Initialize();
-			//enemy->SetJsonDataUE(object);
-
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
@@ -319,36 +325,26 @@ bool ModeGame::LoadStageData()
 			soundSensor->SetMap(_objectServer->GetMap());
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 			soundSensor->SetPos(enemyMove->GetPos());
+			enemyMove->SetEnemySensor(sensor);
 			enemyMove->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemyMove->GetPos());
 
-			//_enemy.emplace_back(enemy);
+			// グループに対応する巡回点があれば割り当てる
+			auto it = patrolGroups.find(gid);
+			if(it != patrolGroups.end() && !it->second.empty())
+			{
+				enemyMove->SetPatrolPoint(it->second);
+				enemyMove->CaptureInitialTransform();
+			}
+
 			_enemyBase.emplace_back(enemyMove);
 		}
 	}
 
-	// ★★★ 全敵に巡回ポイントを設定 ★★★
-	if(!patrolPos.empty())
-	{
-		for(auto& enemyBase : _enemyBase)
-		{
-			if(!enemyBase)
-			{
-				continue;
-			}
-			if(auto em = dynamic_cast<EnemyMove*>(enemyBase.get()))
-			{
-				em->SetPatrolPoint(patrolPos);
-				em->CaptureInitialTransform();
-			}
-		}
-	}
-
+	// 互換のため全敵に初期トランスフォームを確実にキャプチャ
 	for(auto& enemy : _enemyBase)
 	{
-		if(enemy)
-		{
-			enemy->CaptureInitialTransform();
-		}
+		if(enemy) enemy->CaptureInitialTransform();
 	}
 
 	return true;
@@ -397,13 +393,8 @@ bool ModeGame::Process()
 	DebugProcess();
 	DebugCameraControl();
 
-	if(_soundServer)
-	{
-		_soundServer->Update();
-	}
-
+	_soundServer->Update();
 	AnimationManager::GetInstance()->Update(1.0f);
-
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
 
@@ -471,6 +462,7 @@ bool ModeGame::Process()
 		playerBase = _player.get();
 	}
 
+
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)
@@ -484,12 +476,12 @@ bool ModeGame::Process()
 			if(CharaToCharaCollision(playerBase, enemy.get()))
 			{
 				// 実際の押し出し（カプセル）
+				// 敵に接触したときに実際に行う処理はここで記入
+				// デバッグ用：メッセージ表示
 				if(!enemy->IsShowingYouDiedMessage())
 				{
 					enemy->TriggerYouDiedMessage();
 				}
-
-				//CharaToCharaCollision(playerBase, enemy.get());
 			}
 		}
 	}
@@ -622,76 +614,14 @@ bool ModeGame::Render()
 		ui_base->Render();
 	}
 
+	ObjectRender();// オブジェクト描画処理
 	DebugRender();// デバック描画処理
-	// 索敵システムの描画
-	if (_enemySensor)
-	{
-		_enemySensor->Render();
-		_enemySensor->RenderDetectionUI();
-	}
-
 
 	if(_d_view_collision)
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
 
-	for(auto& enemy : _enemyBase)
-	{
-		if(enemy->IsAlive())
-		{
-			// 音センサーの描画
-			if(enemy->GetEnemySoundSensor())
-			{
-				enemy->GetEnemySoundSensor()->Render();
-			}
-		}
-	}
-	
-	// 各敵のセンサーを個別に描画
-	for (auto& enemy : _enemyBase)
-	{
-		if (enemy->IsAlive() && enemy->GetEnemySensor())
-		{
-			enemy->GetEnemySensor()->Render();
-			enemy->GetEnemySensor()->RenderDetectionUI();
-		}
-	}
-
-	// YouDiedメッセージの描画（最前面に表示）
-	for (auto& enemy : _enemyBase)
-	{
-		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
-		{
-			enemy->RenderYouDiedMessage();
-		}
-	}
-
-
-	// 宝箱を開けているメッセージ表示
-	if (_isOpeningTreasure)
-	{
-		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
-		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
-		const char* msg = "お宝を開けています...(Aを押し続けてください)";
-		int color = GetColor(255, 0, 0); // 黄色
-		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
-		DrawString(900, 500, msg, color);
-	}
-
-	// 敵を転ばせたメッセージ表示
-	if(_showKnockdownMessage)
-	{
-		const char* msg = "敵を転ばせた";
-		DrawString(900, 500, msg, GetColor(255, 255, 255));
-	}
-
-	if (anyDetected)
-	{
-		const char* alertMsg = "敵に発見された！変身できない！";
-		// 座標は適宜調整（ここでは画面中央上部に仮配置）
-		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
-	}
 	return true;
 }
 

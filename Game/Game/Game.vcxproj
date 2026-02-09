@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
     <ClInclude Include="source\applicationmain.h" />
+    <ClInclude Include="source\aseeffect.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
@@ -35,6 +37,9 @@
     <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
     <ClInclude Include="source\ModeGoalConfirm.h" />
+    <ClInclude Include="source\findeffect.h" />
+    <ClInclude Include="source\hatenaeffect.h" />
+    <ClInclude Include="source\hensineffect.h" />
     <ClInclude Include="source\modeinit.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
@@ -48,6 +53,7 @@
     <ClInclude Include="source\modetitle.h" />
     <ClInclude Include="source\enemymove.h" />
     <ClInclude Include="source\movepointcontroll.h" />
+    <ClInclude Include="source\nakieffect.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
@@ -58,14 +64,17 @@
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
+    <ClInclude Include="source\walkeffect.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\applicationglobal.cpp" />
     <ClCompile Include="source\applicationmain.cpp" />
+    <ClCompile Include="source\aseeffect.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
@@ -76,6 +85,9 @@
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
     <ClCompile Include="source\ModeGoalConfirm.cpp" />
+    <ClCompile Include="source\findeffect.cpp" />
+    <ClCompile Include="source\hatenaeffect.cpp" />
+    <ClCompile Include="source\hensineffect.cpp" />
     <ClCompile Include="source\modeinit.cpp" />
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
@@ -92,6 +104,7 @@
     <ClCompile Include="source\modetitle.cpp" />
     <ClCompile Include="source\enemymove.cpp" />
     <ClCompile Include="source\movepointcontroll.cpp" />
+    <ClCompile Include="source\nakieffect.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />
@@ -102,6 +115,7 @@
     <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
+    <ClCompile Include="source\walkeffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

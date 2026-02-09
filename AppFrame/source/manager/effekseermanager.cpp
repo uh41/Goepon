@@ -562,6 +562,25 @@ void EffekseerManager::Render2D()
 	DrawEffekseer2D();
 }
 
+bool EffekseerManager::SetEffectMatrix(int handle, const Effekseer::Matrix43& mat)
+{
+	if(!_initialize || handle == -1)
+	{
+		return false;
+	}
+
+	// DxLib(EffekseerForDXLib) 側が管理している Effekseer::Manager を取ってくる必要がある
+	// ※関数名は環境差があるため、ここはプロジェクト側APIに合わせて調整してください
+	auto manager = Effekseer::Manager::Create(1000);
+	if(manager == nullptr)
+	{
+		return false;
+	}
+
+	manager->SetMatrix(handle, mat);
+	return true;
+}
+
 void EffekseerManager::Update()
 {
 	if(!_initialize)

@@ -334,6 +334,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 		treasure->SetOpen(true);
 		_isOpeningTreasure = false;      // 開き終わったので OFF
 
+		_doyaEffect->PlayEffect(treasure->GetPos());
+
 		return true;
 	}
 

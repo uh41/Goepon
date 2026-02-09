@@ -19,8 +19,8 @@ struct SoundWave
 	float currentRadius;	// 現在の半径
 	float maxRadius;		// 最大半径
 	float expandSpeed;		// 拡大速度
-	bool isActive;			// 音波が有効かどうか
 	float alpha;			// 描画用の透明度
+	bool isActive;			// 音波が有効かどうか
 	int soundLevel;			// 音の大きさレベル
 };
 
@@ -31,7 +31,6 @@ struct SoundDectionInfo
 	float timer;					// 検出表示タイマー
 	vec::Vec3 soundSourcePosition;  // 検出した音源の位置
 	int detectedSoundLevel;			// 検出した音の大きさレベル
-
 };
 
 class EnemySoundSensor : public EnemyBase
@@ -51,6 +50,7 @@ public:
 
 	// 音波の発生
 	void TriggerSoundWave(const vec::Vec3& origin, float maxRadius, float speed);
+
 protected:
 	SoundSensorArea _soundsensorarea;
 	SoundDectionInfo _sounddetectionInfo;
