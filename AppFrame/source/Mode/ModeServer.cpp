@@ -299,7 +299,8 @@ int ModeServer::RenderInit() {
 	return 0;
 }
 
-int ModeServer::Render() {
+int ModeServer::Render() 
+{
 	// レイヤーの下の方から処理
 	lstModeBase::iterator ite = _vMode.begin();
 	for (; ite != _vMode.end(); ++ite) {

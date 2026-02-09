@@ -195,6 +195,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		return;
 	}
 
+<<<<<<< HEAD
 	// テレポート待機中の処理（床がないためテレポート待ち）
 	if(_waitingForTeleport)
 	{
@@ -213,6 +214,38 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 
 			// 巡回インデックス復帰
 			_patroll->SetMovePointIndex(_savePatrolIndex);
+=======
+	// テレポート待機中の処理（タイマー減算とテレポート実行）
+	if (_waitingForTeleport)
+	{
+		_teleportTimer -= 1.0f / 60.0f; // 60FPS想定
+		if (_teleportTimer <= 0.0f)
+		{
+			// タイマー切れで目標地点へテレポート
+			_vPos = _savePoint;
+
+			// 向きは目標方向に合わせる（可能なら）
+			vec::Vec3 toTargetDir = vec3::VSub(_savePoint, _vPos);
+			toTargetDir.y = 0.0f;
+
+			// 方向ベクトルが有効なら向きを設定
+			if (vec3::VSize(toTargetDir) > 0.001f)
+			{
+				_vDir = vec3::VNorm(toTargetDir);
+			}
+
+			// 帰還完了処理（巡回復帰）
+			_isReturningToInitialPos = false;
+			_waitingForTeleport = false;
+			_teleportTimer = 0.0f;
+
+			// 巡回復帰
+			if (_patroll)
+			{
+				_patroll->SetMovePointIndex(_savePatrolIndex);
+			}
+
+>>>>>>> 303587fe5b593dd09f6f437757fa9425c500ae3c
 			_patrolIndex = _savePatrolIndex;
 			_isPatroll = true;
 		}
@@ -226,19 +259,22 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 	float distSq = toTarget.LengthSquare();
 	float threshold = 20.0f; // 到着判定の閾値
 
+	// 到着判定
 	if(distSq < (threshold * threshold))
 	{
 		_isReturningToInitialPos = false;
 		_patroll->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
 		_isPatroll = true;
+		ResetTeleport();
 		return;
 	}
 
 	// 帰還移動
 	float dist = std::sqrt(distSq);
-	if(dist > 0.01f)
+	if (dist > 0.01f)
 	{
+<<<<<<< HEAD
 		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed);
 		vec::Vec3 newPos = vec3::VAdd(_vPos, dir);
 
@@ -246,7 +282,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		if(CheckFloorExistence(newPos))
 		{
 			_vPos = newPos;
-		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+			_vDir = vec3::VNorm(toTarget); // 目標方向を向く
 		}
 		else
 		{
@@ -256,7 +292,34 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			// 状態は待機にしてアニメ等を止める（Process 内で反映される）
 		}
 	}
+=======
+		vec::Vec3 moveDir = vec3::VScale(vec3::VNorm(toTarget), _returnSpeed);
+		vec::Vec3 testPos = vec3::VAdd(_vPos, moveDir);
+>>>>>>> 303587fe5b593dd09f6f437757fa9425c500ae3c
 
+		// 床の存在を確認してから移動
+		if (CheckFloorExistence(testPos))
+		{
+			_vPos = testPos;
+			_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+
+			// 床が確認できたのでテレポート待機状態を解除
+			if (_waitingForTeleport)
+			{
+				_waitingForTeleport = false;
+				_teleportTimer = 0.0f;
+			}
+		}
+		else
+		{
+			// 床がない場合はテレポート待機開始
+			if (!_waitingForTeleport)
+			{
+				_waitingForTeleport = true;
+				_teleportTimer = TELEPORT_WAIT_TIME;
+			}
+		}
+	}
 }
 
 // 初期位置に戻る処理を開始

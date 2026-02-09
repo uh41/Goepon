@@ -107,6 +107,7 @@ bool ModeGame::DebugProcess()
 	}
 
 	//
+	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 
 	// デバッグ機能
 	if(trg & PAD_INPUT_7)
@@ -203,6 +204,8 @@ bool ModeGame::DebugRender()
 		int y = sy;
 		int modelHandle = -1;
 		int frameIndex = -1;
+		
+		MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 		if(_map && _map->GetHandleMap() > 0)
 		{
 			modelHandle = _map->GetHandleMap();
@@ -284,7 +287,7 @@ bool ModeGame::DebugRender()
 		}
 	}
 
-
+	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 	// シャドウマップの表示
 	if(_d_view_shadow_map)
 	{
@@ -307,7 +310,7 @@ bool ModeGame::DebugRender()
 		CollisionManager::GetInstance()->SetDebugDraw(false);
 	}
 
-	// YouDiedメッセージの描画（最前面に表示）
+	// デバッグ用：YouDiedメッセージの描画（最前面に表示）
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive() && enemy->IsShowingYouDiedMessage())

@@ -668,14 +668,14 @@ bool EnemyBase::Render()
 	return true;
 }
 
-// YouDiedメッセージを表示開始
+// デバッグ用：YouDiedメッセージを表示開始
 void EnemyBase::TriggerYouDiedMessage()
 {
 	_showYouDiedMessage = true;
 	_youDiedMessageTimer = YOU_DIED_DISPLAY_TIME;
 }
 
-// YouDiedメッセージの描画処理
+// デバッグ用：YouDiedメッセージの描画処理
 void EnemyBase::RenderYouDiedMessage()
 {
 	if(!_showYouDiedMessage) return;

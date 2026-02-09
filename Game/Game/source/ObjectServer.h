@@ -12,6 +12,8 @@
 #include "objectbase.h"
 #include"appframe.h"
 #include "map.h"
+#include "MapBase.h"
+
 class ObjectServer 
 {
 public:
@@ -47,6 +49,7 @@ public:
 	//_objects _add _delete のコンテナが保持するアドレスをdelete、各コンテナのサイズを０にする
 	bool ClearObject();
 
+	MapBase* GetMap() const { return _map; }
 private:
 	// オブジェクト　
 	std::vector<class ObjectBase*> _objects;
@@ -66,7 +69,7 @@ private:
 	// ModeGameが持つ機能や情報を利用するために、自身をnewしたModeGameクラスのアドレスと保持
 	class ModeGame* _game;
 	// マップクラス
-	class Map* _map;
+	class MapBase* _map;
 
 	std::string _sPath;
 	std::string _sJsonFile;

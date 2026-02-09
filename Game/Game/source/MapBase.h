@@ -1,20 +1,10 @@
-ï»¿/*********************************************************************/
-// * \file   map.h
-// * \brief  ãƒãƒƒãƒ—ã‚¯ãƒ©ã‚¹
-// *
-// * \author éˆ´æœ¨è£•ç¨€
-// * \date   2025/12/15
-// * \ä½œæ¥­å†…å®¹: æ–°è¦ä½œæˆ				éˆ´æœ¨è£•ç¨€ã€€2025/12/15
-//				Jsonãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã€€	éˆ´æœ¨è£•ç¨€ã€€2025/12/25
-/*********************************************************************/
-
 #pragma once
 #include "objectbase.h"
 #include "appframe.h"
 #include "camera.h"
 #include "Light.h"
 
-class Map : public ObjectBase
+class MapBase : public ObjectBase
 {
 	typedef ObjectBase base;
 public:
@@ -25,29 +15,28 @@ public:
 
 	void SetCamera(Camera* cam) override { _cam = cam; }
 
-	// ãƒ–ãƒ­ãƒƒã‚¯ãƒã‚¸ã‚·ãƒ§ãƒ³ãƒªã‚¹ãƒˆå–å¾—
 	const std::vector<mymath::BLOCKPOS>& GetBlockPosList() const { return _vBlockPos; }
 
-	//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
+	//ƒ‚ƒfƒ‹“Ç‚İ‚İ
 	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
 protected:
 	Camera* _cam;
-	// ãƒãƒƒãƒ—ç”¨
+	// ƒ}ƒbƒv—p
 
 
-	// ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ç”¨
+	// ƒVƒƒƒhƒEƒ}ƒbƒv—p
 
-	// åœ°é¢ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	// ’n–Ê‚ÌƒeƒNƒXƒ`ƒƒ
 	int _ground_handle;
 	std::vector<VERTEX3D> _ground_vertex;
 	std::vector<unsigned short> _ground_index;
 
-	// åœ°é¢å…¨ä½“ã®ä¸­å¿ƒã‚’åŸç‚¹ã«ã™ã‚‹
+	// ’n–Ê‘S‘Ì‚Ì’†S‚ğŒ´“_‚É‚·‚é
 	float _start_x;
 	float _start_z;
-	// é ‚ç‚¹ç”¨ã®å›ºå®šæƒ…å ±
+	// ’¸“_—p‚ÌŒÅ’èî•ñ
 	VECTOR _ground_normal;
-	//åœ°é¢ã®æ­£æ–¹å½¢ç”¨ã®ãƒ†ãƒ¼ãƒ–ãƒ«
+	//’n–Ê‚Ì³•ûŒ`—p‚Ìƒe[ƒuƒ‹
 	VECTOR _ground_pos_0;
 	VECTOR _ground_pos_1;
 	VECTOR _ground_pos_2;
@@ -61,7 +50,6 @@ protected:
 	std::string _sJsonObjectName;
 	std::ifstream _iFile;
 
-	// ãƒ©ã‚¤ãƒˆæƒ…å ±
+	// ƒ‰ƒCƒgî•ñ
 	Light _mainLight{ LightType::Directional };
 };
-

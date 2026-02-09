@@ -35,6 +35,7 @@ namespace mv1
   inline constexpr const char* FloatingIsland = "res/FloatingIsland/FloatingIsland.mv1";
   inline constexpr const char* Sky = "res/FloatingIsland/Sky.mv1";
   inline constexpr const char* Wood = "res/FloatingIsland/Wood.mv1";
+  inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* Ground = "res/Ground/Ground.mv1";
   inline constexpr const char* S_Barrel = "res/IslandJson/S_Barrel.mv1";
   inline constexpr const char* S_Cocotree = "res/IslandJson/S_Cocotree.mv1";
