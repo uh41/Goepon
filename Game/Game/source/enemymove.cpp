@@ -396,39 +396,6 @@ bool EnemyMove::Process()
 				_isMovingToSound = true;
 				_soundSourcePosition = detectionInfo.soundSourcePosition;
 
-				// ここで即座に音源方向を向かせる（巡回方向が残っているケース対策）
-				{
-					vec::Vec3 toSoundInit = vec3::VSub(_soundSourcePosition, _vPos);
-					toSoundInit.y = 0.0f;
-					if(vec3::VSize(toSoundInit) > 0.001f)
-					{
-						// 正規化した候補ベクトル（検知方向）
-						vec::Vec3 candidate = vec3::VNorm(toSoundInit);
-
-						// 現在向いている角度と候補／反転候補の角度差を比べて、
-						// 180度反転してしまう方を避ける（向きの飛びを抑える）
-						float curAng = atan2f(_vDir.x, _vDir.z);
-						float angCand = atan2f(candidate.x, candidate.z);
-						float angNeg = atan2f(-candidate.x, -candidate.z);
-
-						auto AngleDiffAbs = [](float a, float b) -> float
-							{
-								float d = a - b;
-								while(d > DX_PI_F)  d -= 2.0f * DX_PI_F;
-								while(d < -DX_PI_F) d += 2.0f * DX_PI_F;
-								return fabsf(d);
-							};
-
-						if(AngleDiffAbs(angCand, curAng) <= AngleDiffAbs(angNeg, curAng))
-						{
-							_vDir = candidate; // 検知方向向き
-						}
-						else
-						{
-							_vDir = vec3::VScale(candidate, -1.0f); // 反転方向を採用（安全側）
-						}
-					}
-				}
 				// 音検知タイマー開始
 				_soundDetectionActive = true;
 				_soundDetectionTimer = 0.0f;
