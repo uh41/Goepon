@@ -35,6 +35,8 @@
 #include "findeffect.h"
 #include "hatenaeffect.h"
 #include "aseeffect.h"
+#include "doyaeffect.h"
+#include "nakieffect.h"
 
 class ModeGame : public ModeBase
 {
@@ -157,6 +159,8 @@ protected:
 	at::spc<FindEffect> _findEffect;
 	at::spc<HatenaEffect> _hatenaEffect;
 	at::spc<AseEffect> _aseEffect;
+	at::spc<DoyaEffect> _doyaEffect;
+	at::spc<NakiEffect> _nakiEffect;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

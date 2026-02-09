@@ -54,6 +54,10 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_hatenaEffect);
 	_aseEffect = std::make_shared<AseEffect>();
 	_effectBase.emplace_back(_aseEffect);
+	_doyaEffect = std::make_shared<DoyaEffect>();
+	_effectBase.emplace_back(_doyaEffect);
+	_nakiEffect = std::make_shared<NakiEffect>();
+	_effectBase.emplace_back(_nakiEffect);
 
 	// キャラ
 	for(auto& chara : _chara)
@@ -625,6 +629,7 @@ bool ModeGame::CheckAllDetections()
 					anyDetected = true;
 					eb->OnPlayerDetected(player->GetPos());
 					_hatenaEffect->ResetEnemyEffect(eb);
+					_nakiEffect->PlayEffect(player->GetPos());
 				}
 				else
 				{
@@ -643,6 +648,11 @@ bool ModeGame::CheckAllDetections()
 		};
 
 	processContainer(_enemyBase);
+
+	if(!anyDetected && _nakiEffect)
+	{
+		_nakiEffect->ResetEffect();
+	}
 
 	_bTransCancel = anyDetected;
 

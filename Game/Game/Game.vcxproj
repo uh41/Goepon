@@ -26,6 +26,7 @@
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
@@ -47,6 +48,7 @@
     <ClInclude Include="source\modetitle.h" />
     <ClInclude Include="source\enemymove.h" />
     <ClInclude Include="source\movepointcontroll.h" />
+    <ClInclude Include="source\nakieffect.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
@@ -67,6 +69,7 @@
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
@@ -91,6 +94,7 @@
     <ClCompile Include="source\modetitle.cpp" />
     <ClCompile Include="source\enemymove.cpp" />
     <ClCompile Include="source\movepointcontroll.cpp" />
+    <ClCompile Include="source\nakieffect.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />
