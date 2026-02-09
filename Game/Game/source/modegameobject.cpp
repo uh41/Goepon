@@ -590,7 +590,8 @@ bool ModeGame::CheckAllDetections()
 	// 人状態かどうかを判定
 	bool isHumanForm = (!_bShowTanuki && !_showMonoPlayer);
 
-	bool anyDetected = false;
+	bool anyDetected = false;	// いずれかの敵が検知したかどうか
+	bool reEffect;				// エフェクト再設定フラグ
 
 	auto processContainer = [&](auto& container) -> bool
 		{
@@ -673,6 +674,33 @@ bool ModeGame::CheckAllDetections()
 					eb->OnPlayerDetected(player->GetPos());
 					_hatenaEffect->ResetEnemyEffect(eb);
 					_nakiEffect->PlayEffect(player->GetPos());
+
+					// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
+					if (isHumanForm)
+					{
+						// _playerTanuki が存在し、既にタヌキ表示でなければ切替
+						if (_playerTanuki && player != _playerTanuki.get())
+						{
+							_showMonoPlayer = false;
+							_bShowTanuki = true;
+
+							// 位置・向きを引き継ぐ
+							_playerTanuki->SetPos(player->GetPos());
+							_playerTanuki->SetDir(player->GetDir());
+							_playerTanuki->_status = CharaBase::STATUS::WAIT;
+							_playerTanuki->PlayAnimation("goepon_idle", true);
+							_playerTanuki->Process();
+							reEffect = true;
+
+							// 変身エフェクト等を再設定
+							if (reEffect)
+							{
+								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+								_walkEffect->SetPlayerPos(_playerTanuki.get());
+								_aseEffect->SetPlayer(_playerTanuki.get());
+							}
+						}
+					}
 				}
 				else
 				{
@@ -695,6 +723,7 @@ bool ModeGame::CheckAllDetections()
 	if(!anyDetected && _nakiEffect)
 	{
 		_nakiEffect->ResetEffect();
+		reEffect = false;
 	}
 
 	_bTransCancel = anyDetected;
