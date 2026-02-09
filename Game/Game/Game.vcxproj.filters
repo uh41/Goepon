@@ -42,6 +42,7 @@
     <ClCompile Include="source\uihp.cpp" />
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\Map1.cpp" />
+    <ClCompile Include="source\ModeGoalConfirm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -82,6 +83,7 @@
     <ClInclude Include="source\uihp.h" />
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\ModeGoalConfirm.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
