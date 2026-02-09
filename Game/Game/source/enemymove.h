@@ -52,5 +52,8 @@ protected:
 	// テレポート状態のリセット
 	void ResetTeleport();
 
+	// 音見地から保存した地点があるか
+	bool _hasSavePoint;
+
 };
 

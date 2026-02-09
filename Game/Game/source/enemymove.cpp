@@ -11,6 +11,7 @@
 #include "enemymove.h"
 #include "enemysensor.h"
 #include "enemysoundsensor.h"
+#include <cmath>
 
 EnemyMove::EnemyMove()
 {
@@ -81,6 +82,8 @@ bool EnemyMove::Initialize()
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 
+	_hasSavePoint = false;
+
 	return true;
 }
 
@@ -107,7 +110,7 @@ void EnemyMove::ProcessPatrol()
 	}
 
 	// 音源へ移動中は巡回処理で向きを上書きしない
-	if (_isMovingToSound)
+	if(_isMovingToSound)
 	{
 		return;
 	}
@@ -222,6 +225,8 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			_patroll->SetMovePointIndex(_savePatrolIndex);
 			_patrolIndex = _savePatrolIndex;
 			_isPatroll = true;
+
+			_hasSavePoint = false;
 		}
 		return;
 	}
@@ -239,6 +244,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		_patroll->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
 		_isPatroll = true;
+		_hasSavePoint = false;
 		return;
 	}
 
@@ -253,7 +259,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		if(CheckFloorExistence(newPos))
 		{
 			_vPos = newPos;
-		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
+			_vDir = vec3::VNorm(toTarget); // 目標方向を向く
 		}
 		else
 		{
@@ -274,13 +280,16 @@ void EnemyMove::StartReturningToInitialPosition()
 
 	// 戻る目標点を決定：
 	// 巡回ルートが有効なら現在の巡回ターゲットへ、さもなくば初期位置へ戻す
-	if(_patroll && _patroll->IsValid())
+	if(!_hasSavePoint)
 	{
-		_savePoint = _patroll->GetTargetPoint();
-	}
-	else
-	{
-		_savePoint = _initialPosition;
+		if(_patroll && _patroll->IsValid())
+		{
+			_savePoint = _patroll->GetTargetPoint();
+		}
+		else
+		{
+			_savePoint = _initialPosition;
+		}
 	}
 
 	_isPatroll = false;
@@ -311,13 +320,13 @@ bool EnemyMove::Process()
 	}
 
 	// 音検知タイマーの更新（音検知が有効な場合）
-	if (_soundDetectionActive)
+	if(_soundDetectionActive)
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
 		// 指定時間を越えたら初期位置への帰還を開始
-		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		if(_soundDetectionTimer >= SOUND_RETURN_TIME)
 		{
 			_soundDetectionActive = false;
 			_soundDetectionTimer = 0.0f;
@@ -329,24 +338,61 @@ bool EnemyMove::Process()
 	}
 
 	// 音源到達後の待機中はWAITステータス（プレイヤー検知で割り込み可）
-	if (_waitingAtSound)
+	if(_waitingAtSound)
 	{
-		_status = STATUS::WAIT;
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_soundWaitTimer -= dt;
+
+		if(_soundWaitTimer <= 0.0f)
+		{
+			_waitingAtSound = false;
+			_soundWaitTimer = 0.0f;
+
+			// 次に検知し続けないように（同じ検知情報で再度 Moving に入るのを防止）
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+
+			// 保存してある巡回ルート（ターゲット座標）へ一旦戻してから巡回再開
+			// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
+			if(_hasSavePoint)
+			{
+				_isReturningToInitialPos = true;
+				_isPatroll = false;
+				ResetTeleport();
+			}
+			else
+			{
+				// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
+				StartReturningToInitialPosition();
+			}
+		}
 	}
 
 	// EnemySoundSensorから音の検知情報を取得
-	if (_enemySoundSensor)
+	if(_enemySoundSensor)
 	{
+		// 音検知情報を取得
 		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
 		{
-			// プレイヤー検出や追跡中でなければ音源へ移動開始
-			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
 			{
-				// 巡回を止めて現在の巡回インデックスを保存し、音へ移動
+				// 巡回を止めて現在の巡回インデックスを保存
 				_savePatrolIndex = _patrolIndex;
 				_isPatroll = false;
 
+				// 巡回ターゲット座標を保存（復帰時に使う）
+				if(_patroll && _patroll->IsValid())
+				{
+					_savePoint = _patroll->GetTargetPoint();
+				}
+				else
+				{
+					_savePoint = _initialPosition;
+				}
+				_hasSavePoint = true;
+
+				// テレポートは行わず、プレイヤー（音源）座標へ向けて移動する
 				_isMovingToSound = true;
 				_soundSourcePosition = detectionInfo.soundSourcePosition;
 
@@ -354,9 +400,33 @@ bool EnemyMove::Process()
 				{
 					vec::Vec3 toSoundInit = vec3::VSub(_soundSourcePosition, _vPos);
 					toSoundInit.y = 0.0f;
-					if (vec3::VSize(toSoundInit) > 0.001f)
+					if(vec3::VSize(toSoundInit) > 0.001f)
 					{
-						_vDir = vec3::VNorm(toSoundInit);
+						// 正規化した候補ベクトル（検知方向）
+						vec::Vec3 candidate = vec3::VNorm(toSoundInit);
+
+						// 現在向いている角度と候補／反転候補の角度差を比べて、
+						// 180度反転してしまう方を避ける（向きの飛びを抑える）
+						float curAng = atan2f(_vDir.x, _vDir.z);
+						float angCand = atan2f(candidate.x, candidate.z);
+						float angNeg = atan2f(-candidate.x, -candidate.z);
+
+						auto AngleDiffAbs = [](float a, float b) -> float
+							{
+								float d = a - b;
+								while(d > DX_PI_F)  d -= 2.0f * DX_PI_F;
+								while(d < -DX_PI_F) d += 2.0f * DX_PI_F;
+								return fabsf(d);
+							};
+
+						if(AngleDiffAbs(angCand, curAng) <= AngleDiffAbs(angNeg, curAng))
+						{
+							_vDir = candidate; // 検知方向向き
+						}
+						else
+						{
+							_vDir = vec3::VScale(candidate, -1.0f); // 反転方向を採用（安全側）
+						}
 					}
 				}
 				// 音検知タイマー開始
@@ -366,18 +436,30 @@ bool EnemyMove::Process()
 				// 初期位置への帰還待機は中断
 				_waitingBeforeReturn = false;
 				_returnWaitTimer = 0.0f;
+
+				// 移動フラグを設定して UpdateMovingToSound が実際に移動を行えるようにする
+				_waitingAtSound = false;
 			}
 		}
 	}
 
-	// 音源への移動処理（プレイヤー検出より優先度は低い）
-	if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
+	if(_isMovingToSound || _waitingAtSound)
 	{
-		UpdateMovingToSound();
-	}
+		if(_waitingAtSound)
+		{
+			_status = STATUS::WAIT;
+		}
+		else
+		{
+			_status = STATUS::WALK;
+			UpdateMovingToSound();
+		}
 
-	// 優先順位: 追跡　> 帰還 > 巡回
-	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+		_isReturningToInitialPos = false;
+		_isPatroll = false;
+	}
+	else if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{
 		_status = STATUS::WALK;
 		UpdateChasing();
@@ -519,7 +601,7 @@ bool EnemyMove::Process()
 		DirChangeTimer = 15.0f;
 
 		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
-		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
+		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
 		{
 			// 回転先の方向を計算
 			float currentAngle = atan2f(_vDir.x, _vDir.z);
