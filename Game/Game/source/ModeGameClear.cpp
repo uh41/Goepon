@@ -21,7 +21,6 @@ bool ModeGameClear::Process()
 	base::Process();
 	// クリア画面が出ている間は「下のレイヤー(ゲーム本編)」を止める（描画は止めない）
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->PauseProcessUnderLayer();
 	// キー取得
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
@@ -37,6 +36,9 @@ bool ModeGameClear::Process()
 bool ModeGameClear::Render()
 {
 	base::Render();
+
+	// 下のレイヤーを描画停止しているため、前フレームが残らないようにクリア
+	ClearDrawScreen();
 
 	// 半透明の背景
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);

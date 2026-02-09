@@ -5,6 +5,8 @@ class ModeGameClear :public ModeBase
 {
 	typedef ModeBase base;
 public:
+	explicit ModeGameClear(ModeBase* ownerGame = nullptr) : _ownerGame(ownerGame) {} // コンストラクタ
+
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
 	virtual bool Process() override;
@@ -12,5 +14,6 @@ public:
 
 private:
 	int _fontSize;
+	ModeBase* _ownerGame;
 };
 

@@ -69,6 +69,8 @@ bool ModeGoalConfirm::Process()
 		ModeServer::GetInstance()->Del(this); // ©•ª‚ğíœ
 		return true;
 	}
+
+	return true;
 }
 
 bool ModeGoalConfirm::Render()

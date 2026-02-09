@@ -647,4 +647,6 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 		}
 		
 	}
+
+	return false;
 }
