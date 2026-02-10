@@ -52,15 +52,15 @@ bool EffekseerManager::DeleteEffect(int handle)
 
 	DeleteEffekseerEffect(handle);
 
-	for(auto it = _effect.begin(); it != _effect.end(); it++)
+	for(auto it = _effect.begin(); it != _effect.end(); )
 	{
 		if(it->second == handle)
 		{
-			it = _effect.erase(it);
+			it = _effect.erase(it); // erase‚Ì–ß‚è’l‚ğŸ‚Ìit‚Æ‚µ‚Äg‚¤
 		}
 		else
 		{
-			++it;
+			++it; // ‚±‚±‚Å1‰ñ‚¾‚¯i‚ß‚é
 		}
 	}
 

@@ -9,7 +9,7 @@
 /*********************************************************************/
 #pragma once
 #include "objectbase.h"
-class Goal :public ObjectBase
+class Goal : public ObjectBase
 {
 	typedef ObjectBase base;
 public:

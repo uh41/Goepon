@@ -117,6 +117,17 @@ void ObjectServer::DeleteObject(ObjectBase* obj)
 
 bool ObjectServer::ClearObject()
 {
+	for (auto&& obj : _objects)
+	{
+		// Mapもここで delete される可能性があるので、先に監視
+		if (obj == _map)
+		{
+			_map = nullptr;
+		}
+		delete obj;
+	}
+	_objects.clear();
+
 	for (auto&& obj : _objects) 
 	{
 		delete obj;

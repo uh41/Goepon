@@ -54,7 +54,13 @@ bool Treasure::Initialize()
 
 bool Treasure::Terminate()
 {
-	MV1DeleteModel(_handle);
+	_handle = -1;
+	_hitCollisionFrame = -1;
+	_openCollisionFrame = -1;
+	_isVisible = false;
+	_isOpen = false;
+	_attachIndex = -1;
+
 	return true;
 }
 
@@ -67,11 +73,6 @@ bool Treasure::Process()
 
 	if(!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
-		if(_attachIndex != -1)
-		{
-			MV1DetachAnim(_handle, _attachIndex);
-			_attachIndex = -1;
-		}
 		_objStatus = OBJSTATUS::OPEN;
 	}
 	return true;

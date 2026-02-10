@@ -37,7 +37,9 @@ bool Goal::Initialize()
 
 bool Goal::Terminate()
 {
-	MV1DeleteModel(_handle);
+	_handle = -1;
+	_hitCollisionFrame = -1;
+	_isVisible = false;
 	return true;
 }
 

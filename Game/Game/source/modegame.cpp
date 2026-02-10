@@ -26,8 +26,7 @@ bool ModeGame::Initialize()
 	_camera->Initialize();
 
 	_bShowTanuki = true;
-	ObjectInitialize();	// オブジェクト初期化
-
+	
 	// オブジェクトサーバー初期化
 	_objectServer = new ObjectServer(this);
 	_objectServer->LoadDate("stage");
@@ -51,8 +50,7 @@ bool ModeGame::Initialize()
 		object->Initialize();
 	}
 
-	LoadStageData();// ステージデータ読み込み
-
+	
 	/*for(auto& treasure : _treasure)
 	{
 		treasure->Initialize();
@@ -222,6 +220,7 @@ bool ModeGame::Terminate()
 	return true;
 }
 
+// ステージデータ読み込み
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
@@ -385,6 +384,14 @@ bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 bool ModeGame::Process()
 {
 	base::Process();
+
+	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
+	if (_requestResetStage)
+	{
+		_requestResetStage = false;
+		ResetStage();
+		return true;
+	}
 
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
@@ -637,7 +644,7 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 			_goalConfirmResult = ModeGoalConfirm::Result::None;
 
 			_isGameClear = true;
-			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");	
+			ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");	
 			return true;
 		}
 		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
@@ -649,4 +656,102 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 	}
 
 	return false;
+}
+
+bool ModeGame::ResetStage()
+{
+	// クリアフラグ等を戻す
+	_isGameClear = false;
+	_goalConfirmOpened = false;
+	_goalConfirmResult = ModeGoalConfirm::Result::None;
+
+	// オブジェクトサーバーは以下を全消去
+	if(_objectServer)
+	{
+		_objectServer->ClearObject();
+	}
+
+	// キャラ/オブジェクト/UI/エフェクトを廃棄
+	for(auto& chara       : _chara      ) { if(chara) chara->Terminate();             }
+	_chara.clear();
+	 
+	for(auto& object      : _object     ) { if(object) object->Terminate();           }
+	_object.clear();
+
+	for(auto& player_base : _playerBase ) { if(player_base) player_base->Terminate(); }
+	_playerBase.clear();
+
+	for(auto& ui_base     : _uiBase     ) { if(ui_base) ui_base->Terminate();         }
+	_uiBase.clear();
+
+	for (auto& shadow     : _charaShadow) { if(shadow) shadow->Terminate();           }
+	_charaShadow.clear();
+
+	for (auto& effectBase : _effectBase ) { if(effectBase) effectBase->Terminate();   }
+	_effectBase.clear();
+
+	_enemyBase.clear();
+	_enemy.clear();
+	_enemyMove.clear();
+
+	// サウンドも止める(もしbgm続行させる場合はこちらを修正)
+	if(_soundServer)
+	{
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+	}
+
+	// 再構築
+	_bShowTanuki    = true;
+	_showMonoPlayer = false;
+
+	// オブジェクトサーバーの再ロード　
+	if(_objectServer == nullptr)
+	{
+		_objectServer = new ObjectServer(this);
+	}
+	_objectServer->LoadDate("stage");
+	_objectServer->ProcessInit();
+
+	// カメラセット
+	if (auto* map = _objectServer->GetMap())
+	{
+		map->SetCamera(_camera);
+	}
+
+	ObjectInitialize();	// オブジェクト初期化
+
+	// 各種　initialize
+	for(auto& chara       : _chara     ) { if(chara) chara->Initialize();             }
+	for(auto& object      : _object    ) { if(object) object->Initialize();           }
+	for(auto& player_base : _playerBase) { if(player_base) player_base->Initialize(); }
+	for(auto& ui_base     : _uiBase    ) { if(ui_base) ui_base->Initialize();         }
+	for(auto& _effectBase : _effectBase) { if(_effectBase) _effectBase->Initialize(); }
+
+	LoadStageData(); // ステージデータ読み込み
+
+	// カメラをプレイヤーがいる位置に合わせる
+	if(_player      )       _player->SetCamera(_camera);
+	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
+	if(_playerMono  )   _playerMono->SetCamera(_camera);
+
+	// エフェクトに対象をセット
+	if (_treasureEffect && _treasure) _treasureEffect->SetTreasure(_treasure.get());
+	if (_findEffect)                 _findEffect->SetEnemy(_enemyBase);
+	if (_hatenaEffect)               _hatenaEffect->Enemy(_enemyBase);
+	if (_aseEffect)
+	{
+		_aseEffect->SetEnemy(_enemyBase);
+		_aseEffect->SetPlayer(_playerTanuki.get());
+	}
+	if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+
+	//// 影・カメラも戻す（戻った直後に表示が破綻しやすいので）
+	//ShadowInitialize();
+	//CameraInfoInitialize();
+
+	// 宝箱も閉じる
+	if(_treasure) { _treasure->SetOpen(false); }
+	return true;
 }

@@ -129,6 +129,12 @@ public:
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
 
+	// ステージを完全リセットして初期状態に戻す
+	bool ResetStage();
+
+	// ステージリセット要求フラグのセッター（Process内でこのフラグをチェックしてリセット処理を行う）
+	void RequestResetStage() { _requestResetStage = true; }
+
 protected:
 	Camera* _camera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
@@ -241,5 +247,9 @@ protected:
 	ModeGoalConfirm::Result _goalConfirmResult;
 	// ゴール確認処理
 	bool UpdateGoalConfirm(PlayerBase* player);
+
+private:
+	// class ModeGameのメンバに追加
+	bool _requestResetStage = false; // ステージリセット要求フラグ	
 };
 
