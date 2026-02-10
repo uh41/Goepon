@@ -19,6 +19,7 @@
 #include "enemybase.h"
 #include "enemy.h"
 #include "enemymove.h"
+#include "enemydog.h"
 #include "treasure.h"
 #include "map.h"
 #include "cube.h"
@@ -169,6 +170,7 @@ protected:
 	// 敵
 	at::vspc<Enemy> _enemy;
 	at::vspc<EnemyMove> _enemyMove;
+	at::vspc<EnemyDog> _enemyDog;
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
