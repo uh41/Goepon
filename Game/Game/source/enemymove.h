@@ -55,5 +55,9 @@ protected:
 	// 音見地から保存した地点があるか
 	bool _hasSavePoint;
 
+	bool _isPatrolWaiting;		// 到着後の待機中フラグ
+	float _patrolWaitTimer;		// 待機カウントダウン
+	float _patrolWaitDuration;	// 待機時間（秒）
+	vec::Vec3 _patrolWaitDir;	// 待機中に向く方向
 };
 

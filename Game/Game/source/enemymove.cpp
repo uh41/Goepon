@@ -84,6 +84,11 @@ bool EnemyMove::Initialize()
 
 	_hasSavePoint = false;
 
+	_isPatrolWaiting = false;
+	_patrolWaitTimer = 0.0f;
+	_patrolWaitDuration = 2.0f; // 到着時にその場で視線を変える時間（秒）
+	_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+
 	return true;
 }
 
@@ -101,18 +106,38 @@ void EnemyMove::SetPatrolPoint(const at::vet<vec::Vec3>& point)
 }
 
 // 巡回処理
-// 巡回処理
 void EnemyMove::ProcessPatrol()
 {
-	if(!_isPatroll || !_patroll->IsValid())
+	if (!_isPatroll || !_patroll->IsValid())
 	{
 		return;
 	}
 
 	// 音源へ移動中は巡回処理で向きを上書きしない
-	if(_isMovingToSound)
+	if (_isMovingToSound)
 	{
 		return;
+	}
+
+	// 待機中の更新（到着後その場で停止する処理）
+	if (_isPatrolWaiting)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS 前提
+		_patrolWaitTimer -= dt;
+		// 待機中は視線を変えない（_vDir を上書きしない）
+		if (_patrolWaitTimer <= 0.0f)
+		{
+			// 待機終了 → 次の巡回ポイントへ進める
+			_isPatrolWaiting = false;
+			_patroll->MoveToNextPoint();
+			_patrolIndex = _patroll->GetMovePointIndex();
+			// 続行のため目標を更新（このフレームで移動させる）
+		}
+		else
+		{
+			// 待機中は他の処理を行わない
+			return;
+		}
 	}
 
 	// 現在の目標を取得
@@ -129,25 +154,26 @@ void EnemyMove::ProcessPatrol()
 	// 到着判定は「距離が閾値以下」で到着とみなすべきなので <= に変更。
 	// また、MoveToNextPoint() は MovePointControll 側でインデックスを
 	// 進めるため、ここで別途 +1 するべきではない。
-	if(dist <= reachThreshold)
+	if (dist <= reachThreshold)
 	{
-		_patroll->MoveToNextPoint();
-		// MovePointControll 側のインデックスを反映する（重複インクリメントの防止）
-		_patrolIndex = _patroll->GetMovePointIndex();
-		target = _patroll->GetTargetPoint();
-		// 目標更新
-		toTarget = vec3::VSub(target, _vPos);
-		toTarget.y = 0.0f;
-		dist = vec3::VSize(toTarget);
+		// 到着したらすぐ次へ進まず、その場で停止（視線を変えない）して待機する
+		_patrolWaitDir = _vDir; // 保持しておくが、待機中は _vDir を変更しない
+
+		// 待機開始
+		_patrolWaitTimer = _patrolWaitDuration;
+		_isPatrolWaiting = true;
+
+		// その場で停止して待つため、移動処理はここで終了
+		return;
 	}
 
 	// 目標に向かって移動（オーバーシュート防止）
-	if(dist > 0.01f)
+	if (dist > 0.01f)
 	{
 		// 1フレームでの移動量（step）
 		float step = _patrolSpeed;
 		// 残距離より大きければクランプ
-		if(step > dist) step = dist;
+		if (step > dist) step = dist;
 
 		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), step);
 		_vPos = vec3::VAdd(_vPos, dir);
@@ -156,10 +182,14 @@ void EnemyMove::ProcessPatrol()
 		// 移動後の到着判定（念のため）
 		vec::Vec3 afterToTarget = vec3::VSub(target, _vPos);
 		afterToTarget.y = 0.0f;
-		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
+		if (afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
 		{
-			_patroll->MoveToNextPoint();
-			_patrolIndex = _patroll->GetMovePointIndex();
+			// 移動で到達した場合も、その場で停止（視線は変えない）して待機する
+			_patrolWaitDir = _vDir;
+
+			_patrolWaitTimer = _patrolWaitDuration;
+			_isPatrolWaiting = true;
+			// 待機に入るため移動後の追加処理は行わない
 		}
 	}
 }
@@ -413,7 +443,7 @@ bool EnemyMove::Process()
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
 	if(_isMovingToSound || _waitingAtSound)
 	{
-		if(_waitingAtSound)
+		if(_waitingAtSound|| _isPatrolWaiting)
 		{
 			_status = STATUS::WAIT;
 		}
