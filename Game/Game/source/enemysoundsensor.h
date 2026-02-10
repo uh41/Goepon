@@ -2,6 +2,7 @@
 #include "enemybase.h"
 #include "playerbase.h"
 #include "MapBase.h"
+
 // ‘O•ûéŒ¾
 class Map;
 
