@@ -18,6 +18,7 @@ public:
 	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
+
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensorを設定
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
@@ -50,6 +51,9 @@ protected:
 
 	// テレポート状態のリセット
 	void ResetTeleport();
+
+	// 音見地から保存した地点があるか
+	bool _hasSavePoint;
 
 };
 

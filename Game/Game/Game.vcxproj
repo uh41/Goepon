@@ -30,6 +30,7 @@
     <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
+    <ClInclude Include="source\enemydog.h" />
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\Goal.h" />
     <ClInclude Include="source\Map1.h" />
@@ -78,6 +79,7 @@
     <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
+    <ClCompile Include="source\enemydog.cpp" />
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\Goal.cpp" />
     <ClCompile Include="source\Map1.cpp" />
