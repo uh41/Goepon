@@ -358,6 +358,7 @@ bool ModeGame::LoadStageData()
 			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEnemySensor(sensor);
 			enemyDog->SetEnemySoundSensor(soundSensor);
+			enemyDog->SetEffect(_hensinEffect);
 
 			_enemyBase.emplace_back(enemyDog);
 		}

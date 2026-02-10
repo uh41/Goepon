@@ -64,16 +64,16 @@ bool EnemyDog::Process()
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
-		// 10秒経過したら初期位置への帰還を開始
-		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
-		{
-			_soundDetectionActive = false;
-			_soundDetectionTimer = 0.0f;
-			_isMovingToSound = false;
-			_waitingAtSound = false;
+		//// 10秒経過したら初期位置への帰還を開始
+		//if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		//{
+		//	_soundDetectionActive = false;
+		//	_soundDetectionTimer = 0.0f;
+		//	_isMovingToSound = false;
+		//	_waitingAtSound = false;
 
-			StartReturningToInitialPosition();
-		}
+		//	StartReturningToInitialPosition();
+		//}
 	}
 
 	// 音源到達後の待機処理
@@ -103,9 +103,9 @@ bool EnemyDog::Process()
 				_soundDetectionActive = true;
 				_soundDetectionTimer = 0.0f;
 
-				// 初期位置への帰還を中断
-				_waitingBeforeReturn = false;
-				_returnWaitTimer = 0.0f;
+				//// 初期位置への帰還を中断
+				//_waitingBeforeReturn = false;
+				//_returnWaitTimer = 0.0f;
 			}
 		}
 	}
@@ -121,6 +121,14 @@ bool EnemyDog::Process()
 	{
 		UpdateRotationToPlayer(); // 徐々に回転
 		// または即座に向きたい場合は LookAtPlayer(); を使用
+
+		// センサーの存在を確認してから音波を発生させる（音量設定を先に行う）
+		auto soundSensor = GetSoundSensor();
+		if (soundSensor)
+		{
+			soundSensor->SetSoundLevel(5); // 先にレベルをセット
+			soundSensor->TriggerSoundWave(GetPos(), 1000.0f, 10.0f); // そのレベルで波を生成
+		}
 	}
 
 	// ステータスが変わっていないか？
@@ -200,18 +208,6 @@ bool EnemyDog::Process()
 	if (_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
-	}
-
-	// YouDiedメッセージのタイマー更新
-	if (_showYouDiedMessage)
-	{
-		_youDiedMessageTimer -= 1.0f / 60.0f;
-
-		// タイマーが0以下になったらメッセージ非表示
-		if (_youDiedMessageTimer <= 0.0f)
-		{
-			_showYouDiedMessage = false;
-		}
 	}
 
 	// 定期的に方向を90度変える処理
