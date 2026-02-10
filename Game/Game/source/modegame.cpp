@@ -223,7 +223,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "Route.json";
+	std::string jsonFile = "root.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -266,7 +266,7 @@ bool ModeGame::LoadStageData()
 		}
 
 		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
-		if(name == "S_MarkerB" || name == "S_MarkerRX")
+		if(name == "S_MarkerB" || name == "S_MarkerRX"||name=="Dog")
 		{
 			enemyObjects.push_back(object);
 			continue;
@@ -317,7 +317,6 @@ bool ModeGame::LoadStageData()
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_objectServer->GetMap());
-			//enemy->SetEnemySensor(sensor);
 			enemyMove->SetEnemySensor(sensor);
 
 			auto soundSensor = std::make_shared<EnemySoundSensor>();
@@ -339,6 +338,28 @@ bool ModeGame::LoadStageData()
 			}
 
 			_enemyBase.emplace_back(enemyMove);
+		}
+
+		if (name == "Dog") 
+		{
+			auto enemyDog = std::make_shared<EnemyDog>();
+			enemyDog->Initialize();
+			enemyDog->SetJsonDataUE(object);
+
+			auto sensor = std::make_shared<EnemySensor>();
+			sensor->Initialize();
+			sensor->SetMap(_objectServer->GetMap());
+			enemyDog->SetEnemySensor(sensor);
+
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+			soundSensor->Initialize();
+			soundSensor->SetMap(_objectServer->GetMap());
+			soundSensor->SetSoundSensorArea(900.0f);
+			soundSensor->SetPos(enemyDog->GetPos());
+			enemyDog->SetEnemySensor(sensor);
+			enemyDog->SetEnemySoundSensor(soundSensor);
+
+			_enemyBase.emplace_back(enemyDog);
 		}
 	}
 

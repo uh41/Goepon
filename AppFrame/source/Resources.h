@@ -30,6 +30,7 @@ namespace img
 namespace mv1
 {
   inline constexpr const char* Blood = "res/Blood/Blood.mv1";
+  inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
   inline constexpr const char* Dungeon = "res/Dungeon/Dungeon.mv1";
   inline constexpr const char* Bridge = "res/FloatingIsland/Bridge.mv1";
   inline constexpr const char* FloatingIsland = "res/FloatingIsland/FloatingIsland.mv1";
