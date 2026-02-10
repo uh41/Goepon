@@ -61,12 +61,6 @@
     <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\タヌキ">
       <UniqueIdentifier>{4607dab2-f919-4242-97b8-aa98a9d224c8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\UIベース">
-      <UniqueIdentifier>{7ffaff04-e163-44da-b255-0df85f4e849e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\UIベース\HPバー">
-      <UniqueIdentifier>{41a9c967-6078-4667-8937-1f28c338aa34}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\メニュー">
       <UniqueIdentifier>{2fb577ae-9966-4c1f-8f1e-71238a630cef}</UniqueIdentifier>
     </Filter>
@@ -199,6 +193,12 @@
     <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵2_犬">
       <UniqueIdentifier>{a7e3b9fb-2268-4dfa-9994-3f31292ad769}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース\UIベース">
+      <UniqueIdentifier>{7ffaff04-e163-44da-b255-0df85f4e849e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース\UIベース\HPバー">
+      <UniqueIdentifier>{41a9c967-6078-4667-8937-1f28c338aa34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -240,6 +240,9 @@
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\Map1.h" />
     <ClInclude Include="source\ModeGoalConfirm.h" />
+    <ClInclude Include="source\UIActionButton.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -429,10 +432,10 @@
       <Filter>ソース ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
     </ClCompile>
     <ClCompile Include="source\uibase.cpp">
-      <Filter>ソース ファイル\モードゲーム\UIベース</Filter>
+      <Filter>ソース ファイル\モードゲーム\オブジェクトベース\UIベース</Filter>
     </ClCompile>
     <ClCompile Include="source\uihp.cpp">
-      <Filter>ソース ファイル\モードゲーム\UIベース\HPバー</Filter>
+      <Filter>ソース ファイル\モードゲーム\オブジェクトベース\UIベース\HPバー</Filter>
     </ClCompile>
     <ClCompile Include="source\modemenu.cpp">
       <Filter>ソース ファイル\メニュー</Filter>
@@ -505,6 +508,24 @@
     </ClCompile>
     <ClCompile Include="source\enemydog.cpp">
       <Filter>ソース ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Goal.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Map1.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MapBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGameClear.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGoalConfirm.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\UIActionButton.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
