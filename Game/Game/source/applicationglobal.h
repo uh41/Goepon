@@ -8,11 +8,6 @@
 /*********************************************************************/
 
 #include "appframe.h"
-#include "Player.h"
-#include "Playertanuki.h"
-#include "Enemy.h"
-#include "map.h"
-
 
 class ApplicationGlobal
 {
@@ -22,7 +17,7 @@ public:
 
 	bool Init();    // 初期化
 
-	int _iCgCursor;       // カーソル画像ハンドル
+	int _iCgCursor; // カーソル画像ハンドル
 
 };
 

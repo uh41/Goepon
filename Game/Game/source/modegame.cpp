@@ -143,6 +143,7 @@ bool ModeGame::Initialize()
 
 	_goalConfirmOpened = false;
 	_goalConfirmResult = ModeGoalConfirm::Result::None;
+	_notGoalFlag = false;
 	//_bgmInitialize->Play();
 
 	return true;
@@ -627,6 +628,18 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
 	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 
+	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
+	if (!hitGoal)
+	{
+		_notGoalFlag = false;
+	}
+
+	// 抑制中は確認を開かない（No直後に乗りっぱなしでも再表示しない）
+	if (_notGoalFlag)
+	{
+		return false;
+	}
+
 	 // 踏んだ瞬間に確認モードを開く
 	if(hitGoal && !_goalConfirmOpened)
 	{
@@ -653,6 +666,9 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 		{
 			_goalConfirmOpened = false;
 			_goalConfirmResult = ModeGoalConfirm::Result::None;
+
+			// 抑制フラグを立てる（ゴールから離れたら解除される）
+			_notGoalFlag = true;
 		}
 		
 	}

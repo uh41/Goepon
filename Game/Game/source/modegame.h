@@ -245,6 +245,8 @@ protected:
 	// ゴール確認モード関連
 	bool _goalConfirmOpened;
 	ModeGoalConfirm::Result _goalConfirmResult;
+	// 「No を選んだ直後は、ゴールから離れるまで確認を出さない」ためのフラグ
+	bool _notGoalFlag;
 	// ゴール確認処理
 	bool UpdateGoalConfirm(PlayerBase* player);
 
