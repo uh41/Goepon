@@ -32,11 +32,9 @@
 #include "treasureeffect.h"
 #include "MapBase.h"
 #include "Map1.h"
-
-
 #include "ObjectServer.h"
 #include "Goal.h"
-
+#include "soundserver3D.h"
 #include "hensineffect.h"
 #include "walkeffect.h"
 #include "findeffect.h"
@@ -148,7 +146,7 @@ protected:
 	//at::vspc<Treasure> _treasure;
 
 	// マップ
-	//at::spc<Map> _map;
+	at::spc<Map> _map;
 
 	//ステージベース
 	at::vspc<MapBase> _mapBase;
@@ -181,6 +179,8 @@ protected:
 	at::spc<AseEffect> _aseEffect;
 	at::spc<DoyaEffect> _doyaEffect;
 	at::spc<NakiEffect> _nakiEffect;
+
+	at::spc<SoundServer3D> _sound3D;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -210,8 +210,8 @@ protected:
 	at::spc<EnemySensor> _enemySensor;
 
 	at::spc<soundserver::SoundServer> _soundServer;
-	at::spc<soundserver::SoundItemBase> _bgmInitialize;
-	at::spc<soundserver::SoundItemBase> _bgmChenge;
+	soundserver::SoundItemBase* _bgmInitialize;
+	soundserver::SoundItemBase* _bgmChenge;
 
 	bool _isChengeBgm;
 

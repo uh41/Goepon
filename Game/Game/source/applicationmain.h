@@ -24,7 +24,7 @@ public:
 	virtual int DispSizeW() { return SCREEN_WIDTH; }
 	virtual int DispSizeH() { return SCREEN_HEIGHT; }
 
-	virtual bool BeforeDXLib_Init();
+	virtual bool BeforeDXLib_Init()override;
 
 protected:
 };

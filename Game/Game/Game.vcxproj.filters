@@ -240,6 +240,9 @@
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\Map1.h" />
     <ClInclude Include="source\ModeGoalConfirm.h" />
+    <ClInclude Include="source\soundserver3D.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -505,6 +508,24 @@
     </ClCompile>
     <ClCompile Include="source\enemydog.cpp">
       <Filter>ソース ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Goal.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Map1.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MapBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGameClear.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGoalConfirm.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\soundserver3D.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
