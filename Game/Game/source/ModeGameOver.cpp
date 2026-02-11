@@ -1,46 +1,44 @@
-#include "ModeGameClear.h"
+#include "ModeGameOver.h"
 #include "ApplicationMain.h"
 #include "modegame.h"
-#include "modeteamlogo.h"
 
-bool ModeGameClear::Initialize()
+bool ModeGameOver::Initialize()
 {
-	if(!base::Initialize()) return false;
+	if (!base::Initialize()) return false;
 	return true;
 }
 
-bool ModeGameClear::Terminate()
+bool ModeGameOver::Terminate()
 {
 	base::Terminate();
 	return true;
 }
 
-bool ModeGameClear::Process()
+bool ModeGameOver::Process()
 {
 	base::Process();
-	// クリア画面が出ている間は「下のレイヤー(ゲーム本編)」を止める（描画は止めない）
+	// ゲームオーバー画面が出ている間は「下のレイヤー(ゲーム本編)」を止める（描画は止めない）
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	// キー取得
-	int trg = ApplicationMain::GetInstance()->GetTrg();
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 
 	//// パッド1のボタンが押されたらモード削除
-	if (trg & PAD_INPUT_1)
+	if(trg & PAD_INPUT_1)
 	{
-		// 下層の ModeGame にリセット要求
 		if(_ownerGame)
 		{
 			if(auto* game = dynamic_cast<ModeGame*>(_ownerGame))
 			{
 				game->RequestResetStage();
 			}
-			// クリア画面を閉じる
+			// ゲームオーバー画面を閉じる
 			ModeServer::GetInstance()->Del(this);
 		}
 	}
 	return true;
 }
 
-bool ModeGameClear::Render()
+bool ModeGameOver::Render()
 {
 	base::Render();
 
@@ -62,12 +60,12 @@ bool ModeGameClear::Render()
 		FALSE
 	);
 
-	// クリアメッセージ
+	// ゲームオーバーメッセージ
 	SetFontSize(TitleFontSize);
 	DrawString
 	(
 		TitlePosX, TitlePosY,
-		ClearMessage,
+		GameOverMessage,
 		GetColor(WhiteR, WhiteG, WhiteB)
 	);
 
@@ -81,4 +79,5 @@ bool ModeGameClear::Render()
 	);
 
 	return true;
+
 }

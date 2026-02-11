@@ -317,27 +317,31 @@ int ModeServer::Render()
 }
 
 // 描画を回した後の後始末
-int ModeServer::RenderFinish() {
+int ModeServer::RenderFinish()
+{
 	return 0;
 }
 
 
 
 // 今処理しているレイヤーより下のレイヤーは、処理を呼ばない
-int ModeServer::SkipProcessUnderLayer() {
+int ModeServer::SkipProcessUnderLayer()
+{
 	_skipProcessMode = _nowMode;
 	return 0;
 }
 
 // 今処理しているレイヤーより下のレイヤーは、描画を呼ばない
-int ModeServer::SkipRenderUnderLayer() {
+int ModeServer::SkipRenderUnderLayer() 
+{
 	_skipRenderMode = _nowMode;
 	return 0;
 }
 
 
 // 今処理しているレイヤーより下のレイヤーは、時間経過を止める
-int ModeServer::PauseProcessUnderLayer() {
+int ModeServer::PauseProcessUnderLayer()
+{
 	_pauseProcessMode = _nowMode;
 	return 0;
 }
