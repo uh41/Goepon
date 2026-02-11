@@ -14,11 +14,14 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
+	void SetPlayer(PlayerBase* player) { _playerBase = player; }
 private:
 	ModeGame* _ownerGame;
 	PlayerBase* _playerBase;
 
-	// Œ©‚½–Ú
-	int e_fontSize;
+	// Œ©‚½–Ú/ˆÊ’u
+	float _handOffsetY;
+	int _drawW = 64;
+	int _drawH = 64;
 };
 
