@@ -98,6 +98,9 @@ namespace mp3
 {
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* voice1 = "res/Voice/voice1.mp3";
+  inline constexpr const char* voice2 = "res/Voice/voice2.mp3";
+  inline constexpr const char* voice3 = "res/Voice/voice3.mp3";
 }
 
 namespace wav

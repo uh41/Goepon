@@ -1,10 +1,10 @@
-/*********************************************************************/
+ï»¿/*********************************************************************/
 // * \file   soundserver.cpp
-// * \brief  ƒTƒEƒ“ƒhƒT[ƒo[ƒNƒ‰ƒX
+// * \brief  ã‚µã‚¦ãƒ³ãƒ‰ã‚µãƒ¼ãƒãƒ¼
 // *
-// * \author —é–Ø—T‹H
+// * \author ï¿½ï¿½Ø—Tï¿½H
 // * \date   2025/12/23
-// * \ì‹Æ“à—e: V‹Kì¬ —é–Ø—T‹H@2025/12/23
+// * \ï¿½ï¿½Æ“ï¿½e: ï¿½Vï¿½Kï¿½ì¬ ï¿½ï¿½Ø—Tï¿½Hï¿½@2025/12/23
 /*********************************************************************/
 
 
@@ -12,55 +12,89 @@
 #include "sounditembase.h"
 #include "sounditemoneshot.h"
 
-// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+
 soundserver::SoundServer::SoundServer()
 {
 	_bIsUpdate = false;
 	_iCntOneShot = 0;
 }
 
-// ƒfƒXƒgƒ‰ƒNƒ^
 soundserver::SoundServer::~SoundServer()
 {
 	Clear();
 }
 
-// ƒTƒEƒ“ƒhƒT[ƒo[‚ÌƒNƒŠƒA
 void soundserver::SoundServer::Clear()
 {
+	// ä¿æŒã—ã¦ã„ã‚‹ãƒã‚¤ãƒ³ã‚¿ã‚’ delete ã—ã¦ã‹ã‚‰ã‚¯ãƒªã‚¢ã™ã‚‹
 	for(auto&& e : _v)
 	{
-		delete e.second;
+		if(e.second)
+		{
+			delete e.second;
+			e.second = nullptr;
+		}
 	}
 	_v.clear();
+
+	for(auto&& e : _vAdd)
+	{
+		if(e.second)
+		{
+			delete e.second;
+			e.second = nullptr;
+		}
+	}
+	_vAdd.clear();
+
+	for(auto&& e : _vDel)
+	{
+		if(e.second)
+		{
+			// _vDel ã«å…¥ã£ã¦ã„ã‚‹è¦ç´ ã¯ _v ã«ã‚‚å­˜åœ¨ã™ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ãŸã‚
+			// å®‰å…¨ã®ãŸã‚ deleteï¼ˆå­˜åœ¨ã—ãªã‘ã‚Œã° delete nullptr ã«ã¯ãªã‚‰ãªã„ï¼‰
+			delete e.second;
+			e.second = nullptr;
+		}
+	}
+	_vDel.clear();
 }
 
 void soundserver::SoundServer::Add(SoundItemOneShot* oneshot)
 {
 	std::string name = "ONESHOT_SOUND" + std::to_string(_iCntOneShot);
 	_iCntOneShot++;
-	Add(name, oneshot);
-	oneshot->Play();	// OneShot‚Í“o˜^‚µ‚½uŠÔÄ¶‚·‚é
+	Add(name, at::spc<SoundItemBase>(oneshot));
+	oneshot->Play();	// OneShot ã¯å³å†ç”Ÿ
 }
 
-void soundserver::SoundServer::Add(std::string name, SoundItemBase* sound)
+void soundserver::SoundServer::Add(std::string name, at::spc<SoundItemBase> sound)
 {
+	// NOTE:
+	// ä»¥å‰ã¯ &sound ã‚’æ ¼ç´ã—ã¦ã„ãŸãŸã‚ã‚¹ã‚¿ãƒƒã‚¯å‚ç…§ãŒæ®‹ã‚Šã€Get æ™‚ã«ä¸æ­£ã«ãªã£ã¦ã„ã¾ã—ãŸã€‚
+	// ãƒãƒƒãƒ—ã¯å‹•çš„ç¢ºä¿ã—ãŸ at::spc<SoundItemBase>* ã‚’ä¿æŒã™ã‚‹è¨­è¨ˆã«ãªã£ã¦ã„ã‚‹ãŸã‚ã€
+	// ã“ã“ã§ new ã—ã¦æ ¼ç´ã—ã¾ã™ï¼ˆDel ã§ã¯ delete ã™ã‚‹å®Ÿè£…ã¨æ•´åˆï¼‰ã€‚
+	at::spc<SoundItemBase>* stored = new at::spc<SoundItemBase>(sound);
+
 	if(_bIsUpdate)
 	{
-		_vAdd[name] = sound;
+		_vAdd[name] = stored;
 	}
 	else
 	{
-		_v[name] = sound;
+		_v[name] = stored;
 	}
-	sound->SetSoundServer(this);
+	if(stored->get())
+	{
+		stored->get()->SetSoundServer(this);
+	}
 }
 
 bool soundserver::SoundServer::Del(SoundItemBase* sound)
 {
 	for(auto&& e : _v)
 	{
-		if(e.second == sound)
+		if(e.second->get() == sound)
 		{
 			if(_bIsUpdate)
 			{
@@ -69,6 +103,7 @@ bool soundserver::SoundServer::Del(SoundItemBase* sound)
 			else
 			{
 				std::string name = e.first;
+				// _v[name] ã¯ at::spc<SoundItemBase>* ãªã®ã§ delete ã—ã¦ã‹ã‚‰ erase
 				delete _v[name];
 				_v.erase(name);
 			}
@@ -82,7 +117,7 @@ bool soundserver::SoundServer::Del(std::string name)
 {
 	if(_v.count(name) > 0)
 	{
-		return Del(_v[name]);
+		return Del(_v[name]->get());
 	}
 	return false;
 }
@@ -91,7 +126,7 @@ soundserver::SoundItemBase* soundserver::SoundServer::Get(std::string name)
 {
 	if(_v.count(name) > 0)
 	{
-		return _v[name];
+		return _v[name]->get();
 	}
 	return nullptr;
 }
@@ -100,39 +135,38 @@ void soundserver::SoundServer::StopType(SoundItemBase::TYPE type)
 {
 	for(auto&& e : _v)
 	{
-		if(e.second->GetType() == type)
+		if(e.second->get()->GetType() == type)
 		{
-			e.second->Stop();
+			e.second->get()->Stop();
 		}
 	}
 }
 
 void soundserver::SoundServer::Update()
 {
-	// ’Ç‰ÁƒŠƒXƒg‚Ì‚à‚Ì‚ğˆÀ‘S‚É’Ç‰Á‚·‚éiŒ³ƒR[ƒh‚Í _v ‚ğ‘–¸‚µ‚Ä Add() ‚µ‚Ä‚¨‚èA
-	// ‘–¸’†‚ÉƒRƒ“ƒeƒi‚ğ•ÏX‚µ‚ÄƒCƒeƒŒ[ƒ^”j‰ó‚ğˆø‚«‹N‚±‚µ‚Ä‚¢‚½j
 	for(auto&& e : _vAdd)
 	{
 		_v[e.first] = e.second;
-		if(_v[e.first])
+		if(_v[e.first] && _v[e.first]->get())
 		{
-			_v[e.first]->SetSoundServer(this);
+			_v[e.first]->get()->SetSoundServer(this);
 		}
 	}
 	_vAdd.clear();
 
-	// Update‚ğ‰ñ‚·
 	_bIsUpdate = true;
 	for(auto&& e : _v)
 	{
-		e.second->Update();
+		if(e.second && e.second->get())
+		{
+			e.second->get()->Update();
+		}
 	}
 	_bIsUpdate = false;
 
-	// íœƒŠƒXƒg‚Ì‚à‚Ì‚ğíœ
 	for(auto&& e : _vDel)
 	{
-		Del(e.second);
+		Del(e.second->get());
 	}
 	_vDel.clear();
 }

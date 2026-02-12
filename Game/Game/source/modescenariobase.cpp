@@ -73,7 +73,7 @@ void ModeScenarioBase::ChangePage(int pageNo)
 
 		if(!_page[_pageNo].voiceFile.empty())		// ボイスファイルがある場合
 		{
-			_voice = new soundserver::SoundItemVoice(_page[_pageNo].voiceFile);// ボイス作成
+			_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);// ボイス作成
 			_soundServer->Add("voice", _voice);// サウンドサーバーに追加
 			_voice->Play();// ボイス再生
 		}

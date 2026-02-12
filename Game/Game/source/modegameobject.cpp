@@ -66,6 +66,9 @@ bool ModeGame::ObjectInitialize()
 	_nakiEffect = std::make_shared<NakiEffect>();
 	_effectBase.emplace_back(_nakiEffect);
 
+	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
+	_sound3D->SetRadius(768.0f);
+
 	// キャラ
 	for(auto& chara : _chara)
 	{

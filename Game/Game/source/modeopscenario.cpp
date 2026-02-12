@@ -37,7 +37,7 @@ bool ModeOpScenario::Initialize()
 
 	if(!_page.empty())
 	{
-		_voice = new soundserver::SoundItemVoice(_page[_pageNo].voiceFile);
+		_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);
 		_soundServer->Add("voice",_voice);
 		_voice->Play();
 	}

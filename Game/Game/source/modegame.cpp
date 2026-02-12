@@ -13,6 +13,7 @@
 #include "applicationmain.h"
 #include "modeeffekseer.h"
 #include "ModeGameClear.h"
+#include "applicationglobal.h"
 
 
 // 初期化
@@ -26,11 +27,25 @@ bool ModeGame::Initialize()
 	_camera->Initialize();
 
 	_bShowTanuki = true;
-	
+	ObjectInitialize();	// オブジェクト初期化
+
 	// オブジェクトサーバー初期化
 	_objectServer = new ObjectServer(this);
 	_objectServer->LoadDate("stage");
 	_objectServer->ProcessInit();
+
+	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
+	// gGlobal._soundServer は ApplicationGlobal::Init() 内で生成されている想定
+	if(gGlobal._soundServer)
+	{
+		_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
+		// デフォルトの半径を設定（必要に応じて調整）
+		_sound3D->SetRadius(768.0f);
+	}
+	else
+	{
+		_sound3D.reset();
+	}
 
 	// キャラ
 	for(auto& chara : _chara)
@@ -50,7 +65,8 @@ bool ModeGame::Initialize()
 		object->Initialize();
 	}
 
-	
+	LoadStageData();// ステージデータ読み込み
+
 	/*for(auto& treasure : _treasure)
 	{
 		treasure->Initialize();
@@ -131,19 +147,12 @@ bool ModeGame::Initialize()
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
 
-	_soundServer = std::make_shared<soundserver::SoundServer>();
-	
-	_bgmInitialize = std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi);
-	_bgmChenge = std::make_shared<soundserver::SoundItemBGM>(wav::ks010);
-
-	_soundServer->Add("bgminitialize", _bgmInitialize.get());
-	_soundServer->Add("bgmChenge", _bgmChenge.get());
-
 	_isChengeBgm = false;
 
-	_goalConfirmOpened = false;
-	_goalConfirmResult = ModeGoalConfirm::Result::None;
-	_notGoalFlag = false;
+
+	// BGM再生
+	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
+	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	//_bgmInitialize->Play();
 
 	return true;
@@ -199,33 +208,18 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-	if(_soundServer)
-	{
-		// 全サウンド停止
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
-
-		// SoundServer::Clear() は内部で delete してくれるので安全に呼ぶ
-		_soundServer->Clear();
-
-		_soundServer = nullptr;
-
-		// 既に SoundServer::Clear() で delete 済なら二重 delete にならないよう null チェック
-		_bgmInitialize = nullptr;
-		_bgmChenge = nullptr;
-		_isChengeBgm = false;
+	if(_sound3D)	{
+		_sound3D->StopAll();
+		_sound3D.reset();
 	}
 
 	return true;
 }
 
-// ステージデータ読み込み
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "root.json";
+	std::string jsonFile = "Route.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -268,7 +262,7 @@ bool ModeGame::LoadStageData()
 		}
 
 		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
-		if(name == "S_MarkerB" || name == "S_MarkerRX"||name=="Dog")
+		if(name == "S_MarkerB" || name == "S_MarkerRX")
 		{
 			enemyObjects.push_back(object);
 			continue;
@@ -319,6 +313,7 @@ bool ModeGame::LoadStageData()
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(_objectServer->GetMap());
+			//enemy->SetEnemySensor(sensor);
 			enemyMove->SetEnemySensor(sensor);
 
 			auto soundSensor = std::make_shared<EnemySoundSensor>();
@@ -426,13 +421,38 @@ bool ModeGame::Process()
 	DebugProcess();
 	DebugCameraControl();
 
-	_soundServer->Update();
+	//_soundServer->Update();
 	AnimationManager::GetInstance()->Update(1.0f);
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
 
 	_objectServer->ProcessInit(); // 追加・削除予約の確定
 	_objectServer->Process();
+
+	// 3Dサウンドリスナー位置の設定（毎フレーム更新）
+	PlayerBase* activePlayer = nullptr;
+	if(_bShowTanuki)
+	{
+		activePlayer = _playerTanuki.get();
+	}
+	else if(_showMonoPlayer)
+	{
+		activePlayer = _playerMono.get();
+	}
+	else
+	{
+		activePlayer = _player.get();
+	}
+
+	if(activePlayer)
+	{
+		vec::Vec3 listenerPos = activePlayer->GetPos();
+		vec::Vec3 listenerFront = vec3::VAdd(listenerPos, activePlayer->GetDir());
+		Set3DSoundListenerPosAndFrontPos_UpVecY(
+			DxlibConverter::VecToDxLib(listenerPos),
+			DxlibConverter::VecToDxLib(listenerFront)
+		);
+	}
 
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();   // オブジェクト処理
@@ -535,11 +555,52 @@ bool ModeGame::Process()
 	}
 
 	IsPlayerAttack(_player.get(), _enemyBase);
-
 	// ゴールとの当たり判定
-	if(UpdateGoalConfirm(playerBase))
+	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
 	{
+		_isGameClear = true;
+		// 高レイヤーで追加してオーバーレイ表示
+		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
 		return true;
+	}
+	if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
+	{
+		_isGameClear = true;
+		// 高レイヤーで追加してオーバーレイ表示
+		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+		return true;
+	}
+
+	IsPlayerAttack(_player.get(), _enemyBase);
+
+	if(_sound3D)
+	{
+		// 全ての EnemyBase 系に対して、動く敵(EnemyMove) は "voice2"、
+		// それ以外の敵は "voice1" を使う
+		for(auto& eb : _enemyBase)
+		{
+			if(!eb) continue;
+
+			// 生存チェック
+			if(eb->IsAlive())
+			{
+				// EnemyMove 型かどうかで音を切り替える
+				if(dynamic_cast<EnemyMove*>(eb.get()) != nullptr)
+				{
+					_sound3D->PlayLoopSound3D(eb.get(), "voice2", eb->GetPos());
+				}
+				else
+				{
+					_sound3D->PlayLoopSound3D(eb.get(), "voice1", eb->GetPos());
+				}
+			}
+			else
+			{
+				_sound3D->StopSound3D(eb.get());
+			}
+		}
 	}
 
 	ChangeBGM();

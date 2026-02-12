@@ -23,4 +23,8 @@ public:
 	virtual bool AppWindowed() { return true; }
 	virtual int DispSizeW() { return SCREEN_WIDTH; }
 	virtual int DispSizeH() { return SCREEN_HEIGHT; }
+
+	virtual bool BeforeDXLib_Init()override;
+
+protected:
 };
