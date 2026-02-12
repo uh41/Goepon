@@ -15,10 +15,12 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasure(Treasure* treasure) { _treasure = treasure; }
+	void SetTreasure(at::vspc<Treasure> treasure) { _treasure = treasure; }
 
 protected:
-	Treasure* _treasure;
+	at::vspc<Treasure> _treasure;
 
+	// •ó” ‚²‚Æ‚ÌÄ¶ƒnƒ“ƒhƒ‹ŠÇ—
+	at::umtc<Treasure*, int> _playHandles;
 };
 

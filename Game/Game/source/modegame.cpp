@@ -132,7 +132,7 @@ bool ModeGame::Initialize()
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
-	_treasureEffect->SetTreasure(_treasure.get());
+	_treasureEffect->SetTreasure(_treasure);
 	_walkEffect->SetPlayerPos(_playerTanuki.get());
 	_findEffect->SetEnemy(_enemyBase);
 	_aseEffect->SetPlayer(_playerTanuki.get());
@@ -476,7 +476,38 @@ bool ModeGame::Process()
 		}
 	}
 	
+	// 宝箱との当たり判定処理
+	auto processTreasureCollison = [&](PlayerBase* player)
+	{
+		// 宝箱との当たり判定処理
+		for(auto& treasure : _treasure)
+		{
+				if(!treasure) continue;
+				CharaToTreasureHitCollision(player, treasure.get());
+				CharaToTreasureOpenCollision(player, treasure.get());
+		}
+	};
+
 	if(_bShowTanuki)
+	{
+		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
+		processTreasureCollison(_playerTanuki.get());
+		PlayerCameraInfo(_playerTanuki.get());
+	}
+	else if(_showMonoPlayer)
+	{
+		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
+		processTreasureCollison(_playerMono.get());
+		PlayerCameraInfo(_playerMono.get());
+	}
+	else
+	{
+		EscapeCollision(_player.get(), _objectServer->GetMap());
+		processTreasureCollison(_player.get());
+		PlayerCameraInfo(_player.get());
+	}
+
+	/*if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
@@ -496,7 +527,7 @@ bool ModeGame::Process()
 		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
-	}
+	}*/
 
 	PlayerBase* playerBase = nullptr;
 
@@ -563,23 +594,26 @@ bool ModeGame::Process()
 
 	IsPlayerAttack(_player.get(), _enemyBase);
 	// ゴールとの当たり判定
-	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
+	if(CanGoal())
 	{
-		_isGameClear = true;
-		// 高レイヤーで追加してオーバーレイ表示
-		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
-		return true;
+		if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
+		{
+			_isGameClear = true;
+			// 高レイヤーで追加してオーバーレイ表示
+			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+			// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+			return true;
+		}
+		if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
+		{
+			_isGameClear = true;
+			// 高レイヤーで追加してオーバーレイ表示
+			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+			// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+			return true;
+		}
 	}
-	if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
-	{
-		_isGameClear = true;
-		// 高レイヤーで追加してオーバーレイ表示
-		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
-		return true;
-	}
-
+	
 	IsPlayerAttack(_player.get(), _enemyBase);
 
 	if(_sound3D)
@@ -845,7 +879,7 @@ bool ModeGame::ResetStage()
 	if(_playerMono  )   _playerMono->SetCamera(_camera);
 
 	// エフェクトに対象をセット
-	if (_treasureEffect && _treasure) _treasureEffect->SetTreasure(_treasure.get());
+	if (_treasureEffect             )_treasureEffect->SetTreasure(_treasure);
 	if (_findEffect					) _findEffect->SetEnemy(_enemyBase);
 	if (_hatenaEffect				) _hatenaEffect->Enemy(_enemyBase);
 	if(_walkEffect					) _walkEffect->SetPlayerPos(_playerTanuki.get());
@@ -855,7 +889,10 @@ bool ModeGame::ResetStage()
 		_aseEffect->SetPlayer(_playerTanuki.get());
 	}
 
-	// 宝箱も閉じる
-	if(_treasure) { _treasure->SetOpen(false); }
+// 宝箱も閉じる（全宝箱）
+	for(auto& t : _treasure)
+	{
+		if(t) t->SetOpen(false);
+	}
 	return true;
 }

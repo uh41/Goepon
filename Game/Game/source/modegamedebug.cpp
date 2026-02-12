@@ -115,24 +115,19 @@ bool ModeGame::DebugProcess()
 		_d_view_collision = !_d_view_collision;
 		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
 	}
-	if(_d_view_collision)
+	// Map は null ガード（ここも落ちやすい）
+	if(_map)
 	{
-			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), TRUE);
-		
-			if(_treasure)
-			{
-				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetHitCollisionFrame(), TRUE);
-				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetOpenCollisionFrame(), TRUE);
-			}
+		MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), _d_view_collision ? TRUE : FALSE);
 	}
-	else
+
+	// Treasure が vector になった前提：全要素を処理
+	for(const auto& treasure : _treasure)
 	{
-			MV1SetFrameVisible(_map->GetHandleMap(), _map->GetFrameMapCollision(), FALSE);
-			if(_treasure)
-			{
-				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetHitCollisionFrame(), FALSE);
-				MV1SetFrameVisible(_treasure->GetModelHandle(), _treasure->GetOpenCollisionFrame(), FALSE);
-			}
+		if(!treasure) continue;
+
+		MV1SetFrameVisible(treasure->GetModelHandle(), treasure->GetHitCollisionFrame(), _d_view_collision ? TRUE : FALSE);
+		MV1SetFrameVisible(treasure->GetModelHandle(), treasure->GetOpenCollisionFrame(), _d_view_collision ? TRUE : FALSE);
 	}
 
 	// デバック用タイマー（転ばせる）

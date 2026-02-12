@@ -10,7 +10,6 @@ bool TreasureEffect::Initialize()
 {
 	base::Initialize();
 	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::EF_Tresure, 1.0f);
-	_treasure = nullptr;
 	_playHandle = -1;
 
 	return true;
@@ -21,11 +20,18 @@ bool TreasureEffect::Terminate()
 	base::Terminate();
 
 	auto em = EffekseerManager::GetInstance();
-	if(em && _playHandle != -1)
+	if(em)
 	{
-		em->StopEffect(_playHandle);
-		_playHandle = -1;
+		for(auto& kv : _playHandles)
+		{
+			const int playHandle = kv.second;
+			if(playHandle != -1)
+			{
+				em->StopEffect(playHandle);
+			}
+		}
 	}
+	_playHandles.clear();
 
 
 	return true;
@@ -36,37 +42,86 @@ bool TreasureEffect::Process()
 	base::Process();
 
 	auto em = EffekseerManager::GetInstance();
-	if(!em)
-	{
-		return true;
-	}
+	if(!em) { return true; }
 
-	// _treasure が設定されているかチェック
-	if(!_treasure)
+	// コンテナが空なら、残っている再生を止める
+	if(_treasure.empty())
 	{
-		return true;
-	}
-
-	if(_treasure->IsVisible())
-	{
-		// エフェクトのハンドルが有効なら位置更新、無ければ再生開始
-		if(_handle != -1 && _playHandle == -1)
+		for(auto& kv : _playHandles)
 		{
-			// 再生開始（初回）
-			_playHandle = em->PlayEffect3DPos(_handle, _treasure->GetPos());
+			const int playHandle = kv.second;
+			if(playHandle != -1)
+			{
+				em->StopEffect(playHandle);
+			}
+		}
+		_playHandles.clear();
+		return true;
+	}
+
+	// 現在の宝箱をループして、再生/追従/停止
+	for(const auto& t : _treasure)
+	{
+		Treasure* treasure = t.get();
+		if(!treasure) { continue; }
+
+		// mapにキーがなければ作られ、初期値は0になる可能性があるため-1に寄せる
+		int& playHandle = _playHandles[treasure];
+		if(playHandle == 0)
+		{
+			playHandle = -1;
+		}
+		if(treasure->IsVisible())
+		{
+			if(_handle != -1 && playHandle == -1)
+			{
+				playHandle = em->PlayEffect3DPos(_handle, treasure->GetPos());
+			}
+			else if(playHandle != -1)
+			{
+				em->SetPosEffect(playHandle, treasure->GetPos());
+			}
 		}
 		else
 		{
-			// 既に再生中のインスタンスなら位置を毎フレーム更新して追従させる
-			em->SetPosEffect(_playHandle, _treasure->GetPos());
+			if(playHandle != -1)
+			{
+				em->StopEffect(playHandle);
+				playHandle = -1;
+			}
 		}
 	}
-	else
+
+	// コンテナから消えた宝箱の再生ハンドルを停止して削除
+	for(auto it = _playHandles.begin(); it != _playHandles.end();)
 	{
-		if(_playHandle != -1)
+		Treasure* key = it->first;
+
+		bool stillExists = false;
+		for(const auto& t : _treasure)
 		{
-			em->StopEffect(_playHandle);
-			_playHandle = -1;
+			// コンテナに存在しているかチェック
+			if(t.get() == key)
+			{
+				stillExists = true; // 存在している
+				break;
+			}
+		}
+
+		// 存在していなければ停止して削除
+		if(!stillExists)
+		{
+			const int playHandle = it->second;
+			if(playHandle != -1)
+			{
+				em->StopEffect(playHandle);
+			}
+			it = _playHandles.erase(it);
+		}
+		// 存在していれば次へ
+		else
+		{
+			++it;
 		}
 	}
 

@@ -35,10 +35,11 @@ bool ModeGame::ObjectInitialize()
 	_playerMono = std::make_shared<PlayerMono>();
 	_playerBase.emplace_back(_playerMono);
 
-	// 宝箱初期化
-	_treasure = std::make_shared<Treasure>();
-	_object.emplace_back(_treasure);
 
+	auto treasure = std::make_shared<Treasure>();
+	_treasure.emplace_back(treasure);
+	_object.emplace_back(treasure);
+	
 	// ゴール初期化
 	_goal = std::make_shared<Goal>();
 	_object.emplace_back(_goal);

@@ -127,6 +127,11 @@ public:
 
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
+	// クリアに必要な宝箱数
+	int GetTreasureRequiredCount() const { return _treasureRequiredCount; }
+
+	// ゴール可能か？
+	bool CanGoal() const{ return _treasureTakenCount >= _treasureRequiredCount; }
 
 	// ステージを完全リセットして初期状態に戻す
 	bool ResetStage();
@@ -150,7 +155,7 @@ protected:
 	at::spc<PlayerTanuki> _playerTanuki;
 	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
-	at::spc<Treasure> _treasure;
+	at::vspc<Treasure> _treasure;
 	//ステージベース
 	at::vspc<MapBase> _mapBase;
 	// map1
@@ -226,6 +231,8 @@ protected:
 	float _treasureHoldSec = 0.0f;           // 押下時間カウント用
 	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
 	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
+	// クリアに必要な宝箱の数
+	int _treasureRequiredCount = 3;
 
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;
