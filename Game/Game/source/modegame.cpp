@@ -29,12 +29,6 @@ bool ModeGame::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	//// カメラ初期化
-	//_camera = NEW Camera();
-
-	//_camera->Initialize();
-
-	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
 	// オブジェクトサーバー初期化
@@ -55,50 +49,10 @@ bool ModeGame::Initialize()
 		_sound3D.reset();
 	}
 
-	// キャラ
-	for(auto& chara : _chara)
-	{
-		chara->Initialize();
-	}
-
-	// プレイヤー
-	for(auto& player_base : _playerBase)
-	{
-		player_base->Initialize();
-	}
-
-	// オブジェクトの初期化
-	for(auto& object : _object)
-	{
-		object->Initialize();
-	}
-
 	LoadStageData();// ステージデータ読み込み
-
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Initialize();
-	}*/
-	// UI
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Initialize();
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Initialize();
-	}
 
 	// ゴール初期化
 	_isGameClear = false;
-
-	//// シャドウ
-	//for(auto& charaShadow : _charaShadow)
-	//{
-	//	charaShadow->Initialize();
-	//}
 
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if(_camera != nullptr)
@@ -156,7 +110,6 @@ bool ModeGame::Initialize()
 	_hasSavedCameraState = false;
 
 	_isChengeBgm = false;
-
 
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
@@ -611,6 +564,69 @@ bool ModeGame::Process()
 		}
 	}
 
+	if(_changeTimeActive)
+	{
+		float dt = 1.0f / 60.0f; // 60FPS想定
+		_changeTimeLimit -= dt;
+		if(_changeTimeLimit <= 0.0f)
+		{
+			_changeTimeActive = false;
+			_changeTimeLimit = 0.0f;
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = true;
+
+			// 変身解除処理：モノ表示からタヌキへ即時切替（位置・向きを引き継ぎ、エフェクト等を再設定）
+			_bShowTanuki = true;
+			_showMonoPlayer = false;
+
+			// プレイヤー位置／向きを引き継ぐ
+			if(_playerTanuki && _playerMono)
+			{
+				_playerTanuki->SetPos(_playerMono->GetPos());
+				_playerTanuki->SetDir(_playerMono->GetDir());
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				_playerTanuki->PlayAnimation("goepon_idle", true);
+				_playerTanuki->Process(); // 変身直後の一フレーム更新
+			}
+
+			if(_player && _playerMono)
+			{
+				// 正しくは player の位置を Mono に引き継ぐ
+				_playerTanuki->SetPos(_player->GetPos());
+				_playerTanuki->SetDir(_player->GetDir());
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				_playerTanuki->PlayAnimation("goepon_idle", true);
+				_playerTanuki->Process();
+			}
+
+			// エフェクト再設定
+			if(_hensinEffect && _playerTanuki) _hensinEffect->PlayEffect(_playerTanuki->GetPos());
+			if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+			if(_aseEffect) _aseEffect->SetPlayer(_playerTanuki.get());
+
+			// 周囲の敵に対する音波／エフェクト
+			for(auto& enemy : _enemyBase)
+			{
+				if(enemy && enemy->IsAlive())
+				{
+					enemy->GetSoundSensor()->TriggerSoundWave(_playerTanuki->GetPos(), 500.0f, 10.0f);
+					enemy->GetSoundSensor()->SetSoundLevel(5);
+					_hatenaEffect->PlayOnce(enemy.get());
+				}
+			}
+		}
+		else if(_changeTimeLimit <= 10.0f)
+		{
+			// 正しくタイマーで点滅を制御する
+			_changeBlinkTimer += dt;
+			if(_changeBlinkTimer >= _changeBlinkInterval)
+			{
+				_changeBlinkTimer = 0.0f; // タイマーリセット
+				_changeBlinkVisible = !_changeBlinkVisible; // 点滅反転
+			}
+		}
+	}
+
 	ChangeBGM();
 	return true;
 }
@@ -657,54 +673,39 @@ bool ModeGame::Render()
 	// オブジェクトサーバーの描画
 	_objectServer->Render();
 
-	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto& player_base : _playerBase)
-	{
-		if(_bShowTanuki)
-		{
-			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else if(_showMonoPlayer)
-		{
-			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else
-		{
-			if(player_base.get() == _player.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-	}
-	// キャラクターの影描画
-	for (auto& shadow : _charaShadow)
-	{
-		if (shadow)
-		{
-			shadow->Render();
-		}
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
-	}
-
-	// UIを描画
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Render();
-	}
-
 	ObjectRender();// オブジェクト描画処理
 	DebugRender();// デバック描画処理
+
+	// --- ここに変身時間表示を追加 ---
+	if(_changeTimeActive)
+	{
+		// 点滅制御がある場合は点滅フラグが true のときだけ表示
+		if(_changeBlinkVisible)
+		{
+			// フォントサイズ / 描画位置
+			int fontSize = 28;
+			SetFontSize(fontSize);
+
+			// 5秒以下で注意色、それ以外は白
+			unsigned int color = (_changeTimeLimit <= 5.0f) ? GetColor(255, 64, 64) : GetColor(255, 255, 255);
+
+			// 表示位置（左上に余白を確保）
+			int x = 20;
+			int y = 20;
+
+			// 60秒以上なら MM:SS 表示、未満は秒（小数）表示
+			if(_changeTimeLimit >= 60.0f)
+			{
+				int minutes = static_cast<int>(_changeTimeLimit) / 60;
+				int seconds = static_cast<int>(_changeTimeLimit) % 60;
+				DrawFormatString(x, y, color, "変身残り: %d:%02d", minutes, seconds);
+			}
+			else
+			{
+				DrawFormatString(x, y, color, "変身残り: %.1f s", _changeTimeLimit);
+			}
+		}
+	}
 
 	if(_d_view_collision)
 	{
