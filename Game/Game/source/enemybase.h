@@ -4,7 +4,8 @@
 // *
 // * \author 鈴木裕稀
 // * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \作業内容: 新規作成                   鈴木裕稀　2025/12/15
+//              センサーが追跡中関数の追加 石森虹大　2026/02/12
 /*********************************************************************/
 
 #pragma once
@@ -73,6 +74,9 @@ public:
 	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
 
 	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
+
+	// センサーが追跡中かどうか
+	bool IsPlayerChasing() const; 
 
 protected:
 	// センサー関連

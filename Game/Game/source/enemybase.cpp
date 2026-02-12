@@ -725,3 +725,8 @@ void EnemyBase::RenderYouDiedMessage()
 	DrawFormatString(10, 10, GetColor(255, 255, 0),
 		"YOU DIED残り時間: %.1f", _youDiedMessageTimer);
 }
+
+bool EnemyBase::IsPlayerChasing() const
+{
+	return (_enemySensor && _enemySensor->IsChasing());
+}

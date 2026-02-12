@@ -54,7 +54,7 @@ public:
 	void ResetDetection();
 
 	// 
-	bool IsChasing() const { return _detectionInfo.isChasing; }
+	bool IsChasing() const { return _detectionInfo.isChasing; } 
 	vec::Vec3 GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
 

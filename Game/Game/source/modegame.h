@@ -153,14 +153,8 @@ protected:
 	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
 	at::spc<Treasure> _treasure;
-	//at::vspc<Treasure> _treasure;
-
-	// マップ
-	//at::spc<Map> _map;
-
 	//ステージベース
 	at::vspc<MapBase> _mapBase;
-
 	// map1
 	at::spc<Map1> _map1;
 	// キューブ

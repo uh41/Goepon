@@ -13,6 +13,7 @@
 #include "applicationmain.h"
 #include "modeeffekseer.h"
 #include "ModeGameClear.h"
+#include "ModeGameOver.h"
 
 
 // 初期化
@@ -455,8 +456,6 @@ bool ModeGame::Process()
 		}
 	}
 	
-	
-
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
@@ -508,6 +507,14 @@ bool ModeGame::Process()
 			// 軽量な早期判定（XZ円）
 			if(CharaToCharaCollision(playerBase, enemy.get()))
 			{
+				// プレイヤーが敵に見つかっていなかったら捕まらない
+				if(enemy->IsPlayerChasing())
+				{
+					//ここでゲームオーバー処理へ移行
+					ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
+
+					return true;
+				}
 				// 実際の押し出し（カプセル）
 				// 敵に接触したときに実際に行う処理はここで記入
 				// デバッグ用：メッセージ表示
@@ -778,18 +785,14 @@ bool ModeGame::ResetStage()
 
 	// エフェクトに対象をセット
 	if (_treasureEffect && _treasure) _treasureEffect->SetTreasure(_treasure.get());
-	if (_findEffect)                 _findEffect->SetEnemy(_enemyBase);
-	if (_hatenaEffect)               _hatenaEffect->Enemy(_enemyBase);
-	if (_aseEffect)
+	if (_findEffect					) _findEffect->SetEnemy(_enemyBase);
+	if (_hatenaEffect				) _hatenaEffect->Enemy(_enemyBase);
+	if(_walkEffect					) _walkEffect->SetPlayerPos(_playerTanuki.get());
+	if (_aseEffect					)
 	{
 		_aseEffect->SetEnemy(_enemyBase);
 		_aseEffect->SetPlayer(_playerTanuki.get());
 	}
-	if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
-
-	//// 影・カメラも戻す（戻った直後に表示が破綻しやすいので）
-	//ShadowInitialize();
-	//CameraInfoInitialize();
 
 	// 宝箱も閉じる
 	if(_treasure) { _treasure->SetOpen(false); }

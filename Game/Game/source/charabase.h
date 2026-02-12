@@ -75,6 +75,9 @@ public:
 		return _bIsAlive;
 	} // 生存確認用
 
+	// 生存フラグ
+	void SetAlive(bool alive) { _bIsAlive = alive; }
+
 	int PlayAnimation(std::string name, bool loop = false);
 	void StopAnimation();
 
