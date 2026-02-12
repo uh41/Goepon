@@ -16,8 +16,27 @@
 #include "modeteamlogo.h"
 #include "modeopscenario.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // 実体
 ApplicationMain g_application_main;
+
+// DXLib_Init()前の処理
+bool ApplicationMain::BeforeDXLib_Init()
+{
+	// 3Dsound:XAudioを使用する
+	SetEnableXAudioFlag(TRUE);
+
+	// 3DSound:1メートルに相当する値を設定
+	Set3DSoundOneMetre(1.0f);
+
+	return true;
+}
 
 // 初期化
 bool ApplicationMain::Initialize(HINSTANCE hInstance)
@@ -32,7 +51,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 	//ModeServer::GetInstance()->Add(new ModeTeamLogo(), 3, "teamlogo");
 	//ModeServer::GetInstance()->Add(new ModeTitle(), 2, "title");
 	//ModeServer::GetInstance()->Add(new ModeOpScenario(), 1, "opscenario");
-	ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
+	ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
 
 	return true;
 }

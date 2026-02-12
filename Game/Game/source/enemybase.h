@@ -11,6 +11,7 @@
 #include "charabase.h"
 #include "appframe.h"
 #include "movepointcontroll.h"
+#include "effectbase.h"
 
 // 前方宣言
 class EnemySensor;
@@ -55,10 +56,12 @@ public:
 	// テレポート状態のリセット
 	void ResetTeleport();
 
-	// YouDiedメッセージ表示関連
+	// デバッグ用：YouDiedメッセージ表示関連
 	void TriggerYouDiedMessage();
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
+
+	bool IsDetectPlayer() const { return _detectedPlayer; }
 
 	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
 	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
@@ -68,6 +71,8 @@ public:
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
 	std::shared_ptr<EnemySoundSensor> GetEnemySoundSensor() const { return _enemySoundSensor; }
 	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
+
+	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
 
 protected:
 	// センサー関連
@@ -94,7 +99,7 @@ protected:
 	float _returnWaitTimer;        // 帰還前の待機タイマー
 	static constexpr float RETURN_WAIT_TIME = 3.0f; // 待機時間
 
-	// YouDiedメッセージ表示関連
+	//	デバッグ用：YouDiedメッセージ表示関連
 	bool _showYouDiedMessage;
 	float _youDiedMessageTimer;
 	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間
@@ -122,4 +127,6 @@ protected:
 	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
 	float _soundDetectionTimer;		// 音検知からの経過時間
 	static constexpr float SOUND_RETURN_TIME = 10.0f; // 音検知から初期位置に戻るまでの時間
+
+	at::spc<EffectBase> _effect;
 };

@@ -25,6 +25,7 @@ public:
 
 	void SetCamera(Camera* cam) override { _cam = cam; }
 
+	// ブロックポジションリスト取得
 	const std::vector<mymath::BLOCKPOS>& GetBlockPosList() const { return _vBlockPos; }
 
 	//モデル読み込み

@@ -1,38 +1,20 @@
-﻿#include "Treasure.h"
-
-
-namespace
-{
-
-	inline void ApplyMatrixAndRefreshCollInfo(int handle, int hitFrame, int openFrame, const MATRIX& m)
-	{
-
-		if(handle < 0)
-		{
-			return;
-		}
-
-
-		MV1SetMatrix(handle, m);
-
-
-		if(hitFrame >= 0)
-		{
-			MV1RefreshCollInfo(handle, hitFrame);
-		}
-		if(openFrame >= 0)
-		{
-			MV1RefreshCollInfo(handle, openFrame);
-		}
-	}
-}
+﻿/*********************************************************************/
+// * \file   treasure.cpp
+// * \brief  お宝クラス
+// *
+// * \author 石森虹大
+// * \date   2026/1/25
+// * \作業内容: 新規作成 石森虹大 2026/1/25
+//			 
+/*********************************************************************/
+#include "Treasure.h"
 
 bool Treasure::Initialize()
 {
 	base::Initialize();
 
 
-	_handle = MV1LoadModel("res/Treasure/tuzura_02.mv1");
+	LoadModel("res/Treasure/tuzura_02.mv1");
 	if(_handle < 0) { DxLib::printfDx("Treasure model load failed\n"); return false; }
 
 
@@ -72,7 +54,13 @@ bool Treasure::Initialize()
 
 bool Treasure::Terminate()
 {
-	MV1DeleteModel(_handle);
+	_handle = -1;
+	_hitCollisionFrame = -1;
+	_openCollisionFrame = -1;
+	_isVisible = false;
+	_isOpen = false;
+	_attachIndex = -1;
+
 	return true;
 }
 
@@ -85,11 +73,6 @@ bool Treasure::Process()
 
 	if(!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
-		if(_attachIndex != -1)
-		{
-			MV1DetachAnim(_handle, _attachIndex);
-			_attachIndex = -1;
-		}
 		_objStatus = OBJSTATUS::OPEN;
 	}
 	return true;
@@ -118,13 +101,18 @@ bool Treasure::Render()
 
 MATRIX Treasure::MakeModelMatrix() const
 {
+	const float rotXRad = 12.0f;
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
+	const float tiltX = DX_PI_F * (rotXRad) / 180.0f; // 10度前傾
+
 	MATRIX mRotY = MGetRotY(vorty);
+	MATRIX mRotX = MGetRotX(tiltX);
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f));
 	MATRIX m = MGetIdent();
 	m = MMult(m, mScale);
 	m = MMult(m, mRotY);
+	m = MMult(m, mRotX);
 	m = MMult(m, mTrans);
 	return m;
 }

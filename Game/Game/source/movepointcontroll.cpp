@@ -48,7 +48,7 @@ void MovePointControll::MoveToNextPoint()
 	}
 
 	_index++;
-	if(_index >= static_cast<int>(_movePoints.size()))
+	if(_index >= StCas<int>(_movePoints.size()))
 	{
 		_index = 0; // ループさせる
 	}
@@ -62,7 +62,7 @@ void MovePointControll::SetMovePointIndex(int index)
 	}
 
 	// 範囲内に収める
-	if(index < 0 || index >= static_cast<int>(_movePoints.size()))
+	if(index < 0 || index >= StCas<int>(_movePoints.size()))
 	{
 		_index = 0;
 	}
@@ -83,7 +83,7 @@ int MovePointControll::FindNearPointIndex(const vec::Vec3& pos) const
 	float minDistSq = FLT_MAX;	// 十分大きな値で初期化
 
 	// 全ポイントをチェック
-	for(int i = 0; i < static_cast<int>(_movePoints.size()); i++)
+	for(int i = 0; i < StCas<int>(_movePoints.size()); i++)
 	{
 		vec::Vec3 diff = vec3::VSub(_movePoints[i], pos);// 差分ベクトル
 		diff.y = 0.0f; // Y方向は無視

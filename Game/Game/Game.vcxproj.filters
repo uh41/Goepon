@@ -193,8 +193,66 @@
     <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ">
       <UniqueIdentifier>{8160a9b0-941f-45bd-952c-ada34648ad14}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵2_犬">
+      <UniqueIdentifier>{12c9cefa-6d92-4544-992b-e1a241746e6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵2_犬">
+      <UniqueIdentifier>{a7e3b9fb-2268-4dfa-9994-3f31292ad769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース\UIベース">
+      <UniqueIdentifier>{7ffaff04-e163-44da-b255-0df85f4e849e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース\UIベース\HPバー">
+      <UniqueIdentifier>{41a9c967-6078-4667-8937-1f28c338aa34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\applicationglobal.h" />
+    <ClInclude Include="source\applicationmain.h" />
+    <ClInclude Include="source\camera.h" />
+    <ClInclude Include="source\charabase.h" />
+    <ClInclude Include="source\charashadow.h" />
+    <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\effectbase.h" />
+    <ClInclude Include="source\enemy.h" />
+    <ClInclude Include="source\enemybase.h" />
+    <ClInclude Include="source\enemysensor.h" />
+    <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\ModeGameClear.h" />
+    <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\modeinit.h" />
+    <ClInclude Include="source\Light.h" />
+    <ClInclude Include="source\map.h" />
+    <ClInclude Include="source\menuitembase.h" />
+    <ClInclude Include="source\modeeffekseer.h" />
+    <ClInclude Include="source\modegame.h" />
+    <ClInclude Include="source\modemenu.h" />
+    <ClInclude Include="source\modeopscenario.h" />
+    <ClInclude Include="source\modescenariobase.h" />
+    <ClInclude Include="source\modeteamlogo.h" />
+    <ClInclude Include="source\modetitle.h" />
+    <ClInclude Include="source\enemymove.h" />
+    <ClInclude Include="source\movepointcontroll.h" />
+    <ClInclude Include="source\objectbase.h" />
+    <ClInclude Include="source\ObjectServer.h" />
+    <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\playerbase.h" />
+    <ClInclude Include="source\playermono.h" />
+    <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\Treasure.h" />
+    <ClInclude Include="source\treasureeffect.h" />
+    <ClInclude Include="source\uibase.h" />
+    <ClInclude Include="source\uihp.h" />
+    <ClInclude Include="source\MapBase.h" />
+    <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\ModeGoalConfirm.h" />
+    <ClInclude Include="source\soundserver3D.h">
+    <ClInclude Include="source\UIActionButton.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource.py" />
     <ClInclude Include="source\modeeffekseer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -305,6 +363,21 @@
     </ClInclude>
     <ClInclude Include="source\findeffect.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\hatenaeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\aseeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\doyaeffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\nakieffect.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemydog.h">
+      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -426,6 +499,39 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\findeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\hatenaeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\aseeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\doyaeffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\nakieffect.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\enemydog.cpp">
+      <Filter>ソース ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Goal.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\Map1.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MapBase.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGameClear.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ModeGoalConfirm.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\soundserver3D.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>

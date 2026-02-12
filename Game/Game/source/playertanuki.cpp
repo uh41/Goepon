@@ -6,7 +6,7 @@
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::SK_goepon_multimotion);
+	LoadModel(mv1::SK_goepon_multimotion);
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;
@@ -74,29 +74,45 @@ bool PlayerTanuki::Process()
 		inputLocal.x = 1.0f;
 	}
 
+	// 左スティックの長さを計算
 	float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
 
+	// デッドゾーン未満なら十字キーを採用（合成ではなく置き換え）
+	if (length < _fAnalogDeadZone)
+	{
+		// 十字キーの入力を fLx/fLz と同じ軸系に寄せる
+		lStickX = inputLocal.x;
+		lStickZ = inputLocal.z;
+
+		length = sqrtf(lStickX * lStickX + lStickZ * lStickZ); 
+	}
+
+	// ローカル角度
 	float localRad = 0.0f;
 
-	if(length >= _fAnalogDeadZone)
+	if (length >= _fAnalogDeadZone)
 	{
+		float moveX = lStickZ; // 前後
+		float moveZ = lStickX; // 左右
 
-		float moveX = lStickZ;
-		float moveZ = lStickX;
-
+		// 入力ベクトル保存
 		_vInput = vec3::VGet(moveX, 0.0f, moveZ);
-
-		if(vec3::VSize(_vInput) > 0.0f)
+		// 正規化
+		if (vec3::VSize(_vInput) > 0.0f)
 		{
-			_vInput = vec3::VNorm(_vInput);
+			_vInput = vec3::VNorm(_vInput); 
 		}
 
+		// 角度は atan2(z, x) がXZ平面の標準
 		localRad = atan2f(moveZ, moveX);
 
+		// 速度：アナログは length(0..1想定) * _fMvSpeed にした方が自然
 		float speed = _fMvSpeed;
+		float moveLen = speed * length;
 
-		_v.x = cosf(localRad + camrad) * length;
-		_v.z = sinf(localRad + camrad) * length;
+		// ワールド方向の移動ベクトルに変換
+		_v.x = cosf(localRad + camrad) * moveLen;
+		_v.z = sinf(localRad + camrad) * moveLen;
 
 		_vDir = _v;
 		_status = STATUS::WALK;

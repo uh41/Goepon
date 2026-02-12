@@ -22,6 +22,6 @@ protected:
 	at::vec<Page> _page;
 	int _pageNo;
 	at::spc<soundserver::SoundServer> _soundServer;
-	soundserver::SoundItemVoice* _voice;
+	at::spc<soundserver::SoundItemVoice> _voice;
 };
 

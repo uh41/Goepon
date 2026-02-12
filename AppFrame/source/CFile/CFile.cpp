@@ -2,6 +2,13 @@
 #include "cfile.h"
 #include "../Application/utilmacro.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // 読み込み
 CFile::CFile(const std::string filename)
 {
@@ -25,7 +32,7 @@ CFile::CFile(const std::string filename)
 
 	// メモリを確保
 	// 文字列として利用できるように、+1byte余計に確保
-	_data = new char[_size + 1];
+	_data = NEW char[_size + 1];
 
 	// ファイルをロード
 	ifs.read(_data, _size);

@@ -24,13 +24,13 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
 	};
 
+	// マップの情報（obj が Map なら取得、なければ ModeGame::_map を使う）
+	MapBase* map = dynamic_cast<MapBase*>(obj);
+
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		vec::Vec3 oldvPos = chara->GetPos();
 		vec::Vec3 v = chara->GetInputVector();
-
-		// マップの情報（obj が Map なら取得、なければ ModeGame::_map を使う）
-		Map* map = dynamic_cast<Map*>(obj);
 
 		float rad = atan2((float)v.z, (float)v.x);
 		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
@@ -100,7 +100,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 			chara->SetPos(tmpPos);
 
 			// Y変化を移動ベクトルに反映（必要なら）
-			triedV.y += chara->GetPos().y - oldvPos.y;
+  			triedV.y += chara->GetPos().y - oldvPos.y;
 
 			break;
 		}
@@ -334,6 +334,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 		treasure->SetOpen(true);
 		_isOpeningTreasure = false;      // 開き終わったので OFF
 
+		_doyaEffect->PlayEffect(treasure->GetPos());
+
 		return true;
 	}
 
@@ -345,6 +347,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 {
 	if(!move || !stop) { return false; }
+
+	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 
 	// 移動前の位置を保存
 	vec::Vec3 oldpos = move->GetPos();
@@ -452,4 +456,38 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	}
 
 	return false;
+}
+
+bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
+{
+	
+	// 無効チェック
+	if(!player || !goal)
+	{
+		return false;
+	}
+	// 空中なら処理しない（設計に合わせて維持）
+	if(!player->GetLand())
+	{
+		return false;
+	}
+	// プレイヤーの座標
+	auto playerPos = player->GetPos();
+	auto playerColY = player->GetColSubY();
+	// ゴールの指定フレームで判定
+	const auto handleGoal = goal->GetModelHandle();
+	const auto frameGoal  = goal->GetHitCollisionFrame();
+
+	// プレイヤーと指定したコリジョンフレームで当たり判定
+	vec::Vec3 hitPos;
+	const bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision
+	(
+		playerPos,
+		handleGoal,
+		frameGoal,
+		playerColY,
+		hitPos
+	);
+
+	return hit;
 }

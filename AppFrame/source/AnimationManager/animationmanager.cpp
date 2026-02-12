@@ -47,7 +47,7 @@ int AnimationManager::Play(int handle, std::string& name, bool loop, float speed
 		return -1;
 	}
 
-	float total = static_cast<float>(MV1GetAttachAnimTotalTime(handle, attachIndex));
+	float total = StCas<float>(MV1GetAttachAnimTotalTime(handle, attachIndex));
 	if(total <= 0.0f)
 	{
 		return -1;

@@ -10,6 +10,13 @@
 #include "modegame.h"
 #include "menuitembase.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // デバックの初期化
 bool ModeGame::DebugInitialize()
 {
@@ -91,22 +98,23 @@ bool ModeGame::DebugProcess()
 	// ESCキーでメニューを開く
 	if(trg & PAD_INPUT_9)
 	{
-		ModeMenu* modemenu = new ModeMenu();
+		ModeMenu* modemenu = NEW ModeMenu();
 		// ModeGameより上のレイヤーにメニューを登録する
 		ModeServer::GetInstance()->Add(modemenu, 99, "menu");
 		// オーナーにこの ModeGame を設定
 		modemenu->SetOwner(this);
 		// ModeMenuにメニュー項目を追加する
-		modemenu->Add(new MenuItemViewCollision(this, "ViewCollision"));
-		modemenu->Add(new MenuItemUseCollision(this, "UseCollision"));
-		modemenu->Add(new MenuItemViewCameraInfo(this, "ViewCameraInfo"));
-		modemenu->Add(new MenuItemLaunchEffekseer(this, "Effekseer"));
-		modemenu->Add(new MenuItemViewShadowMap(this, "ShadowMapView"));
+		modemenu->Add(NEW MenuItemViewCollision(this, "ViewCollision"));
+		modemenu->Add(NEW MenuItemUseCollision(this, "UseCollision"));
+		modemenu->Add(NEW MenuItemViewCameraInfo(this, "ViewCameraInfo"));
+		modemenu->Add(NEW MenuItemLaunchEffekseer(this, "Effekseer"));
+		modemenu->Add(NEW MenuItemViewShadowMap(this, "ShadowMapView"));
 		// カメラ操作モード切替項目を追加
-		modemenu->Add(new MenuItemCameraControlMode(this, "CameraControlMode"));
+		modemenu->Add(NEW MenuItemCameraControlMode(this, "CameraControlMode"));
 	}
 
 	//
+	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 
 	// デバッグ機能
 	if(trg & PAD_INPUT_7)
@@ -203,6 +211,8 @@ bool ModeGame::DebugRender()
 		int y = sy;
 		int modelHandle = -1;
 		int frameIndex = -1;
+		
+		MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 		if(_map && _map->GetHandleMap() > 0)
 		{
 			modelHandle = _map->GetHandleMap();
@@ -264,7 +274,7 @@ bool ModeGame::DebugRender()
 			{
 				// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
 				vec::Vec3 currentPos = p->GetPos();
-				float rad            = static_cast<float>(p->GetCollisionR());
+				float rad            = StCas<float>(p->GetCollisionR());
 				float half           = p->GetColSubY();
 
 				// カプセルの上下端を計算
@@ -284,7 +294,7 @@ bool ModeGame::DebugRender()
 		}
 	}
 
-
+	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 	// シャドウマップの表示
 	if(_d_view_shadow_map)
 	{
@@ -307,7 +317,7 @@ bool ModeGame::DebugRender()
 		CollisionManager::GetInstance()->SetDebugDraw(false);
 	}
 
-	// YouDiedメッセージの描画（最前面に表示）
+	// デバッグ用：YouDiedメッセージの描画（最前面に表示）
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive() && enemy->IsShowingYouDiedMessage())

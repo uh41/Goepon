@@ -72,6 +72,8 @@ bool EnemyBase::Initialize()
 	_soundDetectionActive = false;
 	_soundDetectionTimer = 0.0f;
 
+	_effect = nullptr;
+
 	return true;
 }
 
@@ -185,6 +187,8 @@ void EnemyBase::StartReturningToInitialPosition()
 		// 音検知タイマーをリセット
 		_soundDetectionActive = false;
 		_soundDetectionTimer = 0.0f;
+
+		_effect->PlayEffect(_vPos); // 戻り始める位置でエフェクトを再生
 	}
 }
 
@@ -299,11 +303,13 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		if(_teleportTimer <= 0.0f)
 		{
 			// 3秒経過したので初期位置にテレポート
+			_effect->PlayEffect(_vPos); // テレポート前のエフェクト
 			_vPos = _initialPosition;
 			_vDir = _initialDirection;
 			_isReturningToInitialPos = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
+			_effect->PlayEffect(_vPos); // テレポート後のエフェクト
 		}
 		return;
 	}
@@ -396,7 +402,7 @@ void EnemyBase::UpdateMovingToSound()
 	{
 		_isMovingToSound = false;
 		_waitingAtSound = true;
-		//_soundWaitTimer = SOUND_WAIT_TIME;
+		_soundWaitTimer = SOUND_WAIT_TIME;
 		_status = STATUS::WAIT;
 		return;
 	}
@@ -499,6 +505,14 @@ void EnemyBase::UpdateMovingToSound()
 
 	// 実際に移動を実行
 	_vPos = vec3::VAdd(_vPos, finalMovement);
+
+	// 追加: 実際に移動した方向に即座に向ける（壁回避で曲がった場合の向きずれ防止）
+	if (vec3::VSize(finalMovement) > 0.001f)
+	{
+		vec::Vec3 moveDir = vec3::VNorm(finalMovement);
+		moveDir.y = 0.0f;
+		_vDir = moveDir;
+	}
 
 	// 移動中はWALKステータスに設定
 	_status = STATUS::WALK;
@@ -662,14 +676,14 @@ bool EnemyBase::Render()
 	return true;
 }
 
-// YouDiedメッセージを表示開始
+// デバッグ用：YouDiedメッセージを表示開始
 void EnemyBase::TriggerYouDiedMessage()
 {
 	_showYouDiedMessage = true;
 	_youDiedMessageTimer = YOU_DIED_DISPLAY_TIME;
 }
 
-// YouDiedメッセージの描画処理
+// デバッグ用：YouDiedメッセージの描画処理
 void EnemyBase::RenderYouDiedMessage()
 {
 	if(!_showYouDiedMessage) return;
@@ -683,7 +697,7 @@ void EnemyBase::RenderYouDiedMessage()
 
 	// 表示テキスト
 	const char* youDiedText = "YOU DIED";
-	int textWidth = GetDrawStringWidth(youDiedText, static_cast<int>(strlen(youDiedText)));
+	int textWidth = GetDrawStringWidth(youDiedText, StCas<int>(strlen(youDiedText)));
 
 	// 画面中央に配置
 	int x = (screenWidth - textWidth) / 2;

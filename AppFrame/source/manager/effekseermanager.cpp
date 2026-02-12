@@ -52,15 +52,15 @@ bool EffekseerManager::DeleteEffect(int handle)
 
 	DeleteEffekseerEffect(handle);
 
-	for(auto it = _effect.begin(); it != _effect.end(); it++)
+	for(auto it = _effect.begin(); it != _effect.end(); )
 	{
 		if(it->second == handle)
 		{
-			it = _effect.erase(it);
+			it = _effect.erase(it); // eraseの戻り値を次のitとして使う
 		}
 		else
 		{
-			++it;
+			++it; // ここで1回だけ進める
 		}
 	}
 
@@ -560,6 +560,25 @@ void EffekseerManager::Render2D()
 	}
 	//Effekseer_Sync2DSetting();
 	DrawEffekseer2D();
+}
+
+bool EffekseerManager::SetEffectMatrix(int handle, const Effekseer::Matrix43& mat)
+{
+	if(!_initialize || handle == -1)
+	{
+		return false;
+	}
+
+	// DxLib(EffekseerForDXLib) 側が管理している Effekseer::Manager を取ってくる必要がある
+	// ※関数名は環境差があるため、ここはプロジェクト側APIに合わせて調整してください
+	auto manager = Effekseer::Manager::Create(1000);
+	if(manager == nullptr)
+	{
+		return false;
+	}
+
+	manager->SetMatrix(handle, mat);
+	return true;
 }
 
 void EffekseerManager::Update()

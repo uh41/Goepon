@@ -7,12 +7,13 @@
 // * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
+#pragma once
 #include "appframe.h"
-#include "Player.h"
-#include "Playertanuki.h"
-#include "Enemy.h"
-#include "map.h"
 
+namespace soundserver
+{
+	class SoundServer;
+}
 
 class ApplicationGlobal
 {
@@ -23,6 +24,7 @@ public:
 	bool Init();    // 初期化
 
 	int _iCgCursor;       // カーソル画像ハンドル
+	at::spc<soundserver::SoundServer> _soundServer;
 
 };
 

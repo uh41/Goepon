@@ -1,6 +1,13 @@
 #include "modeopscenario.h"
 #include "modegame.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 ModeOpScenario::ModeOpScenario()
 {
 	Initialize();
@@ -37,7 +44,7 @@ bool ModeOpScenario::Initialize()
 
 	if(!_page.empty())
 	{
-		_voice = new soundserver::SoundItemVoice(_page[_pageNo].voiceFile);
+		_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);
 		_soundServer->Add("voice",_voice);
 		_voice->Play();
 	}
@@ -89,7 +96,7 @@ bool ModeOpScenario::Process()
 		if(trg & PAD_INPUT_2)
 		{
 			// 最終ページならフェードアウトへ
-			if(_pageNo >= static_cast<int>(_page.size()) - 1)
+			if(_pageNo >= StCas<int>(_page.size()) - 1)
 			{
 				_state = ModeBase::State::FADE_OUT;
 				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
@@ -121,7 +128,7 @@ bool ModeOpScenario::Process()
 	case ModeBase::State::DONE:
 	{
 		// 次のモードへ移行
-		ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
+		ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
 		ModeServer::GetInstance()->Del(this);
 		break;
 	}

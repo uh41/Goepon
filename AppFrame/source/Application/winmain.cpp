@@ -17,6 +17,10 @@
 
 #include "../appframe.h"
 //#include <pybind11/pybind11.h>
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include <chrono>
 #include <thread>
 
@@ -29,6 +33,8 @@ int WINAPI WinMain(
 	LPSTR lpCmdLine,
 	int nCmdShow
 ) {
+	// メモリリークチェック開始
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	ApplicationBase *appBase = ApplicationBase::GetInstance();
 	if(!appBase) { return 0; }
 

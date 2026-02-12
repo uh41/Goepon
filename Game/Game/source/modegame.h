@@ -19,6 +19,7 @@
 #include "enemybase.h"
 #include "enemy.h"
 #include "enemymove.h"
+#include "enemydog.h"
 #include "treasure.h"
 #include "map.h"
 #include "cube.h"
@@ -30,9 +31,19 @@
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
+#include "MapBase.h"
+#include "Map1.h"
+#include "ObjectServer.h"
+#include "Goal.h"
+#include "soundserver3D.h"
+#include "ModeGoalConfirm.h"
 #include "hensineffect.h"
 #include "walkeffect.h"
 #include "findeffect.h"
+#include "hatenaeffect.h"
+#include "aseeffect.h"
+#include "doyaeffect.h"
+#include "nakieffect.h"
 
 class ModeGame : public ModeBase
 {
@@ -70,6 +81,11 @@ public:
 	// 当たり判定処理
 	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
+    // キャラと宝箱の当たり判定処理
+	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
+	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
+	// プレイヤーとゴールの当たり判定
+	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
 
 	// 索敵範囲の当たり判定
 	bool IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy);
@@ -109,11 +125,14 @@ public:
 
 	bool LoadStageData();
 
-	// キャラと宝箱の当たり判定処理
-	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
-	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
+
+	// ステージを完全リセットして初期状態に戻す
+	bool ResetStage();
+
+	// ステージリセット要求フラグのセッター（Process内でこのフラグをチェックしてリセット処理を行う）
+	void RequestResetStage() { _requestResetStage = true; }
 
 protected:
 	Camera* _camera;
@@ -135,12 +154,21 @@ protected:
 	//at::vspc<Treasure> _treasure;
 
 	// マップ
-	at::spc<Map> _map;
+	//at::spc<Map> _map;
+
+	//ステージベース
+	at::vspc<MapBase> _mapBase;
+
+	// map1
+	at::spc<Map1> _map1;
 	// キューブ
 	at::spc<Cube> _cube;
+	// ゴール
+	at::spc<Goal> _goal;
 	// 敵
 	at::vspc<Enemy> _enemy;
 	at::vspc<EnemyMove> _enemyMove;
+	at::vspc<EnemyDog> _enemyDog;
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
@@ -150,9 +178,18 @@ protected:
 	// エフェクト
 	at::vspc<EffectBase> _effectBase;
 	at::spc<TreasureEffect> _treasureEffect;
+	// オブジェクトサーバー
+	class ObjectServer* _objectServer;
+
 	at::spc<HensinEffect> _hensinEffect;
 	at::spc<WalkEffect> _walkEffect;
 	at::spc<FindEffect> _findEffect;
+	at::spc<HatenaEffect> _hatenaEffect;
+	at::spc<AseEffect> _aseEffect;
+	at::spc<DoyaEffect> _doyaEffect;
+	at::spc<NakiEffect> _nakiEffect;
+
+	at::spc<SoundServer3D> _sound3D;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -182,8 +219,8 @@ protected:
 	at::spc<EnemySensor> _enemySensor;
 
 	at::spc<soundserver::SoundServer> _soundServer;
-	at::spc<soundserver::SoundItemBase> _bgmInitialize;
-	at::spc<soundserver::SoundItemBase> _bgmChenge;
+	soundserver::SoundItemBase* _bgmInitialize;
+	soundserver::SoundItemBase* _bgmChenge;
 
 	bool _isChengeBgm;
 
@@ -199,5 +236,24 @@ protected:
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;
 	float _knockdownMessageSec = 0.0f;
+
+	// ゲームクリア処理
+	bool _isGameClear;
+
+	// ゲーム開始時刻（ms）・クリア表示済みフラグ
+	unsigned long _gameStartMs = 0;
+	bool _gameClearShown = false;
+
+	// ゴール確認モード関連
+	bool _goalConfirmOpened;
+	ModeGoalConfirm::Result _goalConfirmResult;
+	// 「No を選んだ直後は、ゴールから離れるまで確認を出さない」ためのフラグ
+	bool _notGoalFlag;
+	// ゴール確認処理
+	bool UpdateGoalConfirm(PlayerBase* player);
+
+private:
+	// class ModeGameのメンバに追加
+	bool _requestResetStage = false; // ステージリセット要求フラグ	
 };
 

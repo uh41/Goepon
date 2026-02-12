@@ -54,7 +54,7 @@ void ModeScenarioBase::ChangePage(int pageNo)
 	int oldPageNo = _pageNo;
 	int nextpage = mymath::Clamp(
 		0,
-		static_cast<int>(_page.size()) - 1,
+		StCas<int>(_page.size()) - 1,
 		oldPageNo + pageNo
 	);// 範囲内に収める
 
@@ -73,7 +73,7 @@ void ModeScenarioBase::ChangePage(int pageNo)
 
 		if(!_page[_pageNo].voiceFile.empty())		// ボイスファイルがある場合
 		{
-			_voice = new soundserver::SoundItemVoice(_page[_pageNo].voiceFile);// ボイス作成
+			_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);// ボイス作成
 			_soundServer->Add("voice", _voice);// サウンドサーバーに追加
 			_voice->Play();// ボイス再生
 		}

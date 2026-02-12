@@ -1,6 +1,13 @@
 #include "modetitle.h"
 #include "modeopscenario.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // ModeBase / Fade は appframe.h 経由で参照可能な前提
 ModeTitle::ModeTitle()
 {
@@ -77,7 +84,7 @@ bool ModeTitle::Process()
 	case ModeBase::State::DONE:
 		
 		// 次のモードへ移行
-		ModeServer::GetInstance()->Add(new ModeOpScenario(), 1, "opscenario");
+		ModeServer::GetInstance()->Add(NEW ModeOpScenario(), 1, "opscenario");
 		ModeServer::GetInstance()->Del(this);
 		break;
 	}

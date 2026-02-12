@@ -24,6 +24,7 @@ ApplicationGlobal::ApplicationGlobal()
 // デストラクタ
 ApplicationGlobal::~ApplicationGlobal()
 {
+	//ResourceServer::Release();
 	// 何もしない
 }
 
@@ -40,6 +41,16 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel("res/SkySphere/skysphere.mv1");
 	ResourceServer::MV1LoadModel("res/Ground/Ground.mv1");
 	ResourceServer::MV1LoadModel("res/map/SM_map.mv1");
+
+	if(!_soundServer)
+	{
+		_soundServer = std::make_shared<soundserver::SoundServer>();
+	}
+	_soundServer->Add("bgminitialize", std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi));
+	_soundServer->Add("bgmChenge", std::make_shared<soundserver::SoundItemBGM>(wav::ks010));
+	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
 	SetUseASyncLoadFlag(FALSE);
 
 	return true;

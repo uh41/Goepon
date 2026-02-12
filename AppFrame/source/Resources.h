@@ -3,6 +3,7 @@
 namespace img
 {
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
+  inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* Logo = "res/Logo.png";
   inline constexpr const char* Op1 = "res/Op1.png";
@@ -29,11 +30,13 @@ namespace img
 namespace mv1
 {
   inline constexpr const char* Blood = "res/Blood/Blood.mv1";
+  inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
   inline constexpr const char* Dungeon = "res/Dungeon/Dungeon.mv1";
   inline constexpr const char* Bridge = "res/FloatingIsland/Bridge.mv1";
   inline constexpr const char* FloatingIsland = "res/FloatingIsland/FloatingIsland.mv1";
   inline constexpr const char* Sky = "res/FloatingIsland/Sky.mv1";
   inline constexpr const char* Wood = "res/FloatingIsland/Wood.mv1";
+  inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* Ground = "res/Ground/Ground.mv1";
   inline constexpr const char* S_Barrel = "res/IslandJson/S_Barrel.mv1";
   inline constexpr const char* S_Cocotree = "res/IslandJson/S_Cocotree.mv1";
@@ -65,6 +68,7 @@ namespace mv1
   inline constexpr const char* PoorEnemy = "res/PoorEnemyMelee/PoorEnemy.mv1";
   inline constexpr const char* bushi_0114taiki = "res/PoorEnemyMelee/bushi_0114taiki.mv1";
   inline constexpr const char* bushi_karitaiki = "res/PoorEnemyMelee/bushi_karitaiki.mv1";
+  inline constexpr const char* busi_multimotion = "res/PoorEnemyMelee/busi_multimotion.mv1";
   inline constexpr const char* busi_tesuto = "res/PoorEnemyMelee/busi_tesuto.mv1";
   inline constexpr const char* goepon_busi_03 = "res/PoorEnemyMelee/goepon_busi_03.mv1";
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
@@ -95,6 +99,9 @@ namespace mp3
 {
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* voice1 = "res/Voice/voice1.mp3";
+  inline constexpr const char* voice2 = "res/Voice/voice2.mp3";
+  inline constexpr const char* voice3 = "res/Voice/voice3.mp3";
 }
 
 namespace wav

@@ -92,7 +92,7 @@ bool ModeMenu::Process()
 			// カメラ項目かつメニュー閉じの返り値なら、確実に Start してから閉じる
 			if(sel->IsCameraControlItem())
 			{
-				ModeGame* owner = static_cast<ModeGame*>(_owner);
+				ModeGame* owner = StCas<ModeGame*>(_owner);
 				if(owner && !owner->GetCameraControlMode())
 				{
 					owner->StartCameraControlAndSave();
@@ -106,7 +106,7 @@ bool ModeMenu::Process()
 			// ret == 0 のとき、カメラ項目なら Selected() likely ended camera control; ensure End is called
 			if(sel->IsCameraControlItem())
 			{
-				ModeGame* owner = static_cast<ModeGame*>(_owner);
+				ModeGame* owner = StCas<ModeGame*>(_owner);
 				if(owner && owner->GetCameraControlMode())
 				{
 					owner->EndCameraControlAndRestore();
@@ -141,7 +141,7 @@ bool ModeMenu::Render()
 	SetFontSize(fontSize);
 	for(auto* ite : _items)
 	{
-		int item_w = GetDrawStringWidth((ite)->_text.c_str(), static_cast<int>((ite)->_text.length()));
+		int item_w = GetDrawStringWidth((ite)->_text.c_str(), StCas<int>((ite)->_text.length()));
 		if(w < item_w)
 		{
 			w = item_w;

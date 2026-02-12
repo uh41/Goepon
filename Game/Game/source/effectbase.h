@@ -14,6 +14,8 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
+	virtual void PlayEffect(const vec::Vec3& pos) {}
+
 protected:
 	bool _effekseerLaunche;
 	int _playHandle;
