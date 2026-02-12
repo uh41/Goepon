@@ -12,7 +12,8 @@
 #include "modegame.h"
 #include "applicationmain.h"
 #include "modeeffekseer.h"
-
+#include "ModeGameClear.h"
+#include "applicationglobal.h"
 
 
 // 初期化
@@ -22,12 +23,29 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化
 	_camera = new Camera();
-	//_treasure.push_back(std::make_shared<Treasure>());
-	//_object.emplace_back(_treasure.back());
+
 	_camera->Initialize();
 
 	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
+
+	// オブジェクトサーバー初期化
+	_objectServer = new ObjectServer(this);
+	_objectServer->LoadDate("stage");
+	_objectServer->ProcessInit();
+
+	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
+	// gGlobal._soundServer は ApplicationGlobal::Init() 内で生成されている想定
+	if(gGlobal._soundServer)
+	{
+		_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
+		// デフォルトの半径を設定（必要に応じて調整）
+		_sound3D->SetRadius(768.0f);
+	}
+	else
+	{
+		_sound3D.reset();
+	}
 
 	// キャラ
 	for(auto& chara : _chara)
@@ -65,6 +83,15 @@ bool ModeGame::Initialize()
 		effectBase->Initialize();
 	}
 
+	// ゴール初期化
+	_isGameClear = false;
+
+	//// シャドウ
+	//for(auto& charaShadow : _charaShadow)
+	//{
+	//	charaShadow->Initialize();
+	//}
+
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if(_camera != nullptr)
 	{
@@ -91,40 +118,41 @@ bool ModeGame::Initialize()
 		}
 	}
 
-	_map->SetCamera(_camera);
+	// カメラセット
+	if (auto* map = _objectServer->GetMap())
+	{
+		map->SetCamera(_camera);
+	}
+	_bShowTanuki = true;
+	ObjectInitialize();	// オブジェクト初期化
+
+	LoadStageData();// ステージデータ読み込み
+
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasure.get());
-	//InitHpBlock();// ブロック初期化
+	_walkEffect->SetPlayerPos(_playerTanuki.get());
+	_findEffect->SetEnemy(_enemyBase);
+	_aseEffect->SetPlayer(_playerTanuki.get());
+	_hatenaEffect->Enemy(_enemyBase);
+	_aseEffect->SetEnemy(_enemyBase);
 
 	DebugInitialize();// デバック初期化
 	ShadowInitialize();// シャドウ生成
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
-	}
+	CameraInfoInitialize();// カメラ情報初期化
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
 	_bCameraControlMode = false;
 	_hasSavedCameraState = false;
 
-	
-	// Effekseer 初期化
-	//EffekseerManager::GetInstance()->Initialize();
-	_henshineffectHandle = EffekseerManager::GetInstance()->LoadEffect("res/Effect/hennsin.efkefc", 1.0f);
-
-	_soundServer = std::make_shared<soundserver::SoundServer>();
-	
-	_bgmInitialize = std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi);
-	_bgmChenge = std::make_shared<soundserver::SoundItemBGM>(wav::ks010);
-
-	_soundServer->Add("bgminitialize", _bgmInitialize.get());
-	_soundServer->Add("bgmChenge", _bgmChenge.get());
-
 	_isChengeBgm = false;
 
+
+	// BGM再生
+	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
+	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	//_bgmInitialize->Play();
 
 	return true;
@@ -134,6 +162,10 @@ bool ModeGame::Initialize()
 bool ModeGame::Terminate()
 {
 	base::Terminate();
+
+	delete _objectServer;
+	_objectServer = nullptr;
+
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -155,10 +187,6 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Terminate();
-	}*/
 	
 	for(auto& charaShadow : _charaShadow)
 	{
@@ -180,46 +208,11 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-	if(_soundServer)
+	if(_sound3D)
 	{
-		// 全サウンド停止
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
-
-		// SoundServer::Clear() は内部で delete してくれるので安全に呼ぶ
-		_soundServer->Clear();
-
-		_soundServer = nullptr;
-
-		// 既に SoundServer::Clear() で delete 済なら二重 delete にならないよう null チェック
-		_bgmInitialize = nullptr;
-		_bgmChenge = nullptr;
-		_isChengeBgm = false;
+		_sound3D->StopAll();
+		_sound3D.reset();
 	}
-
-	if(_henshineffectHandle != -1)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->DeleteEffect(_henshineffectHandle);
-			_henshineffectHandle = -1;
-		}
-	}
-
-	// Effekseer の終了（Initialize で起動していれば）
-	if(_effekseerLaunched)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->Terminate();
-			_effekseerLaunched = false;
-		}
-	}
-
 
 	return true;
 }
@@ -227,121 +220,152 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "maker_otocheck.json";
+	std::string jsonFile = "Route.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
-
 	nlohmann::json jsonData;
 	ifs >> jsonData;
-
 	nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	at::vet<vec::Vec3> patrolPos;
+	// customId（文字列）ごとの巡回点リストを保持
+	std::unordered_map<std::string, at::vet<vec::Vec3>> patrolGroups;
+
+	// 敵の JSON を一時保存して後で巡回グループを割り当てる
+	std::vector<nlohmann::json> enemyObjects;
 
 	for(auto& object : stage)
 	{
 		const std::string& name = object.at("objectName");
 
-		//// ★★★ S_MarkerR を検出（完全版） ★★★
-		//if(name == "S_MarkerR")
-		//{
-		//	vec::Vec3 pos;
-		//	// JSON から座標を取得
-		//	object.at("translate").at("x").get_to(pos.x);
-		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-		//	pos.z *= -1.0f; // ★ Z軸反転
-
-		//	patrolPos.push_back(pos);
-
-		//	continue;
-		//}
-
-		if(name == "S_MarkerRX")
+		// ★ S_MarkerR を検出 — customId でグループ化
+		if(name == "S_MarkerR")
 		{
 			vec::Vec3 pos;
-			// JSON から座標を取得
 			object.at("translate").at("x").get_to(pos.x);
-			object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-			object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-			pos.z *= -1.0f; // ★ Z軸反転
+			object.at("translate").at("y").get_to(pos.z); // UE:y -> DXLib:z
+			object.at("translate").at("z").get_to(pos.y); // UE:z -> DXLib:y
+			pos.z *= -1.0f;
 
-			patrolPos.push_back(pos);
-
+			std::string gid = "";
+			if(object.contains("customId"))
+			{
+				object.at("customId").get_to(gid);
+			}
+			patrolGroups[gid].push_back(pos);
 			continue;
 		}
 
-		//if(name == "S_MarkerRX")
-		//{
-		//	vec::Vec3 pos;
-		//	// JSON から座標を取得
-		//	object.at("translate").at("x").get_to(pos.x);
-		//	object.at("translate").at("y").get_to(pos.z); // ★ UE: y → DXLib: z
-		//	object.at("translate").at("z").get_to(pos.y); // ★ UE: z → DXLib: y
-		//	pos.z *= -1.0f; // ★ Z軸反転
-
-		//	patrolPos.push_back(pos);
-
-		//	continue;
-		//}
 		if(name == "S_MarkerA")
 		{
 			_playerTanuki->SetJsonDataUE(object);
 			continue;
 		}
 
+		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
+		if(name == "S_MarkerB" || name == "S_MarkerRX")
+		{
+			enemyObjects.push_back(object);
+			continue;
+		}
+	}
+
+	// 敵を生成して、customId にマッチする巡回点を割り当てる
+	for(auto& object : enemyObjects)
+	{
+		// センサー類の生成
+		auto sensor = std::make_shared<EnemySensor>();
+		sensor->Initialize();
+		sensor->SetMap(_objectServer->GetMap());
+
+		auto soundSensor = std::make_shared<EnemySoundSensor>();
+		soundSensor->Initialize();
+		soundSensor->SetMap(_objectServer->GetMap());
+		soundSensor->SetSoundSensorArea(300.0f);
+
+		const std::string& name = object.at("objectName");
+
+		// customId を取得（無ければ空文字 "" を使う）
+		std::string gid = "";
+		if(object.contains("customId"))
+		{
+			object.at("customId").get_to(gid);
+		}
+
+		if(name == "S_MarkerRX")
+		{
+			auto enemy = std::make_shared<Enemy>();
+			enemy->Initialize();
+			enemy->SetJsonDataUE(object);
+			enemy->SetEnemySensor(sensor);
+			enemy->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemy->GetPos());
+			enemy->SetEffect(_hensinEffect);
+			_enemyBase.emplace_back(enemy);
+			continue;
+		}
+
 		if(name == "S_MarkerB")
 		{
-			//auto enemy = std::make_shared<Enemy>();
-			//enemy->Initialize();
-			//enemy->SetJsonDataUE(object);
-
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
 
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
-			sensor->SetMap(_map.get());
+			sensor->SetMap(_objectServer->GetMap());
 			//enemy->SetEnemySensor(sensor);
 			enemyMove->SetEnemySensor(sensor);
 
 			auto soundSensor = std::make_shared<EnemySoundSensor>();
 			soundSensor->Initialize();
-			soundSensor->SetMap(_map.get());
+			soundSensor->SetMap(_objectServer->GetMap());
 			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
 			soundSensor->SetPos(enemyMove->GetPos());
+			enemyMove->SetEnemySensor(sensor);
 			enemyMove->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemyMove->GetPos());
+			enemyMove->SetEffect(_hensinEffect);
 
-			//_enemy.emplace_back(enemy);
-			_enemyMove.emplace_back(enemyMove);
+			// グループに対応する巡回点があれば割り当てる
+			auto it = patrolGroups.find(gid);
+			if(it != patrolGroups.end() && !it->second.empty())
+			{
+				enemyMove->SetPatrolPoint(it->second);
+				enemyMove->CaptureInitialTransform();
+			}
+
+			_enemyBase.emplace_back(enemyMove);
 		}
-	}
 
-	// ★★★ 全敵に巡回ポイントを設定 ★★★
-	if(!patrolPos.empty())
-	{
-		for(auto& enemyBase : _enemyBase)
+		if (name == "Dog") 
 		{
-			if(!enemyBase)
-			{
-				continue;
-			}
-			if(auto em = dynamic_cast<EnemyMove*>(enemyBase.get()))
-			{
-				em->SetPatrolPoint(patrolPos);
-				em->CaptureInitialTransform();
-			}
+			auto enemyDog = std::make_shared<EnemyDog>();
+			enemyDog->Initialize();
+			enemyDog->SetJsonDataUE(object);
+
+			auto sensor = std::make_shared<EnemySensor>();
+			sensor->Initialize();
+			sensor->SetMap(_objectServer->GetMap());
+			enemyDog->SetEnemySensor(sensor);
+
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+			soundSensor->Initialize();
+			soundSensor->SetMap(_objectServer->GetMap());
+			soundSensor->SetSoundSensorArea(900.0f);
+			soundSensor->SetPos(enemyDog->GetPos());
+			enemyDog->SetEnemySensor(sensor);
+			enemyDog->SetEnemySoundSensor(soundSensor);
+			enemyDog->SetEffect(_hensinEffect);
+
+			_enemyBase.emplace_back(enemyDog);
 		}
 	}
 
+	// 互換のため全敵に初期トランスフォームを確実にキャプチャ
 	for(auto& enemy : _enemyBase)
 	{
-		if(enemy)
-		{
-			enemy->CaptureInitialTransform();
-		}
+		if(enemy) enemy->CaptureInitialTransform();
 	}
 
 	return true;
@@ -382,6 +406,14 @@ bool ModeGame::Process()
 {
 	base::Process();
 
+	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
+	if (_requestResetStage)
+	{
+		_requestResetStage = false;
+		ResetStage();
+		return true;
+	}
+
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
@@ -390,15 +422,38 @@ bool ModeGame::Process()
 	DebugProcess();
 	DebugCameraControl();
 
-	if(_soundServer)
-	{
-		_soundServer->Update();
-	}
-
+	//_soundServer->Update();
 	AnimationManager::GetInstance()->Update(1.0f);
-
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
+
+	_objectServer->ProcessInit(); // 追加・削除予約の確定
+	_objectServer->Process();
+
+	// 3Dサウンドリスナー位置の設定（毎フレーム更新）
+	PlayerBase* activePlayer = nullptr;
+	if(_bShowTanuki)
+	{
+		activePlayer = _playerTanuki.get();
+	}
+	else if(_showMonoPlayer)
+	{
+		activePlayer = _playerMono.get();
+	}
+	else
+	{
+		activePlayer = _player.get();
+	}
+
+	if(activePlayer)
+	{
+		vec::Vec3 listenerPos = activePlayer->GetPos();
+		vec::Vec3 listenerFront = vec3::VAdd(listenerPos, activePlayer->GetDir());
+		Set3DSoundListenerPosAndFrontPos_UpVecY(
+			DxlibConverter::VecToDxLib(listenerPos),
+			DxlibConverter::VecToDxLib(listenerFront)
+		);
+	}
 
 	PlayerTransform(); // プレイヤー変身処理
 	ObjectProcess();   // オブジェクト処理
@@ -411,23 +466,35 @@ bool ModeGame::Process()
 		CheckAllDetections();
 	}
 
+
+	// 敵AI（追跡/移動はここで実行される）
+	for(auto& enemy : _enemy)
+	{
+		if(enemy->IsAlive())
+		{
+			enemy->Process();
+		}
+	}
+	
+	
+
 	if(_bShowTanuki)
 	{
-		EscapeCollision(_playerTanuki.get(), _map.get());
+		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else if(_showMonoPlayer)
 	{
-		EscapeCollision(_playerMono.get(), _map.get());
+		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_playerMono.get(), _treasure.get());
 		PlayerCameraInfo(_playerMono.get());
 	}
 	else
 	{
-		EscapeCollision(_player.get(), _map.get());
+		EscapeCollision(_player.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
 		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
 		PlayerCameraInfo(_player.get());
@@ -449,6 +516,7 @@ bool ModeGame::Process()
 		playerBase = _player.get();
 	}
 
+
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)
@@ -462,12 +530,12 @@ bool ModeGame::Process()
 			if(CharaToCharaCollision(playerBase, enemy.get()))
 			{
 				// 実際の押し出し（カプセル）
+				// 敵に接触したときに実際に行う処理はここで記入
+				// デバッグ用：メッセージ表示
 				if(!enemy->IsShowingYouDiedMessage())
 				{
 					enemy->TriggerYouDiedMessage();
 				}
-
-				//CharaToCharaCollision(playerBase, enemy.get());
 			}
 		}
 	}
@@ -487,7 +555,54 @@ bool ModeGame::Process()
 		}
 	}
 
-	IsPlayerAttack(_player.get(), enemy);
+	IsPlayerAttack(_player.get(), _enemyBase);
+	// ゴールとの当たり判定
+	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
+	{
+		_isGameClear = true;
+		// 高レイヤーで追加してオーバーレイ表示
+		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+		return true;
+	}
+	if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
+	{
+		_isGameClear = true;
+		// 高レイヤーで追加してオーバーレイ表示
+		ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
+		// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
+		return true;
+	}
+
+	IsPlayerAttack(_player.get(), _enemyBase);
+
+	if(_sound3D)
+	{
+		// 全ての EnemyBase 系に対して、動く敵(EnemyMove) は "voice2"、
+		// それ以外の敵は "voice1" を使う
+		for(auto& eb : _enemyBase)
+		{
+			if(!eb) continue;
+
+			// 生存チェック
+			if(eb->IsAlive())
+			{
+				// EnemyMove 型かどうかで音を切り替える
+				if(dynamic_cast<EnemyMove*>(eb.get()) != nullptr)
+				{
+					_sound3D->PlayLoopSound3D(eb.get(), "voice2", eb->GetPos());
+				}
+				else
+				{
+					_sound3D->PlayLoopSound3D(eb.get(), "voice1", eb->GetPos());
+				}
+			}
+			else
+			{
+				_sound3D->StopSound3D(eb.get());
+			}
+		}
+	}
 
 	ChangeBGM();
 	return true;
@@ -507,14 +622,6 @@ bool ModeGame::Render()
 
 	EffekseerManager::GetInstance()->Render();
 
-	//if(_henshineffectHandle != -1)
-	//{
-	//	if(!EffekseerManager::GetInstance()->IsPlayingEffect(_henshineffectHandle))
-	//	{
-	//		_henshineffectHandle = -1;
-	//	}
-	//}
-
 	// キャラを描画（生存しているもののみ、プレイヤーは除外）
 	for(auto& chara : _chara)
 	{
@@ -524,7 +631,7 @@ bool ModeGame::Render()
 		}
 	}
 
-for(auto& enemy : _enemyBase)
+	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive())
 		{
@@ -532,16 +639,16 @@ for(auto& enemy : _enemyBase)
 		}
 	}
 
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
-	}
+
 	// オブジェクトを描画
 	for(auto& object : _object)
 	{
 		object->Render();
 	}
+
+
+	// オブジェクトサーバーの描画
+	_objectServer->Render();
 
 	// プレイヤーの描画（フラグに応じて片方のみ）
 	for(auto& player_base : _playerBase)
@@ -577,7 +684,11 @@ for(auto& enemy : _enemyBase)
 		}
 	}
 
-
+	// エフェクト
+	for(auto& effectBase : _effectBase)
+	{
+		effectBase->Render();
+	}
 
 	// UIを描画
 	for(auto& ui_base : _uiBase)
@@ -585,146 +696,164 @@ for(auto& enemy : _enemyBase)
 		ui_base->Render();
 	}
 
+	ObjectRender();// オブジェクト描画処理
 	DebugRender();// デバック描画処理
-	// 索敵システムの描画
-	if (_enemySensor)
-	{
-		_enemySensor->Render();
-		_enemySensor->RenderDetectionUI();
-	}
-
 
 	if(_d_view_collision)
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
-	
-	// 各敵のセンサーを個別に描画
-	for (auto& enemy : _enemyBase)
-	{
-		if (enemy->IsAlive() && enemy->GetEnemySensor())
-		{
-			enemy->GetEnemySensor()->Render();
-			enemy->GetEnemySensor()->RenderDetectionUI();
-		}
-	}
-
-	// YouDiedメッセージの描画（最前面に表示）
-	for (auto& enemy : _enemyBase)
-	{
-		if (enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
-		{
-			enemy->RenderYouDiedMessage();
-		}
-	}
-
-
-	// 宝箱を開けているメッセージ表示
-	if (_isOpeningTreasure)
-	{
-		/*auto _playerPosx = _bShowTanuki ? _playerTanuki->GetPos().x : _player->GetPos().x;
-		auto _playerPosz = _bShowTanuki ? _playerTanuki->GetPos().z : _player->GetPos().z;*/
-		const char* msg = "お宝を開けています...(Aを押し続けてください)";
-		int color = GetColor(255, 0, 0); // 黄色
-		// 座標は適宜調整（ここでは画面左上(50, 400)に仮配置）
-		DrawString(900, 500, msg, color);
-	}
-
-	// 敵を転ばせたメッセージ表示
-	if(_showKnockdownMessage)
-	{
-		const char* msg = "敵を転ばせた";
-		DrawString(900, 500, msg, GetColor(255, 255, 255));
-	}
 
 	return true;
 }
 
-bool ModeGame::CheckAllDetections()
+bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 {
-	PlayerBase* player = _bShowTanuki ? static_cast<PlayerBase*>(_playerTanuki.get())
-		: static_cast<PlayerBase*>(_player.get());
+	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
+	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 
-	if(!player)
+	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
+	if (!hitGoal)
+	{
+		_notGoalFlag = false;
+	}
+
+	// 抑制中は確認を開かない（No直後に乗りっぱなしでも再表示しない）
+	if (_notGoalFlag)
 	{
 		return false;
 	}
 
-	bool anyDetected = false;
+	 // 踏んだ瞬間に確認モードを開く
+	if(hitGoal && !_goalConfirmOpened)
+	{
+		_goalConfirmOpened = true;
+		_goalConfirmResult = ModeGoalConfirm::Result::None;
 
-	// ヘルパーで各コンテナを処理するラムダ
+		ModeServer::GetInstance()->Add(new ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
+		return true;
+	}
 
-	//[x]変数 x をコピーして使う（読み取り専用に近い）
-	//[&x]変数 x を参照で使う（読み書き可能）
-	//[=]スコープ内のすべての変数をコピーして使う（読み取り専用に近い）
-	//[&]スコープ内のすべての変数を参照で使う（読み書き可能）
-	//						[キャプチャ](引数) -> 戻り値の型 { 処理内容 };
-	auto processContainer = [&](auto& container) -> bool
+	// 確認結果を受けて処理を行う
+	if(_goalConfirmOpened)
+	{
+		if(_goalConfirmResult == ModeGoalConfirm::Result::Yes)
 		{
-		for(auto& item : container)
-		{
-			EnemyBase* eb = static_cast<EnemyBase*>(item.get());
-			if(!eb || !eb->IsAlive())
-			{
-				continue;
-			}
+			_goalConfirmOpened = false;
+			_goalConfirmResult = ModeGoalConfirm::Result::None;
 
-			auto sensor = eb->GetEnemySensor();
-			if(!sensor)
-			{
-				continue;
-			}
-
-			sensor->SetPos(eb->GetPos());
-			sensor->SetDir(eb->GetDir());
-			sensor->SetMap(_map.get());
-
-			sensor->Process();
-
-			// 変更点:
-			// 変身アニメ再生中は即座に検出をクリアしない（敵は最後に見た位置を追跡させる）。
-			// これにより、プレイヤーが変身した瞬間に敵が即巡回に戻るのを防ぎます。
-			if(_isTransformingToHuman)
-			{
-				// 変身中なら何もしない（センサーはそのまま動作させる）。
-				// 追跡中であれば、Sensor の chaseTimer によって自然に追跡が解除されます。
-				continue;
-			}
-
-			// プレイヤーがタヌキでない（＝player状態）のときは
-			// 「敵を強制的に見失わせて戻らせる」処理を行わない。
-			// センサー情報だけリセットして巡回を維持する。
-			if(!_bShowTanuki)
-			{
-
-
-				// 変身が完了しており、かつ意図的に「人間表示」にして敵を完全に無視したい場合のみ
-				// リセットする（従来の挙動）。必要なければこのブロック自体を削除してください。
-				sensor->ResetDetection();
-				if(eb)
-				{
-					eb->OnPlayerLost(); // 追跡フラグをクリアし、待機→帰還の処理を開始させる
-				}
-				continue;
-			}
-			bool detected = sensor->CheckPlayerDetection(player);	// 索敵判定
-
-			if(detected)
-			{
-				anyDetected = true;
-				eb->OnPlayerDetected(player->GetPos());
-			}
-			else
-			{
-				if(!sensor->IsChasing())
-				{
-					eb->OnPlayerLost();
-				}
-			}
+			_isGameClear = true;
+			ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");	
+			return true;
 		}
-		return false;
-		};
-	processContainer(_enemyBase);
+		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
+		{
+			_goalConfirmOpened = false;
+			_goalConfirmResult = ModeGoalConfirm::Result::None;
 
-	return anyDetected;
+			// 抑制フラグを立てる（ゴールから離れたら解除される）
+			_notGoalFlag = true;
+		}
+		
+	}
+
+	return false;
+}
+
+bool ModeGame::ResetStage()
+{
+	// クリアフラグ等を戻す
+	_isGameClear = false;
+	_goalConfirmOpened = false;
+	_goalConfirmResult = ModeGoalConfirm::Result::None;
+
+	// オブジェクトサーバーは以下を全消去
+	if(_objectServer)
+	{
+		_objectServer->ClearObject();
+	}
+
+	// キャラ/オブジェクト/UI/エフェクトを廃棄
+	for(auto& chara       : _chara      ) { if(chara) chara->Terminate();             }
+	_chara.clear();
+	 
+	for(auto& object      : _object     ) { if(object) object->Terminate();           }
+	_object.clear();
+
+	for(auto& player_base : _playerBase ) { if(player_base) player_base->Terminate(); }
+	_playerBase.clear();
+
+	for(auto& ui_base     : _uiBase     ) { if(ui_base) ui_base->Terminate();         }
+	_uiBase.clear();
+
+	for (auto& shadow     : _charaShadow) { if(shadow) shadow->Terminate();           }
+	_charaShadow.clear();
+
+	for (auto& effectBase : _effectBase ) { if(effectBase) effectBase->Terminate();   }
+	_effectBase.clear();
+
+	_enemyBase.clear();
+	_enemy.clear();
+	_enemyMove.clear();
+
+	// サウンドも止める(もしbgm続行させる場合はこちらを修正)
+	if(_soundServer)
+	{
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+	}
+
+	// 再構築
+	_bShowTanuki    = true;
+	_showMonoPlayer = false;
+
+	// オブジェクトサーバーの再ロード　
+	if(_objectServer == nullptr)
+	{
+		_objectServer = new ObjectServer(this);
+	}
+	_objectServer->LoadDate("stage");
+	_objectServer->ProcessInit();
+
+	// カメラセット
+	if (auto* map = _objectServer->GetMap())
+	{
+		map->SetCamera(_camera);
+	}
+
+	ObjectInitialize();	// オブジェクト初期化
+
+	// 各種　initialize
+	for(auto& chara       : _chara     ) { if(chara) chara->Initialize();             }
+	for(auto& object      : _object    ) { if(object) object->Initialize();           }
+	for(auto& player_base : _playerBase) { if(player_base) player_base->Initialize(); }
+	for(auto& ui_base     : _uiBase    ) { if(ui_base) ui_base->Initialize();         }
+	for(auto& _effectBase : _effectBase) { if(_effectBase) _effectBase->Initialize(); }
+
+	LoadStageData(); // ステージデータ読み込み
+
+	// カメラをプレイヤーがいる位置に合わせる
+	if(_player      )       _player->SetCamera(_camera);
+	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
+	if(_playerMono  )   _playerMono->SetCamera(_camera);
+
+	// エフェクトに対象をセット
+	if (_treasureEffect && _treasure) _treasureEffect->SetTreasure(_treasure.get());
+	if (_findEffect)                 _findEffect->SetEnemy(_enemyBase);
+	if (_hatenaEffect)               _hatenaEffect->Enemy(_enemyBase);
+	if (_aseEffect)
+	{
+		_aseEffect->SetEnemy(_enemyBase);
+		_aseEffect->SetPlayer(_playerTanuki.get());
+	}
+	if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+
+	//// 影・カメラも戻す（戻った直後に表示が破綻しやすいので）
+	//ShadowInitialize();
+	//CameraInfoInitialize();
+
+	// 宝箱も閉じる
+	if(_treasure) { _treasure->SetOpen(false); }
+	return true;
 }

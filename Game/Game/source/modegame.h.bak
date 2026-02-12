@@ -151,8 +151,14 @@ protected:
 	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
 	at::spc<Treasure> _treasure;
+	//at::vspc<Treasure> _treasure;
+
+	// マップ
+	//at::spc<Map> _map;
+
 	//ステージベース
 	at::vspc<MapBase> _mapBase;
+
 	// map1
 	at::spc<Map1> _map1;
 	// キューブ
@@ -237,17 +243,5 @@ protected:
 	// ゲーム開始時刻（ms）・クリア表示済みフラグ
 	unsigned long _gameStartMs = 0;
 	bool _gameClearShown = false;
-
-	// ゴール確認モード関連
-	bool _goalConfirmOpened;
-	ModeGoalConfirm::Result _goalConfirmResult;
-	// 「No を選んだ直後は、ゴールから離れるまで確認を出さない」ためのフラグ
-	bool _notGoalFlag;
-	// ゴール確認処理
-	bool UpdateGoalConfirm(PlayerBase* player);
-
-private:
-	// class ModeGameのメンバに追加
-	bool _requestResetStage = false; // ステージリセット要求フラグ	
 };
 

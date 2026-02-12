@@ -29,12 +29,12 @@ namespace soundserver
 
 		void Clear();
 		void Add(SoundItemOneShot* oneshot);
-		void Add(std::string name, SoundItemBase* sound);
+		void Add(std::string name, at::spc<SoundItemBase> sound);
 		bool Del(std::string name);
 		bool Del(SoundItemBase* sound);
 		SoundItemBase* Get(std::string name);
 
-		at::msc<SoundItemBase> GetVector() { return _v; }
+		at::msc<at::spc<SoundItemBase>> GetVector() { return _v; }
 
 		void StopType(SoundItemBase::TYPE type);
 
@@ -42,9 +42,9 @@ namespace soundserver
 
 	protected:
 		bool _bIsUpdate; // 更新中フラグ
-		at::msc<SoundItemBase> _v;		// サウンドアイテムコンテナ
-		at::msc<SoundItemBase> _vAdd;	// 追加用コンテナ
-		at::msc<SoundItemBase> _vDel;	// 削除用コンテナ
+		at::msc<at::spc<SoundItemBase>> _v;		// サウンドアイテムコンテナ
+		at::msc<at::spc<SoundItemBase>> _vAdd;	// 追加用コンテナ
+		at::msc<at::spc<SoundItemBase>> _vDel;	// 削除用コンテナ
 
 		int _iCntOneShot; // OneShot用カウント
 	};

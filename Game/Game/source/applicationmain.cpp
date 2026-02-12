@@ -19,6 +19,18 @@
 // 実体
 ApplicationMain g_application_main;
 
+// DXLib_Init()前の処理
+bool ApplicationMain::BeforeDXLib_Init()
+{
+	// 3Dsound:XAudioを使用する
+	SetEnableXAudioFlag(TRUE);
+
+	// 3DSound:1メートルに相当する値を設定
+	Set3DSoundOneMetre(1.0f);
+
+	return true;
+}
+
 // 初期化
 bool ApplicationMain::Initialize(HINSTANCE hInstance)
 {

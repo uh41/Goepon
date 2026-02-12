@@ -9,11 +9,14 @@
 
 #pragma once
 #include "appframe.h"
+<<<<<<< HEAD
+=======
 
 namespace soundserver
 {
 	class SoundServer;
 }
+>>>>>>> SuzukiYuuki
 
 class ApplicationGlobal
 {
@@ -23,8 +26,12 @@ public:
 
 	bool Init();    // 初期化
 
+<<<<<<< HEAD
+	int _iCgCursor; // カーソル画像ハンドル
+=======
 	int _iCgCursor;       // カーソル画像ハンドル
 	at::spc<soundserver::SoundServer> _soundServer;
+>>>>>>> SuzukiYuuki
 
 };
 
