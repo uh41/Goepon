@@ -105,6 +105,11 @@ bool ModeGame::ObjectInitialize()
 		charaShadow->Initialize();
 	}
 
+	// 点滅間隔の初期化（秒） — 明示的に初期化しておく
+	_changeBlinkInterval = 0.1f; // 0.5秒ごとに点滅
+	_changeBlinkTimer = 0.0f;
+	_changeBlinkVisible = true;
+
 	return true;
 }
 
@@ -227,6 +232,12 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 				}
 			}
 			_player->Process(); // 変身直後の一フレーム更新
+
+			// たぬ人間変身時の処理
+			_changeTimeActive = true;// 時間制言を有効化
+			_changeTimeLimit = 20.0f; // 変身時間をリセット
+			_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
+			_changeBlinkVisible = true; // 点滅表示フラグリセット
 			return true;
 		}
 	}
@@ -264,6 +275,12 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			}
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
+
+			// たぬモノ変身時の処理
+			_changeTimeActive = true;
+			_changeTimeLimit = 10.0f;
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = true;
 			return true;
 		}
 	}
@@ -299,6 +316,33 @@ bool ModeGame::PlayerTransform()
 		}
 	}
 
+	// 追加: モノ表示時の自動切替（入力または時間切れ）
+	if(_showMonoPlayer)
+	{
+		// PAD_INPUT_3 が押された、または変身タイマーが有効で時間切れならタヌキへ切替
+		if((trg & PAD_INPUT_3) || (_changeTimeActive && _changeTimeLimit <= 0.0f))
+		{
+			// モノ -> タヌキ は即時切替（アニメなし）
+			_showMonoPlayer = false;
+			_bShowTanuki = true;
+			_playerTanuki->SetPos(_playerMono->GetPos());
+			_playerTanuki->SetDir(_playerMono->GetDir());
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("goepon_idle", true);
+			_playerTanuki->Process();
+			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+			_walkEffect->SetPlayerPos(_playerTanuki.get());
+			_aseEffect->SetPlayer(_playerTanuki.get());
+
+			// タイマーが動いてたらリセット
+			_changeTimeActive = false; // 時間制限を無効化
+			_changeTimeLimit = 0.0f;
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = true;
+			return true;
+		}
+	}
+
 	// PAD_INPUT_3: タヌキ <-> モノ 切替
 	if(trg & PAD_INPUT_3)
 	{
@@ -320,7 +364,7 @@ bool ModeGame::PlayerTransform()
 			}
 			else if(_showMonoPlayer)
 			{
-				// モノ -> タヌキ は即時切替（アニメなし）
+				// (既存) モノ -> タヌキ は即時切替（アニメなし）
 				_showMonoPlayer = false;
 				_bShowTanuki = true;
 				_playerTanuki->SetPos(_playerMono->GetPos());
@@ -331,6 +375,12 @@ bool ModeGame::PlayerTransform()
 				_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 				_walkEffect->SetPlayerPos(_playerTanuki.get());
 				_aseEffect->SetPlayer(_playerTanuki.get());
+
+				// タイマーが動いてたらリセット
+				_changeTimeActive = false;// 時間制限を無効化
+				_changeTimeLimit = 0.0f;
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = true;
 				return true;
 			}
 		}
@@ -365,7 +415,12 @@ bool ModeGame::PlayerTransform()
 					_aseEffect->SetPlayer(_playerTanuki.get());
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->PlayAnimation("goepon_idle", true);
-					
+
+					// タイマーが動いてたらリセット
+					_changeTimeActive = false;
+					_changeTimeLimit = 0.0f;
+					_changeBlinkTimer = 0.0f;
+					_changeBlinkVisible = true;
 				}
 			}
 		}
@@ -387,7 +442,6 @@ bool ModeGame::PlayerTransform()
 
 	return true;
 }
-
 // オブジェクト処理
 bool ModeGame::ObjectProcess()
 {
@@ -478,17 +532,37 @@ bool ModeGame::ObjectRender()
 		{
 			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
 			{
+				if(_changeTimeActive && _changeTimeLimit <= 10.0f)
+				{
+					// 点滅中で「非表示側」のタイミングなら描画しない
+					if(!_changeBlinkVisible)
+					{
+
+						continue;
+					}
+				}
 				player_base->Render();
 			}
 		}
 		else
 		{
+			// 人間プレイヤー描画時に、タイマー点滅中なら描画をスキップする判定を入れる
 			if(player_base.get() == _player.get() && player_base->IsAlive())
 			{
+				if(_changeTimeActive && _changeTimeLimit <= 10.0f)
+				{
+					// 点滅中で「非表示側」のタイミングなら描画しない
+					if(!_changeBlinkVisible)
+					{
+
+						continue;
+					}
+				}
 				player_base->Render();
 			}
 		}
 	}
+
 	// キャラクターの影描画
 	for(auto& shadow : _charaShadow)
 	{
