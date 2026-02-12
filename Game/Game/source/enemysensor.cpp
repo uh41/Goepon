@@ -341,7 +341,7 @@ bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& e
 	vec::Vec3 dirNorm = vec3::VNorm(direction);
 
 	// チェック回数を計算
-	int checkCount = static_cast<int>(totalDistance / checkInterval);
+	int checkCount = StCas<int>(totalDistance / checkInterval);
 
 	// 一定間隔で床の存在をチェック
 	for (int i = 1; i <= checkCount; i++)
@@ -494,8 +494,8 @@ void EnemySensor::RenderDetectionSector() const
 	// 扇形の輪郭線を描画
 	for (int i = 0; i < segments; i++)
 	{
-		float angle1 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / static_cast<float>(segments)));
-		float angle2 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * (i + 1) / static_cast<float>(segments)));
+		float angle1 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(segments)));
+		float angle2 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * (i + 1) / StCas<float>(segments)));
 
 		// 事前計算：三角関数の結果をキャッシュ
 		float sin1 = sinf(angle1);
@@ -635,7 +635,7 @@ void EnemySensor::RenderDetectionUI() const
 
 		// 「found」の文字列の幅を取得して中央揃え
 		const char* foundText = "found";
-		int textWidth = GetDrawStringWidth(foundText, static_cast<int>(strlen(foundText)));
+		int textWidth = GetDrawStringWidth(foundText, StCas<int>(strlen(foundText)));
 		int x = (screenWidth - textWidth) / 2;
 		int y = screenHeight / 2 - 32;
 

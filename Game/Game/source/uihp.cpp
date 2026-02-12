@@ -66,7 +66,7 @@ bool UiHp::Render()
 
 	float hp = _player->GetHP();
 
-	int filled = static_cast<int>((hp / _fMaxHp) * _iBlock + 0.5f);
+	int filled = StCas<int>((hp / _fMaxHp) * _iBlock + 0.5f);
 	if(filled > _iBlock)
 	{
 		filled = _iBlock;
@@ -80,7 +80,7 @@ bool UiHp::Render()
 	// HPÉuÉçÉbÉNï`âÊ
 	for(int i = 0; i < _iBlock; i++)
 	{
-		int x = static_cast<int>(start_x + 70.0f + i * (_iBlockW + _iGap));
+		int x = StCas<int>(start_x + 70.0f + i * (_iBlockW + _iGap));
 		int y = start_y;
 		if(i > filled)
 		{

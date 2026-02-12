@@ -191,7 +191,7 @@ void EnemySoundSensor::RenderSoundWaves()
 
 		// 色と透明度の設定
 		unsigned int color = GetColor(255, 255, 0);
-		int alpha = static_cast<int>(wave.alpha * 255);
+		int alpha = StCas<int>(wave.alpha * 255);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
 
 		// 音波の高さを少し上げる

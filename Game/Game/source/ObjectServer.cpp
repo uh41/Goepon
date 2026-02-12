@@ -7,6 +7,13 @@
 // * \��Ɠ�e: �V�K�쐬 �ΐX����@2026/1/5
 /*********************************************************************/
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 
 #include"ObjectServer.h"
 #include"Player.h"
@@ -190,7 +197,7 @@ bool ObjectServer::LoadDate(std::string stageName)
 	// マップオブジェクト生成
 	if(_map == nullptr)
 	{
-		_map = new Map1();
+		_map = NEW Map1();
 		AddObject(_map);
 	}
 

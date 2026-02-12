@@ -25,6 +25,9 @@ namespace at
 	template<typename C>
 	using upc = std::unique_ptr<C>;				// ユニークポインタとクラス
 
+	template<typename C>
+	using vupc = std::vector<std::unique_ptr<C>>; // ベクターとユニークポインタとクラス
+
 	template<typename T, typename C>
 	using umtc = std::unordered_map<T, C>;	// アンオーダードマップとストリングとクラス
 
@@ -54,4 +57,12 @@ namespace at
 
 	template<typename C>
 	using fc = std::function<C>;				// ファンクションとクラス
+
+
+}
+
+template<typename T, typename U>
+T StCas(U&& u)
+{
+	return static_cast<T>(std::forward<U>(u));
 }

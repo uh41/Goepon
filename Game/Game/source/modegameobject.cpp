@@ -139,7 +139,7 @@ bool ModeGame::ShadowInitialize()
 		}
 		auto shadow = std::make_shared<CharaShadow>();
 		// eb をキャプチャして EnemyBase* を返すラムダを渡す
-		shadow->SetTargetChara([eb]() -> CharaBase* { return static_cast<CharaBase*>(eb.get()); });
+		shadow->SetTargetChara([eb]() -> CharaBase* { return StCas<CharaBase*>(eb.get()); });
 		_charaShadow.emplace_back(shadow);
 	}
 
@@ -599,7 +599,7 @@ bool ModeGame::CheckAllDetections()
 		{
 			for(auto& item : container)
 			{
-				EnemyBase* eb = static_cast<EnemyBase*>(item.get());
+				EnemyBase* eb = StCas<EnemyBase*>(item.get());
 				if(!eb || !eb->IsAlive())
 				{
 					continue;

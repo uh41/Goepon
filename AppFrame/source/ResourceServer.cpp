@@ -11,6 +11,13 @@
 #include "ResourceServer.h"
 #include<algorithm>
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // 静的メンバ実体
 std::unordered_map<std::string, int>	ResourceServer::_mapGraph;
 std::unordered_map<std::string, ResourceServer::DIVGRAPH>	ResourceServer::_mapDivGraph;
@@ -89,7 +96,7 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
     }
     // キーが無かった
     // まずはメモリを作成する
-    int* hbuf = new int[AllNum];
+    int* hbuf = NEW int[AllNum];
     int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIBのAPIを呼ぶので、::を先頭に付け、このクラスの同じ名前の関数と区別する
     if (err == 0) {
         // 成功
@@ -127,7 +134,7 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
     }
     // キーが無かった
     // まずはメモリを作成する
-    int* hbuf = new int[AllNum];
+    int* hbuf = NEW int[AllNum];
     int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIBのAPIを呼ぶので、::を先頭に付け、このクラスの同じ名前の関数と区別する
     if(err == 0) 
     {

@@ -15,22 +15,30 @@
 #include "ModeGameClear.h"
 #include "applicationglobal.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
+
 
 // 初期化
 bool ModeGame::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	// カメラ初期化
-	_camera = new Camera();
+	//// カメラ初期化
+	//_camera = NEW Camera();
 
-	_camera->Initialize();
+	//_camera->Initialize();
 
 	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
 	// オブジェクトサーバー初期化
-	_objectServer = new ObjectServer(this);
+	_objectServer = NEW ObjectServer(this);
 	_objectServer->LoadDate("stage");
 	_objectServer->ProcessInit();
 
@@ -379,7 +387,7 @@ bool ModeGame::IsHitCircle(CharaBase* c1, CharaBase* c2)
 	float w, h, length;
 	w = c1->GetPos().x - c2->GetPos().x;
 	h = c1->GetPos().z - c2->GetPos().z;
-	length = static_cast<float>(sqrtf(w * w + h * h));
+	length = StCas<float>(sqrtf(w * w + h * h));
 
 	// 中心点間の距離が、2つの円の半径の合計よりも小さい場合、当たり
 	if(length < c1->GetCollisionR() + c2->GetCollisionR())

@@ -68,6 +68,7 @@ namespace mv1
   inline constexpr const char* PoorEnemy = "res/PoorEnemyMelee/PoorEnemy.mv1";
   inline constexpr const char* bushi_0114taiki = "res/PoorEnemyMelee/bushi_0114taiki.mv1";
   inline constexpr const char* bushi_karitaiki = "res/PoorEnemyMelee/bushi_karitaiki.mv1";
+  inline constexpr const char* busi_multimotion = "res/PoorEnemyMelee/busi_multimotion.mv1";
   inline constexpr const char* busi_tesuto = "res/PoorEnemyMelee/busi_tesuto.mv1";
   inline constexpr const char* goepon_busi_03 = "res/PoorEnemyMelee/goepon_busi_03.mv1";
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";

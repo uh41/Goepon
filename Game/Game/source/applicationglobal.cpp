@@ -24,6 +24,7 @@ ApplicationGlobal::ApplicationGlobal()
 // デストラクタ
 ApplicationGlobal::~ApplicationGlobal()
 {
+	//ResourceServer::Release();
 	// 何もしない
 }
 
