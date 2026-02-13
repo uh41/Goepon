@@ -351,6 +351,37 @@ bool ModeGame::DebugRender()
 		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
 	}
 
+	// --- ここに変身時間表示を追加 ---
+	if(_changeTimeActive)
+	{
+		// 点滅制御がある場合は点滅フラグが true のときだけ表示
+		if(_changeBlinkVisible)
+		{
+			// フォントサイズ / 描画位置
+			int fontSize = 28;
+			SetFontSize(fontSize);
+
+			// 5秒以下で注意色、それ以外は白
+			unsigned int color = (_changeTimeLimit <= 5.0f) ? GetColor(255, 64, 64) : GetColor(255, 255, 255);
+
+			// 表示位置（左上に余白を確保）
+			int x = 20;
+			int y = 20;
+
+			// 60秒以上なら MM:SS 表示、未満は秒（小数）表示
+			if(_changeTimeLimit >= 60.0f)
+			{
+				int minutes = static_cast<int>(_changeTimeLimit) / 60;
+				int seconds = static_cast<int>(_changeTimeLimit) % 60;
+				DrawFormatString(x, y, color, "変身残り: %d:%02d", minutes, seconds);
+			}
+			else
+			{
+				DrawFormatString(x, y, color, "変身残り: %.1f s", _changeTimeLimit);
+			}
+		}
+	}
+
 	return true;
 }
 

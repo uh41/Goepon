@@ -600,9 +600,9 @@ bool ModeGame::Process()
 			}
 
 			// エフェクト再設定
-			if(_hensinEffect && _playerTanuki) _hensinEffect->PlayEffect(_playerTanuki->GetPos());
-			if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
-			if(_aseEffect) _aseEffect->SetPlayer(_playerTanuki.get());
+			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+			_walkEffect->SetPlayerPos(_playerTanuki.get());
+			_aseEffect->SetPlayer(_playerTanuki.get());
 
 			// 周囲の敵に対する音波／エフェクト
 			for(auto& enemy : _enemyBase)
@@ -645,67 +645,11 @@ bool ModeGame::Render()
 
 	EffekseerManager::GetInstance()->Render();
 
-	// キャラを描画（生存しているもののみ、プレイヤーは除外）
-	for(auto& chara : _chara)
-	{
-		if(chara->IsAlive())
-		{
-			chara->Render();
-		}
-	}
-
-	for(auto& enemy : _enemyBase)
-	{
-		if(enemy->IsAlive())
-		{
-			enemy->Render();
-		}
-	}
-
-
-	// オブジェクトを描画
-	for(auto& object : _object)
-	{
-		object->Render();
-	}
-
-
 	// オブジェクトサーバーの描画
 	_objectServer->Render();
 
 	ObjectRender();// オブジェクト描画処理
 	DebugRender();// デバック描画処理
-
-	// --- ここに変身時間表示を追加 ---
-	if(_changeTimeActive)
-	{
-		// 点滅制御がある場合は点滅フラグが true のときだけ表示
-		if(_changeBlinkVisible)
-		{
-			// フォントサイズ / 描画位置
-			int fontSize = 28;
-			SetFontSize(fontSize);
-
-			// 5秒以下で注意色、それ以外は白
-			unsigned int color = (_changeTimeLimit <= 5.0f) ? GetColor(255, 64, 64) : GetColor(255, 255, 255);
-
-			// 表示位置（左上に余白を確保）
-			int x = 20;
-			int y = 20;
-
-			// 60秒以上なら MM:SS 表示、未満は秒（小数）表示
-			if(_changeTimeLimit >= 60.0f)
-			{
-				int minutes = static_cast<int>(_changeTimeLimit) / 60;
-				int seconds = static_cast<int>(_changeTimeLimit) % 60;
-				DrawFormatString(x, y, color, "変身残り: %d:%02d", minutes, seconds);
-			}
-			else
-			{
-				DrawFormatString(x, y, color, "変身残り: %.1f s", _changeTimeLimit);
-			}
-		}
-	}
 
 	if(_d_view_collision)
 	{
@@ -718,7 +662,7 @@ bool ModeGame::Render()
 bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 {
 	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
-	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
+	bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 
 	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
 	if (!hitGoal)
