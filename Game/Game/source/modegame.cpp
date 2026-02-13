@@ -500,9 +500,6 @@ bool ModeGame::Process()
 		}
 	}
 
-	// 攻撃判定にはアクティブな PlayerBase* を渡す
-	IsPlayerAttack(playerBase, _enemyBase);
-
 	// デバック用タイマー（転ばせる）
 	if(_showKnockdownMessage)
 	{
@@ -515,7 +512,6 @@ bool ModeGame::Process()
 		}
 	}
 
-	IsPlayerAttack(_player.get(), _enemyBase);
 	// ゴールとの当たり判定
 	if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
 	{

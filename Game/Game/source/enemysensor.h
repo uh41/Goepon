@@ -99,6 +99,10 @@ protected:
 	// �ǐՊ֘A�萔
 	static constexpr float CHASE_TIME = 5.0f; // �ǐՌp�����ԁi�b�j
 
+	int _detectionFrameCount;
+	static constexpr int DetectionFrame = 10;
+	bool _CanDetectionResult;
+
 	// ��������p���\�b�h
 	void UpdateDetectionTimer();		  // ���o�^�C�}�[�̍X�V
 	vec::Vec3 GetDetectionCenter() const; // ���G�͈͂̒��S�ʒu��擾

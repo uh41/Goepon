@@ -22,6 +22,9 @@ bool EnemySensor::Initialize()
 	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置初期化
 	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマー初期化
 
+	_detectionFrameCount = 0;
+	_CanDetectionResult = false;
+
 	// デフォルトの索敵範囲設定
 	SetDetectionSector(400.0f, 90.0f);//半径、角度
 
@@ -107,6 +110,14 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 		return false;
 	}
 
+	// フレーム間隔(扇形判定の負荷軽減用)
+	_detectionFrameCount++;
+	if (_detectionFrameCount < DetectionFrame)
+	{
+		return _CanDetectionResult;
+	}
+	_detectionFrameCount = 0;
+
 	vec::Vec3 playerPos = player->GetPos();	// プレイヤーの位置取得
 	
 	// プレイヤーのカプセル情報を計算
@@ -143,11 +154,8 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 		_detectionInfo.isChasing = true;				// 追跡中フラグセット
 		_detectionInfo.chaseTimer = CHASE_TIME;			// 追跡タイマーリセット
 	}
-	else
-	{
-		// プレイヤーが範囲外だが、まだ追跡中の場合
-		// 最後に確認された位置は更新しない（記憶している位置を維持）
-	}
+
+	_CanDetectionResult = detected;
 
 	return detected;
 }
@@ -210,6 +218,9 @@ void EnemySensor::ResetDetection()
 	_detectionInfo.isChasing = false;	// 追跡中フラグリセット
 	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置リセット
 	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマーリセット
+
+	_detectionFrameCount = 0;
+	_CanDetectionResult = false;
 }
 
 // 検出タイマーの更新
