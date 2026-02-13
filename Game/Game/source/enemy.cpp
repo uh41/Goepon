@@ -17,7 +17,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel(mv1::busi_multimotion);
+	_handle = MV1LoadModel(mv1::bushi_0114taiki);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -38,6 +38,10 @@ bool Enemy::Initialize()
 	_moveSpeed = 2.0f;
 
 	// 整合性のため他は base に委譲済み
+
+	_attachAnimDamage = "taiki";
+	_attachAnimStan = "taiki";
+	_attachAnimGetUp = "kari";
 
 	// タイマー初期化等は base にて行われている
 	return true;
@@ -214,9 +218,9 @@ bool Enemy::Process()
 			switch(s)
 			{
 			case CharaBase::STATUS::WAIT:
-				return "kari_idle";
-			case CharaBase::STATUS::WALK:
 				return "kari_walk";
+			case CharaBase::STATUS::WALK:
+				return "taiki";
 			default:
 				return std::string();
 			}
@@ -339,7 +343,7 @@ bool Enemy::Render()
 	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	MATRIX mScale = MGetScale(VGet(1.7f, 1.7f, 1.7f));
+	MATRIX mScale = MGetScale(VGet(10.0f, 10.0f, 10.0f));
 
 	MATRIX m = MGetIdent();
 	m = MMult(m, mRotY);

@@ -118,6 +118,12 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 {
 	if(!c1 || !c2) { return false; }
 
+	if(_isTanukiAttackPlaying)
+	{
+		// タヌキアタック中は当たり判定を無効化
+		return false;
+	}
+
 	// カプセル上下を生成（top: +Y, bottom: -Y）
 	vec::Vec3 c1_pos = c1->GetPos();
 	vec::Vec3 c2_pos = c2->GetPos();
@@ -443,10 +449,6 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 				enemy->StartDamage();
 				_showKnockdownMessage = true;
 				_knockdownMessageSec = 1.0f; // 表示時間 1秒
-			}
-			else
-			{
-				enemy->PlayAnimation("wait", false);
 			}
 		}
 

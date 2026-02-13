@@ -334,12 +334,12 @@ void EnemyBase::UpdateDamageAnimation()
 
 	if(_attachStage == 1)
 	{
-		if(_animId == -1 || !AnimationManager::GetInstance()->IsPlaying(_animId))
+		if(AnimationManager::GetInstance()->IsPlaying(_animId))
 		{
 			_attachStage = 2;
 			_stanTimer = STAN_DURATION;
 
-			if(!_attachAnimDamage.empty())
+			if(!_attachAnimStan.empty())
 			{
 				_animId = PlayAnimation(_attachAnimStan, true);
 				_fPlayTime = 0.0f;
