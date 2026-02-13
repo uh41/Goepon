@@ -178,7 +178,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "TR3Goal.json";
+	std::string jsonFile = "Treasure3.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -229,10 +229,18 @@ bool ModeGame::LoadStageData()
 
 	/*	if(name == "Treasure")
 		{
+			auto treasure = std::make_shared<Treasure>();
+			treasure->SetJsonDataUE(object);
+			_treasure.emplace_back(treasure);
+			continue;
+		}*/
+
+		if(name == "Treasure")
+		{
 			auto _treasure = std::make_shared<Treasure>();
 			_treasure->SetJsonDataUE(object);
 			continue;
-		}*/
+		}
 	}
 
 	// 敵を生成して、customId にマッチする巡回点を割り当てる
