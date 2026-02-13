@@ -186,10 +186,10 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 }
 
 // キャラと宝箱の当たり判定処理
-bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
+bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasure)
 {
 	// 引数チェック
-	if(!chara || !treasure)
+	if(!chara)
 	{
 		return false;
 	}
@@ -200,75 +200,89 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure)
 		return false;
 	}
 
+    // treasureが空なら当たらない
+	if(treasure.empty())
+	{
+		return false;
+	}
+
+	// どれか一つでも当たればtrue
+	bool hitAny = false;
+
 	// コリジョン判定で引っかかった時に、escapeTbl[]順に角度を変えて回避を試みる
 	float escapeTbl[] =
 	{
 		0, -10, 10, -20, 20, -30, 30, -40, 40, -50, 50, -60, 60, -70, 70, -80, 80,
 	};
 
-	// 角度を変えて回避を試みるループ
-	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
+	// 宝箱ごとに判定
+	for(const auto& treasure : treasure)
 	{
-		// 移動前の位置を保存
-		vec::Vec3 oldvPos = chara->GetPos();   // 移動前の位置を保存
-		vec::Vec3 v = chara->GetInputVector(); // 移動量ベクトル
-		vec::Vec3 oldv = v;					   // 移動量ベクトル保存
+		Treasure* t = treasure.get();
+		if(!t) { continue; }
 
-		
-		float rad = atan2((float)v.z, (float)v.x);
-		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
-		float sx = _camera->_vPos.x - _camera->_vTarget.x;
-		float sz = _camera->_vPos.z - _camera->_vTarget.z;
-		float camrad = atan2(sz, sx);
-
-		// escapeTbl[i]の分だけ移動量v回転
-		float escape_rad = DEG2RAD(escapeTbl[i]);
-		v.x = cos(rad + camrad + escape_rad) * length;
-		v.z = sin(rad + camrad + escape_rad) * length;
-
-		// vの分移動
-		chara->SetPos(vec3::VAdd(chara->GetPos(), v));
-
-		// 宝箱の指定フレームで判定
-		const auto handleTreasure = treasure->GetModelHandle();
-		const auto frameTreasure = treasure->GetHitCollisionFrame();
-
-		// プレイヤーと指定したコリジョンフレームで当たり判定
-		vec::Vec3 hitPos;
-		const bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
-			chara->GetPos(),
-			handleTreasure,
-			frameTreasure,
-			chara->GetColSubY(),
-			hitPos
-		);
-
-		//　当たったから元の位置に戻す
-		if(hit)
+		// 角度を変えて回避を試みるループ
+		for(int i = 0; i < static_cast<int>(sizeof(escapeTbl) / sizeof(escapeTbl[0])); i++)
 		{
-			// 位置を戻して「めり込み/加速」を防ぐ
-			chara->SetPos(chara->GetOldPos());
-			return true;
-			break;
-		}
-		else
-		{
+			// 移動前の位置を保存
+			vec::Vec3 oldvPos = chara->GetPos();
+			vec::Vec3 v = chara->GetInputVector();
+
+			float rad = atan2((float)v.z, (float)v.x);
+			float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
+			float sx = _camera->_vPos.x - _camera->_vTarget.x;
+			float sz = _camera->_vPos.z - _camera->_vTarget.z;
+			float camrad = atan2(sz, sx);
+
+			// escapeTbl[i] の分だけ移動量 v を回転
+			float escape_rad = DEG2RAD(escapeTbl[i]);
+			v.x = cos(rad + camrad + escape_rad) * length;
+			v.z = sin(rad + camrad + escape_rad) * length;
+
+			// v の分移動（試行）
+			chara->SetPos(vec3::VAdd(chara->GetPos(), v));
+
+			// 宝箱の指定フレームで判定
+			const auto handleTreasure = t->GetModelHandle();
+			const auto frameTreasure = t->GetHitCollisionFrame();
+
+			vec::Vec3 hitPos;
+			const bool hit = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+				chara->GetPos(),
+				handleTreasure,
+				frameTreasure,
+				chara->GetColSubY(),
+				hitPos
+			);
+
+			if(hit)
+			{
+				// 位置を戻して「めり込み/加速」を防ぐ
+				chara->SetPos(chara->GetOldPos());
+				hitAny = true;
+				break; // この宝箱の回避ループ終了
+			}
+
 			// 当たらなかった。元の座標に戻す
 			chara->SetPos(oldvPos);
 		}
-	}
-	return false;
-}
 
-bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure)
+		// 1つでも当たったら早期終了（必要なら継続でもOK）
+		if(hitAny)
+		{
+			return true;
+		}
+	}
+
+	return hitAny;
+}
+	
+
+
+bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<Treasure>& treasures)
 {
 	// 引数チェック
-	if(!player || !treasure)
-	{
-		return false;
-	}
-
-	if(!treasure->IsVisible())
+	if(!player)
 	{
 		return false;
 	}
@@ -278,68 +292,106 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasu
 	{
 		return false;
 	}
-	// 宝箱の指定フレームで判定
-	const auto handleTreasure = treasure->GetModelHandle();
-	const auto frameTreasure  = treasure->GetOpenCollisionFrame();
 
-	// プレイヤーと指定したコリジョンフレームで当たり判定
-	vec::Vec3 hitPos;
-	const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision
-	(
-		player->GetPos(),
-		handleTreasure,
-		frameTreasure,
-		player->GetColSubY(),
-		hitPos
-	);
+	if(treasures.empty())
+	{
+		return false;
+	}
 
+	bool openedAny = false;
 
+	// A長押し判定は宝箱共通なので先に取る
 	const int key = ApplicationBase::GetInstance()->GetKey();
 	const bool holdA = (key & PAD_INPUT_1) != 0;
 
+	// 「開けている最中か」のデフォルトは false（どれにも該当しなければ OFF）
+	bool anyInTreasure = false;
+
+	for(const auto& sp : treasures)
+	{
+		Treasure* t = sp.get();
+		if(!t) { continue; }
+
+		if(!t->IsVisible())
+		{
+			continue;
+		}
+
+		const auto handleTreasure = t->GetModelHandle();
+		const auto frameTreasure  = t->GetOpenCollisionFrame();
+
+		vec::Vec3 hitPos;
+		const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			player->GetPos(),
+			handleTreasure,
+			frameTreasure,
+			player->GetColSubY(),
+			hitPos
+		);
+
+		if(!inTreasure)
+		{
+			continue;
+		}
+
+		anyInTreasure = true;
+
+		// 宝箱の範囲内だが A を押してないなら「開けてる状態」にしない
+		if(!holdA)
+		{
+			continue;
+		}
+
+		// ここに来た時点で「宝箱の範囲内 + A を押している」
+		_isOpeningTreasure = true;
+
+		// すでに取得済みなら何もしない
+		if(_treasureTakenThisTreasure)
+		{
+			return false;
+		}
+
+		// 経過時間加算（固定FPS前提のまま踏襲）
+		const float dt = 1.0f / 180.0f;
+		_treasureHoldSec += dt;
+
+		// 1秒間ホールドで取得
+		if(_treasureHoldSec >= 1.0f)
+		{
+			_treasureTakenCount++;
+			_treasureTakenThisTreasure = true;
+			_treasureHoldSec = 0.0f;
+
+			t->SetOpen(true);
+			_isOpeningTreasure = false;
+
+			if(_doyaEffect)
+			{
+				_doyaEffect->PlayEffect(t->GetPos());
+			}
+
+			openedAny = true;
+			return true; // 1回の入力で1個開く運用ならここで終了
+		}
+
+		// 範囲内 + 押下中だが時間が足りない場合は継続
+		return false;
+	}
+
 	// 条件崩れたらリセット
-	if(!inTreasure || !holdA)
+	if(!anyInTreasure || !holdA)
 	{
 		_isOpeningTreasure = false;
 		_treasureHoldSec = 0.0f;
-		// 宝箱から離れたら取得フラグリセット
-		if(!inTreasure)
+
+		// 宝箱から離れたら取得フラグリセット（元仕様踏襲）
+		if(!anyInTreasure)
 		{
-			_treasureTakenThisTreasure = false; // 離れたら再取得可能（”同じ宝箱で1回だけ”にしたいならここを消す）
+			_treasureTakenThisTreasure = false;
 		}
-		return false;
 	}
 
-	// ここに来た時点で「宝箱の範囲内 + A を押している」
-	_isOpeningTreasure = true;          
-
-	// すでに取得済みなら何もしない
-	if(_treasureTakenThisTreasure)
-	{
-		return false;
-	}
-
-	// 経過時間加算（固定60FPS前提：必要なら実測deltaに置換）
-	const float dt = 1.0f / 180.0f;
-	_treasureHoldSec += dt;
-
-	// 1秒間ホールドで取得
-	if(_treasureHoldSec >= 1.0f)
-	{
-		_treasureTakenCount++;
-		_treasureTakenThisTreasure = true;
-		_treasureHoldSec = 0.0f;
-
-		// 宝箱状態を変えたい場合（見た目を開ける等）
-		treasure->SetOpen(true);
-		_isOpeningTreasure = false;      // 開き終わったので OFF
-
-		_doyaEffect->PlayEffect(treasure->GetPos());
-
-		return true;
-	}
-
-	return false;
+	return openedAny;
 }
 
 

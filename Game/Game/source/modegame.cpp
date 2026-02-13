@@ -476,58 +476,27 @@ bool ModeGame::Process()
 		}
 	}
 	
-	// 宝箱との当たり判定処理
-	auto processTreasureCollison = [&](PlayerBase* player)
-	{
-		// 宝箱との当たり判定処理
-		for(auto& treasure : _treasure)
-		{
-				if(!treasure) continue;
-				CharaToTreasureHitCollision(player, treasure.get());
-				CharaToTreasureOpenCollision(player, treasure.get());
-		}
-	};
-
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
-		processTreasureCollison(_playerTanuki.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure);
+		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure);
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else if(_showMonoPlayer)
 	{
 		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
-		processTreasureCollison(_playerMono.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure);
+		CharaToTreasureOpenCollision(_playerMono.get(), _treasure);
 		PlayerCameraInfo(_playerMono.get());
 	}
 	else
 	{
 		EscapeCollision(_player.get(), _objectServer->GetMap());
-		processTreasureCollison(_player.get());
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure);
+		CharaToTreasureOpenCollision(_player.get(), _treasure);
 		PlayerCameraInfo(_player.get());
 	}
-
-	/*if(_bShowTanuki)
-	{
-		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure.get());
-		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure.get());
-		PlayerCameraInfo(_playerTanuki.get());
-	}
-	else if(_showMonoPlayer)
-	{
-		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure.get());
-		CharaToTreasureOpenCollision(_playerMono.get(), _treasure.get());
-		PlayerCameraInfo(_playerMono.get());
-	}
-	else
-	{
-		EscapeCollision(_player.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure.get());
-		CharaToTreasureOpenCollision(_player.get(), _treasure.get());
-		PlayerCameraInfo(_player.get());
-	}*/
 
 	PlayerBase* playerBase = nullptr;
 

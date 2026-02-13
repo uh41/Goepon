@@ -82,8 +82,8 @@ public:
 	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
     // キャラと宝箱の当たり判定処理
-	bool CharaToTreasureHitCollision(CharaBase* chara, Treasure* treasure);
-	bool CharaToTreasureOpenCollision(PlayerBase* player, Treasure* treasure);
+	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasures);
+	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<Treasure>& treasures);
 	// プレイヤーとゴールの当たり判定
 	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
 
@@ -256,5 +256,6 @@ protected:
 private:
 	// class ModeGameのメンバに追加
 	bool _requestResetStage = false; // ステージリセット要求フラグ	
+
 };
 
