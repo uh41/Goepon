@@ -87,9 +87,6 @@ bool ModeGame::Initialize()
 		map->SetCamera(_camera);
 	}
 	_bShowTanuki = true;
-	ObjectInitialize();	// オブジェクト初期化
-
-	LoadStageData();// ステージデータ読み込み
 
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
@@ -230,12 +227,12 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-		if(name == "Treasure")
+	/*	if(name == "Treasure")
 		{
 			auto _treasure = std::make_shared<Treasure>();
 			_treasure->SetJsonDataUE(object);
 			continue;
-		}
+		}*/
 	}
 
 	// 敵を生成して、customId にマッチする巡回点を割り当てる
@@ -775,7 +772,7 @@ bool ModeGame::ResetStage()
 	_enemyBase.clear();
 	_enemy.clear();
 	_enemyMove.clear();
-
+	_treasure.clear();
 	// サウンドも止める(もしbgm続行させる場合はこちらを修正)
 	if(_soundServer)
 	{
@@ -829,7 +826,7 @@ bool ModeGame::ResetStage()
 		_aseEffect->SetPlayer(_playerTanuki.get());
 	}
 
-// 宝箱も閉じる（全宝箱）
+    // 宝箱も閉じる（全宝箱）
 	for(auto& t : _treasure)
 	{
 		if(t) t->SetOpen(false);

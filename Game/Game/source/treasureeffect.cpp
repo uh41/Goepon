@@ -44,12 +44,13 @@ bool TreasureEffect::Process()
 	auto em = EffekseerManager::GetInstance();
 	if(!em) { return true; }
 
-	// コンテナが空なら、残っている再生を止める
+	// 宝箱が一つもないなら全て停止して終了
 	if(_treasure.empty())
 	{
+		// 全て停止
 		for(auto& kv : _playHandles)
 		{
-			const int playHandle = kv.second;
+			const int playHandle = kv.second; 
 			if(playHandle != -1)
 			{
 				em->StopEffect(playHandle);
@@ -59,72 +60,84 @@ bool TreasureEffect::Process()
 		return true;
 	}
 
-	// 現在の宝箱をループして、再生/追従/停止
+	// 各宝箱ごとに処理
 	for(const auto& t : _treasure)
 	{
 		Treasure* treasure = t.get();
 		if(!treasure) { continue; }
 
-		// mapにキーがなければ作られ、初期値は0になる可能性があるため-1に寄せる
-		int& playHandle = _playHandles[treasure];
-		if(playHandle == 0)
+		// 存在しなければ-1で初期化
+		auto it = _playHandles.find(treasure);
+		if(it == _playHandles.end())
 		{
-			playHandle = -1;
+			// 新規追加後のイテレータ取得
+			// emplace = コンテナ内に要素を直接構築する
+			it = _playHandles.emplace(treasure, -1).first; 
 		}
-		if(treasure->IsVisible())
-		{
-			if(_handle != -1 && playHandle == -1)
-			{
-				playHandle = em->PlayEffect3DPos(_handle, treasure->GetPos());
-			}
-			else if(playHandle != -1)
-			{
-				em->SetPosEffect(playHandle, treasure->GetPos());
-			}
-		}
-		else
+		int& playHandle = it->second; // 再生ハンドル参照
+
+		// 宝箱が空いているなら止める
+		if(treasure->IsOpen())
 		{
 			if(playHandle != -1)
 			{
 				em->StopEffect(playHandle);
 				playHandle = -1;
 			}
+			continue;
+		}
+
+		// 宝箱が表示されているならエフェクト再生
+		if(treasure->IsVisible())
+		{
+			if(_handle != -1 && playHandle == -1)
+			{
+				playHandle = em->PlayEffect3DPos(_handle, treasure->GetPos());	// 位置指定で再生
+			}
+			else if(playHandle != -1)
+			{
+				em->SetPosEffect(playHandle, treasure->GetPos()); // 位置更新
+			}
+		}
+		else
+		{
+			if(playHandle != -1)
+			{
+				em->StopEffect(playHandle);	 // 非表示なら止める
+				playHandle = -1;
+			}
 		}
 	}
 
-	// コンテナから消えた宝箱の再生ハンドルを停止して削除
+	// _treasure に存在しない宝箱のハンドルを削除
 	for(auto it = _playHandles.begin(); it != _playHandles.end();)
 	{
 		Treasure* key = it->first;
 
-		bool stillExists = false;
+		bool isInTreasureList = false; // _treasure に存在するか
 		for(const auto& t : _treasure)
 		{
-			// コンテナに存在しているかチェック
 			if(t.get() == key)
 			{
-				stillExists = true; // 存在している
+				isInTreasureList = true;
 				break;
 			}
 		}
-
-		// 存在していなければ停止して削除
-		if(!stillExists)
+		if(!isInTreasureList)
 		{
 			const int playHandle = it->second;
 			if(playHandle != -1)
 			{
 				em->StopEffect(playHandle);
 			}
-			it = _playHandles.erase(it);
+			it = _playHandles.erase(it); // 存在しないなら削除
 		}
-		// 存在していれば次へ
 		else
 		{
 			++it;
 		}
 	}
-
+	
 	return true;
 }
 
