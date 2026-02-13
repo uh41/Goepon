@@ -697,7 +697,7 @@ void EnemyBase::RenderYouDiedMessage()
 
 	// 表示テキスト
 	const char* youDiedText = "YOU DIED";
-	int textWidth = GetDrawStringWidth(youDiedText, static_cast<int>(strlen(youDiedText)));
+	int textWidth = GetDrawStringWidth(youDiedText, StCas<int>(strlen(youDiedText)));
 
 	// 画面中央に配置
 	int x = (screenWidth - textWidth) / 2;

@@ -253,6 +253,12 @@ protected:
 	// ゴール確認処理
 	bool UpdateGoalConfirm(PlayerBase* player);
 
+	bool _changeTimeActive;		// プレイヤーの時間制限フラグ
+	float _changeTimeLimit;		// プレイヤーの時間制限（秒）
+	float _changeBlinkTimer;	// プレイヤーの点滅タイマー
+	bool _changeBlinkVisible;	// プレイヤーの点滅表示フラグ
+	float _changeBlinkInterval; // プレイヤーの点滅間隔
+
 private:
 	// class ModeGameのメンバに追加
 	bool _requestResetStage = false; // ステージリセット要求フラグ	

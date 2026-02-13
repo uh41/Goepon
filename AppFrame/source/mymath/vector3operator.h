@@ -1,5 +1,6 @@
 #pragma once
 #include "vector3.h"
+#include "../aliastemplate.h"
 
 namespace vec3
 {
@@ -9,7 +10,7 @@ namespace vec3
 	template <typename T>
 	inline Vec3 VGet(T x, T y, T z)
 	{
-		return Vec3(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+		return Vec3(StCas<float>(x), StCas<float>(y), StCas<float>(z));
 	}
 
 	// ベクトルの加算
@@ -28,14 +29,14 @@ namespace vec3
 	template <typename T>
 	inline Vec3 VScale(const Vec3& v, T scale)
 	{
-		return v * static_cast<float>(scale);
+		return v * StCas<float>(scale);
 	}
 
 	// ベクトルのスカラー除算
 	template <typename T>
 	inline Vec3 VDiv(const Vec3& v, T div)
 	{
-		return v / static_cast<float>(div);
+		return v / StCas<float>(div);
 	}
 
 	// ベクトルの長さ

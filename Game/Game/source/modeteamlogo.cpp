@@ -1,6 +1,13 @@
 #include "modeteamlogo.h"
 #include "modetitle.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 ModeTeamLogo::ModeTeamLogo()
 {
 	Initialize();
@@ -73,7 +80,7 @@ bool ModeTeamLogo::Process()
 		case ModeBase::State::DONE:
 		{
 			// ŽŸ‚Ìƒ‚[ƒh‚ÖˆÚs
-			ModeServer::GetInstance()->Add(new ModeTitle(), 1, "game");
+			ModeServer::GetInstance()->Add(NEW ModeTitle(), 1, "game");
 			ModeServer::GetInstance()->Del(this);
 
 			break;

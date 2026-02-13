@@ -28,7 +28,7 @@ public:
 	int FindNearPointIndex(const vec::Vec3& pos) const;
 
 	// ポイント総数
-	int GetMovePointCount() const { return static_cast<int>(_movePoints.size()); }
+	int GetMovePointCount() const { return StCas<int>(_movePoints.size()); }
 
 	// 有効かどうか(裁定でも2点以上必要)
 	bool IsValid() const { return _movePoints.size() >= 2; }

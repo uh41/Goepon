@@ -9,6 +9,13 @@
 
 #include "ApplicationBase.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 ApplicationBase	*ApplicationBase::_lp_instance = nullptr;
 Fade* ApplicationBase::_fade = nullptr;
 
@@ -75,13 +82,18 @@ bool ApplicationBase::Initialize(HINSTANCE hInstance)
 	srand((unsigned int)time(NULL));
 
 	// モードサーバの初期化
-	_serverMode = new ModeServer();
+	_serverMode = NEW ModeServer();
 
 	return true;
 }
 
 bool ApplicationBase::Terminate()
 {
+	// モードサーバの終了
+	
+	delete _serverMode;
+
+	
 	// Effekseerを終了する。
 	Effkseer_End();
 	// DXライブラリ開放

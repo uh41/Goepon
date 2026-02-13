@@ -12,6 +12,14 @@
 #include "sounditembase.h"
 #include "sounditemoneshot.h"
 
+#ifndef NEW
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+#endif
 
 soundserver::SoundServer::SoundServer()
 {
@@ -74,7 +82,7 @@ void soundserver::SoundServer::Add(std::string name, at::spc<SoundItemBase> soun
 	// 以前は &sound を格納していたためスタック参照が残り、Get 時に不正になっていました。
 	// マップは動的確保した at::spc<SoundItemBase>* を保持する設計になっているため、
 	// ここで new して格納します（Del では delete する実装と整合）。
-	at::spc<SoundItemBase>* stored = new at::spc<SoundItemBase>(sound);
+	at::spc<SoundItemBase>* stored = NEW at::spc<SoundItemBase>(sound);
 
 	if(_bIsUpdate)
 	{

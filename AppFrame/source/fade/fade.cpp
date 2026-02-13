@@ -1,6 +1,7 @@
 #include "fade.h"
 #include "../mymath.h"
 #include "../Application/applicationbase.h"
+#include "../aliastemplate.h"
 
 Fade::Fade()
 {
@@ -80,12 +81,12 @@ bool Fade::Process()
 		_iFadeCnt++; // フェードのカウンタを進める
 		for(int i = 0; i < 4; i++)
 		{
-			_fadeColor[i] = static_cast<int>(
+			_fadeColor[i] = StCas<int>(
 				mymath::EasingLinear(
-					static_cast<float>(_iFadeCnt),// カウント
-					static_cast<float>(_fadeStColor[i]),// 開始カラー
-					static_cast<float>(_fadeEdColor[i]),// 終了カラー
-					static_cast<float>(_iFadeFrames))); // カラーの補間
+					StCas<float>(_iFadeCnt),// カウント
+					StCas<float>(_fadeStColor[i]),// 開始カラー
+					StCas<float>(_fadeEdColor[i]),// 終了カラー
+					StCas<float>(_iFadeFrames))); // カラーの補間
 		}
 	}
 	return true;

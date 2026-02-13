@@ -54,7 +54,7 @@ void ModeScenarioBase::ChangePage(int pageNo)
 	int oldPageNo = _pageNo;
 	int nextpage = mymath::Clamp(
 		0,
-		static_cast<int>(_page.size()) - 1,
+		StCas<int>(_page.size()) - 1,
 		oldPageNo + pageNo
 	);// ”ÍˆÍ“à‚ÉŽû‚ß‚é
 

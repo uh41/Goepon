@@ -12,7 +12,7 @@ void TextUtil::LTrim(std::string& text)
 {
 	size_t i = 0;
 	const size_t n = text.size(); 
-	while(i < n && IsSpace(static_cast<unsigned char>(text[i]))) ++i;
+	while(i < n && IsSpace(StCas<unsigned char>(text[i]))) ++i;
 	if(i > 0) text.erase(0, i);
 }
 
@@ -23,7 +23,7 @@ void TextUtil::RTrim(std::string& text)
 	if (text.empty()) return;
 	size_t i = text.size();
 	// 文字列の後ろから空白文字をスキャンしていく
-	while (i > 0 && IsSpace(static_cast<unsigned char>(text[i - 1])))
+	while (i > 0 && IsSpace(StCas<unsigned char>(text[i - 1])))
 	{
 		// 空白が見つかるたびに、有効な文字数(i)を減らしていく
 		--i;
@@ -50,7 +50,7 @@ std::string TextUtil::ToLower(const std::string& input)
 	// 1文字ずつ小文字化
 	for(size_t i = 0; i < dst.size(); ++i)
 	{
-		dst[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(dst[i])));
+		dst[i] = StCas<char>(std::tolower(StCas<unsigned char>(dst[i])));
 	}
 	return dst;
 }

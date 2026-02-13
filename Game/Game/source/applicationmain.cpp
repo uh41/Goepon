@@ -16,6 +16,13 @@
 #include "modeteamlogo.h"
 #include "modeopscenario.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // 実体
 ApplicationMain g_application_main;
 
@@ -44,7 +51,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 	//ModeServer::GetInstance()->Add(new ModeTeamLogo(), 3, "teamlogo");
 	//ModeServer::GetInstance()->Add(new ModeTitle(), 2, "title");
 	//ModeServer::GetInstance()->Add(new ModeOpScenario(), 1, "opscenario");
-	ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
+	ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
 
 	return true;
 }

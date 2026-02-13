@@ -21,9 +21,9 @@ public:
 	template <typename U>
 	Vector3(const Vector3<U>& v)				// 型変換用のコンストラクタ
 	{ 
-		this->x = static_cast<T>(v.x);
-		this->y = static_cast<T>(v.y);
-		this->z = static_cast<T>(v.z);
+		this->x = StCas<T>(v.x);
+		this->y = StCas<T>(v.y);
+		this->z = StCas<T>(v.z);
 	}
 
 	~Vector3() = default ;						// デストラクタ
@@ -100,18 +100,18 @@ public:
 	// 二つのベクトルが等しいかどうか
 	bool operator == (const Vector3<T>& other) const
 	{
-		if(std::abs(this->x - other.x) > static_cast<T>(0.01)) { return false; }
-		if(std::abs(this->y - other.y) > static_cast<T>(0.01)) { return false; }
-		if(std::abs(this->z - other.z) > static_cast<T>(0.01)) { return false; }
+		if(std::abs(this->x - other.x) > StCas<T>(0.01)) { return false; }
+		if(std::abs(this->y - other.y) > StCas<T>(0.01)) { return false; }
+		if(std::abs(this->z - other.z) > StCas<T>(0.01)) { return false; }
 		return true;
 	}
 
 	// 二つのベクトルが等しくないかどうか
 	bool operator != (const Vector3<T>& other) const
 	{
-		if(std::abs(this->x - other.x) > static_cast<T>(0.0)) { return true; }
-		if(std::abs(this->y - other.y) > static_cast<T>(0.0)) { return true; }
-		if(std::abs(this->z - other.z) > static_cast<T>(0.0)) { return true; }
+		if(std::abs(this->x - other.x) > StCas<T>(0.0)) { return true; }
+		if(std::abs(this->y - other.y) > StCas<T>(0.0)) { return true; }
+		if(std::abs(this->z - other.z) > StCas<T>(0.0)) { return true; }
 		return false;
 	}
 

@@ -261,7 +261,7 @@ void CollisionManager::RenderDebug(unsigned int r, unsigned int g, unsigned int 
     // îŒ`‚Ì‰~ŒÊ‚ğ•`‰æ
     for(int i = 0; i <= segment; ++i)
     {
-        float angle = a1 + (a2 - a1) * (static_cast<float>(i) / static_cast<float>(segment));
+        float angle = a1 + (a2 - a1) * (StCas<float>(i) / StCas<float>(segment));
         // ‰~ŒÊã‚ÌŒ»İ‚Ì“_
         vec::Vec3 curPos = vec3::VGet(
             sector.pos.x + cosf(angle) * sector.rad,
@@ -300,7 +300,7 @@ void CollisionManager::RenderDebug(unsigned int r, unsigned int g, unsigned int 
 
     for(int i = 0; i <= segment; i++)
     {
-        float angle = a1 + (a2 - a1) * (static_cast<float>(i) / static_cast<float>(segment));
+        float angle = a1 + (a2 - a1) * (StCas<float>(i) / StCas<float>(segment));
         // ‰~ŒÊã‚ÌŒ»İ‚Ì“_
         vec::Vec3 curPosUp = vec3::VGet(
             sector.pos.x + cosf(angle) * sector.rad,

@@ -16,22 +16,24 @@
 #include "applicationglobal.h"
 #include "ModeGameOver.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
+
 
 // 初期化
 bool ModeGame::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 
-	// カメラ初期化
-	_camera = new Camera();
-
-	_camera->Initialize();
-
-	_bShowTanuki = true;
 	ObjectInitialize();	// オブジェクト初期化
 
 	// オブジェクトサーバー初期化
-	_objectServer = new ObjectServer(this);
+	_objectServer = NEW ObjectServer(this);
 	_objectServer->LoadDate("stage");
 	_objectServer->ProcessInit();
 
@@ -109,7 +111,6 @@ bool ModeGame::Initialize()
 	_hasSavedCameraState = false;
 
 	_isChengeBgm = false;
-
 
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
@@ -347,7 +348,7 @@ bool ModeGame::IsHitCircle(CharaBase* c1, CharaBase* c2)
 	float w, h, length;
 	w = c1->GetPos().x - c2->GetPos().x;
 	h = c1->GetPos().z - c2->GetPos().z;
-	length = static_cast<float>(sqrtf(w * w + h * h));
+	length = StCas<float>(sqrtf(w * w + h * h));
 
 	// 中心点間の距離が、2つの円の半径の合計よりも小さい場合、当たり
 	if(length < c1->GetCollisionR() + c2->GetCollisionR())
@@ -513,9 +514,6 @@ bool ModeGame::Process()
 		}
 	}
 
-	// 攻撃判定にはアクティブな PlayerBase* を渡す
-	IsPlayerAttack(playerBase, _enemyBase);
-
 	// デバック用タイマー（転ばせる）
 	if(_showKnockdownMessage)
 	{
@@ -528,7 +526,6 @@ bool ModeGame::Process()
 		}
 	}
 
-	IsPlayerAttack(_player.get(), _enemyBase);
 	// ゴールとの当たり判定
 	if(CanGoal())
 	{
@@ -580,6 +577,84 @@ bool ModeGame::Process()
 		}
 	}
 
+	if(_changeTimeActive)
+	{
+		float dt = 1.0f / 60.0f; // 60FPS想定
+		_changeTimeLimit -= dt;
+		// 変更箇所: changeTimeLimit <= 0.0f のブロック内
+		if(_changeTimeLimit <= 0.0f)
+		{
+			_changeTimeActive = false;
+			_changeTimeLimit = 0.0f;
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = true;
+
+			// 変身解除前に「直前に表示されていたプレイヤー」を取得しておく
+			PlayerBase* prevActive = nullptr;
+			if(_bShowTanuki)
+			{
+				prevActive = _playerTanuki.get();
+			}
+			else if(_showMonoPlayer)
+			{
+				prevActive = _playerMono.get();
+			}
+			else
+			{
+				prevActive = _player.get();
+			}
+
+			// タヌキ表示へ切替
+			_bShowTanuki = true;
+			_showMonoPlayer = false;
+
+			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
+			if(prevActive && _playerTanuki)
+			{
+				_playerTanuki->SetPos(prevActive->GetPos());
+				_playerTanuki->SetDir(prevActive->GetDir());
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				_playerTanuki->PlayAnimation("goepon_idle", true);
+				_playerTanuki->Process(); // 変身直後の1フレーム更新
+			}
+
+			// カメラを新しいプレイヤー位置に合わせる（オフセットは維持）
+			if(_camera && _playerTanuki)
+			{
+				vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+				vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+				_camera->_vTarget = target;
+				_camera->_vPos = vec3::VAdd(target, camDelta);
+			}
+
+			// エフェクト再設定
+			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+			_walkEffect->SetPlayerPos(_playerTanuki.get());
+			_aseEffect->SetPlayer(_playerTanuki.get());
+
+			// 周囲の敵に対する音波／エフェクト
+			for(auto& enemy : _enemyBase)
+			{
+				if(enemy && enemy->IsAlive())
+				{
+					enemy->GetSoundSensor()->TriggerSoundWave(_playerTanuki->GetPos(), 500.0f, 10.0f);
+					enemy->GetSoundSensor()->SetSoundLevel(5);
+					_hatenaEffect->PlayOnce(enemy.get());
+				}
+			}
+		}
+		else if(_changeTimeLimit <= 10.0f)
+		{
+			// 正しくタイマーで点滅を制御する
+			_changeBlinkTimer += dt;
+			if(_changeBlinkTimer >= _changeBlinkInterval)
+			{
+				_changeBlinkTimer = 0.0f; // タイマーリセット
+				_changeBlinkVisible = !_changeBlinkVisible; // 点滅反転
+			}
+		}
+	}
+
 	ChangeBGM();
 	return true;
 }
@@ -598,79 +673,8 @@ bool ModeGame::Render()
 
 	EffekseerManager::GetInstance()->Render();
 
-	// キャラを描画（生存しているもののみ、プレイヤーは除外）
-	for(auto& chara : _chara)
-	{
-		if(chara->IsAlive())
-		{
-			chara->Render();
-		}
-	}
-
-	for(auto& enemy : _enemyBase)
-	{
-		if(enemy->IsAlive())
-		{
-			enemy->Render();
-		}
-	}
-
-
-	// オブジェクトを描画
-	for(auto& object : _object)
-	{
-		object->Render();
-	}
-
-
 	// オブジェクトサーバーの描画
 	_objectServer->Render();
-
-	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto& player_base : _playerBase)
-	{
-		if(_bShowTanuki)
-		{
-			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else if(_showMonoPlayer)
-		{
-			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else
-		{
-			if(player_base.get() == _player.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-	}
-	// キャラクターの影描画
-	for (auto& shadow : _charaShadow)
-	{
-		if (shadow)
-		{
-			shadow->Render();
-		}
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
-	}
-
-	// UIを描画
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Render();
-	}
 
 	ObjectRender();// オブジェクト描画処理
 	DebugRender(); // デバック描画処理
@@ -686,7 +690,7 @@ bool ModeGame::Render()
 bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 {
 	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
-	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
+	bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 
 	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
 	if (!hitGoal)

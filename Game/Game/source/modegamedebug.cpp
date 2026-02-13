@@ -10,6 +10,13 @@
 #include "modegame.h"
 #include "menuitembase.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 // デバックの初期化
 bool ModeGame::DebugInitialize()
 {
@@ -91,19 +98,19 @@ bool ModeGame::DebugProcess()
 	// ESCキーでメニューを開く
 	if(trg & PAD_INPUT_9)
 	{
-		ModeMenu* modemenu = new ModeMenu();
+		ModeMenu* modemenu = NEW ModeMenu();
 		// ModeGameより上のレイヤーにメニューを登録する
 		ModeServer::GetInstance()->Add(modemenu, 99, "menu");
 		// オーナーにこの ModeGame を設定
 		modemenu->SetOwner(this);
 		// ModeMenuにメニュー項目を追加する
-		modemenu->Add(new MenuItemViewCollision(this, "ViewCollision"));
-		modemenu->Add(new MenuItemUseCollision(this, "UseCollision"));
-		modemenu->Add(new MenuItemViewCameraInfo(this, "ViewCameraInfo"));
-		modemenu->Add(new MenuItemLaunchEffekseer(this, "Effekseer"));
-		modemenu->Add(new MenuItemViewShadowMap(this, "ShadowMapView"));
+		modemenu->Add(NEW MenuItemViewCollision(this, "ViewCollision"));
+		modemenu->Add(NEW MenuItemUseCollision(this, "UseCollision"));
+		modemenu->Add(NEW MenuItemViewCameraInfo(this, "ViewCameraInfo"));
+		modemenu->Add(NEW MenuItemLaunchEffekseer(this, "Effekseer"));
+		modemenu->Add(NEW MenuItemViewShadowMap(this, "ShadowMapView"));
 		// カメラ操作モード切替項目を追加
-		modemenu->Add(new MenuItemCameraControlMode(this, "CameraControlMode"));
+		modemenu->Add(NEW MenuItemCameraControlMode(this, "CameraControlMode"));
 	}
 
 	//
@@ -262,7 +269,7 @@ bool ModeGame::DebugRender()
 			{
 				// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
 				vec::Vec3 currentPos = p->GetPos();
-				float rad            = static_cast<float>(p->GetCollisionR());
+				float rad            = StCas<float>(p->GetCollisionR());
 				float half           = p->GetColSubY();
 
 				// カプセルの上下端を計算
@@ -337,6 +344,37 @@ bool ModeGame::DebugRender()
 		const char* alertMsg = "敵に発見された！変身できない！";
 		// 座標は適宜調整（ここでは画面中央上部に仮配置）
 		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
+	}
+
+	// --- ここに変身時間表示を追加 ---
+	if(_changeTimeActive)
+	{
+		// 点滅制御がある場合は点滅フラグが true のときだけ表示
+		if(_changeBlinkVisible)
+		{
+			// フォントサイズ / 描画位置
+			int fontSize = 28;
+			SetFontSize(fontSize);
+
+			// 5秒以下で注意色、それ以外は白
+			unsigned int color = (_changeTimeLimit <= 5.0f) ? GetColor(255, 64, 64) : GetColor(255, 255, 255);
+
+			// 表示位置（左上に余白を確保）
+			int x = 20;
+			int y = 20;
+
+			// 60秒以上なら MM:SS 表示、未満は秒（小数）表示
+			if(_changeTimeLimit >= 60.0f)
+			{
+				int minutes = static_cast<int>(_changeTimeLimit) / 60;
+				int seconds = static_cast<int>(_changeTimeLimit) % 60;
+				DrawFormatString(x, y, color, "変身残り: %d:%02d", minutes, seconds);
+			}
+			else
+			{
+				DrawFormatString(x, y, color, "変身残り: %.1f s", _changeTimeLimit);
+			}
+		}
 	}
 
 	return true;

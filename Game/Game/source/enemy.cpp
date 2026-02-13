@@ -301,7 +301,7 @@ bool Enemy::Process()
 	DirChangeTimer -= 1.0f / 60.0f;
 	if(DirChangeTimer <= 0.0f)
 	{
-		DirChangeTimer = static_cast<float>(DirChangeInterval);
+		DirChangeTimer = StCas<float>(DirChangeInterval);
 		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
 		{
 			float currentAngle = atan2f(_vDir.x, _vDir.z);

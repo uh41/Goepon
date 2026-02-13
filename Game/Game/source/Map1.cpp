@@ -125,8 +125,8 @@ bool Map1::Initialize()
 	_ground_handle = LoadGraph(img::BG_stone);
 	// 以降の初期化（省略せず元の処理を入れてください）
 	_half_polygon_size = GROUND_POLYGON_SIZE * 0.5f;
-	_start_x = -_half_polygon_size * static_cast<float>(GROUND_X);
-	_start_z = -_half_polygon_size * static_cast<float>(GROUND_Z);
+	_start_x = -_half_polygon_size * StCas<float>(GROUND_X);
+	_start_z = -_half_polygon_size * StCas<float>(GROUND_Z);
 	_ground_normal = VGet(0.0f, 1.0f, 0.0f);
 	_diffuse = GetColorU8(255, 255, 255, 255);
 	_specular = GetColorU8(0, 0, 0, 0);
@@ -180,12 +180,12 @@ bool Map1::Process()
 	for(int i = 0; i < GROUND_Z * GROUND_X; i++)
 	{
 		// 行と列の計算
-		int z = i / static_cast<int>(GROUND_X);// 行
-		int x = i % static_cast<int>(GROUND_X);// 列
+		int z = i / StCas<int>(GROUND_X);// 行
+		int x = i % StCas<int>(GROUND_X);// 列
 
 		// オフセット計算
-		auto offset_x = _start_x + static_cast<float>(x) * GROUND_POLYGON_SIZE;
-		auto offset_z = _start_z + static_cast<float>(z) * GROUND_POLYGON_SIZE;
+		auto offset_x = _start_x + StCas<float>(x) * GROUND_POLYGON_SIZE;
+		auto offset_z = _start_z + StCas<float>(z) * GROUND_POLYGON_SIZE;
 
 		// 4頂点の作成
 		for(int j = 0; j < 4; j++)
@@ -207,13 +207,13 @@ bool Map1::Process()
 		}
 
 		// 2枚の三角形のインデックス
-		auto index = static_cast<unsigned short>(i * 4);
-		_ground_index.push_back(static_cast<unsigned short>(index + 0));
-		_ground_index.push_back(static_cast<unsigned short>(index + 1));
-		_ground_index.push_back(static_cast<unsigned short>(index + 2));
-		_ground_index.push_back(static_cast<unsigned short>(index + 2));
-		_ground_index.push_back(static_cast<unsigned short>(index + 1));
-		_ground_index.push_back(static_cast<unsigned short>(index + 3));
+		auto index = StCas<unsigned short>(i * 4);
+		_ground_index.push_back(StCas<unsigned short>(index + 0));
+		_ground_index.push_back(StCas<unsigned short>(index + 1));
+		_ground_index.push_back(StCas<unsigned short>(index + 2));
+		_ground_index.push_back(StCas<unsigned short>(index + 2));
+		_ground_index.push_back(StCas<unsigned short>(index + 1));
+		_ground_index.push_back(StCas<unsigned short>(index + 3));
 	}
 
 	// ブロックの位置・回転・スケール設定
@@ -339,8 +339,8 @@ bool Map1::Render()
 	}
 
 	// 地面を描画
-	auto vertex_num = static_cast<int>(_ground_vertex.size());
-	auto index_num = static_cast<int>(_ground_index.size());
+	auto vertex_num = StCas<int>(_ground_vertex.size());
+	auto index_num = StCas<int>(_ground_index.size());
 
 	// ポリゴンが1つもなければ描画しない
 	if(3 > vertex_num || 3 > index_num)

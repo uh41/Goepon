@@ -517,7 +517,7 @@ bool EnemyMove::Process()
 		// アニメーションがアタッチされていたら、デタッチする
 		if(_iAttachIndex != -1)
 		{
-			MV1DetachAnim(_handle, static_cast<int>(_iAttachIndex));
+			MV1DetachAnim(_handle, StCas<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
@@ -528,10 +528,10 @@ bool EnemyMove::Process()
 			int animIndex = MV1GetAnimIndex(_handle, "taiki");
 			if(animIndex != -1)
 			{
-				_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
+				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
 				if(_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex));
+					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -542,10 +542,10 @@ bool EnemyMove::Process()
 			int animIndex = MV1GetAnimIndex(_handle, "walk");
 			if(animIndex != -1)
 			{
-				_iAttachIndex = static_cast<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
+				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
 				if(_iAttachIndex != -1)
 				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex));
+					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
 				}
 			}
@@ -555,7 +555,7 @@ bool EnemyMove::Process()
 		// アタッチしたアニメーションの総再生時間を取得する
 		if(_iAttachIndex != -1)
 		{
-			_fTotalTime = MV1GetAttachAnimTotalTime(_handle, static_cast<int>(_iAttachIndex));
+			_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;
@@ -628,7 +628,7 @@ bool EnemyMove::Render()
 {
 	base::Render();
 	// 再生時間をセット
-	MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
+	MV1SetAttachAnimTime(_handle, StCas<int>(_iAttachIndex), _fPlayTime);
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ���f�����W���łǂ��������Ă��邩�Ŏ����ς��(�����-z������Ă���ꍇ)
 
 	MATRIX mRotY = MGetRotY(vorty);

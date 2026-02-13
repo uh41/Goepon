@@ -12,6 +12,13 @@
 #include "modeeffekseer.h"
 #include "modegame.h"
 
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+#define NEW new
+#endif
+
 class MenuItemBase
 {
 public:
@@ -38,7 +45,7 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected()
 	{
-		ModeGame* game = static_cast<ModeGame*>(_param);
+		ModeGame* game = StCas<ModeGame*>(_param);
 		game->SetDebugViewCollsion(!game->GetDebugViewCollision());
 		return 1;
 	}
@@ -52,7 +59,7 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected()
 	{
-		ModeGame* game = static_cast<ModeGame*>(_param);
+		ModeGame* game = StCas<ModeGame*>(_param);
 		game->SetDebugUseCollision(!game->GetDebugUseCollision());
 		return 1;
 	}
@@ -66,7 +73,7 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected()
 	{
-		ModeGame* game = static_cast<ModeGame*>(_param);
+		ModeGame* game = StCas<ModeGame*>(_param);
 		game->SetDebugViewCameraInfo(!game->GetDebugViewCameraInfo());
 		return 0;
 	}
@@ -80,7 +87,7 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected()
 	{
-		ModeGame* game = static_cast<ModeGame*>(_param);
+		ModeGame* game = StCas<ModeGame*>(_param);
 		if(!game) return 1;
 		// 既に起動済みなら停止（モードを検索して削除予約）
 		if(game->GetEffekseerLaunched())
@@ -99,7 +106,7 @@ public:
 			return 1; // メニューを閉じる
 		}
 		// ModeGameより上のレイヤーに登録する
-		ModeServer::GetInstance()->Add(new ModeEffekseer(), 100, "effectsample");
+		ModeServer::GetInstance()->Add(NEW ModeEffekseer(), 100, "effectsample");
 		// フラグを立ててメニューを閉じる
 		game->SetEffekseerLaunched(true);
 		return 1; // メニューを閉じる
@@ -114,7 +121,7 @@ public:
 	// return int : 0 = メニュー継続, 1 = メニュー終了
 	virtual int Selected()
 	{
-		ModeGame* game = static_cast<ModeGame*>(_param);
+		ModeGame* game = StCas<ModeGame*>(_param);
 		game->SetDebugViewShadowMap(!game->GetDebugViewShadowMap());
 		return 0;
 	}
@@ -127,7 +134,7 @@ public:
 	MenuItemCameraControlMode(void* param, std::string text) : MenuItemBase(param, text) {}
 	virtual int Selected()
 	{
-		ModeGame* game = static_cast<ModeGame*>(_param);
+		ModeGame* game = StCas<ModeGame*>(_param);
 		if(!game)
 		{
 			return 0;
