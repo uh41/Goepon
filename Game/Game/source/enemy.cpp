@@ -17,7 +17,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
+	_handle = MV1LoadModel(mv1::busi_multimotion);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -214,9 +214,9 @@ bool Enemy::Process()
 			switch(s)
 			{
 			case CharaBase::STATUS::WAIT:
-				return "taiki";
+				return "kari_idle";
 			case CharaBase::STATUS::WALK:
-				return "walk";
+				return "kari_walk";
 			default:
 				return std::string();
 			}

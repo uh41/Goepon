@@ -329,6 +329,24 @@ void EnemyMove::StartReturningToInitialPosition()
 	ResetTeleport();
 }
 
+void EnemyMove::OnDamageStart()
+{
+	_savePatrolIndex = _patrolIndex;
+	_isPatroll = false;
+	_hasSavePoint = true;
+}
+
+void EnemyMove::OnDamageEnd()
+{
+	if(_patroll && _patroll->IsValid())
+	{
+		_patroll->SetMovePointIndex(_savePatrolIndex);
+		_patrolIndex = _savePatrolIndex;
+		_isPatroll = true;
+		_hasSavePoint = false;
+	}
+}
+
 // 計算処理
 bool EnemyMove::Process()
 {

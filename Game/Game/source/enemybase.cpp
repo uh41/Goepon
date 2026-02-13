@@ -72,6 +72,14 @@ bool EnemyBase::Initialize()
 	_soundDetectionActive = false;
 	_soundDetectionTimer = 0.0f;
 
+	// 攻撃無力化フラグの初期化
+	_isInvincible = false;
+	_stanTimer = 0.0f;
+	_attachStage = 0;
+	_attachAnimDamage = "";
+	_attachAnimStan = "";
+	_attachAnimGetUp = "";
+
 	_effect = nullptr;
 
 	return true;
@@ -285,6 +293,103 @@ bool EnemyBase::IsAtInitialPosition() const
 	return distance < 30.0f; // 30.0f以内なら初期位置とみなす
 }
 
+void EnemyBase::StartDamage()
+{
+	// 既に無敵状態なら何もしない
+	if(_isInvincible) { return; }
+
+	_isInvincible = true;
+	_attachStage = 1;// ダメージステージに移行
+	_stanTimer = 0.0f;
+
+	OnDamageStart();
+
+	if(_enemySensor)
+	{
+		_enemySensor->SetSensorEnabled(false); // センサーを無効化
+	}
+
+	if(_enemySoundSensor)
+	{
+		_enemySoundSensor->SetSoundLevel(0); // 音センサーを無効化
+		_enemySoundSensor->SetSoundSensorArea(0.0f);
+	}
+
+	_isMoving = false; // 移動を停止
+	_isMovingToSound = false; // 音源への移動も停止
+	_waitingAtSound = false;
+	_detectedPlayer = false; // プレイヤー検出もリセット
+
+	// ダメージアニメーションの再生
+	if(!_attachAnimDamage.empty())
+	{
+		_animId = PlayAnimation(_attachAnimDamage, false);
+		_fPlayTime = 0.0f;
+	}
+}
+
+void EnemyBase::UpdateDamageAnimation()
+{
+	if(!_isInvincible) { return; }
+
+	if(_attachStage == 1)
+	{
+		if(_animId == -1 || !AnimationManager::GetInstance()->IsPlaying(_animId))
+		{
+			_attachStage = 2;
+			_stanTimer = STAN_DURATION;
+
+			if(!_attachAnimDamage.empty())
+			{
+				_animId = PlayAnimation(_attachAnimStan, true);
+				_fPlayTime = 0.0f;
+			}
+		}
+	}
+	else if(_attachStage == 2)
+	{
+		_stanTimer -= 1.0f / 60.0f; // 60FPSとして計算
+
+		if(_stanTimer <= 0.0f)
+		{
+			_attachStage = 3;
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->Stop(_animId);	
+				_animId = -1;
+			}
+
+			if(!_attachAnimGetUp.empty())
+			{
+				_animId = PlayAnimation(_attachAnimGetUp, false);
+				_fPlayTime = 0.0f;
+			}
+		}
+	}
+	else if(_attachStage == 3)
+	{
+		if(_animId == -1 || !AnimationManager::GetInstance()->IsPlaying(_animId))
+		{
+			_attachStage = 0;
+			_isInvincible = false;
+
+			if(_enemySensor)
+			{
+				_enemySensor->SetSensorEnabled(true);
+				_enemySensor->ResetDetection();
+			}
+
+			if(_enemySoundSensor)
+			{
+				_enemySoundSensor->SetSoundLevel(0);
+				_enemySoundSensor->SetSoundSensorArea(0.0f);
+			}
+
+			OnDamageEnd();
+		}
+	}
+
+}
 
 // 初期位置に戻る更新処理
 void EnemyBase::UpdateReturningToInitialPosition()
@@ -522,6 +627,12 @@ void EnemyBase::UpdateMovingToSound()
 bool EnemyBase::Process()
 {
 	base::Process();
+
+	if(_isInvincible)
+	{
+		UpdateDamageAnimation();
+		return true;
+	}
 
 	// EnemySoundSensorの位置も同期
 	if (_enemySoundSensor)

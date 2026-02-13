@@ -424,6 +424,11 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 				continue;
 			}
 
+			if(enemy->GetIsInvincible())
+			{
+				continue;
+			}
+
 			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
 				enemy->GetPos(),
 				vec3::VScale(enemy->GetDir(), -1.0f),
@@ -435,7 +440,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			if(hit)
 			{
 				anyhit = true;
-				enemy->PlayAnimation("walk", false);
+				enemy->StartDamage();
 				_showKnockdownMessage = true;
 				_knockdownMessageSec = 1.0f; // 表示時間 1秒
 			}

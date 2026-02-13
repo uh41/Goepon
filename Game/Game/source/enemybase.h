@@ -56,6 +56,11 @@ public:
 	// テレポート状態のリセット
 	void ResetTeleport();
 
+	// ダメージ受けたときの処理
+	void StartDamage();
+	// 無敵中かどうか
+	bool GetIsInvincible() const { return _isInvincible; }
+
 	// デバッグ用：YouDiedメッセージ表示関連
 	void TriggerYouDiedMessage();
 	void RenderYouDiedMessage();
@@ -73,6 +78,11 @@ public:
 	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
 
 	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
+
+	void UpdateDamageAnimation();// ダメージアニメーションの更新
+
+	virtual void OnDamageStart() {} // ダメージアニメーション開始時の処理
+	virtual void OnDamageEnd() {}   // ダメージアニメーション終了時の処理
 
 protected:
 	// センサー関連
@@ -129,4 +139,14 @@ protected:
 	static constexpr float SOUND_RETURN_TIME = 10.0f; // 音検知から初期位置に戻るまでの時間
 
 	at::spc<EffectBase> _effect;
+
+	bool _isInvincible;	// 無敵状態かどうか
+	float _stanTimer; // スタン時間
+	int _attachStage; // ダメージ後のアニメーション名
+	static constexpr float STAN_DURATION = 60.0f; // スタン時間
+
+	// アニメーション名
+	std::string _attachAnimDamage;// ダメージアニメーション名
+	std::string _attachAnimStan;  // スタンアニメーション名
+	std::string _attachAnimGetUp; // 起き上がりアニメーション名
 };
