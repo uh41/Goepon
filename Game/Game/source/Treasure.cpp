@@ -43,7 +43,6 @@ bool Treasure::Initialize()
 		MV1SetFrameVisible(_handle, _openCollisionFrame, FALSE);
 	}
 
-
 	_isOpen    = false;
 	_isVisible = true;
 
@@ -70,7 +69,6 @@ bool Treasure::Process()
 
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
 
-
 	if(!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
 		_objStatus = OBJSTATUS::OPEN;
@@ -86,7 +84,6 @@ bool Treasure::Render()
 	if (!_isVisible)
 	{
 		return true; 
-
 	}
 
 
@@ -115,4 +112,15 @@ MATRIX Treasure::MakeModelMatrix() const
 	m = MMult(m, mRotX);
 	m = MMult(m, mTrans);
 	return m;
+}
+
+void Treasure::SetOpen(bool isOpen)
+{
+	_isOpen = isOpen;
+
+	// デバッグ：開いたら見た目を消す
+	if(_isOpen)
+	{
+		_isVisible = false;
+	}
 }

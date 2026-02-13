@@ -48,50 +48,10 @@ bool ModeGame::Initialize()
 		_sound3D.reset();
 	}
 
-	// キャラ
-	for(auto& chara : _chara)
-	{
-		chara->Initialize();
-	}
-
-	// プレイヤー
-	for(auto& player_base : _playerBase)
-	{
-		player_base->Initialize();
-	}
-
-	// オブジェクトの初期化
-	for(auto& object : _object)
-	{
-		object->Initialize();
-	}
-
 	LoadStageData();// ステージデータ読み込み
-
-	/*for(auto& treasure : _treasure)
-	{
-		treasure->Initialize();
-	}*/
-	// UI
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Initialize();
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Initialize();
-	}
 
 	// ゴール初期化
 	_isGameClear = false;
-
-	//// シャドウ
-	//for(auto& charaShadow : _charaShadow)
-	//{
-	//	charaShadow->Initialize();
-	//}
 
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if(_camera != nullptr)
@@ -220,7 +180,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "Route.json";
+	std::string jsonFile = "TR3Goal.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -266,6 +226,13 @@ bool ModeGame::LoadStageData()
 		if(name == "S_MarkerB" || name == "S_MarkerRX")
 		{
 			enemyObjects.push_back(object);
+			continue;
+		}
+
+		if(name == "Treasure")
+		{
+			auto _treasure = std::make_shared<Treasure>();
+			_treasure->SetJsonDataUE(object);
 			continue;
 		}
 	}
@@ -706,7 +673,7 @@ bool ModeGame::Render()
 	}
 
 	ObjectRender();// オブジェクト描画処理
-	DebugRender();// デバック描画処理
+	DebugRender(); // デバック描画処理
 
 	if(_d_view_collision)
 	{

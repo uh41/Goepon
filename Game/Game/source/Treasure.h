@@ -44,17 +44,8 @@ public:
 	// 実装はこっち
 	//void SetOpen(bool isOpen) { _isOpen = isOpen; }
 	// デバックとしてこちらを今使っている
-	void SetOpen(bool isOpen)
-	{
-		_isOpen = isOpen;
-
-		// ここを追加：開いたら見た目を消す
-		if (_isOpen)
-		{
-			_isVisible = false;
-		}
-	}
-
+	void SetOpen(bool isOpen);
+	
 	// デバック用(モデルを表示/非表示)
 	bool IsVisible() const { return _isVisible; }
 

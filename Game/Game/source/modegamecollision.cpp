@@ -287,41 +287,32 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		return false;
 	}
 
+	for(auto& t : treasures)
+	{
+		Treasure* treasure = t.get();
+		if(!treasure->IsVisible())
+		{
+			return false;
+		}
+	}
+	
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
 		return false;
 	}
-
-	if(treasures.empty())
+	// 宝箱の指定フレームで判定
+	for(auto& t : treasures)
 	{
-		return false;
-	}
+		Treasure* treasure = t.get();
 
-	bool openedAny = false;
+		const auto handleTreasure = treasure->GetModelHandle();
+		const auto frameTreasure = treasure->GetOpenCollisionFrame();
 
-	// A長押し判定は宝箱共通なので先に取る
-	const int key = ApplicationBase::GetInstance()->GetKey();
-	const bool holdA = (key & PAD_INPUT_1) != 0;
-
-	// 「開けている最中か」のデフォルトは false（どれにも該当しなければ OFF）
-	bool anyInTreasure = false;
-
-	for(const auto& sp : treasures)
-	{
-		Treasure* t = sp.get();
-		if(!t) { continue; }
-
-		if(!t->IsVisible())
-		{
-			continue;
-		}
-
-		const auto handleTreasure = t->GetModelHandle();
-		const auto frameTreasure  = t->GetOpenCollisionFrame();
-
+		// プレイヤーと指定したコリジョンフレームで当たり判定
 		vec::Vec3 hitPos;
-		const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+		const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision
+		(
 			player->GetPos(),
 			handleTreasure,
 			frameTreasure,
@@ -329,17 +320,21 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			hitPos
 		);
 
-		if(!inTreasure)
-		{
-			continue;
-		}
 
-		anyInTreasure = true;
+		const int    key = ApplicationBase::GetInstance()->GetKey();
+		const bool holdA = (key & PAD_INPUT_1) != 0;
 
-		// 宝箱の範囲内だが A を押してないなら「開けてる状態」にしない
-		if(!holdA)
+		// 条件崩れたらリセット
+		if(!inTreasure || !holdA)
 		{
-			continue;
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+			// 宝箱から離れたら取得フラグリセット
+			if(!inTreasure)
+			{
+				_treasureTakenThisTreasure = false; // 離れたら再取得可能（”同じ宝箱で1回だけ”にしたいならここを消す）
+			}
+			return false;
 		}
 
 		// ここに来た時点で「宝箱の範囲内 + A を押している」
@@ -351,7 +346,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			return false;
 		}
 
-		// 経過時間加算（固定FPS前提のまま踏襲）
+		// 経過時間加算（固定60FPS前提：必要なら実測deltaに置換）
 		const float dt = 1.0f / 180.0f;
 		_treasureHoldSec += dt;
 
@@ -362,36 +357,18 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			_treasureTakenThisTreasure = true;
 			_treasureHoldSec = 0.0f;
 
-			t->SetOpen(true);
-			_isOpeningTreasure = false;
+			// 宝箱状態を変えたい場合（見た目を開ける等）
+			treasure->SetOpen(true);
+			_isOpeningTreasure = false;      // 開き終わったので OFF
 
-			if(_doyaEffect)
-			{
-				_doyaEffect->PlayEffect(t->GetPos());
-			}
+			_doyaEffect->PlayEffect(treasure->GetPos());
 
-			openedAny = true;
-			return true; // 1回の入力で1個開く運用ならここで終了
-		}
-
-		// 範囲内 + 押下中だが時間が足りない場合は継続
-		return false;
-	}
-
-	// 条件崩れたらリセット
-	if(!anyInTreasure || !holdA)
-	{
-		_isOpeningTreasure = false;
-		_treasureHoldSec = 0.0f;
-
-		// 宝箱から離れたら取得フラグリセット（元仕様踏襲）
-		if(!anyInTreasure)
-		{
-			_treasureTakenThisTreasure = false;
+			return true;
 		}
 	}
+	
 
-	return openedAny;
+	return false;
 }
 
 
