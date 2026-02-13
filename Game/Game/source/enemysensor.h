@@ -100,7 +100,7 @@ protected:
 	static constexpr float CHASE_TIME = 5.0f; // �ǐՌp�����ԁi�b�j
 
 	int _detectionFrameCount;
-	static constexpr int DetectionFrame = 10;
+	static constexpr int DetectionFrame = 5;
 	bool _CanDetectionResult;
 
 	// ��������p���\�b�h

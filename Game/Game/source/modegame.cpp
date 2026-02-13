@@ -564,6 +564,7 @@ bool ModeGame::Process()
 	{
 		float dt = 1.0f / 60.0f; // 60FPS想定
 		_changeTimeLimit -= dt;
+		// 変更箇所: changeTimeLimit <= 0.0f のブロック内
 		if(_changeTimeLimit <= 0.0f)
 		{
 			_changeTimeActive = false;
@@ -571,28 +572,42 @@ bool ModeGame::Process()
 			_changeBlinkTimer = 0.0f;
 			_changeBlinkVisible = true;
 
-			// 変身解除処理：モノ表示からタヌキへ即時切替（位置・向きを引き継ぎ、エフェクト等を再設定）
+			// 変身解除前に「直前に表示されていたプレイヤー」を取得しておく
+			PlayerBase* prevActive = nullptr;
+			if(_bShowTanuki)
+			{
+				prevActive = _playerTanuki.get();
+			}
+			else if(_showMonoPlayer)
+			{
+				prevActive = _playerMono.get();
+			}
+			else
+			{
+				prevActive = _player.get();
+			}
+
+			// タヌキ表示へ切替
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
 
-			// プレイヤー位置／向きを引き継ぐ
-			if(_playerTanuki && _playerMono)
+			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
+			if(prevActive && _playerTanuki)
 			{
-				_playerTanuki->SetPos(_playerMono->GetPos());
-				_playerTanuki->SetDir(_playerMono->GetDir());
+				_playerTanuki->SetPos(prevActive->GetPos());
+				_playerTanuki->SetDir(prevActive->GetDir());
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 				_playerTanuki->PlayAnimation("goepon_idle", true);
-				_playerTanuki->Process(); // 変身直後の一フレーム更新
+				_playerTanuki->Process(); // 変身直後の1フレーム更新
 			}
 
-			if(_player && _playerMono)
+			// カメラを新しいプレイヤー位置に合わせる（オフセットは維持）
+			if(_camera && _playerTanuki)
 			{
-				// 正しくは player の位置を Mono に引き継ぐ
-				_playerTanuki->SetPos(_player->GetPos());
-				_playerTanuki->SetDir(_player->GetDir());
-				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				_playerTanuki->PlayAnimation("goepon_idle", true);
-				_playerTanuki->Process();
+				vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+				vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+				_camera->_vTarget = target;
+				_camera->_vPos = vec3::VAdd(target, camDelta);
 			}
 
 			// エフェクト再設定
