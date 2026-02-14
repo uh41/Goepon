@@ -277,8 +277,6 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Trea
 	return hitAny;
 }
 	
-
-
 bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<Treasure>& treasures)
 {
 	// 引数チェック
@@ -286,88 +284,93 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	{
 		return false;
 	}
-
-	for(auto& t : treasures)
-	{
-		Treasure* treasure = t.get();
-		if(!treasure->IsVisible())
-		{
-			return false;
-		}
-	}
 	
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
+		_isOpeningTreasure = false;
+		_treasureHoldSec = 0.0f;
 		return false;
 	}
+	
+	const int key = ApplicationMain::GetInstance()->GetKey();
+	const int holdA = (key & PAD_INPUT_1) != 0;
+
+	bool inAnyTreasure = false; // どれか一つでも当たればtrue
+
 	// 宝箱の指定フレームで判定
-	for(auto& t : treasures)
+	for (const auto& sp : treasures)
 	{
-		Treasure* treasure = t.get();
+		Treasure* treasure = sp.get();
+		if (!treasure)
+		{
+			continue;
+		}
 
+		// すでに開いているなら(おそらくアニメーションが届いたらこちらの条件を変更)
+		if (!treasure->IsVisible())
+		{
+			continue;
+		}
 		const auto handleTreasure = treasure->GetModelHandle();
-		const auto frameTreasure = treasure->GetOpenCollisionFrame();
-
-		// プレイヤーと指定したコリジョンフレームで当たり判定
+		const auto OpenCollision   = treasure->GetOpenCollisionFrame();
+		if(handleTreasure < 0 || OpenCollision < 0)
+		{
+			continue;
+		}
+		// 当たり判定
 		vec::Vec3 hitPos;
 		const bool inTreasure = CollisionManager::GetInstance()->CheckPositionToMV1Collision
 		(
 			player->GetPos(),
 			handleTreasure,
-			frameTreasure,
+			OpenCollision,
 			player->GetColSubY(),
 			hitPos
 		);
-
-
-		const int    key = ApplicationBase::GetInstance()->GetKey();
-		const bool holdA = (key & PAD_INPUT_1) != 0;
-
-		// 条件崩れたらリセット
-		if(!inTreasure || !holdA)
+		if (!inTreasure)
 		{
-			_isOpeningTreasure = false;
-			_treasureHoldSec = 0.0f;
-			// 宝箱から離れたら取得フラグリセット
-			if(!inTreasure)
-			{
-				_treasureTakenThisTreasure = false; // 離れたら再取得可能（”同じ宝箱で1回だけ”にしたいならここを消す）
-			}
-			return false;
+			continue;
 		}
 
-		// ここに来た時点で「宝箱の範囲内 + A を押している」
+		// 少なくともどれかの宝箱の範囲
+		inAnyTreasure = true;
+
+		// Aボタンを押していなかったら開けない
+		if(!holdA)
+		{
+			continue;
+		}
+
+		// 個々の処理に来た時点で「宝を開けられる範囲 + Aボタンを押している」状態
 		_isOpeningTreasure = true;
 
-		// すでに取得済みなら何もしない
-		if(_treasureTakenThisTreasure)
+		// 経過時間を計算
+		const float dt = 1.0f / 60.0f; // 60FPS固定とする
+		_treasureHoldSec += dt;		   // 開けるのに必要な時間を 1秒とする
+
+		// 3秒間ホールドで取得
+		if(_treasureHoldSec >= CHECK_OPEN_TIME)
 		{
-			return false;
+			_treasureTakenCount++;      // 取得数を増やす
+			_treasureHoldSec = 0.0f;    // 開けるのに必要な時間のカウンタをリセット
+			treasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
+			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
+			// エフェクト再生
+			if (_doyaEffect)
+			{
+				_doyaEffect->PlayEffect(treasure->GetPos());
+			}
+			return true;				// 1つ開けたら終了
 		}
-
-		// 経過時間加算（固定60FPS前提：必要なら実測deltaに置換）
-		const float dt = 1.0f / 180.0f;
-		_treasureHoldSec += dt;
-
-		// 1秒間ホールドで取得
-		if(_treasureHoldSec >= 1.0f)
-		{
-			_treasureTakenCount++;
-			_treasureTakenThisTreasure = true;
-			_treasureHoldSec = 0.0f;
-
-			// 宝箱状態を変えたい場合（見た目を開ける等）
-			treasure->SetOpen(true);
-			_isOpeningTreasure = false;      // 開き終わったので OFF
-
-			_doyaEffect->PlayEffect(treasure->GetPos());
-
-			return true;
-		}
+		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
 	}
-	
-
+	// どの宝箱範囲にも入ってない or A押してない等ならリセット
+	if (!inAnyTreasure || !holdA)
+	{
+		_isOpeningTreasure = false;
+		_treasureHoldSec = 0.0f;
+	}
 	return false;
 }
 

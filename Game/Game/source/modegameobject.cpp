@@ -479,6 +479,10 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
+	for (auto& t : _treasure)
+	{
+		if (t) t->Process();
+	}
 	// UI処理
 	for(auto& ui_base : _uiBase)
 	{
@@ -512,6 +516,10 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+	for (auto& t : _treasure)
+	{
+		if (t) t->Render();
+	}
 
 	// オブジェクトを描画
 	for(auto& object : _object)

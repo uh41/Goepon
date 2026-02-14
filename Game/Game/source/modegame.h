@@ -45,6 +45,8 @@
 #include "doyaeffect.h"
 #include "nakieffect.h"
 
+constexpr float CHECK_OPEN_TIME = 3.0f; // 宝箱が開くまでの時間（秒）
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
