@@ -533,24 +533,24 @@ bool ModeGame::Process()
 	}
 
 	// ゴールとの当たり判定
-	if(CanGoal())
+	if (CanGoal() && !_isGameClear)
 	{
-		if(!_isGameClear && PlayerToGoalHitCollision(_player.get(), _goal.get()))
+		// いま操作/表示しているプレイヤーで判定
+		PlayerBase* goalPlayer = nullptr;
+		if (_bShowTanuki)
 		{
-			_isGameClear = true;
-			// 高レイヤーで追加してオーバーレイ表示
-			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-			// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
-			return true;
+			goalPlayer = _playerTanuki.get();
 		}
-		if(!_isGameClear && PlayerToGoalHitCollision(_playerTanuki.get(), _goal.get()))
+		else if (_showMonoPlayer)
 		{
-			_isGameClear = true;
-			// 高レイヤーで追加してオーバーレイ表示
-			ModeServer::GetInstance()->Add(new ModeGameClear(), 255, "ModeGameClear");
-			// クリア画面を上に出すだけなら、ここで return しておくと安全（以降の処理を止められる）
-			return true;
+			goalPlayer = _playerMono.get();
 		}
+		else
+		{
+			goalPlayer = _player.get();
+		}
+
+		UpdateGoalConfirm(goalPlayer);
 	}
 	
 	IsPlayerAttack(_player.get(), _enemyBase);
