@@ -537,6 +537,8 @@ bool ModeGame::Process()
 	{
 		// いま操作/表示しているプレイヤーで判定
 		PlayerBase* goalPlayer = nullptr;
+
+		// ゴール判定を行うプレイヤーを明示的に選択（タヌキ / Mono / 通常）
 		if (_bShowTanuki)
 		{
 			goalPlayer = _playerTanuki.get();
@@ -550,6 +552,7 @@ bool ModeGame::Process()
 			goalPlayer = _player.get();
 		}
 
+		// ゴール判定を行うプレイヤーが有効なら当たり判定をチェック
 		UpdateGoalConfirm(goalPlayer);
 	}
 	
