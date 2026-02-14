@@ -65,6 +65,7 @@ public:
 	void TriggerYouDiedMessage();
 	void RenderYouDiedMessage();
 	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
+	void RenderDamageTime();
 
 	bool IsDetectPlayer() const { return _detectedPlayer; }
 
@@ -83,6 +84,10 @@ public:
 
 	virtual void OnDamageStart() {} // ダメージアニメーション開始時の処理
 	virtual void OnDamageEnd() {}   // ダメージアニメーション終了時の処理
+
+	bool IsStun() const {
+		return _isInvincible && _attachStage == 2;
+	}
 
 protected:
 	// センサー関連

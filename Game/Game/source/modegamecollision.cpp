@@ -124,6 +124,16 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 		return false;
 	}
 
+	// 追加: いずれかが EnemyBase にキャストできてスタン中であれば当たり判定を無視
+	if(auto e1 = dynamic_cast<EnemyBase*>(c1))
+	{
+		if(e1->IsStun()) return false;
+	}
+	if(auto e2 = dynamic_cast<EnemyBase*>(c2))
+	{
+		if(e2->IsStun()) return false;
+	}
+
 	// カプセル上下を生成（top: +Y, bottom: -Y）
 	vec::Vec3 c1_pos = c1->GetPos();
 	vec::Vec3 c2_pos = c2->GetPos();

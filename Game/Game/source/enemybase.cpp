@@ -218,6 +218,12 @@ void EnemyBase::UpdateRotationToPlayer()
 {
 	vec::Vec3 targetPos;
 
+	if(IsStun())
+	{
+		// スタン中は向きを変えない
+		return;
+	}
+
 	// 追跡中か検出中かでターゲット位置を決定
 	if(_enemySensor && _enemySensor->IsChasing())
 	{
@@ -270,6 +276,12 @@ void EnemyBase::UpdateRotationToPlayer()
 void EnemyBase::LookAtPlayer()
 {
 	if(!_detectedPlayer) return;
+
+	if(IsStun())
+	{
+		// スタン中は向きを変えない
+		return;
+	}
 
 	// プレイヤーへの方向ベクトルを計算
 	vec::Vec3 toPlayer = vec3::VSub(_playerPos, _vPos);
@@ -334,7 +346,7 @@ void EnemyBase::UpdateDamageAnimation()
 
 	if(_attachStage == 1)
 	{
-		if(AnimationManager::GetInstance()->IsPlaying(_animId))
+		if(_animId == -1 || !AnimationManager::GetInstance()->IsPlaying(_animId))
 		{
 			_attachStage = 2;
 			_stanTimer = STAN_DURATION;
@@ -410,7 +422,10 @@ void EnemyBase::UpdateReturningToInitialPosition()
 			// 3秒経過したので初期位置にテレポート
 			_effect->PlayEffect(_vPos); // テレポート前のエフェクト
 			_vPos = _initialPosition;
-			_vDir = _initialDirection;
+			if(!IsStun())
+			{
+				_vDir = _initialDirection;
+			}
 			_isReturningToInitialPos = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
@@ -466,26 +481,29 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		}
 	}
 
-	// 移動方向に向きを徐々に変更
-	float currentAngle = atan2f(_vDir.x, _vDir.z);
-	float targetAngle = atan2f(moveDirection.x, moveDirection.z);
-
-	// 角度差を計算
-	float angleDiff = targetAngle - currentAngle;
-	while(angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
-	while(angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
-
-	// 回転速度を制限
-	if(abs(angleDiff) > _rotationSpeed)
+	if(!IsStun())
 	{
-		angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
+		// 移動方向に向きを徐々に変更
+		float currentAngle = atan2f(_vDir.x, _vDir.z);
+		float targetAngle = atan2f(moveDirection.x, moveDirection.z);
+
+		// 角度差を計算
+		float angleDiff = targetAngle - currentAngle;
+		while(angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+		while(angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+		// 回転速度を制限
+		if(abs(angleDiff) > _rotationSpeed)
+		{
+			angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
+		}
+
+		// 新しい角度を計算
+		float newAngle = currentAngle + angleDiff;
+		_vDir.x = sin(newAngle);
+		_vDir.z = cos(newAngle);
+
 	}
-
-	// 新しい角度を計算
-	float newAngle = currentAngle + angleDiff;
-	_vDir.x = sin(newAngle);
-	_vDir.z = cos(newAngle);
-
 	// 初期位置に戻り中は検出状態を再度falseに設定（念のため）
 	_detectedPlayer = false;
 }
@@ -528,10 +546,13 @@ void EnemyBase::UpdateMovingToSound()
 		angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
 	}
 
-	// 新しい角度を計算
-	float newAngle = currentAngle + angleDiff;
-	_vDir.x = sin(newAngle);
-	_vDir.z = cos(newAngle);
+	if(!IsStun())
+	{
+		// 新しい角度を計算
+		float newAngle = currentAngle + angleDiff;
+		_vDir.x = sin(newAngle);
+		_vDir.z = cos(newAngle);
+	}
 
 	// 音源に向かって移動（壁回避機能を使用）
 	// 壁回避を試行する角度テーブル（度数）
@@ -575,23 +596,26 @@ void EnemyBase::UpdateMovingToSound()
 			// 直進以外の方向で移動する場合、その方向を向く
 			if (i > 0)
 			{
-				// 移動方向に徐々に向きを変更
-				float testAngle = atan2f(testDirection.x, testDirection.z);
-				float testAngleDiff = testAngle - currentAngle;
-				while (testAngleDiff > DX_PI_F) testAngleDiff -= 2.0f * DX_PI_F;
-				while (testAngleDiff < -DX_PI_F) testAngleDiff += 2.0f * DX_PI_F;
-
-				// 回転速度を制限
-				float maxRotation = _rotationSpeed * 1.5f;
-				if (abs(testAngleDiff) > maxRotation)
+				if(!IsStun())
 				{
-					testAngleDiff = (testAngleDiff > 0) ? maxRotation : -maxRotation;
-				}
+					// 移動方向に徐々に向きを変更
+					float testAngle = atan2f(testDirection.x, testDirection.z);
+					float testAngleDiff = testAngle - currentAngle;
+					while(testAngleDiff > DX_PI_F) testAngleDiff -= 2.0f * DX_PI_F;
+					while(testAngleDiff < -DX_PI_F) testAngleDiff += 2.0f * DX_PI_F;
 
-				// 新しい角度を適用
-				float adjustedAngle = currentAngle + testAngleDiff;
-				_vDir.x = sin(adjustedAngle);
-				_vDir.z = cos(adjustedAngle);
+					// 回転速度を制限
+					float maxRotation = _rotationSpeed * 1.5f;
+					if(abs(testAngleDiff) > maxRotation)
+					{
+						testAngleDiff = (testAngleDiff > 0) ? maxRotation : -maxRotation;
+					}
+
+					// 新しい角度を適用
+					float adjustedAngle = currentAngle + testAngleDiff;
+					_vDir.x = sin(adjustedAngle);
+					_vDir.z = cos(adjustedAngle);
+				}
 			}
 			break;
 		}
@@ -616,7 +640,10 @@ void EnemyBase::UpdateMovingToSound()
 	{
 		vec::Vec3 moveDir = vec3::VNorm(finalMovement);
 		moveDir.y = 0.0f;
-		_vDir = moveDir;
+		if(!IsStun())
+		{
+			_vDir = moveDir;
+		}
 	}
 
 	// 移動中はWALKステータスに設定
@@ -709,26 +736,29 @@ void EnemyBase::MoveTowardsTarget(const vec::Vec3& target)
 			// 直進以外の方向で移動する場合、その方向を向く
 			if(i > 0)
 			{
-				// 移動方向に徐々に向きを変更
-				float currentAngle = atan2f(_vDir.x, _vDir.z);
-				float targetAngle = atan2f(testDirection.x, testDirection.z);
-
-				// 角度差を計算（-π から π の範囲に正規化）
-				float angleDiff = targetAngle - currentAngle;
-				while(angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
-				while(angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
-
-				// 回転速度を制限
-				float maxRotation = _rotationSpeed * 2.0f; // 壁回避時は少し速く回転
-				if(abs(angleDiff) > maxRotation)
+				if(!IsStun())
 				{
-					angleDiff = (angleDiff > 0) ? maxRotation : -maxRotation;
-				}
+					// 移動方向に徐々に向きを変更
+					float currentAngle = atan2f(_vDir.x, _vDir.z);
+					float targetAngle = atan2f(testDirection.x, testDirection.z);
 
-				// 新しい角度を適用
-				float newAngle = currentAngle + angleDiff;
-				_vDir.x = sin(newAngle);
-				_vDir.z = cos(newAngle);
+					// 角度差を計算（-π から π の範囲に正規化）
+					float angleDiff = targetAngle - currentAngle;
+					while(angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+					while(angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+					// 回転速度を制限
+					float maxRotation = _rotationSpeed * 2.0f; // 壁回避時は少し速く回転
+					if(abs(angleDiff) > maxRotation)
+					{
+						angleDiff = (angleDiff > 0) ? maxRotation : -maxRotation;
+					}
+
+					// 新しい角度を適用
+					float newAngle = currentAngle + angleDiff;
+					_vDir.x = sin(newAngle);
+					_vDir.z = cos(newAngle);
+				}
 			}
 			break;
 		}
@@ -784,6 +814,8 @@ void EnemyBase::UpdateChasing()
 bool EnemyBase::Render()
 {
 	base::Render();
+
+	RenderDamageTime();
 	return true;
 }
 
@@ -835,4 +867,17 @@ void EnemyBase::RenderYouDiedMessage()
 	// 残り時間表示（デバッグ用、必要に応じてコメントアウト可能）
 	DrawFormatString(10, 10, GetColor(255, 255, 0),
 		"YOU DIED残り時間: %.1f", _youDiedMessageTimer);
+}
+
+void EnemyBase::RenderDamageTime()
+{
+	// 無敵＋スタンステージ(2) のときのみ表示
+	if(!(_isInvincible && _attachStage == 2)) return;
+	
+	// フォントサイズを設定（必要に応じて変更可）
+	SetFontSize(16);
+	
+	// 画面左上に表示（位置は調整可）
+	DrawFormatString(10, 40, GetColor(255, 200, 0),
+	"STAN残り時間: %.1f", _stanTimer);
 }
