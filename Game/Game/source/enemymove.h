@@ -35,6 +35,9 @@ public:
 		return _isPatroll;
 	}
 
+	void OnDamageStart()override;
+	void OnDamageEnd()override;
+
 protected:
 
 	// „‰ñƒ‹[ƒgŠÖ˜A

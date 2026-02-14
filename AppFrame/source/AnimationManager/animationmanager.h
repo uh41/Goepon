@@ -48,6 +48,9 @@ public:
 	// Ä¶’†‚©‚Ç‚¤‚©
 	bool IsPlaying(int id) const;
 
+	// ‘Ä¶ŠÔ‚ğæ“¾
+	float GetTotalTime(int id) const;
+
 private:
 
 	int CreateInstance(int handle, int attachindex, const std::string& name,float totaltime, bool loop, float speed);

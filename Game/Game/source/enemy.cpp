@@ -17,7 +17,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
+	_handle = MV1LoadModel(mv1::busi_multimotion);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -38,6 +38,10 @@ bool Enemy::Initialize()
 	_moveSpeed = 2.0f;
 
 	// 整合性のため他は base に委譲済み
+
+	_attachAnimDamage = "kari_walk";
+	_attachAnimStan = "kari_korobu_2";
+	_attachAnimGetUp = "kari_korobu_3";
 
 	// タイマー初期化等は base にて行われている
 	return true;
@@ -214,9 +218,9 @@ bool Enemy::Process()
 			switch(s)
 			{
 			case CharaBase::STATUS::WAIT:
-				return "taiki";
+				return "kari_idle";
 			case CharaBase::STATUS::WALK:
-				return "walk";
+				return "kari_walk";
 			default:
 				return std::string();
 			}
@@ -233,6 +237,7 @@ bool Enemy::Process()
 			_fPlayTime = 0.0f;
 			if(_animId != -1)
 			{
+				_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
 				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 			}
 		}
@@ -276,6 +281,7 @@ bool Enemy::Process()
 			}
 			if(_animId != -1)
 			{
+				_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
 				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 			}
 		}
@@ -298,23 +304,26 @@ bool Enemy::Process()
 	}
 
 	// 定期的な向き変更処理（WAIT 時のみ）
-	DirChangeTimer -= 1.0f / 60.0f;
-	if(DirChangeTimer <= 0.0f)
+	if(!IsStun() && _status == STATUS::WAIT)
 	{
-		DirChangeTimer = StCas<float>(DirChangeInterval);
-		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+		DirChangeTimer -= 1.0f / 60.0f;
+		if(DirChangeTimer <= 0.0f)
 		{
-			float currentAngle = atan2f(_vDir.x, _vDir.z);
-			float newAngle = currentAngle + DX_PI_F / 2.0f;
-			vec::Vec3 newDir;
-			newDir.x = sin(newAngle);
-			newDir.y = 0.0f;
-			newDir.z = cos(newAngle);
-
-			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-			if(CheckFloorExistence(testPos))
+			DirChangeTimer = StCas<float>(DirChangeInterval);
+			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
 			{
-				_vDir = newDir;
+				float currentAngle = atan2f(_vDir.x, _vDir.z);
+				float newAngle = currentAngle + DX_PI_F / 2.0f;
+				vec::Vec3 newDir;
+				newDir.x = sin(newAngle);
+				newDir.y = 0.0f;
+				newDir.z = cos(newAngle);
+
+				vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
+				if(CheckFloorExistence(testPos))
+				{
+					_vDir = newDir;
+				}
 			}
 		}
 	}
@@ -327,11 +336,6 @@ bool Enemy::Render()
 {
 	base::Render();
 	// 再生時間をセット（必要なら AnimationManager に反映）
-	if(_animId != -1)
-	{
-		AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
-	}
-
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
 
 	MATRIX mRotY = MGetRotY(vorty);
@@ -339,7 +343,7 @@ bool Enemy::Render()
 	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	MATRIX mScale = MGetScale(VGet(1.7f, 1.7f, 1.7f));
+	MATRIX mScale = MGetScale(VGet(10.0f, 10.0f, 10.0f));
 
 	MATRIX m = MGetIdent();
 	m = MMult(m, mRotY);

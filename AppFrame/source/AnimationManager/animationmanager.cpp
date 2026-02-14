@@ -226,3 +226,13 @@ int AnimationManager::CreateInstance(int handle, int attachindex, const std::str
 	_animInstance[instance.id] = instance;
 	return instance.id;
 }
+
+float AnimationManager::GetTotalTime(int id) const
+{
+	auto it = _animInstance.find(id);
+	if(it == _animInstance.end())
+	{
+		return 0.0f;
+	}
+	return it->second.totalTime;
+}
