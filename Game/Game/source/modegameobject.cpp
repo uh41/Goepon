@@ -27,6 +27,10 @@ bool ModeGame::ObjectInitialize()
 	//_map = std::make_shared<Map>();
 	//_object.emplace_back(_map);
 
+	auto makimono = std::make_shared<Makimono>();
+	makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
+	makimono->SetCamera(_camera);
+
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
 	_playerBase.emplace_back(_player);
@@ -35,11 +39,6 @@ bool ModeGame::ObjectInitialize()
 	_playerMono = std::make_shared<PlayerMono>();
 	_playerBase.emplace_back(_playerMono);
 
-
-	auto treasure = std::make_shared<Treasure>();
-	_treasure.emplace_back(treasure);
-	_object.emplace_back(treasure);
-	
 	// ゴール初期化
 	_goal = std::make_shared<Goal>();
 	_object.emplace_back(_goal);
@@ -479,10 +478,18 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
+	// 宝箱処理
 	for (auto& t : _treasure)
 	{
 		if (t) t->Process();
 	}
+
+	// 巻物処理
+	for(auto& makimono : _makimono)
+	{
+		makimono->Process();
+	}
+
 	// UI処理
 	for(auto& ui_base : _uiBase)
 	{
@@ -508,6 +515,7 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+	// 敵の描画
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive())
@@ -516,9 +524,16 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+	// 宝箱の描画
 	for (auto& t : _treasure)
 	{
 		if (t) t->Render();
+	}
+
+	// 巻物の描画
+	for(auto& makimono : _makimono)
+	{
+		if(makimono) makimono->Render();
 	}
 
 	// オブジェクトを描画
