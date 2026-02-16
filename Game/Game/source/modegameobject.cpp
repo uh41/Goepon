@@ -36,9 +36,9 @@ bool ModeGame::ObjectInitialize()
 	_playerBase.emplace_back(_playerMono);
 
 
-	auto treasure = std::make_shared<Treasure>();
-	_treasure.emplace_back(treasure);
-	_object.emplace_back(treasure);
+	//auto treasure = std::make_shared<Treasure>();
+	//_treasure.emplace_back(treasure);
+	//_object.emplace_back(treasure);
 	
 	// ゴール初期化
 	_goal = std::make_shared<Goal>();

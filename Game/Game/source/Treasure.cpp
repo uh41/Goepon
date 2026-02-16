@@ -30,8 +30,8 @@ bool Treasure::Initialize()
 
 	_objStatus = OBJSTATUS::NONE;
 
-	_vPos = vec::Vec3{ 714.0f, 0.0f, 5803.0f };
-	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
+	//_vPos = vec::Vec3{ 714.0f, 0.0f, 5803.0f };
+	//_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 
 
 	MV1SetupCollInfo(_handle, _hitCollisionFrame, 16, 16, 16);

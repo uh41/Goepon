@@ -15,8 +15,6 @@ class Treasure : public ObjectBase
 {
 	typedef ObjectBase base;
 public:
-
-
 	enum class OBJSTATUS
 	{
 		NONE,
@@ -38,7 +36,6 @@ public:
 	auto GetOpenCollisionFrame() const { return _openCollisionFrame; }
 
 	auto GetModelHandle() const { return _handle; }
-
 
 	bool IsOpen() const { return _isOpen; }
 	// 実装はこっち
