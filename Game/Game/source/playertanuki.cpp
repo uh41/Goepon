@@ -1,6 +1,7 @@
 ﻿
 #include "playertanuki.h"
 #include "appframe.h"
+#include "applicationglobal.h"
 
 
 bool PlayerTanuki::Initialize()
@@ -30,6 +31,33 @@ bool PlayerTanuki::Initialize()
 bool PlayerTanuki::Terminate()
 {
 	base::Terminate();
+
+	return true;
+}
+
+bool PlayerTanuki::SoundWalk()
+{
+	if(gGlobal._soundServer)
+	{
+		auto sound = gGlobal._soundServer->Get("1");
+		if(sound)
+		{
+			if(_status == STATUS::WALK)
+			{
+				if(!sound->IsPlay())
+				{
+					sound->Play();
+				}
+			}
+			else
+			{
+				if(sound->IsPlay())
+				{
+					sound->Stop();
+				}
+			}
+		}
+	}
 
 	return true;
 }
@@ -192,12 +220,15 @@ bool PlayerTanuki::Process()
 			_animId = -1;
 		}
 		PlayAnim(true);
+		SoundWalk();
 	}
 
 	if(_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
 	}
+
+	SoundWalk();
 
 	return true;
 }

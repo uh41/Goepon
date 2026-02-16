@@ -10,6 +10,7 @@
 
 #include "player.h"
 #include "appframe.h"
+#include "applicationglobal.h"
 
 // 初期化
 bool Player::Initialize()
@@ -65,6 +66,33 @@ bool Player::Initialize()
 bool Player::Terminate()
 {
 	base::Terminate();
+	return true;
+}
+
+bool Player::PlayerSoundMove()
+{
+	if(gGlobal._soundServer)
+	{
+		auto sound = gGlobal._soundServer->Get("11");
+		if(sound)
+		{
+			if(_status == STATUS::WALK)
+			{
+				if(!sound->IsPlay())
+				{
+					sound->Play();
+				}
+			}
+			else
+			{
+				if(sound->IsPlay())
+				{
+					sound->Stop();
+				}
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -290,6 +318,11 @@ bool Player::Process()
 	else
 	{
 		_status = STATUS::WAIT;
+	}
+
+	if(old_status != _status)
+	{
+		PlayerSoundMove();
 	}
 
 	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))

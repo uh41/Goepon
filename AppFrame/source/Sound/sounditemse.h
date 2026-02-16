@@ -4,7 +4,7 @@
 // *
 // * \author —é–Ø—T‹H
 // * \date   2025/12/23
-// * \ì‹Æ“à—e: V‹Kì¬ —é–Ø—T‹H@2025/12/23
+// * \ì‹Æ“à—e: C³ —é–Ø—T‹H 2026/02/16
 /*********************************************************************/
 
 #pragma once
@@ -17,14 +17,25 @@ namespace soundserver
 		typedef SoundItemStatic base;
 	public:
 
-		SoundItemSE(std::string filename, int flag = 0) : base(filename, flag)	{}
+		SoundItemSE(std::string filename, int flag = 0) : base(filename, flag) {}
 
 		virtual TYPE GetType()override { return TYPE::SE; }
+
 		virtual void Play()override
 		{
+			// –¢ƒ[ƒh‚È‚çƒ[ƒh‚µ‚Ä‚©‚çÄ¶‚·‚éi“¯Šúƒ[ƒhj
+			if(_iSoundHandle == -1)
+			{
+				_iSoundHandle = LoadMem(_sFileName);
+				// ƒ[ƒhŽ¸”s‚È‚ç‰½‚à‚µ‚È‚¢
+				if(_iSoundHandle == -1)
+				{
+					return;
+				}
+			}
+
 			this->Stop();
 			PlayMem(DX_PLAYTYPE_BACK);
 		}
 	};
 }
-

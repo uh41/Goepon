@@ -1,4 +1,5 @@
 #include "playermono.h"
+#include "applicationglobal.h"
 
 PlayerMono::PlayerMono()
 {
@@ -13,7 +14,7 @@ PlayerMono::~PlayerMono()
 bool PlayerMono::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::tuzura_02);
+	_handle = MV1LoadModel(mv1::Kagurayaki);
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;
@@ -37,6 +38,32 @@ bool PlayerMono::Terminate()
 {
 	base::Terminate();
 	return true;
+}
+
+bool PlayerMono::PlayerMonoSoundMove()
+{
+	if(gGlobal._soundServer)
+	{
+		auto sound = gGlobal._soundServer->Get("50");
+		if(sound)
+		{
+			if(_status == STATUS::WALK)
+			{
+				if(!sound->IsPlay())
+				{
+					sound->Play();
+				}
+			}
+			else
+			{
+				if(sound->IsPlay())
+				{
+					sound->Stop();
+				}
+			}
+		}
+	}
+	return false;
 }
 
 bool PlayerMono::Process()
@@ -109,6 +136,11 @@ bool PlayerMono::Process()
 	if(_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
+	}
+
+	if(old_status != _status)
+	{
+		PlayerMonoSoundMove();
 	}
 
 	// アニメーションの名前取得

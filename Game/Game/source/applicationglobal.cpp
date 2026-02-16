@@ -44,22 +44,25 @@ bool ApplicationGlobal::Init()
 
 	if(!_soundServer)
 	{
-		_soundServer = ms<soundserver::SoundServer>();
+		_soundServer = std::make_shared<soundserver::SoundServer>();
 	}
-	_soundServer->Add("bgminitialize", ms<soundserver::SoundItemBGM>(mp3::shinobiashi));
-	_soundServer->Add("bgmChenge", ms<soundserver::SoundItemBGM>(wav::ks010));
-	_soundServer->Add("tanukiwalk", ms<soundserver::SoundItemSE>(mp3::tanuki_walk));
-	_soundServer->Add("tanukihenshinstart", ms<soundserver::SoundItemSE>(mp3::tanuki_henshin_start));
-	_soundServer->Add("bushfound", ms<soundserver::SoundItemSE>(mp3::bush_found));
-	_soundServer->Add("bushiwalk", ms<soundserver::SoundItemSE>(mp3::bushi_walk));
-	_soundServer->Add("tanukitresureopen", ms<soundserver::SoundItemSE>(mp3::tanuki_Tresure_open));
-	_soundServer->Add("tanukihenshinfinish", ms<soundserver::SoundItemSE>(mp3::tanuki_henshinfinish));
-	_soundServer->Add("tanubitotailattack", ms<soundserver::SoundItemSE>(mp3::tanubito_tailattack));
-	_soundServer->Add("bushistunstart", ms<soundserver::SoundItemSE>(mp3::bushi_stun_start));
-	_soundServer->Add("doghowling", ms<soundserver::SoundItemSE>(mp3::dog_howling));
-	_soundServer->Add("voice1", ms<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
-	_soundServer->Add("voice2", ms<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
-	_soundServer->Add("voice3", ms<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("bgminitialize", std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi));
+	_soundServer->Add("bgmChenge", std::make_shared<soundserver::SoundItemBGM>(wav::ks010));
+	_soundServer->Add("1", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_walk));
+	_soundServer->Add("2", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_henshin_start));
+	_soundServer->Add("35", std::make_shared<soundserver::SoundItemSE>(mp3::bush_found));
+	_soundServer->Add("31", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_walk, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("4", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_Tresure_open));
+	_soundServer->Add("3", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_henshinfinish));
+	_soundServer->Add("5", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_tailattack));
+	_soundServer->Add("30", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_stun_start));
+	_soundServer->Add("doghowling", std::make_shared<soundserver::SoundItemSE>(mp3::dog_howling));
+	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk));
+	_soundServer->Add("50", std::make_shared<soundserver::SoundItemSE>(mp3::okimono_move));
+	_soundServer->Add("60", std::make_shared<soundserver::SoundItemSE>(mp3::UI_charin));
+	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
 	SetUseASyncLoadFlag(FALSE);
 
 	return true;
