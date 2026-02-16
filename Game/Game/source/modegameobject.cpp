@@ -234,8 +234,11 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			{
 				if(enemy->IsAlive())
 				{
-					enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
-					enemy->GetSoundSensor()->SetSoundLevel(5);
+					// 変身中は敵の音検知を無効化（音波を発生させない）
+					if(enemy->GetEnemySoundSensor())
+					{
+						enemy->GetEnemySoundSensor()->SetSoundLevel(0);
+					}
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}
@@ -277,8 +280,11 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			{
 				if(enemy->IsAlive())
 				{
-					enemy->GetSoundSensor()->TriggerSoundWave(_playerMono->GetPos(), 500.0f, 10.0f);
-					enemy->GetSoundSensor()->SetSoundLevel(5);
+					// 変身中は敵の音検知を無効化（音波を発生させない）
+					if(enemy->GetEnemySoundSensor())
+					{
+						enemy->GetEnemySoundSensor()->SetSoundLevel(0);
+					}
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}

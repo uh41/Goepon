@@ -16,7 +16,7 @@
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::SK_tanuhuman_multimotion);
+	_handle = MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
 	_iAttachIndex = -1;
 	_animId = -1;
 	// ステータスを「無し」に設定
@@ -332,10 +332,10 @@ bool Player::Process()
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			anim_name = "mot_attack_charge_loop"; // 元コードに合わせる
+			anim_name = "tanuhuman_idle"; // 元コードに合わせる
 			break;
 		case STATUS::WALK:
-			anim_name = "mot_move_run";
+			anim_name = "tanuhuman_walk";
 			break;
 		default:
 			anim_name.clear();
@@ -375,10 +375,10 @@ bool Player::Process()
 		switch(_status)
 		{
 		case STATUS::WAIT:
-			anim_name = "idle_kari";
+			anim_name = "tanuhuman_idle";
 			break;
 		case STATUS::WALK:
-			anim_name = "walk";
+			anim_name = "tanuhuman_walk";
 			break;
 		default:
 			anim_name.clear();
