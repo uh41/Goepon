@@ -79,6 +79,7 @@ namespace mv1
   inline constexpr const char* SK_goepon_multimotion = "res/Tanuki/SK_goepon_multimotion.mv1";
   inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
+  inline constexpr const char* Kagurayaki = "res/tanumono/Kagurayaki.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
 }
 
@@ -98,6 +99,18 @@ namespace mp3
 {
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
+  inline constexpr const char* bush_found = "res/SE/bush_found.mp3";
+  inline constexpr const char* bushi_stun_start = "res/SE/bushi_stun_start.mp3";
+  inline constexpr const char* bushi_walk = "res/SE/bushi_walk.mp3";
+  inline constexpr const char* dog_howling = "res/SE/dog_howling.mp3";
+  inline constexpr const char* okimono_move = "res/SE/okimono_move.mp3";
+  inline constexpr const char* tanubito_tailattack = "res/SE/tanubito_tailattack.mp3";
+  inline constexpr const char* tanubito_walk = "res/SE/tanubito_walk.mp3";
+  inline constexpr const char* tanuki_Tresure_open = "res/SE/tanuki_Tresure_open.mp3";
+  inline constexpr const char* tanuki_henshin_start = "res/SE/tanuki_henshin_start.mp3";
+  inline constexpr const char* tanuki_henshinfinish = "res/SE/tanuki_henshinfinish.mp3";
+  inline constexpr const char* tanuki_walk = "res/SE/tanuki_walk.mp3";
   inline constexpr const char* voice1 = "res/Voice/voice1.mp3";
   inline constexpr const char* voice2 = "res/Voice/voice2.mp3";
   inline constexpr const char* voice3 = "res/Voice/voice3.mp3";

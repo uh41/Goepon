@@ -355,11 +355,22 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		// Aボタンを押していなかったら開けない
 		if(!holdA)
 		{
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
 			continue;
 		}
 
-		// 個々の処理に来た時点で「宝を開けられる範囲 + Aボタンを押している」状態
-		_isOpeningTreasure = true;
+		if(!_isOpeningTreasure)
+		{
+			_isOpeningTreasure = true;
+			_treasureHoldSec = 0.0f; // 開始時点でリセットしておく
+
+			auto sound = gGlobal._soundServer->Get("60");
+			if(sound && !sound->IsPlay())
+			{
+				sound->Play();
+			}
+		}
 
 		// 経過時間を計算
 		const float dt = 1.0f / 60.0f; // 60FPS固定とする
@@ -377,6 +388,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				_doyaEffect->PlayEffect(treasure->GetPos());
 			}
+
+
 			return true;				// 1つ開けたら終了
 		}
 		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
@@ -386,6 +399,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	{
 		_isOpeningTreasure = false;
 		_treasureHoldSec = 0.0f;
+		auto sound = gGlobal._soundServer->Get("60");
+		if(sound && sound->IsPlay())
+		{
+			sound->Stop();
+		}
 	}
 	return false;
 }
@@ -498,6 +516,11 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 		if(anyhit)
 		{
 			_tanukiAttackAnimId = player->PlayAnimation("gomepon_hensin", false);
+			auto soundAttack = gGlobal._soundServer->Get("5");
+			if(soundAttack)
+			{
+				soundAttack->Play();
+			}
 			_isTanukiAttackPlaying = (_tanukiAttackAnimId != -1);
 		}
 

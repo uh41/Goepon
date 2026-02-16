@@ -237,7 +237,7 @@ bool Enemy::Process()
 			_fPlayTime = 0.0f;
 			if(_animId != -1)
 			{
-				_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
+				//_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
 				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 			}
 		}
@@ -281,7 +281,7 @@ bool Enemy::Process()
 			}
 			if(_animId != -1)
 			{
-				_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
+				//_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
 				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 			}
 		}

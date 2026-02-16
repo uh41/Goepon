@@ -10,6 +10,7 @@
 #include "enemybase.h"
 #include "enemysensor.h"
 #include "enemysoundsensor.h"
+#include "applicationglobal.h"
 
 // 初期化
 bool EnemyBase::Initialize()
@@ -114,6 +115,9 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 		return;
 	}
 
+	// 変更点：遷移検出のため、呼び出し前の状態を保存
+	bool wasDetected = _detectedPlayer;
+
 	_detectedPlayer = true;	// プレイヤーを検出したフラグを立てる
 	_playerPos = playerPos;	// 検出したプレイヤーの位置を保存
 
@@ -131,6 +135,19 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 	// 音検知タイマーをリセット
 	_soundDetectionActive = false;
 	_soundDetectionTimer = 0.0f;
+
+	// 遷移（未検出 -> 検出）時のみ効果音を鳴らす
+	if(!wasDetected)
+	{
+		if(gGlobal._soundServer)
+		{
+			auto bushfound = gGlobal._soundServer->Get("35");
+			if(bushfound && !bushfound->IsPlay())
+			{
+				bushfound->Play();
+			}
+		}
+	}
 }
 
 // EnemySensorを設定
@@ -350,6 +367,15 @@ void EnemyBase::UpdateDamageAnimation()
 		{
 			_attachStage = 2;
 			_stanTimer = STAN_DURATION;
+
+			if(gGlobal._soundServer)
+			{
+				auto sound = gGlobal._soundServer->Get("30");
+				if(sound && !sound->IsPlay())
+				{
+					sound->Play();
+				}
+			}
 
 			if(!_attachAnimStan.empty())
 			{
