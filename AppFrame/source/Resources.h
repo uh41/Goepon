@@ -73,6 +73,7 @@ namespace mv1
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_tanuhuman_multimotion = "res/Tanuhuman/SK_tanuhuman_multimotion.mv1";
+  inline constexpr const char* SK_tanuhuman_multimotion_02 = "res/Tanuhuman/SK_tanuhuman_multimotion_02.mv1";
   inline constexpr const char* TanuHuman = "res/Tanuhuman/TanuHuman.mv1";
   inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
   inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
@@ -92,6 +93,7 @@ namespace ef
   inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
   inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
   inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
+  inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
   inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
 }
 

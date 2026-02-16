@@ -471,10 +471,11 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
+
 	// 攻撃中は上で return 済みなので、ここに来たら新規受付OK
 	if(trg & PAD_INPUT_2)
 	{
-		player = _playerTanuki.get();
+		player = _player.get();
 
 		float halfAngle = DEG2RAD(60.0f); // 60度
 		float rad = 120.0f; // 半径100
@@ -515,8 +516,8 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 		// ヒットした時だけ攻撃アニメ開始＆ロックON
 		if(anyhit)
 		{
-			_tanukiAttackAnimId = player->PlayAnimation("gomepon_hensin", false);
-			auto soundAttack = gGlobal._soundServer->Get("5");
+			_tanukiAttackAnimId = player->PlayAnimation("tanuhito_kougeki", false);
+			auto soundAttack = gGlobal._soundServer->Get("10");
 			if(soundAttack)
 			{
 				soundAttack->Play();

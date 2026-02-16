@@ -54,7 +54,7 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("31", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_walk, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("4", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_Tresure_open));
 	_soundServer->Add("3", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_henshinfinish));
-	_soundServer->Add("5", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_tailattack));
+	_soundServer->Add("10", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_tailattack));
 	_soundServer->Add("30", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_stun_start));
 	_soundServer->Add("doghowling", std::make_shared<soundserver::SoundItemSE>(mp3::dog_howling));
 	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk));
