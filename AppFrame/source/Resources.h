@@ -91,6 +91,7 @@ namespace ef
   inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
   inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
   inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
+  inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
   inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
 }
 

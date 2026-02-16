@@ -1,8 +1,9 @@
 #pragma once
-#include "objectbase.h"
-class Makimono : public ObjectBase
+#include "effectbase.h"
+#include "appframe.h"	
+class Makimono : public EffectBase
 {
-	typedef ObjectBase base;
+	typedef EffectBase base;
 public:
 	
 	bool Initialize() override;
@@ -14,7 +15,7 @@ public:
 protected:
 	bool  haveMakimono;
 	bool  _isVisible;
-
 	float _drawSize;
+
 };
 

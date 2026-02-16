@@ -201,6 +201,17 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	return true;
 }
 
+bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>& makimono)
+{
+	if(!player || makimono.empty())
+	{
+		return false;
+	}
+
+
+	return false;
+}
+
 // キャラと宝箱の当たり判定処理
 bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasure)
 {
