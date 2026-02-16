@@ -14,5 +14,7 @@ public:
 protected:
 	bool  haveMakimono;
 	bool  _isVisible;
+
+	float _drawSize;
 };
 

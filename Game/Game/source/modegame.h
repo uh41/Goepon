@@ -44,6 +44,7 @@
 #include "aseeffect.h"
 #include "doyaeffect.h"
 #include "nakieffect.h"
+#include "Makimono.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -158,6 +159,7 @@ protected:
 	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
 	at::vspc<Treasure> _treasure;
+	at::vspc<Makimono> _makimono;
 	//ステージベース
 	at::vspc<MapBase> _mapBase;
 	// map1

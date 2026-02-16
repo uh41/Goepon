@@ -24,7 +24,6 @@
 #endif
 
 
-
 // 初期化
 bool ModeGame::Initialize()
 {
