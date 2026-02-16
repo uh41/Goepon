@@ -29,7 +29,7 @@ bool EnemyMove::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
+	_handle = MV1LoadModel("res/PoorEnemyMelee/busi_multimotion.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -329,6 +329,24 @@ void EnemyMove::StartReturningToInitialPosition()
 	ResetTeleport();
 }
 
+void EnemyMove::OnDamageStart()
+{
+	_savePatrolIndex = _patrolIndex;
+	_isPatroll = false;
+	_hasSavePoint = true;
+}
+
+void EnemyMove::OnDamageEnd()
+{
+	if(_patroll && _patroll->IsValid())
+	{
+		_patroll->SetMovePointIndex(_savePatrolIndex);
+		_patrolIndex = _savePatrolIndex;
+		_isPatroll = true;
+		_hasSavePoint = false;
+	}
+}
+
 // 計算処理
 bool EnemyMove::Process()
 {
@@ -525,7 +543,7 @@ bool EnemyMove::Process()
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "taiki");
+			int animIndex = MV1GetAnimIndex(_handle, "kari_idle");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -539,7 +557,7 @@ bool EnemyMove::Process()
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "walk");
+			int animIndex = MV1GetAnimIndex(_handle, "kari_walk");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
