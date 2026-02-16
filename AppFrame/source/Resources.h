@@ -98,6 +98,15 @@ namespace mp3
 {
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* bush_found = "res/SE/bush_found.mp3";
+  inline constexpr const char* bushi_stun_start = "res/SE/bushi_stun_start.mp3";
+  inline constexpr const char* bushi_walk = "res/SE/bushi_walk.mp3";
+  inline constexpr const char* dog_howling = "res/SE/dog_howling.mp3";
+  inline constexpr const char* tanubito_tailattack = "res/SE/tanubito_tailattack.mp3";
+  inline constexpr const char* tanuki_Tresure_open = "res/SE/tanuki_Tresure_open.mp3";
+  inline constexpr const char* tanuki_henshin_start = "res/SE/tanuki_henshin_start.mp3";
+  inline constexpr const char* tanuki_henshinfinish = "res/SE/tanuki_henshinfinish.mp3";
+  inline constexpr const char* tanuki_walk = "res/SE/tanuki_walk.mp3";
   inline constexpr const char* voice1 = "res/Voice/voice1.mp3";
   inline constexpr const char* voice2 = "res/Voice/voice2.mp3";
   inline constexpr const char* voice3 = "res/Voice/voice3.mp3";

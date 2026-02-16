@@ -18,6 +18,9 @@ namespace soundserver
 class ApplicationGlobal
 {
 public:
+	template<typename C>
+	using ms = std::make_shared<C>;
+
 	ApplicationGlobal();
 	virtual ~ApplicationGlobal();
 
