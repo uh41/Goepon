@@ -517,7 +517,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 		if(anyhit)
 		{
 			_tanukiAttackAnimId = player->PlayAnimation("tanuhito_kougeki", false);
-			auto soundAttack = gGlobal._soundServer->Get("5");
+			auto soundAttack = gGlobal._soundServer->Get("10");
 			if(soundAttack)
 			{
 				soundAttack->Play();
