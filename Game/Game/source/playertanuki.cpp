@@ -7,7 +7,7 @@
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	LoadModel(mv1::SK_goepon_multimotion);
+	LoadModel(mv1::SK_goepon_multimotion_4);
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;
@@ -163,9 +163,9 @@ bool PlayerTanuki::Process()
 			switch(name)
 			{
 			case STATUS::WAIT:
-				return "goepon_idle";
+				return "idle";
 			case STATUS::WALK:
-				return "goepon_walk";
+				return "walk";
 			default:
 				return std::string();
 			}

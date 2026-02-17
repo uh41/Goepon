@@ -195,7 +195,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 	// 変身アニメ開始（未開始時のみ）
 	if(_transformAnimId == -1)
 	{
-		_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false); 
+		_transformAnimId = _playerTanuki->PlayAnimation("henge", false); 
 		if(player)
 		{
 			_isTransformToHuman = true;
@@ -343,7 +343,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetPos(_playerMono->GetPos());
 			_playerTanuki->SetDir(_playerMono->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("goepon_idle", true);
+			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
@@ -390,7 +390,7 @@ bool ModeGame::PlayerTransform()
 				_playerTanuki->SetPos(_playerMono->GetPos());
 				_playerTanuki->SetDir(_playerMono->GetDir());
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				_playerTanuki->PlayAnimation("goepon_idle", true);
+				_playerTanuki->PlayAnimation("idle", true);
 				_playerTanuki->Process();
 				_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 				_walkEffect->SetPlayerPos(_playerTanuki.get());
@@ -439,7 +439,7 @@ bool ModeGame::PlayerTransform()
 					_walkEffect->SetPlayerPos(_playerTanuki.get());
 					_aseEffect->SetPlayer(_playerTanuki.get());
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
-					_playerTanuki->PlayAnimation("goepon_idle", true);
+					_playerTanuki->PlayAnimation("idle", true);
 					auto soundFinish = gGlobal._soundServer->Get("3");
 					if(soundFinish && !soundFinish->IsPlay())
 					{
@@ -818,7 +818,7 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->SetPos(player->GetPos());
 							_playerTanuki->SetDir(player->GetDir());
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
-							_playerTanuki->PlayAnimation("goepon_idle", true);
+							_playerTanuki->PlayAnimation("idle", true);
 							_playerTanuki->Process();
 							reEffect = true;
 
