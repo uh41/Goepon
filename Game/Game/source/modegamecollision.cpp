@@ -201,6 +201,55 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	return true;
 }
 
+bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>& makimono)
+{
+	if(!player || makimono.empty())
+	{
+		return false;
+	}
+	
+	// プレイヤーのカプセル
+	const vec::Vec3 pPos = player->GetPos();
+	const float pHalf = player->GetColSubY();
+	const float pR = (float)player->GetCollisionR();
+
+	const vec::Vec3 pTop = vec3::VAdd(pPos, vec3::VGet(0.0f, pHalf, 0.0f));
+	const vec::Vec3 pBottom = vec3::VAdd(pPos, vec3::VGet(0.0f, -pHalf, 0.0f));
+
+	for(auto& sp : makimono)
+	{
+		Makimono* makimono = sp.get();
+		if(!makimono)
+		{
+			continue;
+		}
+		if(!makimono->IsVisible())
+		{
+			continue;
+		}
+		// 巻物カプセル
+		const vec::Vec3 mPos = makimono->GetPos();
+		const float mHalf = makimono->GetColSubY();
+		const float mR = (float)makimono->GetCollisionR();
+
+		const vec::Vec3 mTop	= vec3::VAdd(mPos, vec3::VGet(0.0f, mHalf, 0.0f));
+		const vec::Vec3 mBottom = vec3::VAdd(mPos, vec3::VGet(0.0f, -mHalf, 0.0f));
+
+		//　カプセル同士の当たり判定
+		if(DxlibConverter::HitCheckCapsuleToCapsule(pTop, pBottom, pR, mTop, mBottom, mR))
+		{
+			makimono->SetVisible(false); // 巻物を消す
+
+			
+
+		}
+
+	}
+
+
+	return false;
+}
+
 // キャラと宝箱の当たり判定処理
 bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasure)
 {

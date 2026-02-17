@@ -84,6 +84,7 @@ public:
 	// 当たり判定処理
 	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
+	bool PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>& makimono);// プレイヤーと巻物の当たり判定処理
     // キャラと宝箱の当たり判定処理
 	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasures);
 	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<Treasure>& treasures);

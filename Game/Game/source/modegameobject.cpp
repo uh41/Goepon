@@ -30,6 +30,7 @@ bool ModeGame::ObjectInitialize()
 	auto makimono = std::make_shared<Makimono>();
 	makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
 	makimono->SetCamera(_camera);
+	_makimono.emplace_back(makimono);
 
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
