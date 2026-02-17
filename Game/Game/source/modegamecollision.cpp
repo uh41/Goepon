@@ -478,7 +478,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 		player = _player.get();
 
 		float halfAngle = DEG2RAD(60.0f); // 60度
-		float rad = 120.0f; // 半径100
+		float rad = 240.0f; // 半径100
 
 		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
 

@@ -157,6 +157,11 @@ bool PlayerTanuki::Process()
 		_fPlayTime = 0.0f;
 	}
 
+	if(old_status != _status)
+	{
+		SoundWalk();
+	}
+
 	// アニメーションの名前取得
 	auto GetAnimName = [this](STATUS name) -> std::string
 		{
@@ -220,16 +225,12 @@ bool PlayerTanuki::Process()
 			_animId = -1;
 		}
 		PlayAnim(true);
-		SoundWalk();
 	}
 
 	if(_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
 	}
-
-	SoundWalk();
-
 	return true;
 }
 

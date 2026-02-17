@@ -377,6 +377,14 @@ void EnemyBase::UpdateDamageAnimation()
 				}
 			}
 
+			if(_enemySoundSensor)
+			{
+				// 検知用のレベルとエリアを設定してから音波を飛ばす
+				_enemySoundSensor->SetSoundLevel(5);                // 強い音として扱う
+				_enemySoundSensor->SetSoundSensorArea(768.0f);      // センサー半径（敵側）
+				_enemySoundSensor->TriggerSoundWave(_vPos, 1500.0f, 30.0f); // origin, maxRadius, speed
+			}
+
 			if(!_attachAnimStan.empty())
 			{
 				_animId = PlayAnimation(_attachAnimStan, true);
