@@ -1,8 +1,9 @@
 #pragma once
-#include "objectbase.h"
-class Makimono : public ObjectBase
+#include "effectbase.h"
+#include "appframe.h"	
+class Makimono : public EffectBase
 {
-	typedef ObjectBase base;
+	typedef EffectBase base;
 public:
 	
 	bool Initialize() override;
@@ -10,11 +11,15 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+	// デバック用(モデルを表示/非表示)
+	bool IsVisible() const { return _isVisible; }
+	void SetVisible(bool isVisible) { _isVisible = isVisible; }
+
 	bool HaveMakimono() const { return haveMakimono; }
 protected:
 	bool  haveMakimono;
 	bool  _isVisible;
-
 	float _drawSize;
+
 };
 
