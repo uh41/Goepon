@@ -185,10 +185,18 @@ bool ModeGame::CameraInfoInitialize()
 
 bool ModeGame::PlayerTransformToTanuki(bool player)
 {
+	auto soundHenshin = [this]()
+		{
+			auto henshinSound = gGlobal._soundServer->Get("2");
+			if(henshinSound && !henshinSound->IsPlay())
+			{
+				henshinSound->Play();
+			}
+		};
 	// 変身アニメ開始（未開始時のみ）
 	if(_transformAnimId == -1)
 	{
-		_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false);
+		_transformAnimId = _playerTanuki->PlayAnimation("gomepon_hensin", false); 
 		if(player)
 		{
 			_isTransformToHuman = true;
@@ -197,6 +205,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 		{
 			_isTransformToMono = true;
 		}
+		soundHenshin();
 	}
 
 	if(player)
@@ -221,14 +230,16 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
 			_aseEffect->SetPlayer(_player.get());
-
 			// タヌキから人間への変身完了時に音波を発生
 			for(auto& enemy : _enemyBase)
 			{
 				if(enemy->IsAlive())
 				{
-					enemy->GetSoundSensor()->TriggerSoundWave(_player->GetPos(), 500.0f, 10.0f);
-					enemy->GetSoundSensor()->SetSoundLevel(5);
+					// 変身中は敵の音検知を無効化（音波を発生させない）
+					if(enemy->GetEnemySoundSensor())
+					{
+						enemy->GetEnemySoundSensor()->SetSoundLevel(0);
+					}
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}
@@ -264,13 +275,17 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_aseEffect->SetPlayer(_playerMono.get());
+
 			// タヌキから人間への変身完了時に音波を発生
 			for(auto& enemy : _enemyBase)
 			{
 				if(enemy->IsAlive())
 				{
-					enemy->GetSoundSensor()->TriggerSoundWave(_playerMono->GetPos(), 500.0f, 10.0f);
-					enemy->GetSoundSensor()->SetSoundLevel(5);
+					// 変身中は敵の音検知を無効化（音波を発生させない）
+					if(enemy->GetEnemySoundSensor())
+					{
+						enemy->GetEnemySoundSensor()->SetSoundLevel(0);
+					}
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}
@@ -334,6 +349,11 @@ bool ModeGame::PlayerTransform()
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
 			_aseEffect->SetPlayer(_playerTanuki.get());
+			auto soundHenshin = gGlobal._soundServer->Get("2");
+			if(soundHenshin && !soundHenshin->IsPlay())
+			{
+				soundHenshin->Play();
+			}
 
 			// タイマーが動いてたらリセット
 			_changeTimeActive = false; // 時間制限を無効化
@@ -376,6 +396,11 @@ bool ModeGame::PlayerTransform()
 				_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 				_walkEffect->SetPlayerPos(_playerTanuki.get());
 				_aseEffect->SetPlayer(_playerTanuki.get());
+				auto soundFinish = gGlobal._soundServer->Get("3");
+				if(soundFinish && !soundFinish->IsPlay())
+				{
+					soundFinish->Play();
+				}
 
 				// タイマーが動いてたらリセット
 				_changeTimeActive = false;// 時間制限を無効化
@@ -416,6 +441,11 @@ bool ModeGame::PlayerTransform()
 					_aseEffect->SetPlayer(_playerTanuki.get());
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->PlayAnimation("goepon_idle", true);
+					auto soundFinish = gGlobal._soundServer->Get("3");
+					if(soundFinish && !soundFinish->IsPlay())
+					{
+						soundFinish->Play();
+					}
 
 					// タイマーが動いてたらリセット
 					_changeTimeActive = false;
@@ -799,6 +829,11 @@ bool ModeGame::CheckAllDetections()
 								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 								_walkEffect->SetPlayerPos(_playerTanuki.get());
 								_aseEffect->SetPlayer(_playerTanuki.get());
+							}
+							auto soundFinish = gGlobal._soundServer->Get("3");
+							if(soundFinish && !soundFinish->IsPlay())
+							{
+								soundFinish->Play();
 							}
 						}
 					}

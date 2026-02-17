@@ -487,7 +487,6 @@ bool ModeGame::Process()
 		playerBase = _player.get();
 	}
 
-
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)
@@ -503,6 +502,39 @@ bool ModeGame::Process()
 				// プレイヤーが敵に見つかっていなかったら捕まらない
 				if(enemy->IsPlayerChasing())
 				{
+
+					if(gGlobal._soundServer)
+					{
+						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+
+						// 明示的にキーで登録されているループ音を停止
+						auto walkSound = gGlobal._soundServer->Get("1");
+						if(walkSound && walkSound->IsPlay()) walkSound->Stop();
+						auto walkSound11 = gGlobal._soundServer->Get("11");
+						if(walkSound11 && walkSound11->IsPlay()) walkSound11->Stop();
+
+						// 保持しているBGMハンドルがあるなら停止
+						if(_bgmInitialize && _bgmInitialize->IsPlay()) _bgmInitialize->Stop();
+						if(_bgmChenge && _bgmChenge->IsPlay()) _bgmChenge->Stop();
+					}
+
+					// モード内サウンドサーバーがあれば停止（存在するなら）
+					if(_soundServer)
+					{
+						_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+						_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+						_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+						_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+					}
+
+					// 3Dサウンドの停止
+					if(_sound3D)
+					{
+						_sound3D->StopAll();
+					}
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
 
@@ -555,12 +587,15 @@ bool ModeGame::Process()
 		UpdateGoalConfirm(goalPlayer);
 	}
 	
-	IsPlayerAttack(_player.get(), _enemyBase);
+	// 攻撃判定は「表示中のプレイヤーが人間プレイヤー(_player) のときのみ」実行する
+	if(playerBase == _player.get())
+	{
+		IsPlayerAttack(_player.get(), _enemyBase);
+	}
 
 	if(_sound3D)
 	{
-		// 全ての EnemyBase 系に対して、動く敵(EnemyMove) は "voice2"、
-		// それ以外の敵は "voice1" を使う
+		// 全ての EnemyBase 系に対して、歩行中のみ3D音を再生する
 		for(auto& eb : _enemyBase)
 		{
 			if(!eb) continue;
@@ -568,18 +603,28 @@ bool ModeGame::Process()
 			// 生存チェック
 			if(eb->IsAlive())
 			{
-				// EnemyMove 型かどうかで音を切り替える
-				if(dynamic_cast<EnemyMove*>(eb.get()) != nullptr)
+				// 歩行状態のときだけ再生、それ以外は停止
+				if(eb->_status == CharaBase::STATUS::WALK)
 				{
-					_sound3D->PlayLoopSound3D(eb.get(), "voice2", eb->GetPos());
+					// EnemyMove 型かどうかで音を切り替える
+					if(dynamic_cast<EnemyMove*>(eb.get()) != nullptr)
+					{
+						_sound3D->PlayLoopSound3D(eb.get(), "31", eb->GetPos());
+					}
+					else
+					{
+						_sound3D->PlayLoopSound3D(eb.get(), "31", eb->GetPos());
+					}
 				}
 				else
 				{
-					_sound3D->PlayLoopSound3D(eb.get(), "voice1", eb->GetPos());
+					// 歩行していなければループ音を停止
+					_sound3D->StopSound3D(eb.get());
 				}
 			}
 			else
 			{
+				// 死亡時は確実に停止
 				_sound3D->StopSound3D(eb.get());
 			}
 		}
@@ -639,6 +684,12 @@ bool ModeGame::Process()
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
 			_aseEffect->SetPlayer(_playerTanuki.get());
+
+			auto soundFinish = gGlobal._soundServer->Get("3");
+			if(soundFinish && !soundFinish->IsPlay())
+			{
+				soundFinish->Play();
+			}
 
 			// 周囲の敵に対する音波／エフェクト
 			for(auto& enemy : _enemyBase)
@@ -784,12 +835,33 @@ bool ModeGame::ResetStage()
 	_enemy.clear();
 	_enemyMove.clear();
 	_treasure.clear();
-	// サウンドも止める(もしbgm続行させる場合はこちらを修正)
-	if(_soundServer)
+	// - グローバルサウンドサーバーも停止（歩行音などグローバルに登録されている音を確実に停止）
+	if(gGlobal._soundServer)
 	{
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+
+		// 個別に保持しているBGMハンドルが再生中なら停止
+		if(_bgmInitialize)
+		{
+			if(_bgmInitialize->IsPlay()) _bgmInitialize->Stop();
+		}
+		if(_bgmChenge)
+		{
+			if(_bgmChenge->IsPlay()) _bgmChenge->Stop();
+		}
+
+		// 歩行SEなどキー指定で確実に止めたい場合はここで取得して停止
+		auto walkSound = gGlobal._soundServer->Get("1");
+		if(walkSound && walkSound->IsPlay()) walkSound->Stop();
+	}
+
+	// 3Dサウンドも全停止（存在すれば）
+	if(_sound3D)
+	{
+		_sound3D->StopAll();
 	}
 
 	// 再構築
