@@ -11,6 +11,10 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+	// デバック用(モデルを表示/非表示)
+	bool IsVisible() const { return _isVisible; }
+	void SetVisible(bool isVisible) { _isVisible = isVisible; }
+
 	bool HaveMakimono() const { return haveMakimono; }
 protected:
 	bool  haveMakimono;
