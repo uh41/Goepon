@@ -92,3 +92,19 @@ bool PlayerBase::Render()
 	base::Render();
 	return true;
 }
+
+void PlayerBase::AddMakimono(int addCount)
+{
+	_makimonoCount += addCount;
+	
+	// 0未満にならないようにする
+	if(_makimonoCount < 0)
+	{
+		_makimonoCount = 0;
+	}
+}
+
+void PlayerBase::SubMakimono(int subCount)
+{
+	AddMakimono(-subCount);
+}

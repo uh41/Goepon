@@ -240,7 +240,7 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 		{
 			makimono->SetVisible(false); // 巻物を消す
 
-			makimono->SetHaveMakimono(1); // 巻物を持った状態にする
+			player->AddMakimono(1); // プレイヤーの巻物所持数を増やす
 
 			return true;
 		}
