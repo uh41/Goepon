@@ -487,6 +487,9 @@ bool ModeGame::Process()
 		playerBase = _player.get();
 	}
 
+	// ここで呼ぶ（playerBase が確定してから）
+	PlayerToMakimonoCollision(playerBase, _makimono);
+
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)

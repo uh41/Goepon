@@ -146,8 +146,8 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	vec::Vec3 c2_top = vec3::VAdd(c2_pos, vec3::VGet(0.0f, c2_half, 0.0f));
 	vec::Vec3 c2_bottom = vec3::VAdd(c2_pos, vec3::VGet(0.0f, -c2_half, 0.0f));
 
-	float c1_r = (float)c1->GetCollisionR();
-	float c2_r = (float)c2->GetCollisionR();
+	float c1_r = StCas<float>(c1->GetCollisionR());
+	float c2_r = StCas<float>(c2->GetCollisionR());
 
 	// カプセル同士が当たっていなければ終了
 	if(!DxlibConverter::HitCheckCapsuleToCapsule(
@@ -211,7 +211,7 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 	// プレイヤーのカプセル
 	const vec::Vec3 pPos = player->GetPos();
 	const float pHalf = player->GetColSubY();
-	const float pR = (float)player->GetCollisionR();
+	const float pR = StCas<float>(player->GetCollisionR());
 
 	const vec::Vec3 pTop = vec3::VAdd(pPos, vec3::VGet(0.0f, pHalf, 0.0f));
 	const vec::Vec3 pBottom = vec3::VAdd(pPos, vec3::VGet(0.0f, -pHalf, 0.0f));
@@ -230,23 +230,21 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 		// 巻物カプセル
 		const vec::Vec3 mPos = makimono->GetPos();
 		const float mHalf = makimono->GetColSubY();
-		const float mR = (float)makimono->GetCollisionR();
+		const float mR = StCas<float>(makimono->GetCollisionR());
 
 		const vec::Vec3 mTop	= vec3::VAdd(mPos, vec3::VGet(0.0f, mHalf, 0.0f));
 		const vec::Vec3 mBottom = vec3::VAdd(mPos, vec3::VGet(0.0f, -mHalf, 0.0f));
-
+		
 		//　カプセル同士の当たり判定
 		if(DxlibConverter::HitCheckCapsuleToCapsule(pTop, pBottom, pR, mTop, mBottom, mR))
 		{
 			makimono->SetVisible(false); // 巻物を消す
 
-			
+			makimono->SetHaveMakimono(1); // 巻物を持った状態にする
 
+			return true;
 		}
-
 	}
-
-
 	return false;
 }
 

@@ -59,7 +59,8 @@ public:
 		return _vDir;
 	}
 
-	auto GetCollisionR() const {
+	auto GetCollisionR() const
+	{
 		return _fCollisionR;
 	}
 	auto GetCollisionWeight() const {
