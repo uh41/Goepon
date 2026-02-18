@@ -83,11 +83,11 @@ bool UiMakimono::Render()
 	int makimonoCount = 0;
 	if (_player != nullptr)
 	{
-		makimonoCount = _player->GetMakimonoCount();
+		makimonoCount = _player->GetMakimonoCount(); // プレイヤーから巻物の所持数を取得
 	}
-	const int kTextGapX = 12;               // 画像右端からの隙間
+	const int kTextGapX = 12;                        // 画像右端からの隙間
 	const int textX = imageLeft + imgW + kTextGapX;
-	const int textY = imageTop + (imgH / 2) - 10; // 縦はだいたい中央寄せ（微調整）
+	const int textY = imageTop + (imgH / 2) - 10;    // 縦はだいたい中央寄せ（微調整）
 
 	SetFontSize(32);
 	DrawFormatString(textX, textY, GetColor(255, 255, 255), "x %d", makimonoCount);

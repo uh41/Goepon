@@ -67,6 +67,7 @@ namespace mv1
   inline constexpr const char* SignBoard = "res/Object/SignBoard/SignBoard.mv1";
   inline constexpr const char* Player = "res/Player/Player.mv1";
   inline constexpr const char* PoorEnemy = "res/PoorEnemyMelee/PoorEnemy.mv1";
+  inline constexpr const char* SK_busi_multimotion_03 = "res/PoorEnemyMelee/SK_busi_multimotion_03.mv1";
   inline constexpr const char* bushi_0114taiki = "res/PoorEnemyMelee/bushi_0114taiki.mv1";
   inline constexpr const char* bushi_karitaiki = "res/PoorEnemyMelee/bushi_karitaiki.mv1";
   inline constexpr const char* busi_multimotion = "res/PoorEnemyMelee/busi_multimotion.mv1";
@@ -75,6 +76,7 @@ namespace mv1
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_tanuhuman_multimotion = "res/Tanuhuman/SK_tanuhuman_multimotion.mv1";
+  inline constexpr const char* SK_tanuhuman_multimotion_01 = "res/Tanuhuman/SK_tanuhuman_multimotion_01.mv1";
   inline constexpr const char* SK_tanuhuman_multimotion_02 = "res/Tanuhuman/SK_tanuhuman_multimotion_02.mv1";
   inline constexpr const char* TanuHuman = "res/Tanuhuman/TanuHuman.mv1";
   inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
@@ -90,6 +92,8 @@ namespace mv1
 
 namespace ef
 {
+  inline constexpr const char* EF_Kizetsu = "res/Effect/EF_Kizetsu.efkefc";
+  inline constexpr const char* EF_Shirimoti = "res/Effect/EF_Shirimoti.efkefc";
   inline constexpr const char* EF_Tresure = "res/Effect/EF_Tresure.efkefc";
   inline constexpr const char* EF_ase = "res/Effect/EF_ase.efkefc";
   inline constexpr const char* EF_doya = "res/Effect/EF_doya.efkefc";
