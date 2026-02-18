@@ -225,7 +225,7 @@ bool PlayerMono::Render()
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos)); // 平行移動行列
 
-	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));					// 拡大行列
+	MATRIX mScale = MGetScale(VGet(2.5f, 2.5f, 2.5f));					// 拡大行列
 
 	MATRIX m = MGetIdent();
 
