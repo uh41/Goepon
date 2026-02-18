@@ -23,7 +23,9 @@ public:
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
-
+	int GetMakimonoCount() const { return _makimonoCount; } // まきものの所持数を取得する
+	void AddMakimono(int addCount);                         // まきものの所持数を増やす
+	void SubMakimono(int subCount);                         // まきものの所持数を減らす	
 protected:
 
 	//アナログスティック関係
@@ -39,5 +41,7 @@ protected:
 
 	// メモ読み込み
 	std::string _memoFileName;
+
+	int _makimonoCount; // まきものの所持数	
 };
 
