@@ -57,7 +57,7 @@ bool EnemyMove::Initialize()
 	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
 
 	// 移動関連の初期化
-	_moveSpeed = 5.0f;								// 移動速度（調整可能）
+	_moveSpeed = 8.25f;								// 移動速度（調整可能）
 	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	// 目標位置の初期化
 	_isMoving = false;								// 移動中フラグの初期化
 
@@ -78,7 +78,7 @@ bool EnemyMove::Initialize()
 
 	_patroll = std::make_shared<MovePointControll>();
 	_isPatroll = false;
-	_patrolSpeed = 5.0f;
+	_patrolSpeed = 6.3f;
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 
@@ -587,7 +587,7 @@ bool EnemyMove::Process()
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "kari_idle");
+			int animIndex = MV1GetAnimIndex(_handle, "bushi_idle");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -601,7 +601,7 @@ bool EnemyMove::Process()
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "kari_walk");
+			int animIndex = MV1GetAnimIndex(_handle, "bushi_okkake");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -702,7 +702,7 @@ bool EnemyMove::Render()
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
-	MATRIX mScale = MGetScale(VGet(7.0f, 7.0f, 7.0f));
+	MATRIX mScale = MGetScale(VGet(8.0f, 8.0f, 8.0f));
 
 	MATRIX m = MGetIdent();
 

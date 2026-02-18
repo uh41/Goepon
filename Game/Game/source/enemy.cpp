@@ -35,13 +35,13 @@ bool Enemy::Initialize()
 
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
 	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
-	_moveSpeed = 2.0f;
+	_moveSpeed = 8.25f;
 
 	// 整合性のため他は base に委譲済み
 
-	_attachAnimDamage = "kari_walk";
-	_attachAnimStan = "kari_korobu_2";
-	_attachAnimGetUp = "kari_korobu_3";
+	_attachAnimDamage = "bushi_okkake";
+	_attachAnimStan = "bushi_tentou";
+	_attachAnimGetUp = "bushi_idle";
 
 	// タイマー初期化等は base にて行われている
 	return true;
@@ -218,9 +218,9 @@ bool Enemy::Process()
 			switch(s)
 			{
 			case CharaBase::STATUS::WAIT:
-				return "kari_idle";
+				return "bushi_idle";
 			case CharaBase::STATUS::WALK:
-				return "kari_walk";
+				return "bushi_okkake";
 			default:
 				return std::string();
 			}
@@ -343,7 +343,7 @@ bool Enemy::Render()
 	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	MATRIX mScale = MGetScale(VGet(7.0f, 7.0f, 7.0f));
+	MATRIX mScale = MGetScale(VGet(8.0f, 8.0f, 8.0f));
 
 	MATRIX m = MGetIdent();
 	m = MMult(m, mRotY);
