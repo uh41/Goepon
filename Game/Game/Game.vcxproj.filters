@@ -55,6 +55,7 @@
     <ClCompile Include="source\uihp.cpp" />
     <ClCompile Include="source\walkeffect.cpp" />
     <ClCompile Include="source\Makimono.cpp" />
+    <ClCompile Include="source\UiMakimono.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="source\uihp.h" />
     <ClInclude Include="source\walkeffect.h" />
     <ClInclude Include="source\Makimono.h" />
+    <ClInclude Include="source\UiMakimono.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

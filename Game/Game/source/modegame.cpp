@@ -917,5 +917,12 @@ bool ModeGame::ResetStage()
 	{
 		if(t) t->SetOpen(false);
 	}
+
+	// タイマーが動いてたらリセット
+	_changeTimeActive = false; // 時間制限を無効化
+	_changeTimeLimit = 0.0f;
+	_changeBlinkTimer = 0.0f;
+	_changeBlinkVisible = true;
+
 	return true;
 }

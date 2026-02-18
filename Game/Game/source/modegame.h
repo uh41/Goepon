@@ -27,6 +27,7 @@
 #include "enemysoundsensor.h"
 #include "uibase.h"
 #include "uihp.h"
+#include "UiMakimono.h"	
 #include "charashadow.h"
 #include "playermono.h"
 #include "effectbase.h"
@@ -176,6 +177,7 @@ protected:
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
+	at::spc<UiMakimono> _uiMakimono;
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
 

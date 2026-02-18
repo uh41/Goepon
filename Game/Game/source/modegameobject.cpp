@@ -49,6 +49,12 @@ bool ModeGame::ObjectInitialize()
 	_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
+	{
+		auto uiMakimono = std::make_shared<UiMakimono>();
+		uiMakimono->SetPlayer(_player.get());   // まずは人間固定（巻物所持数を持っている実体に合わせて変更）
+		uiMakimono->Initialize();
+		_uiBase.emplace_back(uiMakimono);
+	}
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
@@ -363,6 +369,8 @@ bool ModeGame::PlayerTransform()
 			return true;
 		}
 	}
+
+	// タヌキ表示時の人間への変身（入力または時間切れ）
 	if(!_bShowTanuki && !_showMonoPlayer)
 	{
 		if((trg & PAD_INPUT_4) || (_changeTimeActive && _changeTimeLimit <= 0.0f))
@@ -374,7 +382,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetPos(_player->GetPos());
 			_playerTanuki->SetDir(_player->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("goepon_idle", true);
+			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
