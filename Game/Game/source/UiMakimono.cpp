@@ -40,36 +40,58 @@ bool UiMakimono::Process()
 bool UiMakimono::Render()
 {
 	base::Render();
-	if(_handle < 0)
+
+	// 画像未ロードなら何もしない
+	if (_handle < 0)
 	{
 		return true;
 	}
 
 	// 画面サイズ
-	const int screen_w = ApplicationBase::GetInstance()->DispSizeW();
-	const int screen_h = ApplicationBase::GetInstance()->DispSizeH();
+	const int screenW = ApplicationBase::GetInstance()->DispSizeW();
+	const int screenH = ApplicationBase::GetInstance()->DispSizeH();
 
 	// 画像サイズ
-	int img_w = 0;
-	int img_h = 0;
-	GetGraphSize(_handle, &img_w, &img_h);
+	int imgW = 0;
+	int imgH = 0;
+	GetGraphSize(_handle, &imgW, &imgH);
 
-	const int draw_w = static_cast<int>(img_w);
-	const int draw_h = static_cast<int>(img_h);
+	// 余白は「UI仕様としての固定値」にする（メンバにしない）
+	const int kPadding = 10;
 
-	// 右下座標（画像の左上座標）
-	const int x = screen_w - draw_w - _padding;
-	const int y = screen_h - draw_h - _padding;
+	// 基準点（画面右下からの一定余白）※基準は動かさない
+	const int anchorX = screenW - kPadding;
+	const int anchorY = screenH - kPadding;
 
-	// 表示位置微調整（現状コードに合わせる）
-	const int ui_x = x - 1100;
-	const int ui_y = y + 30;
+	// 画像位置（基準点を右下とみなして配置）
+	const int kImageOffsetX = -1100;
+	const int kImageOffsetY = +30;
 
-	// 背景を描画
-	DrawBox(x - 1200, y + 50, x - 900 + draw_w, y + draw_h + 20, GetColor(0, 0, 233), TRUE);
-	
-	// 拡大縮小して描画（_scale=1.0f なら等倍）
-	DrawGraph(ui_x, ui_y, _handle, TRUE);
+	const int imageLeft = anchorX - imgW + kImageOffsetX;
+	const int imageTop = anchorY - imgH + kImageOffsetY;
+
+
+	const int bgW = anchorX - 1000;
+	const int bgH = anchorY + 20;
+
+	DrawBox(imageLeft - 20, imageTop + 30, bgW, bgH, GetColor(0, 0, 233), TRUE);
+	DrawGraph(imageLeft, imageTop, _handle, TRUE);
+
+	//============================
+    // 巻物所持数（画像の右側に表示）
+    //============================
+	int makimonoCount = 0;
+	if (_player != nullptr)
+	{
+		makimonoCount = _player->GetMakimonoCount();
+	}
+	const int kTextGapX = 12;               // 画像右端からの隙間
+	const int textX = imageLeft + imgW + kTextGapX;
+	const int textY = imageTop + (imgH / 2) - 10; // 縦はだいたい中央寄せ（微調整）
+
+	SetFontSize(32);
+	DrawFormatString(textX, textY, GetColor(255, 255, 255), "x %d", makimonoCount);
+
 
 	return true;
 }

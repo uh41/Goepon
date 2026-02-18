@@ -50,13 +50,9 @@ bool ModeGame::ObjectInitialize()
 	_uiBase.emplace_back(_uiHp);
 
 	_uiMakimono = std::make_shared<UiMakimono>();
+	_uiMakimono->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiMakimono);
 
-	//{
-	//	auto uiMakimono = std::make_shared<UiMakimono>();
-	//	uiMakimono->Initialize();
-	//	_uiBase.emplace_back(uiMakimono);
-	//}
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
@@ -711,6 +707,15 @@ bool ModeGame::ObjectRender()
 	{
 		effectBase->Render();
 	}
+
+	// UIが参照するプレイヤーを「現在表示中」に合わせる
+	PlayerBase* currentPlayer = nullptr;
+	if (_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
+	else if (_showMonoPlayer) { currentPlayer = _playerMono.get(); }
+	else { currentPlayer = _player.get(); }
+
+	if (_uiHp) { _uiHp->SetPlayer(currentPlayer); }
+	if (_uiMakimono) { _uiMakimono->SetPlayer(currentPlayer); }
 
 	// UIを描画
 	for(auto& ui_base : _uiBase)
