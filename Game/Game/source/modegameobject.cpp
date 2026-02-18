@@ -844,9 +844,12 @@ bool ModeGame::CheckAllDetections()
 				if(detected)
 				{
 					anyDetected = true;
-					eb->OnPlayerDetected(player->GetPos());
-					_hatenaEffect->ResetEnemyEffect(eb);
-					_nakiEffect->PlayEffect(player->GetPos());
+					if(player != nullptr) // NULLチェックを追加
+					{
+						eb->OnPlayerDetected(player->GetPos());
+						_hatenaEffect->ResetEnemyEffect(eb);
+						_nakiEffect->PlayEffect(player->GetPos());
+					}
 
 					// --- 追加: PlayerMono が検知されたら即時モノ->タヌキに切替 ---
 					if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
@@ -901,6 +904,12 @@ bool ModeGame::CheckAllDetections()
 								_walkEffect->SetPlayerPos(_playerTanuki.get());
 								_aseEffect->SetPlayer(_playerTanuki.get());
 							}
+
+							_changeTimeActive = false;
+							_changeTimeLimit = 0.0f;
+							_changeBlinkTimer = 0.0f;
+							_changeBlinkVisible = true;
+
 							auto soundFinish = gGlobal._soundServer->Get("3");
 							if(soundFinish && !soundFinish->IsPlay())
 							{
