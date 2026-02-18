@@ -180,9 +180,9 @@ bool PlayerTanuki::Process()
 			switch(name)
 			{
 			case STATUS::WAIT:
-				return "tanuhuman_idle";
+				return "idle";
 			case STATUS::WALK:
-				return "tanuhuman_walk";
+				return "walk";
 			default:
 				return std::string();
 			}
