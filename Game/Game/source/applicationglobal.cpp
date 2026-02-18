@@ -34,9 +34,9 @@ bool ApplicationGlobal::Init()
 	SetUseASyncLoadFlag(TRUE);
 	_iCgCursor = LoadGraph("res/cursor.png");
 	// キャラクター関連モデル読み込み
-	ResourceServer::MV1LoadModel("res/Tanuhuman/TanuHuman.mv1");
-	ResourceServer::MV1LoadModel("res/Tanuki/SK_goepon_multimotion.mv1");
-	ResourceServer::MV1LoadModel("res/PoorEnemyMelee/bushi_0114taiki.mv1");
+	ResourceServer::MV1LoadModel("res/Tanuhuman/SK_tanuhuman_multimotion_02.mv1");
+	ResourceServer::MV1LoadModel("res/Tanuki/SK_goepon_multimotion_4.mv1");
+	ResourceServer::MV1LoadModel("res/PoorEnemyMelee/busi_multimotion.mv1");
 	// マップ関連モデル読み込み
 	ResourceServer::MV1LoadModel("res/SkySphere/skysphere.mv1");
 	ResourceServer::MV1LoadModel("res/Ground/Ground.mv1");
