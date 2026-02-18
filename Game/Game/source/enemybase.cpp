@@ -1051,13 +1051,6 @@ void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
 	if(!seq.empty())
 	{
 		SetDirSequence(seq, _dirSeqWaitTime);
-
-		char buf[256];
-		sprintf_s(buf, "SetDirSequenceFromJson: seq=");
-		std::string extra;
-		for(auto id : seq) { char t[8]; sprintf_s(t, "%d,", id); extra += t; }
-		strcat_s(buf, extra.c_str());
-		OutputDebugStringA(buf);
 	}
 }
 
@@ -1080,10 +1073,5 @@ void EnemyBase::UpdateDirectionSequence()
 		int id = _dirSequence[_dirSeqIndex];
 		_vDir = DirIdToVec3(id);
 		_dirSeqTimer = _dirSeqWaitTime; // タイマーをリセット
-
-		// Debug: 何時どのIDに切り替わったか出力
-		char buf[128];
-		sprintf_s(buf, "UpdateDirectionSequence: index=%d id=%d wait=%.2f", _dirSeqIndex, id, _dirSeqWaitTime);
-		OutputDebugStringA(buf);
 	}
 }
