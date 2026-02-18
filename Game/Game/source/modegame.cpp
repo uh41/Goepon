@@ -177,7 +177,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "Treasure3.json";
+	std::string jsonFile = "markerbeta.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -190,6 +190,8 @@ bool ModeGame::LoadStageData()
 
 	// 敵の JSON を一時保存して後で巡回グループを割り当てる
 	std::vector<nlohmann::json> enemyObjects;
+
+	uint32_t nextEnemyId = 1; // 敵IDのカウンタ（1からスタート）
 
 	for(auto& object : stage)
 	{
@@ -220,7 +222,7 @@ bool ModeGame::LoadStageData()
 		}
 
 		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
-		if(name == "S_MarkerB" || name == "S_MarkerRX")
+		if(name == "S_MarkerB" || name == "S_MarkerRX" || name == "Dog")
 		{
 			enemyObjects.push_back(object);
 			continue;
@@ -274,6 +276,9 @@ bool ModeGame::LoadStageData()
 			enemy->SetEnemySoundSensor(soundSensor);
 			soundSensor->SetPos(enemy->GetPos());
 			enemy->SetEffect(_hensinEffect);
+			enemy->SetEnemyId(nextEnemyId++);
+			enemy->SetDirSequenceFromJson(object);
+
 			_enemyBase.emplace_back(enemy);
 			continue;
 		}
@@ -299,6 +304,8 @@ bool ModeGame::LoadStageData()
 			enemyMove->SetEnemySoundSensor(soundSensor);
 			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEffect(_hensinEffect);
+			enemyMove->SetEnemyId(nextEnemyId++);
+			enemyMove->SetDirSequenceFromJson(object);
 
 			// グループに対応する巡回点があれば割り当てる
 			auto it = patrolGroups.find(gid);
@@ -311,7 +318,7 @@ bool ModeGame::LoadStageData()
 			_enemyBase.emplace_back(enemyMove);
 		}
 
-		if (name == "Dog") 
+		if(name == "Dog")
 		{
 			auto enemyDog = std::make_shared<EnemyDog>();
 			enemyDog->Initialize();
@@ -330,6 +337,8 @@ bool ModeGame::LoadStageData()
 			enemyDog->SetEnemySensor(sensor);
 			enemyDog->SetEnemySoundSensor(soundSensor);
 			enemyDog->SetEffect(_hensinEffect);
+
+			enemyDog->SetEnemyId(nextEnemyId++); // ★追加：敵IDを必ず付与
 
 			_enemyBase.emplace_back(enemyDog);
 		}
@@ -399,6 +408,30 @@ bool ModeGame::Process()
 	AnimationManager::GetInstance()->Update(1.0f);
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
+
+	EnemySoundManager::GetInstance()->Update(1.0f/60.0f);
+
+	for(auto& e : _enemyBase)
+	{
+		if(!e || !e->IsAlive())
+		{
+			continue;
+		}
+
+		EnemySoundManager::DetectionInfo info{};
+		if(EnemySoundManager::GetInstance()->TryDetectForEnemy(*e, info) && info.isDetected)
+		{
+			// ここを「EnemyMove だけ」ではなく「全敵」に反映する
+			if(auto* moveEnemy = dynamic_cast<EnemyMove*>(e.get()))
+			{
+				moveEnemy->StartMoveToSound(info.soundSourcePos, info.detectedSoundLevel);
+			}
+			else
+			{
+				e->StartMoveToSoundFromManager(info.soundSourcePos, info.detectedSoundLevel);
+			}
+		}
+	}
 
 	_objectServer->ProcessInit(); // 追加・削除予約の確定
 	_objectServer->Process();

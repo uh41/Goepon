@@ -35,13 +35,13 @@ bool Enemy::Initialize()
 
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
 	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
-	_moveSpeed = 2.0f;
+	_moveSpeed = 8.25f;
 
 	// 整合性のため他は base に委譲済み
 
-	_attachAnimDamage = "kari_walk";
-	_attachAnimStan = "kari_korobu_2";
-	_attachAnimGetUp = "kari_korobu_3";
+	_attachAnimDamage = "bushi_okkake";
+	_attachAnimStan = "bushi_tentou";
+	_attachAnimGetUp = "bushi_idle";
 
 	// タイマー初期化等は base にて行われている
 	return true;
@@ -109,25 +109,17 @@ bool Enemy::Process()
 	}
 
 	// EnemySoundSensorから音の検知情報を取得
-	if (_enemySoundSensor)
+	if(_enemySoundSensor)
 	{
-		// 音レベル5の音を検知したかチェック
 		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
 		{
-			// プレイヤーを検出中または追跡中でなければ、音源に向かって移動開始
-			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
 			{
 				_isMovingToSound = true;
 				_soundSourcePosition = detectionInfo.soundSourcePosition;
-
-				// 音検知タイマーを開始
 				_soundDetectionActive = true;
 				_soundDetectionTimer = 0.0f;
-
-				// 初期位置への帰還を中断
-				_waitingBeforeReturn = false;
-				_returnWaitTimer = 0.0f;
 			}
 		}
 	}
@@ -218,9 +210,9 @@ bool Enemy::Process()
 			switch(s)
 			{
 			case CharaBase::STATUS::WAIT:
-				return "kari_idle";
+				return "bushi_idle";
 			case CharaBase::STATUS::WALK:
-				return "kari_walk";
+				return "bushi_okkake";
 			default:
 				return std::string();
 			}
@@ -303,31 +295,6 @@ bool Enemy::Process()
 		}
 	}
 
-	// 定期的な向き変更処理（WAIT 時のみ）
-	if(!IsStun() && _status == STATUS::WAIT)
-	{
-		DirChangeTimer -= 1.0f / 60.0f;
-		if(DirChangeTimer <= 0.0f)
-		{
-			DirChangeTimer = StCas<float>(DirChangeInterval);
-			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
-			{
-				float currentAngle = atan2f(_vDir.x, _vDir.z);
-				float newAngle = currentAngle + DX_PI_F / 2.0f;
-				vec::Vec3 newDir;
-				newDir.x = sin(newAngle);
-				newDir.y = 0.0f;
-				newDir.z = cos(newAngle);
-
-				vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-				if(CheckFloorExistence(testPos))
-				{
-					_vDir = newDir;
-				}
-			}
-		}
-	}
-
 	return true;
 }
 
@@ -343,7 +310,7 @@ bool Enemy::Render()
 	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	MATRIX mScale = MGetScale(VGet(10.0f, 10.0f, 10.0f));
+	MATRIX mScale = MGetScale(VGet(8.0f, 8.0f, 8.0f));
 
 	MATRIX m = MGetIdent();
 	m = MMult(m, mRotY);

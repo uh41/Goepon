@@ -40,7 +40,7 @@ bool ApplicationGlobal::Init()
 	// マップ関連モデル読み込み
 	ResourceServer::MV1LoadModel("res/SkySphere/skysphere.mv1");
 	ResourceServer::MV1LoadModel("res/Ground/Ground.mv1");
-	ResourceServer::MV1LoadModel("res/map/SM_map.mv1");
+	ResourceServer::MV1LoadModel("res/map/SM_stagebeta.mv1");
 
 	if(!_soundServer)
 	{
@@ -48,7 +48,7 @@ bool ApplicationGlobal::Init()
 	}
 	_soundServer->Add("bgminitialize", std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi));
 	_soundServer->Add("bgmChenge", std::make_shared<soundserver::SoundItemBGM>(wav::ks010));
-	_soundServer->Add("1", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_walk));
+	_soundServer->Add("1", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_walk, soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("2", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_henshin_start));
 	_soundServer->Add("35", std::make_shared<soundserver::SoundItemSE>(mp3::bush_found));
 	_soundServer->Add("31", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_walk, soundserver::SoundItemBase::FLG_3D));
@@ -57,9 +57,13 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("10", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_tailattack));
 	_soundServer->Add("30", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_stun_start));
 	_soundServer->Add("doghowling", std::make_shared<soundserver::SoundItemSE>(mp3::dog_howling));
-	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk));
+	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk, soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("50", std::make_shared<soundserver::SoundItemSE>(mp3::okimono_move));
-	_soundServer->Add("60", std::make_shared<soundserver::SoundItemSE>(mp3::UI_charin));
+	_soundServer->Add("60", std::make_shared<soundserver::SoundItemSE>(mp3::UI_charin, soundserver::SoundItemBase::FLG_LOOP));
+	_soundServer->Add("33", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_sight_off));
+	_soundServer->Add("32", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_tail_hit));
+	_soundServer->Add("34", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_stunfinish));
+	_soundServer->Add("61", std::make_shared<soundserver::SoundItemSE>(mp3::UI_no_makimono));
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));

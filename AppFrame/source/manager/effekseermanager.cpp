@@ -143,7 +143,7 @@ int EffekseerManager::PlayEffect3DPos(int handle, const vec::Vec3& pos)
 	if(playing != -1)
 	{
 		SetPosPlayingEffekseer3DEffect(playing, pos.x, pos.y, pos.z);
-		float speed = 1.0f;
+		float speed = 1.0f / 60.0f;
 		_effectSpeed.emplace(playing, speed);
 	}
 	return playing;

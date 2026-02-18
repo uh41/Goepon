@@ -38,6 +38,9 @@ public:
 	void OnDamageStart()override;
 	void OnDamageEnd()override;
 
+	virtual float GetHearingRadius() const override { return 1000.0f; } // 音検知の半径をオーバーライド
+	void StartMoveToSound(const vec::Vec3& soundPos, int soundLevel);
+
 protected:
 
 	// 巡回ルート関連

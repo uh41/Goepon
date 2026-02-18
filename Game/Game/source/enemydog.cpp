@@ -5,7 +5,7 @@
 bool EnemyDog::Initialize()
 {
 	base::Initialize();
-	_handle = MV1LoadModel("res/Dog/SK_Dog.mv1");
+	_handle = MV1LoadModel(mv1::SK_Dog);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -87,25 +87,17 @@ bool EnemyDog::Process()
 	}
 
 	// EnemySoundSensorから音の検知情報を取得
-	if (_enemySoundSensor)
+	if(_enemySoundSensor)
 	{
-		// 音レベル5の音を検知したかチェック
 		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
 		{
-			// プレイヤーを検出中または追跡中でなければ、音源に向かって移動開始
-			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
 			{
 				_isMovingToSound = true;
 				_soundSourcePosition = detectionInfo.soundSourcePosition;
-
-				// 音検知タイマーを開始
 				_soundDetectionActive = true;
 				_soundDetectionTimer = 0.0f;
-
-				//// 初期位置への帰還を中断
-				//_waitingBeforeReturn = false;
-				//_returnWaitTimer = 0.0f;
 			}
 		}
 	}

@@ -11,6 +11,7 @@
 #include "enemysensor.h"
 #include "enemysoundsensor.h"
 #include "applicationglobal.h"
+#include "enemysoundmanager.h"
 
 // 初期化
 bool EnemyBase::Initialize()
@@ -82,6 +83,14 @@ bool EnemyBase::Initialize()
 	_attachAnimGetUp = "";
 
 	_effect = nullptr;
+
+	_dirSequence.clear();
+	_dirSeqIndex = 0;
+	_dirSeqTimer = 0.0f;
+	_dirSeqWaitTime = 0.0f;
+	_dirSeqActive = false;
+
+	_playSightOffOnReturn = false;
 
 	return true;
 }
@@ -330,6 +339,9 @@ void EnemyBase::StartDamage()
 	_isInvincible = true;
 	_attachStage = 1;// ダメージステージに移行
 	_stanTimer = 0.0f;
+	_isReturningToInitialPos = false;
+	_waitingForTeleport = false;
+	_teleportTimer = 0.0f;
 
 	OnDamageStart();
 
@@ -368,14 +380,21 @@ void EnemyBase::UpdateDamageAnimation()
 			_attachStage = 2;
 			_stanTimer = STAN_DURATION;
 
-			if(gGlobal._soundServer)
+			// プレイヤーの攻撃SE
+			auto sound = gGlobal._soundServer->Get("30");
+			if(sound && !sound->IsPlay())
 			{
-				auto sound = gGlobal._soundServer->Get("30");
-				if(sound && !sound->IsPlay())
-				{
-					sound->Play();
-				}
+				sound->Play();
 			}
+
+			// 転ばされたときのボイス
+			auto damageSound = gGlobal._soundServer->Get("32");
+			if(damageSound && !damageSound->IsPlay())
+			{
+				damageSound->Play();
+			}
+
+			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 1000.0f, 50.0f); // ダメージ音を発生させる
 
 			if(!_attachAnimStan.empty())
 			{
@@ -401,6 +420,12 @@ void EnemyBase::UpdateDamageAnimation()
 			{
 				_animId = PlayAnimation(_attachAnimGetUp, false);
 				_fPlayTime = 0.0f;
+				// 起き上がりのボイス
+				auto getUpSound = gGlobal._soundServer->Get("34");
+				if(getUpSound && !getUpSound->IsPlay())
+				{
+					getUpSound->Play();
+				}
 			}
 		}
 	}
@@ -426,7 +451,6 @@ void EnemyBase::UpdateDamageAnimation()
 			OnDamageEnd();
 		}
 	}
-
 }
 
 // 初期位置に戻る更新処理
@@ -473,12 +497,21 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		_vDir = _initialDirection;
 		_isReturningToInitialPos = false;
 
-		// ここで検出状態をリセット（初期位置に完全に到達してから）
 		_detectedPlayer = false;
 		if(_enemySensor)
 		{
 			_enemySensor->ResetDetection();
 		}
+
+		if(_playSightOffOnReturn && gGlobal._soundServer)
+		{
+			auto sightOff = gGlobal._soundServer->Get("33");
+			if(sightOff && !sightOff->IsPlay())
+			{
+				sightOff->Play();
+			}
+		}
+		_playSightOffOnReturn = false;
 
 		return;
 	}
@@ -693,6 +726,8 @@ bool EnemyBase::Process()
 		_enemySoundSensor->SetPos(_vPos);
 		_enemySoundSensor->SetDir(_vDir);
 	}
+
+	UpdateDirectionSequence();
 
 	return true;
 }
@@ -909,4 +944,171 @@ void EnemyBase::RenderDamageTime()
 	// 画面左上に表示（位置は調整可）
 	DrawFormatString(10, 40, GetColor(255, 200, 0),
 	"STAN残り時間: %.1f", _stanTimer);
+}
+
+static vec::Vec3 DirIdToVec3(int id)
+{
+	switch(id)
+	{
+	case 1: return vec::Vec3(0.0f, 0.0f, -1.0f);   // 上
+	case 2: return vec::Vec3(1.0f, 0.0f, 0.0f);    // 右
+	case 3: return vec::Vec3(0.0f, 0.0f, 1.0f);    // 下
+	case 4: return vec::Vec3(-1.0f, 0.0f, 0.0f);   // 左
+	default: return vec::Vec3(0.0f, 0.0f, -1.0f);   // 無効なID
+	}
+}
+
+void EnemyBase::SetDirSequence(const std::vector<int>& sequence, float waitTime)
+{
+	if(sequence.empty())
+	{
+		_dirSequence.clear();
+		_dirSeqActive = false;
+		return;
+	}
+	_dirSequence = sequence;
+	_dirSeqIndex = 0;
+	if(waitTime > 0.0f)
+	{
+		_dirSeqWaitTime = waitTime;
+	}
+	else
+	{
+		_dirSeqWaitTime = 0.0f;
+	}
+	_dirSeqTimer = _dirSeqWaitTime;
+	_dirSeqActive = true;
+
+	int id = _dirSequence[_dirSeqIndex];
+	_vDir = DirIdToVec3(id);
+}
+
+void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
+{
+	if(!j.is_object()) { return; }
+
+	at::vet<int> seq;
+	if(j.contains("direction"))
+	{
+		auto& node = j.at("direction");
+
+		// 配列であれば順番にIDを読み取る
+		if(node.is_array())
+		{
+			for(auto&& it : node)
+			{
+				// 整数であればシーケンスに追加
+				if(it.is_number_integer())
+				{
+					seq.push_back(it.get<int>());
+				}
+			}
+		}
+		else if(node.is_string())
+		{
+			std::string s = node.get<std::string>();
+			size_t pos = 0;
+			while(true)
+			{
+				size_t comma = s.find(',', pos);
+				std::string token;
+				// カンマが見つからなければ残り全てを、見つかればカンマまでを取り出す
+				if(comma == std::string::npos)
+				{
+					token = s.substr(pos);
+				}
+				else
+				{
+					token = s.substr(pos, comma - pos);
+				}
+				// 空でなければシーケンスに追加
+				if(!token.empty())
+				{
+					seq.push_back(std::stoi(token));// 文字列を整数に変換してシーケンスに追加
+				}
+				if(comma == std::string::npos) { break; }
+				pos = comma + 1;
+			}
+		}
+
+		if(j.contains("waittime"))
+		{
+			auto& w = j.at("waittime");
+			if(w.is_number())
+			{
+				_dirSeqWaitTime = w.get<float>();
+			}
+			else if(w.is_string())
+			{
+				// 文字列からの変換で例外が発生する可能性があるため安全に扱う
+				std::string s = w.get<std::string>();
+				try
+				{
+					// std::stof は不正な文字列で std::invalid_argument を投げる
+					// 例外が発生した場合は既存の _dirSeqWaitTime を維持する
+					_dirSeqWaitTime = std::stof(s);
+				}
+				catch(...)
+				{
+					//何もしない
+				}
+			}
+		}
+	}
+
+	if(!seq.empty())
+	{
+		SetDirSequence(seq, _dirSeqWaitTime);
+	}
+}
+
+void EnemyBase::UpdateDirectionSequence()
+{
+	if(!_dirSeqActive || _dirSequence.empty()) { return; }
+
+	// シーケンスはプレイヤー検知中や追跡中には進めない
+	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		return;
+	}
+
+	float deltaTime = 1.0f / 60.0f; // 60FPSとして計算
+	_dirSeqTimer -= deltaTime;
+
+	if(_dirSeqTimer <= 0.0f)
+	{
+		_dirSeqIndex = (_dirSeqIndex + 1) % _dirSequence.size(); // シーケンスをループ
+		int id = _dirSequence[_dirSeqIndex];
+		_vDir = DirIdToVec3(id);
+		_dirSeqTimer = _dirSeqWaitTime; // タイマーをリセット
+	}
+}
+
+void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel)
+{
+	// 今のゲームでは 5 のみ反応（既存ロジック踏襲）
+	if(soundLevel != 5)
+	{
+		return;
+	}
+
+	// 音優先：追跡/検出/帰還中でも上書きする
+	_detectedPlayer = false;
+	_isReturningToInitialPos = false;
+
+	if(_enemySensor)
+	{
+		_enemySensor->ResetDetection();
+	}
+
+	ResetTeleport();
+
+	_isMovingToSound = true;
+	_soundSourcePosition = soundPos;
+
+	_soundDetectionActive = true;
+	_soundDetectionTimer = 0.0f;
+
+	_waitingAtSound = false;
+	_soundWaitTimer = 0.0f;
 }

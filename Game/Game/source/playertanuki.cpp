@@ -20,7 +20,7 @@ bool PlayerTanuki::Initialize()
 	_fCollisionR = 30.0f;			// キャラの当たり判定用の円の半径
 	_fCollisionWeight = 20.0f;		// キャラの重さ
 	_cam = nullptr;
-	_fMvSpeed = 10.0f;
+	_fMvSpeed = 8.0f;
 
 	_bLand = true;
 
@@ -42,8 +42,18 @@ bool PlayerTanuki::SoundWalk()
 		auto sound = gGlobal._soundServer->Get("1");
 		if(sound)
 		{
-			if(_status == STATUS::WALK)
+			// パッドの方向キーが押されているか検出
+			int key = ApplicationBase::GetInstance()->GetKey();
+			bool padPressed = (key & (PAD_INPUT_LEFT | PAD_INPUT_RIGHT | PAD_INPUT_UP | PAD_INPUT_DOWN)) != 0;
+
+			// アナログスティックでの移動判定（しきい値以上なら移動）
+			float stickLen = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+			bool analogMove = (stickLen >= _fAnalogDeadZone);
+
+			// 歩行ステータスかつ方向入力（十字キー or アナログ）がある間だけ鳴らす
+			if(_status == STATUS::WALK && (padPressed || analogMove))
 			{
+				// 既に再生中でなければ再生（毎フレーム呼ばれても重複再生しないようにする）
 				if(!sound->IsPlay())
 				{
 					sound->Play();
@@ -51,6 +61,7 @@ bool PlayerTanuki::SoundWalk()
 			}
 			else
 			{
+				// 入力が無ければ再生中なら停止
 				if(sound->IsPlay())
 				{
 					sound->Stop();
@@ -58,6 +69,7 @@ bool PlayerTanuki::SoundWalk()
 			}
 		}
 	}
+
 
 	return true;
 }
@@ -157,6 +169,11 @@ bool PlayerTanuki::Process()
 		_fPlayTime = 0.0f;
 	}
 
+	if(old_status != _status)
+	{
+		SoundWalk();
+	}
+
 	// アニメーションの名前取得
 	auto GetAnimName = [this](STATUS name) -> std::string
 		{
@@ -220,16 +237,12 @@ bool PlayerTanuki::Process()
 			_animId = -1;
 		}
 		PlayAnim(true);
-		SoundWalk();
 	}
 
 	if(_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
 	}
-
-	SoundWalk();
-
 	return true;
 }
 

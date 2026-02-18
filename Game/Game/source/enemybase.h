@@ -18,6 +18,7 @@
 class EnemySensor;
 class EnemySoundSensor;
 class PlayerBase;
+class EnemySoundManager;
 
 class EnemyBase : public CharaBase
 {
@@ -88,11 +89,22 @@ public:
 	virtual void OnDamageStart() {} // ダメージアニメーション開始時の処理
 	virtual void OnDamageEnd() {}   // ダメージアニメーション終了時の処理
 
-	bool IsStun() const {
-		return _isInvincible && _attachStage == 2;
-	}
+	bool IsStun() const { return _isInvincible && _attachStage == 2; }
+
+	void SetEnemyId(uint32_t id) { _enemyId = id; }
+	uint32_t GetEnemyId() const { return _enemyId; }
+
+	virtual float GetHearingRadius() const { return 0.0f; } // 音検知の半径
+	bool IsMovingToSound() const { return _isMovingToSound; }
+
+	void SetDirSequence(const at::vet<int>& sequence, float waitTime = 2.0f);	// 向き変更のシーケンスを設定
+	void SetDirSequenceFromJson(const nlohmann::json& j);						// JSONから向き変更のシーケンスを設定
+	void UpdateDirectionSequence();												// 向き変更のシーケンスの更新
+	void StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel);// 敵サウンドマネージャーから音源に向かって移動する処理を開始
 
 protected:
+	uint32_t _enemyId; // 敵のID
+
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
 	std::shared_ptr<EnemySoundSensor> _enemySoundSensor;
@@ -144,7 +156,7 @@ protected:
 	// 音検知からの経過時間管理
 	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
 	float _soundDetectionTimer;		// 音検知からの経過時間
-	static constexpr float SOUND_RETURN_TIME = 10.0f; // 音検知から初期位置に戻るまでの時間
+	static constexpr float SOUND_RETURN_TIME = 60.0f; // 音検知から初期位置に戻るまでの時間
 
 	at::spc<EffectBase> _effect;
 
@@ -157,4 +169,12 @@ protected:
 	std::string _attachAnimDamage;// ダメージアニメーション名
 	std::string _attachAnimStan;  // スタンアニメーション名
 	std::string _attachAnimGetUp; // 起き上がりアニメーション名
+
+	at::vet<int> _dirSequence;		// 向き変更のシーケンス
+	size_t _dirSeqIndex;			// 向き変更のシーケンスの現在のインデックス
+	float _dirSeqTimer;				// 向き変更のシーケンスのタイマー
+	float _dirSeqWaitTime;			// 向き変更のシーケンスの待機時間
+	bool _dirSeqActive;				// 向き変更のシーケンスがアクティブかどうか
+
+	bool _playSightOffOnReturn;// 初期位置に戻るときにvoiceをオフにするかどうか
 };

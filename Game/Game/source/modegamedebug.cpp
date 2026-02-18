@@ -149,6 +149,12 @@ bool ModeGame::DebugProcess()
 		}
 	}
 
+	if(auto* soundMgr = EnemySoundManager::GetInstance())
+	{
+		soundMgr->RenderDebug();
+		soundMgr->RenderDebugEnemyHearing(_enemyBase);
+	}
+
 	return true;
 }
 

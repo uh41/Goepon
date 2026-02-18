@@ -9,7 +9,7 @@ bool Map1::Initialize()
 	// スカイスフィア読み込み
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 	_sPath = "res/map/";
-	_sJsonFile = "marker0127_2.json";
+	_sJsonFile = "beta.json";
 	_sJsonObjectName = "stage";
 
 	// JSONファイル読み込み
@@ -75,7 +75,7 @@ bool Map1::Initialize()
 		if(pos.modelHandle >= 0)
 		{
 			// まずは想定名で検索
-			pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "Collision_01");
+			pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "collision");
 
 			// 見つからなければモデル内フレームを列挙して "Collision" を含むものを探す
 			if(pos.collisionFrame < 0)
