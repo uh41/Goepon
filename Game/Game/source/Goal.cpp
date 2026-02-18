@@ -22,7 +22,7 @@ bool Goal::Initialize()
 
 	_attachIndex = -1;
 
-	_vPos = vec::Vec3{ 389.0f, 0.0f, 2050.0f };
+	_vPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
 	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 
 	MV1SetupCollInfo(_handle, _hitCollisionFrame, 16, 16, 16);

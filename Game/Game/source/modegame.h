@@ -162,6 +162,7 @@ protected:
 	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
 	at::vspc<Treasure> _treasure;
+	// 巻物
 	at::vspc<Makimono> _makimono;
 	//ステージベース
 	at::vspc<MapBase> _mapBase;

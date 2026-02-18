@@ -27,10 +27,10 @@ bool ModeGame::ObjectInitialize()
 	//_map = std::make_shared<Map>();
 	//_object.emplace_back(_map);
 
-	auto makimono = std::make_shared<Makimono>();
-	makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
-	makimono->SetCamera(_camera);
-	_makimono.emplace_back(makimono);
+	//auto makimono = std::make_shared<Makimono>();
+	//makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
+	//makimono->SetCamera(_camera);
+	//_makimono.emplace_back(makimono);
 
 	// プレイヤー初期化
 	_player = std::make_shared<Player>();
@@ -45,9 +45,9 @@ bool ModeGame::ObjectInitialize()
 	_object.emplace_back(_goal);
 
 	// ui初期化
-	//_uiHp = std::make_shared<UiHp>();
-	//_uiHp->SetPlayer(_player.get());
-	//_uiBase.emplace_back(_uiHp);
+	_uiHp = std::make_shared<UiHp>();
+	_uiHp->SetPlayer(_player.get());
+	_uiBase.emplace_back(_uiHp);
 
 	_uiMakimono = std::make_shared<UiMakimono>();
 	_uiMakimono->SetPlayer(_player.get());
@@ -474,10 +474,10 @@ bool ModeGame::PlayerTransform()
 					if(_bShowTanuki)
 					{
 						// まきものを1つ消費する
-						if(_playerTanuki)
+						/*if(_playerTanuki)
 						{
 							_playerTanuki->SubMakimono(1);
-						}
+						}*/
 
 						if(PlayerTransformToTanuki(true))
 						{

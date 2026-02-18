@@ -228,19 +228,29 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-	/*	if(name == "Treasure")
+		if(name == "Goal")
 		{
-			auto _treasure = std::make_shared<Treasure>();
-			_treasure->SetJsonDataUE(object);
+			_goal->SetJsonDataUE(object);
 			continue;
-		}*/
+		}
 
-		if (name == "Treasure")
+
+		if(name == "Treasure")
 		{
 			auto treasure = std::make_shared<Treasure>();
 			treasure->Initialize();          // モデル読み込み・当たり判定フレーム設定
 			treasure->SetJsonDataUE(object); // UE座標/回転を反映
 			_treasure.emplace_back(treasure);
+			continue;
+		}
+
+		if(name == "Item")
+		{
+			auto makimono = std::make_shared<Makimono>();
+			makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
+			makimono->SetJsonDataUE(object); // UE座標/回転を反映
+			makimono->SetCamera(_camera);
+			_makimono.emplace_back(makimono);
 			continue;
 		}
 	}

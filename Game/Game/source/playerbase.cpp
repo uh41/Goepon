@@ -17,7 +17,7 @@ bool PlayerBase::Initialize()
 	// アナログスティックの設定関係
 	_fAnalogDeadZone = 0.3f;
 
-	//_makimonoCount = 0;
+	_makimonoCount = 100;
 
 	// 移動速度設定
 	_v = { 0,0,0 };
