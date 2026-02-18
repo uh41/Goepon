@@ -702,7 +702,7 @@ bool EnemyMove::Render()
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
-	MATRIX mScale = MGetScale(VGet(1.7f, 1.7f, 1.7f));
+	MATRIX mScale = MGetScale(VGet(7.0f, 7.0f, 7.0f));
 
 	MATRIX m = MGetIdent();
 

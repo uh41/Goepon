@@ -40,7 +40,7 @@ bool ApplicationGlobal::Init()
 	// マップ関連モデル読み込み
 	ResourceServer::MV1LoadModel("res/SkySphere/skysphere.mv1");
 	ResourceServer::MV1LoadModel("res/Ground/Ground.mv1");
-	ResourceServer::MV1LoadModel("res/map/SM_map.mv1");
+	ResourceServer::MV1LoadModel("res/map/SM_stagebeta.mv1");
 
 	if(!_soundServer)
 	{
