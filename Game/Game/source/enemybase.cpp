@@ -369,13 +369,18 @@ void EnemyBase::UpdateDamageAnimation()
 			_attachStage = 2;
 			_stanTimer = STAN_DURATION;
 
-			if(gGlobal._soundServer)
+			// プレイヤーの攻撃SE
+			auto sound = gGlobal._soundServer->Get("30");
+			if(sound && !sound->IsPlay())
 			{
-				auto sound = gGlobal._soundServer->Get("30");
-				if(sound && !sound->IsPlay())
-				{
-					sound->Play();
-				}
+				sound->Play();
+			}
+
+			// 転ばされたときのボイス
+			auto damageSound = gGlobal._soundServer->Get("33");
+			if(damageSound && !damageSound->IsPlay())
+			{
+				damageSound->Play();
 			}
 
 			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 1000.0f, 50.0f); // ダメージ音を発生させる
@@ -404,6 +409,12 @@ void EnemyBase::UpdateDamageAnimation()
 			{
 				_animId = PlayAnimation(_attachAnimGetUp, false);
 				_fPlayTime = 0.0f;
+				// 起き上がりのボイス
+				auto getUpSound = gGlobal._soundServer->Get("34");
+				if(getUpSound && !getUpSound->IsPlay())
+				{
+					getUpSound->Play();
+				}
 			}
 		}
 	}
@@ -480,6 +491,12 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		if(_enemySensor)
 		{
 			_enemySensor->ResetDetection();
+		}
+
+		auto sightOff = gGlobal._soundServer->Get("33");
+		if(sightOff && !sightOff->IsPlay())
+		{
+			sightOff->Play();
 		}
 
 		return;
