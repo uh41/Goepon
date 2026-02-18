@@ -5,7 +5,7 @@
 bool EnemyDog::Initialize()
 {
 	base::Initialize();
-	_handle = MV1LoadModel("res/Dog/SK_Dog.mv1");
+	_handle = MV1LoadModel(mv1::SK_Dog);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;

@@ -18,6 +18,7 @@
 class EnemySensor;
 class EnemySoundSensor;
 class PlayerBase;
+class EnemySoundManager;
 
 class EnemyBase : public CharaBase
 {
@@ -88,11 +89,17 @@ public:
 	virtual void OnDamageStart() {} // ダメージアニメーション開始時の処理
 	virtual void OnDamageEnd() {}   // ダメージアニメーション終了時の処理
 
-	bool IsStun() const {
-		return _isInvincible && _attachStage == 2;
-	}
+	bool IsStun() const { return _isInvincible && _attachStage == 2; }
+
+	void SetEnemyId(uint32_t id) { _enemyId = id; }
+	uint32_t GetEnemyId() const { return _enemyId; }
+
+	virtual float GetHearingRadius() const { return 0.0f; } // 音検知の半径
+	bool IsMovingToSound() const { return _isMovingToSound; }
 
 protected:
+	uint32_t _enemyId; // 敵のID
+
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
 	std::shared_ptr<EnemySoundSensor> _enemySoundSensor;

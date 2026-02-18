@@ -45,6 +45,7 @@
 #include "doyaeffect.h"
 #include "nakieffect.h"
 #include "Makimono.h"
+#include "enemysoundmanager.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -266,6 +267,7 @@ protected:
 
 	// 巻物関連
 	bool _subMakimono = false; // 変身開始時に巻物を消費する予約をする
+
 private:
 	// class ModeGameのメンバに追加
 	bool _requestResetStage = false; // ステージリセット要求フラグ	
