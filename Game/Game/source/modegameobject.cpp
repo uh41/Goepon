@@ -807,29 +807,36 @@ bool ModeGame::CheckAllDetections()
 				}
 				else
 				{
-					// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
-					if(sensor->IsPlayerInDetectionRange(player->GetPos()))
+					if(player != nullptr && sensor != nullptr)
 					{
-						vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
-						toEnemy.y = 0.0f;
-						if(vec3::VSize(toEnemy) > 0.0001f)
+						// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
+						if(sensor->IsPlayerInDetectionRange(player->GetPos()))
 						{
-							vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
-
-							vec::Vec3 playerForward = player->GetDir();
-							playerForward.y = 0.0f;
-							if(vec3::VSize(playerForward) > 0.0001f)
+							vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
+							toEnemy.y = 0.0f;
+							if(vec3::VSize(toEnemy) > 0.0001f)
 							{
-								playerForward = vec3::VNorm(playerForward);
+								vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
 
-								const float backDotThreshold = 0.0f;
-								float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
-								if(dot <= backDotThreshold)
+								vec::Vec3 playerForward = player->GetDir();
+								playerForward.y = 0.0f;
+								if(vec3::VSize(playerForward) > 0.0001f)
 								{
-									detected = sensor->CheckPlayerDetection(player);
+									playerForward = vec3::VNorm(playerForward);
+
+									const float backDotThreshold = 0.0f;
+									float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
+									if(dot <= backDotThreshold)
+									{
+										detected = sensor->CheckPlayerDetection(player);
+									}
 								}
 							}
 						}
+					}
+					else
+					{
+						detected = false;
 					}
 				}
 

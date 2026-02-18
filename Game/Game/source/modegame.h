@@ -45,6 +45,7 @@
 #include "doyaeffect.h"
 #include "nakieffect.h"
 #include "Makimono.h"
+#include "enemysoundmanager.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -262,6 +263,7 @@ protected:
 	float _changeBlinkTimer;	// プレイヤーの点滅タイマー
 	bool _changeBlinkVisible;	// プレイヤーの点滅表示フラグ
 	float _changeBlinkInterval; // プレイヤーの点滅間隔
+
 
 private:
 	// class ModeGameのメンバに追加

@@ -11,6 +11,7 @@
 #include "enemysensor.h"
 #include "enemysoundsensor.h"
 #include "applicationglobal.h"
+#include "enemysoundmanager.h"
 
 // 初期化
 bool EnemyBase::Initialize()
@@ -377,13 +378,7 @@ void EnemyBase::UpdateDamageAnimation()
 				}
 			}
 
-			if(_enemySoundSensor)
-			{
-				// 検知用のレベルとエリアを設定してから音波を飛ばす
-				_enemySoundSensor->SetSoundLevel(5);                // 強い音として扱う
-				_enemySoundSensor->SetSoundSensorArea(768.0f);      // センサー半径（敵側）
-				_enemySoundSensor->TriggerSoundWave(_vPos, 1500.0f, 30.0f); // origin, maxRadius, speed
-			}
+			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 1000.0f, 50.0f); // ダメージ音を発生させる
 
 			if(!_attachAnimStan.empty())
 			{
@@ -434,7 +429,6 @@ void EnemyBase::UpdateDamageAnimation()
 			OnDamageEnd();
 		}
 	}
-
 }
 
 // 初期位置に戻る更新処理
