@@ -83,8 +83,6 @@ namespace mv1
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
   inline constexpr const char* Kagurayaki = "res/tanumono/Kagurayaki.mv1";
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
-  inline constexpr const char* Kagurayaki = "res/Tanumono/Kagurayaki.mv1";
-  inline constexpr const char* sigaraki = "res/Tanumono/sigaraki.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
 }
 
