@@ -1,10 +1,11 @@
 #include "UiMakimono.h"
 #include "playerbase.h"
 #include "applicationglobal.h"
+#include "appframe.h"
 
-UiMakimono::UiMakimono():_player(nullptr)
+UiMakimono::UiMakimono()
 {
-	
+
 }
 
 UiMakimono::~UiMakimono()
@@ -15,7 +16,7 @@ UiMakimono::~UiMakimono()
 bool UiMakimono::Initialize()
 {
 	base::Initialize();
-	_handle = LoadGraph("res/Makimono.png");
+	_handle = LoadGraph("res/Makimono/Makimono (1).png");
 	return true;
 }
 
@@ -25,7 +26,7 @@ bool UiMakimono::Terminate()
 	if(_handle >= 0)
 	{
 		DeleteGraph(_handle);
-		handle = -1;
+		_handle = -1;
 	}
 	return true;
 }
@@ -39,47 +40,37 @@ bool UiMakimono::Process()
 bool UiMakimono::Render()
 {
 	base::Render();
-	if(!_player)
+	if(_handle < 0)
 	{
 		return true;
 	}
 
-	// 画像サイズ取得（右下配置用）
-	int w = 0;
-	int h = 0;
-	if(_handle >= 0)
-	{
-		GetGraphSize(_handle, &w, &h);
-	}
-
 	// 画面サイズ
-	const int screenW = ApplicationBase::GetInstance()->DispSizeW();
-	const int screenH = ApplicationBase::GetInstance()->DispSizeH();
+	const int screen_w = ApplicationBase::GetInstance()->DispSizeW();
+	const int screen_h = ApplicationBase::GetInstance()->DispSizeH();
 
-	// 右下の余白（写真の感じに合わせて調整）
-	const int marginX = 30;
-	const int marginY = 30;
+	// 画像サイズ
+	int img_w = 0;
+	int img_h = 0;
+	GetGraphSize(_handle, &img_w, &img_h);
 
-	// 右下基準で座標決定
-	const int x = screenW - marginX - w;
-	const int y = screenH - marginY - h;
+	const int draw_w = static_cast<int>(img_w);
+	const int draw_h = static_cast<int>(img_h);
 
-	// 巻物画像を描画（透過あり）
-	if(_handle >= 0)
-	{
-		DrawGraph(x, y, _handle, TRUE);
-	}
+	// 右下座標（画像の左上座標）
+	const int x = screen_w - draw_w - _padding;
+	const int y = screen_h - draw_h - _padding;
 
-	// 所持数（ひとまず文字。あとで数字画像に置換可能）
-	{
-		const int count = _player->GetMakimonoCount();
-		const std::string text = "x" + std::to_string(count);
+	// 表示位置微調整（現状コードに合わせる）
+	const int ui_x = x - 1100;
+	const int ui_y = y + 30;
 
-		// 画像の右側に少しずらして描画（ここも好みで）
-		const int tx = x + w + 8;
-		const int ty = y + (h / 2) - 8;
-		DrawString(tx, ty, text.c_str(), GetColor(255, 255, 255));
-	}
+	// 背景を描画
+	DrawBox(x - 1200, y + 50, x - 900 + draw_w, y + draw_h + 20, GetColor(0, 0, 233), TRUE);
+	
+	// 拡大縮小して描画（_scale=1.0f なら等倍）
+	DrawGraph(ui_x, ui_y, _handle, TRUE);
+
 	return true;
 }
 

@@ -49,12 +49,14 @@ bool ModeGame::ObjectInitialize()
 	_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
-	{
-		auto uiMakimono = std::make_shared<UiMakimono>();
-		uiMakimono->SetPlayer(_player.get());   // まずは人間固定（巻物所持数を持っている実体に合わせて変更）
-		uiMakimono->Initialize();
-		_uiBase.emplace_back(uiMakimono);
-	}
+	_uiMakimono = std::make_shared<UiMakimono>();
+	_uiBase.emplace_back(_uiMakimono);
+
+	//{
+	//	auto uiMakimono = std::make_shared<UiMakimono>();
+	//	uiMakimono->Initialize();
+	//	_uiBase.emplace_back(uiMakimono);
+	//}
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
