@@ -35,7 +35,17 @@ namespace soundserver
 			}
 
 			this->Stop();
-			PlayMem(DX_PLAYTYPE_BACK);
+			int playType;
+			// ループフラグが立っているかで再生タイプを切り替える
+			if(_iFlag & FLG_LOOP)
+			{
+				playType = DX_PLAYTYPE_LOOP;
+			}
+			else
+			{
+				playType = DX_PLAYTYPE_BACK;
+			}
+			PlayMem(playType);
 		}
 	};
 }

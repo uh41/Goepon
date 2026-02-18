@@ -47,10 +47,12 @@ namespace mv1
   inline constexpr const char* S_Stairs = "res/IslandJson/S_Stairs.mv1";
   inline constexpr const char* S_TreasureBox = "res/IslandJson/S_TreasureBox.mv1";
   inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
+  inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
   inline constexpr const char* SM_stage_arufa2 = "res/map/SM_stage_arufa2.mv1";
+  inline constexpr const char* SM_stagebeta = "res/map/SM_stagebeta.mv1";
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
@@ -104,8 +106,12 @@ namespace mp3
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
   inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
+  inline constexpr const char* UI_no_makimono = "res/SE/UI_no_makimono.mp3";
   inline constexpr const char* bush_found = "res/SE/bush_found.mp3";
+  inline constexpr const char* bushi_sight_off = "res/SE/bushi_sight_off.mp3";
   inline constexpr const char* bushi_stun_start = "res/SE/bushi_stun_start.mp3";
+  inline constexpr const char* bushi_stunfinish = "res/SE/bushi_stunfinish.mp3";
+  inline constexpr const char* bushi_tail_hit = "res/SE/bushi_tail_hit.mp3";
   inline constexpr const char* bushi_walk = "res/SE/bushi_walk.mp3";
   inline constexpr const char* dog_howling = "res/SE/dog_howling.mp3";
   inline constexpr const char* okimono_move = "res/SE/okimono_move.mp3";

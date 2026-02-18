@@ -30,6 +30,7 @@ namespace soundserver
 			ONESHOT,		// ストリーミング再生。1回のみ再生。即時再生し、停止したらサーバから削除される
 		};
 		static const int FLG_3D = 0x0001;			// 3Dサウンドとして再生する
+		static const int FLG_LOOP = 0x0002;			// ループ再生する
 
 		SoundItemBase(std::string filename, int flg);
 		virtual ~SoundItemBase();
