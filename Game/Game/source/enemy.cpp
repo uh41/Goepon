@@ -303,30 +303,30 @@ bool Enemy::Process()
 		}
 	}
 
-	// 定期的な向き変更処理（WAIT 時のみ）
-	if(!IsStun() && _status == STATUS::WAIT)
-	{
-		DirChangeTimer -= 1.0f / 60.0f;
-		if(DirChangeTimer <= 0.0f)
-		{
-			DirChangeTimer = StCas<float>(DirChangeInterval);
-			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
-			{
-				float currentAngle = atan2f(_vDir.x, _vDir.z);
-				float newAngle = currentAngle + DX_PI_F / 2.0f;
-				vec::Vec3 newDir;
-				newDir.x = sin(newAngle);
-				newDir.y = 0.0f;
-				newDir.z = cos(newAngle);
+	//// 定期的な向き変更処理（WAIT 時のみ）
+	//if(!IsStun() && _status == STATUS::WAIT)
+	//{
+	//	DirChangeTimer -= 1.0f / 60.0f;
+	//	if(DirChangeTimer <= 0.0f)
+	//	{
+	//		DirChangeTimer = StCas<float>(DirChangeInterval);
+	//		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+	//		{
+	//			float currentAngle = atan2f(_vDir.x, _vDir.z);
+	//			float newAngle = currentAngle + DX_PI_F / 2.0f;
+	//			vec::Vec3 newDir;
+	//			newDir.x = sin(newAngle);
+	//			newDir.y = 0.0f;
+	//			newDir.z = cos(newAngle);
 
-				vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-				if(CheckFloorExistence(testPos))
-				{
-					_vDir = newDir;
-				}
-			}
-		}
-	}
+	//			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
+	//			if(CheckFloorExistence(testPos))
+	//			{
+	//				_vDir = newDir;
+	//			}
+	//		}
+	//	}
+	//}
 
 	return true;
 }

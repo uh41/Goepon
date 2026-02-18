@@ -84,6 +84,12 @@ bool EnemyBase::Initialize()
 
 	_effect = nullptr;
 
+	_dirSequence.clear();
+	_dirSeqIndex = 0;
+	_dirSeqTimer = 0.0f;
+	_dirSeqWaitTime = 0.0f;
+	_dirSeqActive = false;
+
 	return true;
 }
 
@@ -713,6 +719,8 @@ bool EnemyBase::Process()
 		_enemySoundSensor->SetDir(_vDir);
 	}
 
+	UpdateDirectionSequence();
+
 	return true;
 }
 
@@ -928,4 +936,154 @@ void EnemyBase::RenderDamageTime()
 	// 画面左上に表示（位置は調整可）
 	DrawFormatString(10, 40, GetColor(255, 200, 0),
 	"STAN残り時間: %.1f", _stanTimer);
+}
+
+static vec::Vec3 DirIdToVec3(int id)
+{
+	switch(id)
+	{
+	case 1: return vec::Vec3(0.0f, 0.0f, -1.0f);   // 上
+	case 2: return vec::Vec3(1.0f, 0.0f, 0.0f);    // 右
+	case 3: return vec::Vec3(0.0f, 0.0f, 1.0f);    // 下
+	case 4: return vec::Vec3(-1.0f, 0.0f, 0.0f);   // 左
+	default: return vec::Vec3(0.0f, 0.0f, -1.0f);   // 無効なID
+	}
+}
+
+void EnemyBase::SetDirSequence(const std::vector<int>& sequence, float waitTime)
+{
+	if(sequence.empty())
+	{
+		_dirSequence.clear();
+		_dirSeqActive = false;
+		return;
+	}
+	_dirSequence = sequence;
+	_dirSeqIndex = 0;
+	if(waitTime > 0.0f)
+	{
+		_dirSeqWaitTime = waitTime;
+	}
+	else
+	{
+		_dirSeqWaitTime = 0.0f;
+	}
+	_dirSeqTimer = _dirSeqWaitTime;
+	_dirSeqActive = true;
+
+	int id = _dirSequence[_dirSeqIndex];
+	_vDir = DirIdToVec3(id);
+}
+
+void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
+{
+	if(!j.is_object()) { return; }
+
+	at::vet<int> seq;
+	if(j.contains("direction"))
+	{
+		auto& node = j.at("direction");
+
+		// 配列であれば順番にIDを読み取る
+		if(node.is_array())
+		{
+			for(auto&& it : node)
+			{
+				// 整数であればシーケンスに追加
+				if(it.is_number_integer())
+				{
+					seq.push_back(it.get<int>());
+				}
+			}
+		}
+		else if(node.is_string())
+		{
+			std::string s = node.get<std::string>();
+			size_t pos = 0;
+			while(true)
+			{
+				size_t comma = s.find(',', pos);
+				std::string token;
+				// カンマが見つからなければ残り全てを、見つかればカンマまでを取り出す
+				if(comma == std::string::npos)
+				{
+					token = s.substr(pos);
+				}
+				else
+				{
+					token = s.substr(pos, comma - pos);
+				}
+				// 空でなければシーケンスに追加
+				if(!token.empty())
+				{
+					seq.push_back(std::stoi(token));// 文字列を整数に変換してシーケンスに追加
+				}
+				if(comma == std::string::npos) { break; }
+				pos = comma + 1;
+			}
+		}
+
+		if(j.contains("waittime"))
+		{
+			auto& w = j.at("waittime");
+			if(w.is_number())
+			{
+				_dirSeqWaitTime = w.get<float>();
+			}
+			else if(w.is_string())
+			{
+				// 文字列からの変換で例外が発生する可能性があるため安全に扱う
+				std::string s = w.get<std::string>();
+				try
+				{
+					// std::stof は不正な文字列で std::invalid_argument を投げる
+					// 例外が発生した場合は既存の _dirSeqWaitTime を維持する
+					_dirSeqWaitTime = std::stof(s);
+				}
+				catch(...)
+				{
+					//何もしない
+				}
+			}
+		}
+	}
+
+	if(!seq.empty())
+	{
+		SetDirSequence(seq, _dirSeqWaitTime);
+
+		char buf[256];
+		sprintf_s(buf, "SetDirSequenceFromJson: seq=");
+		std::string extra;
+		for(auto id : seq) { char t[8]; sprintf_s(t, "%d,", id); extra += t; }
+		strcat_s(buf, extra.c_str());
+		OutputDebugStringA(buf);
+	}
+}
+
+void EnemyBase::UpdateDirectionSequence()
+{
+	if(!_dirSeqActive || _dirSequence.empty()) { return; }
+
+	// シーケンスはプレイヤー検知中や追跡中には進めない
+	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		return;
+	}
+
+	float deltaTime = 1.0f / 60.0f; // 60FPSとして計算
+	_dirSeqTimer -= deltaTime;
+
+	if(_dirSeqTimer <= 0.0f)
+	{
+		_dirSeqIndex = (_dirSeqIndex + 1) % _dirSequence.size(); // シーケンスをループ
+		int id = _dirSequence[_dirSeqIndex];
+		_vDir = DirIdToVec3(id);
+		_dirSeqTimer = _dirSeqWaitTime; // タイマーをリセット
+
+		// Debug: 何時どのIDに切り替わったか出力
+		char buf[128];
+		sprintf_s(buf, "UpdateDirectionSequence: index=%d id=%d wait=%.2f", _dirSeqIndex, id, _dirSeqWaitTime);
+		OutputDebugStringA(buf);
+	}
 }

@@ -277,6 +277,7 @@ bool ModeGame::LoadStageData()
 			soundSensor->SetPos(enemy->GetPos());
 			enemy->SetEffect(_hensinEffect);
 			enemy->SetEnemyId(nextEnemyId++);
+			enemy->SetDirSequenceFromJson(object);
 
 			_enemyBase.emplace_back(enemy);
 			continue;
@@ -304,6 +305,7 @@ bool ModeGame::LoadStageData()
 			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEffect(_hensinEffect);
 			enemyMove->SetEnemyId(nextEnemyId++);
+			enemyMove->SetDirSequenceFromJson(object);
 
 			// グループに対応する巡回点があれば割り当てる
 			auto it = patrolGroups.find(gid);
