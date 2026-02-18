@@ -220,7 +220,7 @@ bool ModeGame::LoadStageData()
 		}
 
 		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
-		if(name == "S_MarkerB" || name == "S_MarkerRX")
+		if(name == "S_MarkerB" || name == "S_MarkerRX" || name == "Dog")
 		{
 			enemyObjects.push_back(object);
 			continue;
