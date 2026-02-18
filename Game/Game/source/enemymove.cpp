@@ -11,6 +11,7 @@
 #include "enemymove.h"
 #include "enemysensor.h"
 #include "enemysoundsensor.h"
+#include "enemysoundmanager.h"
 #include <cmath>
 
 EnemyMove::EnemyMove()
@@ -119,6 +120,11 @@ void EnemyMove::ProcessPatrol()
 		return;
 	}
 
+	//if(IsStun())
+	//{
+	//	return;
+	//}
+
 	// 待機中の更新（到着後その場で停止する処理）
 	if (_isPatrolWaiting)
 	{
@@ -223,6 +229,11 @@ void EnemyMove::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 // プレイヤーが検出範囲外になった時の処理
 void EnemyMove::OnPlayerLost()
 {
+	if(IsStun())
+	{
+		return; // 無敵状態なら見失い処理を行わない
+	}
+
 	_detectedPlayer = false;
 
 	StartReturningToInitialPosition();
@@ -231,6 +242,11 @@ void EnemyMove::OnPlayerLost()
 void EnemyMove::ProcessReturnToPatrolPoint()
 {
 	if(!_isReturningToInitialPos)
+	{
+		return;
+	}
+
+	if(IsStun())
 	{
 		return;
 	}
@@ -546,7 +562,7 @@ bool EnemyMove::Process()
 	{
 		_status = STATUS::WAIT;
 
-		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPosition())
+		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPosition() && !IsStun())
 		{
 			StartReturningToInitialPosition();
 		}

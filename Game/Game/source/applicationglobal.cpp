@@ -63,6 +63,7 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("33", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_sight_off));
 	_soundServer->Add("32", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_tail_hit));
 	_soundServer->Add("34", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_stunfinish));
+	_soundServer->Add("61", std::make_shared<soundserver::SoundItemSE>(mp3::UI_no_makimono));
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));

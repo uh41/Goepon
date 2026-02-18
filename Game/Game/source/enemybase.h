@@ -100,6 +100,7 @@ public:
 	void SetDirSequence(const at::vet<int>& sequence, float waitTime = 2.0f);	// 向き変更のシーケンスを設定
 	void SetDirSequenceFromJson(const nlohmann::json& j);						// JSONから向き変更のシーケンスを設定
 	void UpdateDirectionSequence();												// 向き変更のシーケンスの更新
+	void StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel);// 敵サウンドマネージャーから音源に向かって移動する処理を開始
 
 protected:
 	uint32_t _enemyId; // 敵のID
@@ -155,7 +156,7 @@ protected:
 	// 音検知からの経過時間管理
 	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
 	float _soundDetectionTimer;		// 音検知からの経過時間
-	static constexpr float SOUND_RETURN_TIME = 10.0f; // 音検知から初期位置に戻るまでの時間
+	static constexpr float SOUND_RETURN_TIME = 60.0f; // 音検知から初期位置に戻るまでの時間
 
 	at::spc<EffectBase> _effect;
 
@@ -174,4 +175,6 @@ protected:
 	float _dirSeqTimer;				// 向き変更のシーケンスのタイマー
 	float _dirSeqWaitTime;			// 向き変更のシーケンスの待機時間
 	bool _dirSeqActive;				// 向き変更のシーケンスがアクティブかどうか
+
+	bool _playSightOffOnReturn;// 初期位置に戻るときにvoiceをオフにするかどうか
 };

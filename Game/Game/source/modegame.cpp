@@ -318,7 +318,7 @@ bool ModeGame::LoadStageData()
 			_enemyBase.emplace_back(enemyMove);
 		}
 
-		if (name == "Dog") 
+		if(name == "Dog")
 		{
 			auto enemyDog = std::make_shared<EnemyDog>();
 			enemyDog->Initialize();
@@ -337,6 +337,8 @@ bool ModeGame::LoadStageData()
 			enemyDog->SetEnemySensor(sensor);
 			enemyDog->SetEnemySoundSensor(soundSensor);
 			enemyDog->SetEffect(_hensinEffect);
+
+			enemyDog->SetEnemyId(nextEnemyId++); // ★追加：敵IDを必ず付与
 
 			_enemyBase.emplace_back(enemyDog);
 		}
@@ -419,10 +421,14 @@ bool ModeGame::Process()
 		EnemySoundManager::DetectionInfo info{};
 		if(EnemySoundManager::GetInstance()->TryDetectForEnemy(*e, info) && info.isDetected)
 		{
-			// EnemyMove だけに反映したいなら dynamic_cast 等で分岐
+			// ここを「EnemyMove だけ」ではなく「全敵」に反映する
 			if(auto* moveEnemy = dynamic_cast<EnemyMove*>(e.get()))
 			{
 				moveEnemy->StartMoveToSound(info.soundSourcePos, info.detectedSoundLevel);
+			}
+			else
+			{
+				e->StartMoveToSoundFromManager(info.soundSourcePos, info.detectedSoundLevel);
 			}
 		}
 	}

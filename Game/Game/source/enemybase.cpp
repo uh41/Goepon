@@ -90,6 +90,8 @@ bool EnemyBase::Initialize()
 	_dirSeqWaitTime = 0.0f;
 	_dirSeqActive = false;
 
+	_playSightOffOnReturn = false;
+
 	return true;
 }
 
@@ -337,6 +339,9 @@ void EnemyBase::StartDamage()
 	_isInvincible = true;
 	_attachStage = 1;// ダメージステージに移行
 	_stanTimer = 0.0f;
+	_isReturningToInitialPos = false;
+	_waitingForTeleport = false;
+	_teleportTimer = 0.0f;
 
 	OnDamageStart();
 
@@ -383,7 +388,7 @@ void EnemyBase::UpdateDamageAnimation()
 			}
 
 			// 転ばされたときのボイス
-			auto damageSound = gGlobal._soundServer->Get("33");
+			auto damageSound = gGlobal._soundServer->Get("32");
 			if(damageSound && !damageSound->IsPlay())
 			{
 				damageSound->Play();
@@ -492,18 +497,21 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		_vDir = _initialDirection;
 		_isReturningToInitialPos = false;
 
-		// ここで検出状態をリセット（初期位置に完全に到達してから）
 		_detectedPlayer = false;
 		if(_enemySensor)
 		{
 			_enemySensor->ResetDetection();
 		}
 
-		auto sightOff = gGlobal._soundServer->Get("33");
-		if(sightOff && !sightOff->IsPlay())
+		if(_playSightOffOnReturn && gGlobal._soundServer)
 		{
-			sightOff->Play();
+			auto sightOff = gGlobal._soundServer->Get("33");
+			if(sightOff && !sightOff->IsPlay())
+			{
+				sightOff->Play();
+			}
 		}
+		_playSightOffOnReturn = false;
 
 		return;
 	}
@@ -1074,4 +1082,33 @@ void EnemyBase::UpdateDirectionSequence()
 		_vDir = DirIdToVec3(id);
 		_dirSeqTimer = _dirSeqWaitTime; // タイマーをリセット
 	}
+}
+
+void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel)
+{
+	// 今のゲームでは 5 のみ反応（既存ロジック踏襲）
+	if(soundLevel != 5)
+	{
+		return;
+	}
+
+	// 音優先：追跡/検出/帰還中でも上書きする
+	_detectedPlayer = false;
+	_isReturningToInitialPos = false;
+
+	if(_enemySensor)
+	{
+		_enemySensor->ResetDetection();
+	}
+
+	ResetTeleport();
+
+	_isMovingToSound = true;
+	_soundSourcePosition = soundPos;
+
+	_soundDetectionActive = true;
+	_soundDetectionTimer = 0.0f;
+
+	_waitingAtSound = false;
+	_soundWaitTimer = 0.0f;
 }
