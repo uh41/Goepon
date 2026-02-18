@@ -230,19 +230,6 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
 			_aseEffect->SetPlayer(_player.get());
-			// タヌキから人間への変身完了時に音波を発生
-			for(auto& enemy : _enemyBase)
-			{
-				if(enemy->IsAlive())
-				{
-					// 変身中は敵の音検知を無効化（音波を発生させない）
-					if(enemy->GetEnemySoundSensor())
-					{
-						enemy->GetEnemySoundSensor()->SetSoundLevel(0);
-					}
-					_hatenaEffect->PlayOnce(enemy.get());
-				}
-			}
 			_player->Process(); // 変身直後の一フレーム更新
 
 			// たぬ人間変身時の処理
@@ -281,19 +268,6 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_aseEffect->SetPlayer(_playerMono.get());
 
-			// タヌキから人間への変身完了時に音波を発生
-			for(auto& enemy : _enemyBase)
-			{
-				if(enemy->IsAlive())
-				{
-					// 変身中は敵の音検知を無効化（音波を発生させない）
-					if(enemy->GetEnemySoundSensor())
-					{
-						enemy->GetEnemySoundSensor()->SetSoundLevel(0);
-					}
-					_hatenaEffect->PlayOnce(enemy.get());
-				}
-			}
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 
@@ -384,7 +358,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetPos(_player->GetPos());
 			_playerTanuki->SetDir(_player->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("goepon_idle", true);
+			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
@@ -417,7 +391,12 @@ bool ModeGame::PlayerTransform()
 
 	if(!hasMakimono && pushBottan)
 	{
-		// もしSEやUIを表示する場合はここに追加
+		// まきものを持ってないのに変身ボタンを押した場合のフィードバック（音のみ）
+		auto soundNoMakimono = gGlobal._soundServer->Get("61");
+		if(soundNoMakimono && !soundNoMakimono->IsPlay())
+		{
+			soundNoMakimono->Play();
+		}
 	}
 	else
 	{

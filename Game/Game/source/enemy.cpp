@@ -109,25 +109,17 @@ bool Enemy::Process()
 	}
 
 	// EnemySoundSensorから音の検知情報を取得
-	if (_enemySoundSensor)
+	if(_enemySoundSensor)
 	{
-		// 音レベル5の音を検知したかチェック
 		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
 		{
-			// プレイヤーを検出中または追跡中でなければ、音源に向かって移動開始
-			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
 			{
 				_isMovingToSound = true;
 				_soundSourcePosition = detectionInfo.soundSourcePosition;
-
-				// 音検知タイマーを開始
 				_soundDetectionActive = true;
 				_soundDetectionTimer = 0.0f;
-
-				// 初期位置への帰還を中断
-				_waitingBeforeReturn = false;
-				_returnWaitTimer = 0.0f;
 			}
 		}
 	}
@@ -302,31 +294,6 @@ bool Enemy::Process()
 			_showYouDiedMessage = false;
 		}
 	}
-
-	//// 定期的な向き変更処理（WAIT 時のみ）
-	//if(!IsStun() && _status == STATUS::WAIT)
-	//{
-	//	DirChangeTimer -= 1.0f / 60.0f;
-	//	if(DirChangeTimer <= 0.0f)
-	//	{
-	//		DirChangeTimer = StCas<float>(DirChangeInterval);
-	//		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
-	//		{
-	//			float currentAngle = atan2f(_vDir.x, _vDir.z);
-	//			float newAngle = currentAngle + DX_PI_F / 2.0f;
-	//			vec::Vec3 newDir;
-	//			newDir.x = sin(newAngle);
-	//			newDir.y = 0.0f;
-	//			newDir.z = cos(newAngle);
-
-	//			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-	//			if(CheckFloorExistence(testPos))
-	//			{
-	//				_vDir = newDir;
-	//			}
-	//		}
-	//	}
-	//}
 
 	return true;
 }
