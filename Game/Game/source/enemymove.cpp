@@ -64,7 +64,7 @@ bool EnemyMove::Initialize()
 
 	// 初期位置に戻る機能の初期化
 	_isReturningToInitialPos = false;	// 初期位置に戻り中フラグの初期化
-	_returnSpeed = 1.5f;				// 初期位置に戻る速度（追跡より少し遅め）
+	_returnSpeed = 5.0f;				// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
 	_waitingForTeleport = false;
@@ -79,7 +79,7 @@ bool EnemyMove::Initialize()
 
 	_patroll = std::make_shared<MovePointControll>();
 	_isPatroll = false;
-	_patrolSpeed = 6.3f;
+	_patrolSpeed = 5.0f;
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 
@@ -666,38 +666,38 @@ bool EnemyMove::Process()
 		}
 	}
 
-	// 定期的に方向を90度変える処理
-	DirChangeTimer -= 1.0f / 60.0f;
-
-	// タイマーが0以下になったら方向を変える
-	if(DirChangeTimer <= 0.0f)
-	{
-		// タイマーをリセット（15秒ごとに変更）
-		DirChangeTimer = 15.0f;
-
-		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
-		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
-		{
-			// 回転先の方向を計算
-			float currentAngle = atan2f(_vDir.x, _vDir.z);
-			float newAngle = currentAngle + DX_PI_F / 2.0f;
-
-			// 新しい向きベクトルを計算
-			vec::Vec3 newDir;
-			newDir.x = sin(newAngle);
-			newDir.y = 0.0f;
-			newDir.z = cos(newAngle);
-
-			// 新しい方向に少し移動した位置で床の存在を確認
-			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-
-			// 床がある場合のみ回転を実行
-			if(CheckFloorExistence(testPos))
-			{
-				_vDir = newDir;
-			}
-		}
-	}
+//	// 定期的に方向を90度変える処理
+//	DirChangeTimer -= 1.0f / 60.0f;
+//
+//	// タイマーが0以下になったら方向を変える
+//	if(DirChangeTimer <= 0.0f)
+//	{
+//		// タイマーをリセット（15秒ごとに変更）
+//		DirChangeTimer = 15.0f;
+//
+//		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
+//		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
+//		{
+//			// 回転先の方向を計算
+//			float currentAngle = atan2f(_vDir.x, _vDir.z);
+//			float newAngle = currentAngle + DX_PI_F / 2.0f;
+//
+//			// 新しい向きベクトルを計算
+//			vec::Vec3 newDir;
+//			newDir.x = sin(newAngle);
+//			newDir.y = 0.0f;
+//			newDir.z = cos(newAngle);
+//
+//			// 新しい方向に少し移動した位置で床の存在を確認
+//			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
+//
+//			// 床がある場合のみ回転を実行
+//			if(CheckFloorExistence(testPos))
+//			{
+//				_vDir = newDir;
+//			}
+//		}
+//	}
 	return true;
 }
 
