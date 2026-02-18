@@ -332,7 +332,7 @@ bool ModeGame::PlayerTransform()
 		}
 	}
 
-	// 追加: モノ表示時の自動切替（入力または時間切れ）
+	// モノ表示時の自動切替（入力または時間切れ）
 	if(_showMonoPlayer)
 	{
 		// PAD_INPUT_3 が押された、または変身タイマーが有効で時間切れならタヌキへ切替
@@ -363,99 +363,168 @@ bool ModeGame::PlayerTransform()
 			return true;
 		}
 	}
-
-	// PAD_INPUT_3: タヌキ <-> モノ 切替
-	if(trg & PAD_INPUT_3)
+	if(!_bShowTanuki && !_showMonoPlayer)
 	{
-		// 無効化：現在「プレイヤー（人間）」表示中なら PAD_INPUT_3 は何もしない
-		// （プレイヤー＝_bShowTanuki==false && _showMonoPlayer==false）
-		if(!_bShowTanuki && !_showMonoPlayer)
+		if((trg & PAD_INPUT_4) || (_changeTimeActive && _changeTimeLimit <= 0.0f))
 		{
-			// プレイヤー（人間）時は無効化、何もしない
-		}
-		else
-		{
-			// タヌキ表示中ならモノに切り替え（変身開始）
-			if(_bShowTanuki)
-			{
-				if(PlayerTransformToTanuki(false))
-				{
-					return true;
-				}
-			}
-			else if(_showMonoPlayer)
-			{
-				// (既存) モノ -> タヌキ は即時切替（アニメなし）
-				_showMonoPlayer = false;
-				_bShowTanuki = true;
-				_playerTanuki->SetPos(_playerMono->GetPos());
-				_playerTanuki->SetDir(_playerMono->GetDir());
-				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				_playerTanuki->PlayAnimation("goepon_idle", true);
-				_playerTanuki->Process();
-				_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-				_walkEffect->SetPlayerPos(_playerTanuki.get());
-				_aseEffect->SetPlayer(_playerTanuki.get());
-				auto soundFinish = gGlobal._soundServer->Get("3");
-				if(soundFinish && !soundFinish->IsPlay())
-				{
-					soundFinish->Play();
-				}
+			// 人間 -> タヌキ（再度ボタンで戻す）
+			_bShowTanuki = true;
+			_showMonoPlayer = false;
 
-				// タイマーが動いてたらリセット
-				_changeTimeActive = false;// 時間制限を無効化
-				_changeTimeLimit = 0.0f;
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = true;
-				return true;
+			_playerTanuki->SetPos(_player->GetPos());
+			_playerTanuki->SetDir(_player->GetDir());
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("goepon_idle", true);
+			_playerTanuki->Process();
+
+			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+			_walkEffect->SetPlayerPos(_playerTanuki.get());
+			_aseEffect->SetPlayer(_playerTanuki.get());
+
+			auto soundFinish = gGlobal._soundServer->Get("3");
+			if(soundFinish && !soundFinish->IsPlay())
+			{
+				soundFinish->Play();
 			}
+
+			// タイマーが動いてたらリセット（人状態の点滅等を止める）
+			_changeTimeActive = false;
+			_changeTimeLimit = 0.0f;
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = true;
+
+			return true;
 		}
 	}
+	// 巻物取得チェック
+	PlayerBase* currentPlayer = nullptr;
+	if(_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
+	else if(_showMonoPlayer) { currentPlayer = _playerMono.get(); }
+	else { currentPlayer = _player.get(); }
 
-	// PAD_INPUT_4: タヌキ -> 人間 の変身（無効化：モノ表示時は変身不可）
-	if(!_bTransCancel)
+	const bool hasMakimono = (currentPlayer != nullptr && currentPlayer->GetMakimonoCount() > 0);
+	const bool pushBottan  = (trg & PAD_INPUT_3) || (trg & PAD_INPUT_4); // 変身ボタンが押されているか
+
+	if(!hasMakimono && pushBottan)
 	{
-		if(trg & PAD_INPUT_4)
+		// もしSEやUIを表示する場合はここに追加
+	}
+	else
+	{
+		// PAD_INPUT_3: タヌキ <-> モノ 切替
+		if(trg & PAD_INPUT_3)
 		{
-			// 無効化：現在「モノ」表示中なら PAD_INPUT_4 を無効化する
-			if(_showMonoPlayer)
+			// 無効化：現在「モノ」表示中なら PAD_INPUT_3 を無効化する
+			if(!_bShowTanuki && !_showMonoPlayer)
 			{
-				// モノ時は変身不可、何もしない
+				// プレイヤー（人間）時は無効化、何もしない
 			}
 			else
 			{
+				// タヌキ表示中ならモノに切り替え（変身開始）
 				if(_bShowTanuki)
 				{
-					if(PlayerTransformToTanuki(true))
+					// まきものを1つ消費する
+					if(_playerTanuki)
+					{
+						_playerTanuki->SubMakimono(1);
+					}
+					// タヌキ -> モノ へ変身開始
+					if(PlayerTransformToTanuki(false))
 					{
 						return true;
 					}
 				}
+				//else if(_showMonoPlayer)
+				//{
+				//	// (既存) モノ -> タヌキ は即時切替（アニメなし）
+				//	_showMonoPlayer = false;
+				//	_bShowTanuki = true;
+				//	_playerTanuki->SetPos(_playerMono->GetPos());
+				//	_playerTanuki->SetDir(_playerMono->GetDir());
+				//	_playerTanuki->_status = CharaBase::STATUS::WAIT;
+				//	_playerTanuki->PlayAnimation("goepon_idle", true);
+				//	_playerTanuki->Process();
+				//	_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+				//	_walkEffect->SetPlayerPos(_playerTanuki.get());
+				//	_aseEffect->SetPlayer(_playerTanuki.get());
+				//	auto soundFinish = gGlobal._soundServer->Get("3");
+				//	if(soundFinish && !soundFinish->IsPlay())
+				//	{
+				//		soundFinish->Play();
+				//	}
+
+				//	// タイマーが動いてたらリセット
+				//	_changeTimeActive = false;// 時間制限を無効化
+				//	_changeTimeLimit = 0.0f;
+				//	_changeBlinkTimer = 0.0f;
+				//	_changeBlinkVisible = true;
+				//	return true;
+				//}
+			}
+		}
+
+		// PAD_INPUT_4: タヌキ -> 人間 の変身（無効化：モノ表示時は変身不可）
+		if(!_bTransCancel)
+		{
+			if(trg & PAD_INPUT_4)
+			{
+				// 無効化：現在「モノ」表示中なら PAD_INPUT_4 を無効化する
+				if(_showMonoPlayer)
+				{
+					// モノ時は変身不可、何もしない
+				}
 				else
 				{
-					_bShowTanuki = true;
-					_playerTanuki->SetPos(_player->GetPos());
-					_playerTanuki->SetDir(_player->GetDir());
-					_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-					_walkEffect->SetPlayerPos(_playerTanuki.get());
-					_aseEffect->SetPlayer(_playerTanuki.get());
-					_playerTanuki->_status = CharaBase::STATUS::WAIT;
-					_playerTanuki->PlayAnimation("goepon_idle", true);
-					auto soundFinish = gGlobal._soundServer->Get("3");
-					if(soundFinish && !soundFinish->IsPlay())
+					if(_bShowTanuki)
 					{
-						soundFinish->Play();
-					}
+						// まきものを1つ消費する
+						if(_playerTanuki)
+						{
+							_playerTanuki->SubMakimono(1);
+						}
 
-					// タイマーが動いてたらリセット
-					_changeTimeActive = false;
-					_changeTimeLimit = 0.0f;
-					_changeBlinkTimer = 0.0f;
-					_changeBlinkVisible = true;
+						if(PlayerTransformToTanuki(true))
+						{
+							return true;
+						}
+					}
+					//else
+					//{
+					//	// 人間 -> タヌキ（再度ボタンで戻す）
+					//	_bShowTanuki = true;
+					//	_showMonoPlayer = false;
+
+					//	_playerTanuki->SetPos(_player->GetPos());
+					//	_playerTanuki->SetDir(_player->GetDir());
+					//	_playerTanuki->_status = CharaBase::STATUS::WAIT;
+					//	_playerTanuki->PlayAnimation("goepon_idle", true);
+					//	_playerTanuki->Process();
+
+					//	_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+					//	_walkEffect->SetPlayerPos(_playerTanuki.get());
+					//	_aseEffect->SetPlayer(_playerTanuki.get());
+
+					//	auto soundFinish = gGlobal._soundServer->Get("3");
+					//	if(soundFinish && !soundFinish->IsPlay())
+					//	{
+					//		soundFinish->Play();
+					//	}
+
+					//	// タイマーが動いてたらリセット（人状態の点滅等を止める）
+					//	_changeTimeActive = false;
+					//	_changeTimeLimit = 0.0f;
+					//	_changeBlinkTimer = 0.0f;
+					//	_changeBlinkVisible = true;
+
+					//	return true;
+					//	
+					//}
 				}
 			}
 		}
 	}
+	
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
 	if(_bShowTanuki)

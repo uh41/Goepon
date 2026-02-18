@@ -264,6 +264,8 @@ protected:
 	bool _changeBlinkVisible;	// プレイヤーの点滅表示フラグ
 	float _changeBlinkInterval; // プレイヤーの点滅間隔
 
+	// 巻物関連
+	bool _subMakimono = false; // 変身開始時に巻物を消費する予約をする
 private:
 	// class ModeGameのメンバに追加
 	bool _requestResetStage = false; // ステージリセット要求フラグ	

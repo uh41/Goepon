@@ -14,7 +14,7 @@ PlayerMono::~PlayerMono()
 bool PlayerMono::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::Kagurayaki);
+	_handle = MV1LoadModel(mv1::sigaraki);
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;
