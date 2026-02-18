@@ -187,3 +187,317 @@
 26553:Alloc memory dump
 26554:	Total size:0(0.000kb)  Alloc num:0
 26554:
+1:ウインドウモードフラグが立てられました
+4:ＤＸライブラリの初期化処理開始
+5:	システムの情報を出力します
+6:		ＤＸライブラリ Ver3.24b
+6:		論理プロセッサの数 : 12
+6:		ＯＳ  Windows11 ( Build 22631  )
+107:		現時点のＣＰＵ動作速度：大体3.18GHz
+113:		ＭＭＸ命令を使用します
+113:		ＳＳＥ命令が使用可能です
+114:		ＳＳＥ２命令が使用可能です
+114:		ＣＰＵベンダ：GenuineIntel
+117:		ＣＰＵ名：Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+118:	ＣＯＭの初期化... 成功
+132:	非同期読み込み処理の初期化...成功
+133:	ファイルアクセス処理の初期化...成功
+134:	メモリ総量:16214.34MB  空きメモリ領域:3489.10MB 
+134:	タイマーの精度を検査します
+134:	精度結果 更新回数 マルチメディアタイマー：0  パフォーマンスカウンター：60
+134:	 パフォーマンスカウンターを使用します タイマー精度 : 10000.000000 KHz 
+135:	 
+135:	ソフトの二重起動検査... 二重起動はされていませんでした
+136:	ウインドウクラスを登録します... 登録に成功しました
+136:	ウインドウモード起動用のウインドウを作成します
+137:	ディスプレイ情報のセットアップ開始
+138:		モニターの数：1  ディスプレイデバイスの数：7
+138:		No.0  モニター名：\\.\DISPLAY1　1920x1080　32bit　60Hz  96x96dpi
+148:	ディスプレイ情報のセットアップ完了
+149:	ウインドウ矩形 ( 304, 129 )-( 1600, 888 )
+156:	ウインドウの作成に成功しました
+156:	ウインドウを表示します
+194:	ＩＭＥを無効にしました
+198:	ウインドウスタイルをウインドウモード用に変更します... 完了
+237:	XInput DLL の読み込み中... 成功
+306:	DirectInput関係初期化処理
+306:		DirectInput8 の取得を試みます...成功
+335:			引き続き初期化処理... 初期化成功
+349:		ジョイパッドの初期化... 
+349:			XInput 対応コントローラーのチェックを開始します
+350:				XInput 対応コントローラー No.0 をチェック
+355:				XInput 対応コントローラー No.0 の接続を確認しました
+355:				XInput 対応コントローラー No.0 を入力ナンバー 0 で登録します
+355:				XInput 対応コントローラー No.1 をチェック
+356:				XInput 対応コントローラー No.1 の接続は確認できませんでした
+356:				XInput 対応コントローラー No.2 をチェック
+357:				XInput 対応コントローラー No.2 の接続は確認できませんでした
+357:				XInput 対応コントローラー No.3 をチェック
+358:				XInput 対応コントローラー No.3 の接続は確認できませんでした
+358:			XInput 対応コントローラーのチェック完了
+358:			DirectInput 対応ジョイパッドの列挙を開始します
+414:				DirectInput 対応入力装置を検出しました
+414:						Device Product GUID  : 2019056e,0000,0000,00,00,50,49,44,56,49,44
+414:						Device Instance GUID : f16eb350,5284,11f0,80,01,44,45,53,54,00,00
+415:					DirectInputDevice8 の作成... 成功
+416:					DirectInputDevice の情報を取得します... 成功
+417:						Device Product Name  : Controller (GP20X-Xinput)
+417:						Device Instance Name : Controller (GP20X-Xinput)
+417:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
+418:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
+418:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 一致
+732:				検出した DirectInput 対応入力装置の初期化を中断します
+764:			DirectInput 対応ジョイパッドの列挙終了
+764:		ジョイパッドの初期化は正常に終了しました
+764:		マウスデバイスの初期化... 初期化成功
+771:		キーボードデバイスの初期化... 初期化成功
+799:	DirectInput 関連の初期化は正常に終了しました
+804:	XAudio2 の初期化を行います
+808:		XAudio2_8.dll を使用します
+818:		XAudio2 インターフェースの取得と初期化を行います....  成功 Ver2.8
+999:	XAudio2 の初期化は正常に終了しました
+1026:	d3d11.dll の読み込み.... 成功
+1032:	dxgi.dll の読み込み.... 成功
+1033:	API CreateDXGIFactory2 のアドレスを取得します.... 成功
+1034:	IDXGIFactory2 を作成します.... 成功
+1125:	API CreateDXGIFactory6 のアドレスを取得します.... 成功
+1125:	IDXGIAdapter を列挙
+1127:		Adapter No.0 Desc:NVIDIA GeForce GTX 1080  VRAM:8059MB
+1128:			Output Device No.0 Name:\\.\DISPLAY1 ( 0, 0 )-( 1920, 1080 )
+1129:		Adapter No.1 Desc:Intel(R) UHD Graphics 630  VRAM:128MB
+1133:		Adapter No.2 Desc:Microsoft Basic Render Driver  VRAM:0MB
+1134:	API D3D11CreateDevice のアドレスを取得します.... 成功
+1145:	IDXGIAdapter を取得します.... 成功
+1153:	IDXGIAdapter1 を取得します.... 成功
+1155:	IDXGIAdapter2 を取得します.... 成功
+1161:	IDXGIAdapter3 を取得します.... 成功
+1176:	IDXGIAdapter4 を取得します.... 成功
+1180:	Direct3D 11 FeatureLevel 11_0 以上を対象とします
+1182:	ID3D11Device オブジェクトを取得します.... 成功
+1723:	IDXGIDevice1 を取得します.... 成功
+1724:	IDXGIDevice1->SetMaximunFrameLatency( 1 ); を実行しました
+1732:	[ウインドウモード 1280x720 ( 320, 167 )-( 1600, 887 )]
+1739:	IDXGISwapChain2 を作成します.... 成功
+1747:	IDXGIFactory2->CreateSwapChainForHwnd の戻り値：0x00000000
+1750:	IDXGIOutput を取得します.... 成功
+1764:	Graphics Device:NVIDIA GeForce GTX 1080
+1766:	画面のフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1767:	16bit Zバッファフォーマットは DXGI_FORMAT_D16_UNORM です
+1767:	24bit Zバッファフォーマットは DXGI_FORMAT_D24_UNORM_S8_UINT です
+1768:	32bit Zバッファフォーマットは DXGI_FORMAT_D32_FLOAT です
+1769:	16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
+1769:	32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
+1770:	アルファ付き 16bit カラーフォーマットは DXGI_FORMAT_B4G4R4A4_UNORM です
+1772:	アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1773:	アルファテスト用 16bit カラーフォーマットは DXGI_FORMAT_B5G5R5A1_UNORM です
+1776:	アルファテスト用 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1777:	ＤＸＴ１テクスチャフォーマットは DXGI_FORMAT_BC1_UNORM です
+1777:	ＤＸＴ２テクスチャフォーマットは使えません
+1778:	ＤＸＴ３テクスチャフォーマットは DXGI_FORMAT_BC2_UNORM です
+1778:	ＤＸＴ４テクスチャフォーマットは使えません
+1780:	ＤＸＴ５テクスチャフォーマットは DXGI_FORMAT_BC3_UNORM です
+1780:	BC7_UNORM テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM です
+1781:	BC7_UNORM_SRGB テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM_SRGB です
+1782:	ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
+1783:	ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
+1783:	ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
+1784:	１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
+1784:	１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
+1785:	１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
+1785:	１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
+1785:	２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
+1786:	２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
+1786:	２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
+1786:	２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
+1787:	描画用 16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
+1787:	描画用 32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
+1787:	描画用アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1788:	描画用 ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
+1788:	描画用 ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
+1789:	描画用 ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
+1790:	描画用１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
+1792:	描画用１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
+1793:	描画用１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
+1798:	描画用１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
+1801:	描画用２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
+1814:	描画用２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
+1815:	描画用２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
+1819:	描画用２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
+1821:	使用する機能レベル:D3D_FEATURE_LEVEL_11_1
+1823:	同時にレンダリングできるバッファの数:8
+1824:	最大テクスチャサイズ　幅:16384 高さ:16384
+1824:	標準描画用の頂点バッファの作成.... 成功
+1826:	シェーダーコード関係の初期化.... 成功
+2082:	各種シェーダー用定数バッファの作成.... 成功
+2107:	各種 ID3D11InputLayout の作成.... 成功
+2180:	画像の単純転送処理の初期化... 成功
+2192:	深度バッファを作成します.... 成功
+2212:	フォントの初期化を行います
+2221:	フォントの初期化は正常に終了しました
+2498:	文字コードバッファの初期化を行います... 完了しました
+2517:ＤＸライブラリの初期化処理終了
+2612:MV1CreateTextureColorBaseImage : Error 1
+
+2614:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+2615:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+2617:VMD Load Error : 対応していない VMD バージョンです
+
+4664:MV1CreateTextureColorBaseImage : Error 1
+
+4664:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+4665:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+4665:VMD Load Error : 対応していない VMD バージョンです
+
+5189:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerB.mv1
+5564:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerA.mv1
+98976:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerB.mv1
+99329:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerA.mv1
+99340:MV1CreateTextureColorBaseImage : Error 1
+
+99340:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+99340:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+99340:VMD Load Error : 対応していない VMD バージョンです
+
+100388:MV1CreateTextureColorBaseImage : Error 1
+
+100388:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+100389:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+100389:VMD Load Error : 対応していない VMD バージョンです
+
+100755:MV1CreateTextureColorBaseImage : Error 1
+
+100756:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+100756:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+100756:VMD Load Error : 対応していない VMD バージョンです
+
+114185:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerB.mv1
+114541:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerA.mv1
+114551:MV1CreateTextureColorBaseImage : Error 1
+
+114552:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+114552:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+114552:VMD Load Error : 対応していない VMD バージョンです
+
+115392:MV1CreateTextureColorBaseImage : Error 1
+
+115393:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+115393:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+115393:VMD Load Error : 対応していない VMD バージョンです
+
+115758:MV1CreateTextureColorBaseImage : Error 1
+
+115758:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+115758:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+115758:VMD Load Error : 対応していない VMD バージョンです
+
+159403:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerB.mv1
+159762:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerA.mv1
+159772:MV1CreateTextureColorBaseImage : Error 1
+
+159772:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+159772:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+159773:VMD Load Error : 対応していない VMD バージョンです
+
+160723:MV1CreateTextureColorBaseImage : Error 1
+
+160723:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+160723:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+160723:VMD Load Error : 対応していない VMD バージョンです
+
+161076:MV1CreateTextureColorBaseImage : Error 1
+
+161077:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+161077:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+161077:VMD Load Error : 対応していない VMD バージョンです
+
+296511:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerB.mv1
+296875:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerA.mv1
+296886:MV1CreateTextureColorBaseImage : Error 1
+
+296887:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+296887:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+296887:VMD Load Error : 対応していない VMD バージョンです
+
+297658:MV1CreateTextureColorBaseImage : Error 1
+
+297658:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+297659:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+297659:VMD Load Error : 対応していない VMD バージョンです
+
+298011:MV1CreateTextureColorBaseImage : Error 1
+
+298011:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+298012:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+298012:VMD Load Error : 対応していない VMD バージョンです
+
+309647:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerB.mv1
+310005:Model File Open Error : C:\Users\amg\goepon\Goepon\Game\Game\res\map\S_MarkerA.mv1
+310017:MV1CreateTextureColorBaseImage : Error 1
+
+310017:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+310017:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+310017:VMD Load Error : 対応していない VMD バージョンです
+
+310746:MV1CreateTextureColorBaseImage : Error 1
+
+310746:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+310747:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+310747:VMD Load Error : 対応していない VMD バージョンです
+
+311098:MV1CreateTextureColorBaseImage : Error 1
+
+311100:Load Texture Error : テクスチャ用の BASEIMAGE の作成に失敗しました
+
+311100:MV1 LoadModel Error : Txture Load Error : base_color_texture
+
+311100:VMD Load Error : 対応していない VMD バージョンです
+
+327617:ウインドウを閉じようとしています
+327625:ウインドウが破棄されようとしています
+327626:ソフトを終了する準備が整いました
+327736:フォントの初期化を行います
+327743:フォントの初期化は正常に終了しました
+327837:d3d11.dll の解放 1
+327837:dxgi.dll の解放 1
+327838:Direct3D11 のオブジェクト数を出力
+327838:Direct3D11 のオブジェクト合計数 : 0
+327843:DirectInput 関連の終了処理... 完了
+327846:サウンド関連の終了処理... 完了
+327895:ウィンドウ関連の終了処理... 完了
+327971:ＣＯＭを終了... 完了
+327972:
+327972:Alloc memory dump
+327972:	Total size:0(0.000kb)  Alloc num:0
+327972:

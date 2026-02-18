@@ -670,7 +670,7 @@ bool ModeGame::Process()
 				_playerTanuki->SetPos(prevActive->GetPos());
 				_playerTanuki->SetDir(prevActive->GetDir());
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				_playerTanuki->PlayAnimation("goepon_idle", true);
+				_playerTanuki->PlayAnimation("idle", true);
 				_playerTanuki->Process(); // 変身直後の1フレーム更新
 			}
 
