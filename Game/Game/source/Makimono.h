@@ -15,9 +15,10 @@ public:
 	bool IsVisible() const { return _isVisible; }
 	void SetVisible(bool isVisible) { _isVisible = isVisible; }
 
-	bool HaveMakimono() const { return haveMakimono; }
+	int HaveMakimono() const { return haveMakimono; }
+	void SetHaveMakimono(int have) { haveMakimono = have; }
 protected:
-	bool  haveMakimono;
+	int  haveMakimono;
 	bool  _isVisible;
 	float _drawSize;
 

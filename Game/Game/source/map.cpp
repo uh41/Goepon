@@ -44,7 +44,7 @@ bool Map::Initialize()
 	else if(MAP_SELECT == 2)
 	{
 		_sPath = "res/map/";
-		_sJsonFile = "marker0127_2.json";
+		_sJsonFile = "beta.json";
 		_sJsonObjectName = "stage";
 
 		_iFile.open(_sPath + _sJsonFile);
@@ -109,7 +109,7 @@ bool Map::Initialize()
 			if(pos.modelHandle >= 0)
 			{
 				// まずは想定名で検索
-				pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "Collision_01");
+				pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "collision");
 
 				// 見つからなければモデル内フレームを列挙して "Collision" を含むものを探す
 				if(pos.collisionFrame < 0)

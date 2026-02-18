@@ -177,7 +177,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "map0218.json";
+	std::string jsonFile = "markerbeta.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -513,6 +513,9 @@ bool ModeGame::Process()
 	{
 		playerBase = _player.get();
 	}
+
+	// ここで呼ぶ（playerBase が確定してから）
+	PlayerToMakimonoCollision(playerBase, _makimono);
 
 	if(playerBase && playerBase->IsAlive())
 	{

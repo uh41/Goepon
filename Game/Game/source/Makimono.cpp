@@ -13,6 +13,7 @@ bool Makimono::Initialize()
 	_isVisible = true;
 	_drawSize = 60.0f;
 	_playHandle = -1;
+	_fCollisionR = 45.0f;
 	return true;
 }
 

@@ -343,7 +343,7 @@ bool Enemy::Render()
 	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	MATRIX mScale = MGetScale(VGet(10.0f, 10.0f, 10.0f));
+	MATRIX mScale = MGetScale(VGet(7.0f, 7.0f, 7.0f));
 
 	MATRIX m = MGetIdent();
 	m = MMult(m, mRotY);
