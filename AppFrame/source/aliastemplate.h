@@ -34,6 +34,9 @@ namespace at
 	template<typename T, typename U>
 	using umtt = std::unordered_map<T, U>;	// アンオーダードマップとテンプレート(型)
 
+	template<typename T>
+	using ust = std::unordered_set<T>;			// アンオーダードセットとテンプレート(型)
+
 	template<typename T, typename U>
 	using umss = std::unordered_map<std::string, std::string>; // アンオーダードマップとストリングとストリング 
 

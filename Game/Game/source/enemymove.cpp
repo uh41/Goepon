@@ -347,6 +347,50 @@ void EnemyMove::OnDamageEnd()
 	}
 }
 
+void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
+{
+	// 追跡/プレイヤー検出中は音より優先（既存方針に合わせる）
+	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		return;
+	}
+
+	// レベルフィルタ（今のロジックに合わせて 5 のみ反応）
+	if(soundLevel != 5)
+	{
+		return;
+	}
+
+	// 巡回を止めて現在の巡回インデックスを保存
+	_savePatrolIndex = _patrolIndex;
+	_isPatroll = false;
+
+	// 巡回ターゲット座標を保存（復帰時に使う）
+	if(_patroll && _patroll->IsValid())
+	{
+		_savePoint = _patroll->GetTargetPoint();
+	}
+	else
+	{
+		_savePoint = _initialPosition;
+	}
+	_hasSavePoint = true;
+
+	// 音源へ向けて移動開始
+	_isMovingToSound = true;
+	_soundSourcePosition = soundPos;
+
+	// 音検知タイマー開始
+	_soundDetectionActive = true;
+	_soundDetectionTimer = 0.0f;
+
+	// 初期位置への帰還待機は中断
+	_waitingBeforeReturn = false;
+	_returnWaitTimer = 0.0f;
+
+	_waitingAtSound = false;
+}
+
 // 計算処理
 bool EnemyMove::Process()
 {

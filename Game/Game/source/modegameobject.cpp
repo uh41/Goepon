@@ -45,9 +45,9 @@ bool ModeGame::ObjectInitialize()
 	_object.emplace_back(_goal);
 
 	// ui初期化
-	_uiHp = std::make_shared<UiHp>();
-	_uiHp->SetPlayer(_player.get());
-	_uiBase.emplace_back(_uiHp);
+	//_uiHp = std::make_shared<UiHp>();
+	//_uiHp->SetPlayer(_player.get());
+	//_uiBase.emplace_back(_uiHp);
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
@@ -250,6 +250,11 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_changeTimeLimit = 20.0f; // 変身時間をリセット
 			_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
 			_changeBlinkVisible = true; // 点滅表示フラグリセット
+			auto s = gGlobal._soundServer->Get("1");
+			if(s && s->IsPlay())
+			{
+				s->Stop();
+			}
 			return true;
 		}
 	}
@@ -297,6 +302,11 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_changeTimeLimit = 10.0f;
 			_changeBlinkTimer = 0.0f;
 			_changeBlinkVisible = true;
+			auto s = gGlobal._soundServer->Get("1");
+			if(s && s->IsPlay())
+			{
+				s->Stop();
+			}
 			return true;
 		}
 	}
@@ -724,6 +734,9 @@ bool ModeGame::CheckAllDetections()
 	bool anyDetected = false;	// いずれかの敵が検知したかどうか
 	bool reEffect;				// エフェクト再設定フラグ
 
+	// Mono の「動いたか」を判定する閾値（ワールド単位）
+	constexpr float kMonoMoveDetectThreshold = 0.1f;
+
 	auto processContainer = [&](auto& container) -> bool
 		{
 			for(auto& item : container)
@@ -759,42 +772,72 @@ bool ModeGame::CheckAllDetections()
 				// 視覚検知判定
 				bool detected = false;
 
-				if (!isHumanForm)
+				// --- PlayerMono 表示時の特別処理 ---
+				if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+				{
+					// PlayerMono のときは「扇形内にいて、かつプレイヤーが動いた場合のみ」検知させる
+					if(sensor->IsPlayerInDetectionRange(player->GetPos()))
+					{
+						// プレイヤーの移動量をチェック（座標差だけでなく入力でも判定）
+						vec::Vec3 delta = vec3::VSub(player->GetPos(), player->GetOldPos());
+						float moved = vec3::VSize(delta);
+
+						// 入力ベクトルがあるか（アナログ/十字キー）を判定
+						bool inputMoving = (vec3::VSize(player->GetInputVector()) > 0.001f);
+
+						// 座標差が閾値超過、もしくは入力があるなら「動いた」とみなす
+						if(moved > kMonoMoveDetectThreshold || inputMoving)
+						{
+							detected = sensor->CheckPlayerDetection(player);
+						}
+						else
+						{
+							// 静止しているので検知しない（ただしセンサー追跡中は維持）
+							detected = false;
+						}
+					}
+					else
+					{
+						detected = false;
+					}
+				}
+				else if(!isHumanForm)
 				{
 					// 非人状態：既存の通常判定をそのまま使用
 					detected = sensor->CheckPlayerDetection(player);
 				}
 				else
 				{
-					// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
-					// 敵から見てプレイヤーが索敵範囲内か
-					if (sensor->IsPlayerInDetectionRange(player->GetPos()))
+					if(player != nullptr && sensor != nullptr)
 					{
-						// 敵がプレイヤーの「後方」にいるかチェック
-						vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
-						toEnemy.y = 0.0f;
-						if (vec3::VSize(toEnemy) > 0.0001f)
+						// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
+						if(sensor->IsPlayerInDetectionRange(player->GetPos()))
 						{
-							vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
-
-							vec::Vec3 playerForward = player->GetDir();
-							playerForward.y = 0.0f;
-							if (vec3::VSize(playerForward) > 0.0001f)
+							vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
+							toEnemy.y = 0.0f;
+							if(vec3::VSize(toEnemy) > 0.0001f)
 							{
-								playerForward = vec3::VNorm(playerForward);
+								vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
 
-								// 内積によって後方かどうかを判定
-								// playerForward と toEnemyNorm が一直線で逆向きなら内積 = -1
-								// threshold を 0 にすると、正面90度以外が後方扱いになる
-								const float backDotThreshold = 0.0f; //負の値が大きいほど範囲が狭くなる
-								float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
-								if (dot <= backDotThreshold)
+								vec::Vec3 playerForward = player->GetDir();
+								playerForward.y = 0.0f;
+								if(vec3::VSize(playerForward) > 0.0001f)
 								{
-									// 実際の検知処理（副作用：検出情報の更新など）
-									detected = sensor->CheckPlayerDetection(player);
+									playerForward = vec3::VNorm(playerForward);
+
+									const float backDotThreshold = 0.0f;
+									float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
+									if(dot <= backDotThreshold)
+									{
+										detected = sensor->CheckPlayerDetection(player);
+									}
 								}
 							}
 						}
+					}
+					else
+					{
+						detected = false;
 					}
 				}
 
@@ -802,20 +845,53 @@ bool ModeGame::CheckAllDetections()
 				if(detected)
 				{
 					anyDetected = true;
-					eb->OnPlayerDetected(player->GetPos());
-					_hatenaEffect->ResetEnemyEffect(eb);
-					_nakiEffect->PlayEffect(player->GetPos());
-
-					// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
-					if (isHumanForm)
+					if(player != nullptr) // NULLチェックを追加
 					{
-						// _playerTanuki が存在し、既にタヌキ表示でなければ切替
-						if (_playerTanuki && player != _playerTanuki.get())
+						eb->OnPlayerDetected(player->GetPos());
+						_hatenaEffect->ResetEnemyEffect(eb);
+						_nakiEffect->PlayEffect(player->GetPos());
+					}
+
+					// --- 追加: PlayerMono が検知されたら即時モノ->タヌキに切替 ---
+					if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+					{
+						if(_playerTanuki && player != _playerTanuki.get())
 						{
 							_showMonoPlayer = false;
 							_bShowTanuki = true;
 
-							// 位置・向きを引き継ぐ
+							_playerTanuki->SetPos(player->GetPos());
+							_playerTanuki->SetDir(player->GetDir());
+							_playerTanuki->_status = CharaBase::STATUS::WAIT;
+							_playerTanuki->PlayAnimation("goepon_idle", true);
+							_playerTanuki->Process();
+
+							_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+							_walkEffect->SetPlayerPos(_playerTanuki.get());
+							_aseEffect->SetPlayer(_playerTanuki.get());
+
+							// タイマー等リセット（モノ表示からの即時戻しは時間制限を扱わない）
+							_changeTimeActive = false;
+							_changeTimeLimit = 0.0f;
+							_changeBlinkTimer = 0.0f;
+							_changeBlinkVisible = true;
+
+							auto soundFinish = gGlobal._soundServer->Get("3");
+							if(soundFinish && !soundFinish->IsPlay())
+							{
+								soundFinish->Play();
+							}
+						}
+					}
+
+					// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
+					if(isHumanForm)
+					{
+						if(_playerTanuki && player != _playerTanuki.get())
+						{
+							_showMonoPlayer = false;
+							_bShowTanuki = true;
+
 							_playerTanuki->SetPos(player->GetPos());
 							_playerTanuki->SetDir(player->GetDir());
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
@@ -823,13 +899,18 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->Process();
 							reEffect = true;
 
-							// 変身エフェクト等を再設定
-							if (reEffect)
+							if(reEffect)
 							{
 								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 								_walkEffect->SetPlayerPos(_playerTanuki.get());
 								_aseEffect->SetPlayer(_playerTanuki.get());
 							}
+
+							_changeTimeActive = false;
+							_changeTimeLimit = 0.0f;
+							_changeBlinkTimer = 0.0f;
+							_changeBlinkVisible = true;
+
 							auto soundFinish = gGlobal._soundServer->Get("3");
 							if(soundFinish && !soundFinish->IsPlay())
 							{

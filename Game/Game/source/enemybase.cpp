@@ -11,6 +11,7 @@
 #include "enemysensor.h"
 #include "enemysoundsensor.h"
 #include "applicationglobal.h"
+#include "enemysoundmanager.h"
 
 // 初期化
 bool EnemyBase::Initialize()
@@ -377,6 +378,8 @@ void EnemyBase::UpdateDamageAnimation()
 				}
 			}
 
+			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 1000.0f, 50.0f); // ダメージ音を発生させる
+
 			if(!_attachAnimStan.empty())
 			{
 				_animId = PlayAnimation(_attachAnimStan, true);
@@ -426,7 +429,6 @@ void EnemyBase::UpdateDamageAnimation()
 			OnDamageEnd();
 		}
 	}
-
 }
 
 // 初期位置に戻る更新処理

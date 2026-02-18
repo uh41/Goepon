@@ -14,7 +14,7 @@ PlayerMono::~PlayerMono()
 bool PlayerMono::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::Kagurayaki);
+	_handle = MV1LoadModel(mv1::sigaraki);
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;
@@ -63,7 +63,7 @@ bool PlayerMono::PlayerMonoSoundMove()
 			}
 		}
 	}
-	return false;
+	return true;
 }
 
 bool PlayerMono::Process()
@@ -133,10 +133,7 @@ bool PlayerMono::Process()
 		_status = STATUS::WAIT;
 	}
 
-	if(_fPlayTime >= _fTotalTime)
-	{
-		_fPlayTime = 0.0f;
-	}
+	PlayerMonoSoundMove();
 
 	if(old_status != _status)
 	{
