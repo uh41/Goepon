@@ -46,8 +46,8 @@ bool ApplicationGlobal::Init()
 	{
 		_soundServer = std::make_shared<soundserver::SoundServer>();
 	}
-	_soundServer->Add("bgminitialize", std::make_shared<soundserver::SoundItemBGM>(mp3::shinobiashi));
-	_soundServer->Add("bgmChenge", std::make_shared<soundserver::SoundItemBGM>(wav::ks010));
+	_soundServer->Add("bgminitialize", std::make_shared<soundserver::SoundItemBGM>(mp3::BGM_stage_normal));
+	_soundServer->Add("bgmChenge", std::make_shared<soundserver::SoundItemBGM>(mp3::BGM_enemy_found));
 	_soundServer->Add("1", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_walk, soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("2", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_henshin_start));
 	_soundServer->Add("35", std::make_shared<soundserver::SoundItemSE>(mp3::bush_found));

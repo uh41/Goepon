@@ -111,7 +111,7 @@ bool ModeGame::Initialize()
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
-	//_bgmInitialize->Play();
+	_bgmInitialize->Play();
 
 	return true;
 }

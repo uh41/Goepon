@@ -85,9 +85,10 @@ namespace mv1
   inline constexpr const char* SK_goepon_multimotion_4 = "res/Tanuki/SK_goepon_multimotion_4.mv1";
   inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
-  inline constexpr const char* Kagurayaki = "res/tanumono/Kagurayaki.mv1";
-  inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
+  inline constexpr const char* Kagurayaki = "res/Tanumono/Kagurayaki.mv1";
+  inline constexpr const char* sigaraki = "res/Tanumono/sigaraki.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
+  inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
 }
 
 namespace ef
@@ -107,6 +108,8 @@ namespace ef
 
 namespace mp3
 {
+  inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
+  inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
   inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
