@@ -57,7 +57,7 @@ bool Map1::Initialize()
 			_mModelHandle[pos.name] = h;
 			if(h < 0)
 			{
-				DxLib::printfDx("Failed to load model: %s (path=%s)\n", pos.name.c_str(), filename.c_str());
+				//DxLib::printfDx("Failed to load model: %s (path=%s)\n", pos.name.c_str(), filename.c_str());
 			}
 		}
 		// 名前から使うモデルハンドル＆表示フレームを決める

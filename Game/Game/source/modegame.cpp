@@ -782,7 +782,7 @@ bool ModeGame::Render()
 	_objectServer->Render();
 
 	ObjectRender();// オブジェクト描画処理
-	DebugRender(); // デバック描画処理
+	//DebugRender(); // デバック描画処理
 
 	if(_d_view_collision)
 	{
