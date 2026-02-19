@@ -1,4 +1,5 @@
 #include "Map1.h"
+#include "applicationglobal.h"
 
 // 初期化
 bool Map1::Initialize()
@@ -8,119 +9,139 @@ bool Map1::Initialize()
 
 	// スカイスフィア読み込み
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
-	_sPath = "res/map/";
-	_sJsonFile = "beta.json";
-	_sJsonObjectName = "stage";
 
-	// JSONファイル読み込み
-	_iFile.open(_sPath + _sJsonFile);
-	nlohmann::json json;
-
-	_iFile >> json;
-
-	nlohmann::json stage = json.at(_sJsonObjectName);
-	for(auto& data : stage)
+	const ApplicationGlobal::MapData* map = gGlobal.GetMapData("Map1");
+	if(map)
 	{
-		mymath::BLOCKPOS pos;
+		_mModelHandle = map->modelHandle;
+		_vBlockPos = map->blockPos;
 
-		// 明示的に初期化しておく
-		pos.name.clear();
-		pos.x = pos.y = pos.z = 0.0f;
-		pos.rx = pos.ry = pos.rz = 0.0f;
-		pos.sx = pos.sy = pos.sz = 1.0f;
-		pos.modelHandle = -1;
-		pos.drawFrame = -1;
-		pos.collisionFrame = -1;
-
-		data.at("objectName").get_to(pos.name);
-		// UEは左手座標系/Zup →左手座標系/Yup に変換しつつ取得
-		data.at("translate").at("x").get_to(pos.x);
-		data.at("translate").at("z").get_to(pos.y);
-		data.at("translate").at("y").get_to(pos.z);
-		pos.z *= -1.0f;
-		data.at("rotate").at("x").get_to(pos.rx);
-		data.at("rotate").at("z").get_to(pos.ry);
-		data.at("rotate").at("y").get_to(pos.rz);
-		pos.rx = DEG2RAD(pos.rx);
-		pos.ry = DEG2RAD(pos.ry);
-		pos.rz = DEG2RAD(pos.rz);
-		data.at("scale").at("x").get_to(pos.sx);
-		data.at("scale").at("z").get_to(pos.sy);
-		data.at("scale").at("y").get_to(pos.sz);
-
-		// 名前のモデルがすでに読み込み済か？
-		if(_mModelHandle.count(pos.name) == 0)
+		// コリジョン情報の更新
+		for(auto& block : _vBlockPos)
 		{
-			// まだ読み込まれていない。読み込みを行う
-			std::string filename = _sPath + pos.name + ".mv1";
-			int h = MV1LoadModel(filename.c_str());
-			_mModelHandle[pos.name] = h;
-			if(h < 0)
+			if(block.modelHandle >= 0)
 			{
-				//DxLib::printfDx("Failed to load model: %s (path=%s)\n", pos.name.c_str(), filename.c_str());
+				MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+				MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+				MV1RefreshCollInfo(block.modelHandle, -1);
 			}
-		}
-		// 名前から使うモデルハンドル＆表示フレームを決める
-		if(_mModelHandle.count(pos.name) > 0)
-		{
-			pos.modelHandle = _mModelHandle[pos.name];
-			if(pos.modelHandle >= 0)
-			{
-				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
-			}
-		}
-
-		// Collision フレームは各ブロックごとに求めて保存（グローバル変数を上書きしない）
-		pos.collisionFrame = -1;
-		if(pos.modelHandle >= 0)
-		{
-			// まずは想定名で検索
-			pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "collision");
-
-			// 見つからなければモデル内フレームを列挙して "Collision" を含むものを探す
-			if(pos.collisionFrame < 0)
-			{
-				int frameNum = MV1GetFrameNum(pos.modelHandle);
-				//DxLib::printfDx("Model '%s' has %d frames\n", pos.name.c_str(), frameNum);
-				for(int fi = 0; fi < frameNum; ++fi)
-				{
-					const char* fname = MV1GetFrameName(pos.modelHandle, fi);
-					if(fname)
-					{
-						//DxLib::printfDx("  frame[%d] = %s\n", fi, fname);
-						std::string s(fname);
-						if(s.find("Collision") != std::string::npos || s.find("collision") != std::string::npos)
-						{
-							pos.collisionFrame = fi;
-							//DxLib::printfDx("  -> selected collision frame %d ('%s') for model '%s'\n", fi, fname, pos.name.c_str());
-							break;
-						}
-					}
-				}
-			}
-
-			// 見つかったらコリジョン情報を生成、見つからなければ警告
-			if(pos.collisionFrame >= 0)
-			{
-				MV1SetupCollInfo(pos.modelHandle, pos.collisionFrame, 16, 16, 16);
-				MV1SetFrameVisible(pos.modelHandle, pos.collisionFrame, FALSE);
-			}
-			else
-			{
-				//DxLib::printfDx("Warning: Collision frame not found for model '%s' (handle=%d)\n", pos.name.c_str(), pos.modelHandle);
-			}
-		}
-		else
-		{
-			//DxLib::printfDx("Warning: model handle invalid for '%s'\n", pos.name.c_str());
-		}
-
-		// データをコンテナに追加（モデル番号があれば）
-		if(pos.modelHandle != -1)
-		{
-			_vBlockPos.push_back(pos);
 		}
 	}
+
+	//_sPath = "res/map/";
+	//_sJsonFile = "beta.json";
+	//_sJsonObjectName = "stage";
+
+	//// JSONファイル読み込み
+	//_iFile.open(_sPath + _sJsonFile);
+	//nlohmann::json json;
+
+	//_iFile >> json;
+
+	//nlohmann::json stage = json.at(_sJsonObjectName);
+	//for(auto& data : stage)
+	//{
+	//	mymath::BLOCKPOS pos;
+
+	//	// 明示的に初期化しておく
+	//	pos.name.clear();
+	//	pos.x = pos.y = pos.z = 0.0f;
+	//	pos.rx = pos.ry = pos.rz = 0.0f;
+	//	pos.sx = pos.sy = pos.sz = 1.0f;
+	//	pos.modelHandle = -1;
+	//	pos.drawFrame = -1;
+	//	pos.collisionFrame = -1;
+
+	//	data.at("objectName").get_to(pos.name);
+	//	// UEは左手座標系/Zup →左手座標系/Yup に変換しつつ取得
+	//	data.at("translate").at("x").get_to(pos.x);
+	//	data.at("translate").at("z").get_to(pos.y);
+	//	data.at("translate").at("y").get_to(pos.z);
+	//	pos.z *= -1.0f;
+	//	data.at("rotate").at("x").get_to(pos.rx);
+	//	data.at("rotate").at("z").get_to(pos.ry);
+	//	data.at("rotate").at("y").get_to(pos.rz);
+	//	pos.rx = DEG2RAD(pos.rx);
+	//	pos.ry = DEG2RAD(pos.ry);
+	//	pos.rz = DEG2RAD(pos.rz);
+	//	data.at("scale").at("x").get_to(pos.sx);
+	//	data.at("scale").at("z").get_to(pos.sy);
+	//	data.at("scale").at("y").get_to(pos.sz);
+
+	//	// 名前のモデルがすでに読み込み済か？
+	//	if(_mModelHandle.count(pos.name) == 0)
+	//	{
+	//		// まだ読み込まれていない。読み込みを行う
+	//		std::string filename = _sPath + pos.name + ".mv1";
+	//		int h = MV1LoadModel(filename.c_str());
+	//		_mModelHandle[pos.name] = h;
+	//		if(h < 0)
+	//		{
+	//			//DxLib::printfDx("Failed to load model: %s (path=%s)\n", pos.name.c_str(), filename.c_str());
+	//		}
+	//	}
+	//	// 名前から使うモデルハンドル＆表示フレームを決める
+	//	if(_mModelHandle.count(pos.name) > 0)
+	//	{
+	//		pos.modelHandle = _mModelHandle[pos.name];
+	//		if(pos.modelHandle >= 0)
+	//		{
+	//			pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
+	//		}
+	//	}
+
+	//	// Collision フレームは各ブロックごとに求めて保存（グローバル変数を上書きしない）
+	//	pos.collisionFrame = -1;
+	//	if(pos.modelHandle >= 0)
+	//	{
+	//		// まずは想定名で検索
+	//		pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "collision");
+
+	//		// 見つからなければモデル内フレームを列挙して "Collision" を含むものを探す
+	//		if(pos.collisionFrame < 0)
+	//		{
+	//			int frameNum = MV1GetFrameNum(pos.modelHandle);
+	//			//DxLib::printfDx("Model '%s' has %d frames\n", pos.name.c_str(), frameNum);
+	//			for(int fi = 0; fi < frameNum; ++fi)
+	//			{
+	//				const char* fname = MV1GetFrameName(pos.modelHandle, fi);
+	//				if(fname)
+	//				{
+	//					//DxLib::printfDx("  frame[%d] = %s\n", fi, fname);
+	//					std::string s(fname);
+	//					if(s.find("Collision") != std::string::npos || s.find("collision") != std::string::npos)
+	//					{
+	//						pos.collisionFrame = fi;
+	//						//DxLib::printfDx("  -> selected collision frame %d ('%s') for model '%s'\n", fi, fname, pos.name.c_str());
+	//						break;
+	//					}
+	//				}
+	//			}
+	//		}
+
+	//		// 見つかったらコリジョン情報を生成、見つからなければ警告
+	//		if(pos.collisionFrame >= 0)
+	//		{
+	//			MV1SetupCollInfo(pos.modelHandle, pos.collisionFrame, 16, 16, 16);
+	//			MV1SetFrameVisible(pos.modelHandle, pos.collisionFrame, FALSE);
+	//		}
+	//		else
+	//		{
+	//			//DxLib::printfDx("Warning: Collision frame not found for model '%s' (handle=%d)\n", pos.name.c_str(), pos.modelHandle);
+	//		}
+	//	}
+	//	else
+	//	{
+	//		//DxLib::printfDx("Warning: model handle invalid for '%s'\n", pos.name.c_str());
+	//	}
+
+	//	// データをコンテナに追加（モデル番号があれば）
+	//	if(pos.modelHandle != -1)
+	//	{
+	//		_vBlockPos.push_back(pos);
+	//	}
+	//}
 
 	_ground_handle = LoadGraph(img::BG_stone);
 	// 以降の初期化（省略せず元の処理を入れてください）
