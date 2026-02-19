@@ -654,17 +654,17 @@ bool EnemyMove::Process()
 		_fPlayTime = 0.0f;
 	}
 
-	// YouDiedメッセージのタイマー更新
-	if(_showYouDiedMessage)
-	{
-		_youDiedMessageTimer -= 1.0f / 60.0f;
+	//// YouDiedメッセージのタイマー更新
+	//if(_showYouDiedMessage)
+	//{
+	//	_youDiedMessageTimer -= 1.0f / 60.0f;
 
-		// タイマーが0以下になったらメッセージ非表示
-		if(_youDiedMessageTimer <= 0.0f)
-		{
-			_showYouDiedMessage = false;
-		}
-	}
+	//	// タイマーが0以下になったらメッセージ非表示
+	//	if(_youDiedMessageTimer <= 0.0f)
+	//	{
+	//		_showYouDiedMessage = false;
+	//	}
+	//}
 
 //	// 定期的に方向を90度変える処理
 //	DirChangeTimer -= 1.0f / 60.0f;

@@ -285,15 +285,15 @@ bool Enemy::Process()
 	}
 	// --- アニメーション管理ここまで ---
 
-	// YouDied メッセージ時間更新（共通フラグ利用）
-	if(_showYouDiedMessage)
-	{
-		_youDiedMessageTimer -= 1.0f / 60.0f;
-		if(_youDiedMessageTimer <= 0.0f)
-		{
-			_showYouDiedMessage = false;
-		}
-	}
+	//// YouDied メッセージ時間更新（共通フラグ利用）
+	//if(_showYouDiedMessage)
+	//{
+	//	_youDiedMessageTimer -= 1.0f / 60.0f;
+	//	if(_youDiedMessageTimer <= 0.0f)
+	//	{
+	//		_showYouDiedMessage = false;
+	//	}
+	//}
 
 	return true;
 }

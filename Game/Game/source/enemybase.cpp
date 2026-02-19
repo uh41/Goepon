@@ -941,9 +941,9 @@ void EnemyBase::RenderDamageTime()
 	// フォントサイズを設定（必要に応じて変更可）
 	SetFontSize(16);
 	
-	// 画面左上に表示（位置は調整可）
-	DrawFormatString(10, 40, GetColor(255, 200, 0),
-	"STAN残り時間: %.1f", _stanTimer);
+	//// 画面左上に表示（位置は調整可）
+	//DrawFormatString(10, 40, GetColor(255, 200, 0),
+	//"STAN残り時間: %.1f", _stanTimer);
 }
 
 static vec::Vec3 DirIdToVec3(int id)
