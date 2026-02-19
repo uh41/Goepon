@@ -1,5 +1,6 @@
 #pragma once
 #include "MapBase.h"
+
 class Map1 : public MapBase
 {
 	typedef	MapBase base;

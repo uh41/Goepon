@@ -19,6 +19,8 @@ ApplicationGlobal gGlobal;
 ApplicationGlobal::ApplicationGlobal()
 {
 	_iCgCursor = -1;
+	_isLoading = false;
+	_loadProgress = 0;
 }
 
 // デストラクタ
@@ -28,11 +30,203 @@ ApplicationGlobal::~ApplicationGlobal()
 	// 何もしない
 }
 
+bool ApplicationGlobal::LoadMapData(const std::string& mapName, const std::string& jsonFileName, const std::string& jsonObjectName)
+{
+	std::string path = "res/map/";
+
+	std::ifstream ifs(path + jsonFileName);
+	if (!ifs.is_open())
+	{
+		return false; // ファイルが開けない場合はfalseを返す
+	}
+
+	nlohmann::json json;
+
+	ifs >> json;
+	ifs.close();
+
+	MapData map;
+
+	nlohmann::json stage = json.at(jsonObjectName);
+	for(auto&& data : stage)
+	{
+		mymath::BLOCKPOS pos;
+
+
+		// 明示的に初期化しておく
+		pos.name.clear();
+		pos.x = pos.y = pos.z = 0.0f;
+		pos.rx = pos.ry = pos.rz = 0.0f;
+		pos.sx = pos.sy = pos.sz = 1.0f;
+		pos.modelHandle = -1;
+		pos.drawFrame = -1;
+		pos.collisionFrame = -1;
+
+		data.at("objectName").get_to(pos.name);
+		// UEは左手座標系/Zup →左手座標系/Yup に変換しつつ取得
+		data.at("translate").at("x").get_to(pos.x);
+		data.at("translate").at("z").get_to(pos.y);
+		data.at("translate").at("y").get_to(pos.z);
+		pos.z *= -1.0f;
+		data.at("rotate").at("x").get_to(pos.rx);
+		data.at("rotate").at("z").get_to(pos.ry);
+		data.at("rotate").at("y").get_to(pos.rz);
+		pos.rx = DEG2RAD(pos.rx);
+		pos.ry = DEG2RAD(pos.ry);
+		pos.rz = DEG2RAD(pos.rz);
+		data.at("scale").at("x").get_to(pos.sx);
+		data.at("scale").at("z").get_to(pos.sy);
+		data.at("scale").at("y").get_to(pos.sz);
+
+		// 名前のモデルがすでに読み込み済か？
+		if(map.modelHandle.count(pos.name) == 0)
+		{
+			// まだ読み込まれていない。読み込みを行う
+			std::string filename = path + pos.name + ".mv1";
+			int h = MV1LoadModel(filename.c_str());
+			map.modelHandle[pos.name] = h;
+		}
+
+		// 名前から使うモデルハンドル＆表示フレームを決める
+		if(map.modelHandle.count(pos.name) > 0)
+		{
+			pos.modelHandle = map.modelHandle[pos.name];
+			if(pos.modelHandle >= 0)
+			{
+				pos.drawFrame = MV1SearchFrame(pos.modelHandle, pos.name.c_str());
+			}
+		}
+
+		// Collision フレームは各ブロックごとに求めて保存
+		pos.collisionFrame = -1;
+		if(pos.modelHandle >= 0)
+		{
+			// まずは想定名で検索
+			pos.collisionFrame = MV1SearchFrame(pos.modelHandle, "collision");
+
+			// 見つからなければモデル内フレームを列挙して "Collision" を含むものを探す
+			if(pos.collisionFrame < 0)
+			{
+				int frameNum = MV1GetFrameNum(pos.modelHandle);
+				for(int fi = 0; fi < frameNum; ++fi)
+				{
+					const char* fname = MV1GetFrameName(pos.modelHandle, fi);
+					if(fname)
+					{
+						std::string s(fname);
+						if(s.find("Collision") != std::string::npos || s.find("collision") != std::string::npos)
+						{
+							pos.collisionFrame = fi;
+							break;
+						}
+					}
+				}
+			}
+
+			// 見つかったらコリジョン情報を生成
+			if(pos.collisionFrame >= 0)
+			{
+				MV1SetupCollInfo(pos.modelHandle, pos.collisionFrame, 16, 16, 16);
+				MV1SetFrameVisible(pos.modelHandle, pos.collisionFrame, FALSE);
+			}
+		}
+
+		// データをコンテナに追加（モデル番号があれば）
+		if(pos.modelHandle != -1)
+		{
+			map.blockPos.push_back(pos);
+		}
+	}
+
+
+	// マップデータを保存
+	_mapData[mapName] = map;
+
+	return true; // 成功した場合はtrueを返す
+}
+
+bool ApplicationGlobal::LoadStageData(const std::string& stageName, const std::string& jsonFileName, const std::string& jsonObjectName)
+{
+	std::string path = "res/map/";
+
+	std::ifstream ifs(path + jsonFileName);
+	if(!ifs.is_open())
+	{
+		return false;
+	}
+
+	nlohmann::json jsonData;
+	ifs >> jsonData;
+	ifs.close();
+
+	nlohmann::json stage = jsonData.at(jsonObjectName);
+
+	StageData stageData;
+
+	// 全オブジェクトを保存
+	for(auto& object : stage)
+	{
+		StageObjectData objData;
+		objData.objectName = object.at("objectName");
+		objData.json = object;
+
+		// S_MarkerR（巡回点）をグループ化
+		if(objData.objectName == "S_MarkerR")
+		{
+			vec::Vec3 pos;
+			object.at("translate").at("x").get_to(pos.x);
+			object.at("translate").at("y").get_to(pos.z); // UE:y -> DXLib:z
+			object.at("translate").at("z").get_to(pos.y); // UE:z -> DXLib:y
+			pos.z *= -1.0f;
+
+			std::string gid = "";
+			if(object.contains("customId"))
+			{
+				object.at("customId").get_to(gid);
+			}
+			stageData.patrolGroup[gid].push_back(pos);
+		}
+
+		stageData.object.push_back(objData);
+	}
+
+	// ステージデータを保存
+	_stageData[stageName] = stageData;
+	return true;
+}
+
+const ApplicationGlobal::MapData* ApplicationGlobal::GetMapData(const std::string& mapName)
+{
+	auto it = _mapData.find(mapName);
+	if(it != _mapData.end())
+	{
+		return &(it->second);
+	}
+	return nullptr; // 見つからない場合はnullptrを返す
+}
+
+const ApplicationGlobal::StageData* ApplicationGlobal::GetStageData(const std::string& stageName)
+{
+	auto it = _stageData.find(stageName);
+	if(it != _stageData.end())
+	{
+		return &(it->second);
+	}
+	return nullptr; // 見つからない場合はnullptrを返す
+}
+
 // 初期化
 bool ApplicationGlobal::Init()
 {
+	_isLoading = true;
+	_loadProgress = 0;
+
 	SetUseASyncLoadFlag(TRUE);
 	_iCgCursor = LoadGraph("res/cursor.png");
+
+	LoadMapData("Map1", "beta.json", "stage");// 1ステージ目
+	LoadStageData("Stage1", "markerbeta2.json", "stage");// 1ステージ目
+
 	// キャラクター関連モデル読み込み
 	ResourceServer::MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
 	ResourceServer::MV1LoadModel(mv1::SK_goepon_multimotion_4);
@@ -51,7 +245,6 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel(mv1::tuzura_02);
 	ResourceServer::MV1LoadModel(mv1::Goal);
 
-	
 
 	if(!_soundServer)
 	{
@@ -78,7 +271,33 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
-	SetUseASyncLoadFlag(FALSE);
+
 
 	return true;
+}
+
+void ApplicationGlobal::UpdateLoadProgress()
+{
+	if(_isLoading)
+	{
+		if(GetASyncLoadNum() == 0)
+		{
+			_loadProgress = 100;
+			_isLoading = false;
+			SetUseASyncLoadFlag(FALSE);
+		}
+		else
+		{
+			int maxLoadNum = 0;
+			if(GetASyncLoadNum() > maxLoadNum)
+			{
+				maxLoadNum = GetASyncLoadNum();
+			}
+
+			if(maxLoadNum > 0)
+			{
+				_loadProgress = (int)(((float)(maxLoadNum - GetASyncLoadNum()) / (float)maxLoadNum) * 100.0f);
+			}
+		}
+	}
 }

@@ -57,6 +57,7 @@
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\UiMakimono.cpp" />
     <ClCompile Include="source\enemysoundmanager.cpp" />
+    <ClCompile Include="source\modeloading.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -112,6 +113,7 @@
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\UiMakimono.h" />
     <ClInclude Include="source\enemysoundmanager.h" />
+    <ClInclude Include="source\modeloading.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
