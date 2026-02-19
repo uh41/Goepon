@@ -746,23 +746,46 @@ bool ModeGame::ObjectRender()
 
 bool ModeGame::ChangeBGM()
 {
+	// 全ての敵の追跡状態をチェック
 	bool isChase = false;
-	if(_enemySensor)
+	for(auto& enemy : _enemyBase)
 	{
-		isChase = _enemySensor->IsChasing();
+		if(!enemy || !enemy->IsAlive())
+		{
+			continue;
+		}
+
+		// 各敵のセンサーが追跡中かチェック
+		if(enemy->GetEnemySensor() && enemy->GetEnemySensor()->IsChasing())
+		{
+			isChase = true;
+			break; // 1体でも追跡中ならBGM切り替え
+		}
 	}
 
 	// BGMチェンジ処理
 	if(!_isChengeBgm && isChase)
 	{
-		_bgmInitialize->Stop();
-		_bgmChenge->Play();
+		if(_bgmInitialize && _bgmInitialize->IsPlay())
+		{
+			_bgmInitialize->Stop();
+		}
+		if(_bgmChenge && !_bgmChenge->IsPlay())
+		{
+			_bgmChenge->Play();
+		}
 		_isChengeBgm = true;
 	}
 	else if(_isChengeBgm && !isChase)
 	{
-		_bgmChenge->Stop();
-		_bgmInitialize->Play();
+		if(_bgmChenge && _bgmChenge->IsPlay())
+		{
+			_bgmChenge->Stop();
+		}
+		if(_bgmInitialize && !_bgmInitialize->IsPlay())
+		{
+			_bgmInitialize->Play();
+		}
 		_isChengeBgm = false;
 	}
 
