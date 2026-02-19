@@ -34,13 +34,24 @@ bool ApplicationGlobal::Init()
 	SetUseASyncLoadFlag(TRUE);
 	_iCgCursor = LoadGraph("res/cursor.png");
 	// キャラクター関連モデル読み込み
-	ResourceServer::MV1LoadModel("res/Tanuhuman/SK_tanuhuman_multimotion_02.mv1");
-	ResourceServer::MV1LoadModel("res/Tanuki/SK_goepon_multimotion_4.mv1");
-	ResourceServer::MV1LoadModel("res/PoorEnemyMelee/busi_multimotion.mv1");
-	// マップ関連モデル読み込み
-	ResourceServer::MV1LoadModel("res/SkySphere/skysphere.mv1");
-	ResourceServer::MV1LoadModel("res/Ground/Ground.mv1");
-	ResourceServer::MV1LoadModel("res/map/SM_stagebeta.mv1");
+	ResourceServer::MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
+	ResourceServer::MV1LoadModel(mv1::SK_goepon_multimotion_4);
+	ResourceServer::MV1LoadModel(mv1::sigaraki);
+	ResourceServer::MV1LoadModel(mv1::busi_multimotion);
+	ResourceServer::MV1LoadModel(mv1::SK_Dog);
+
+								 	 
+	// マップ関連モデル読み込み	  	 
+	ResourceServer::MV1LoadModel(mv1::skysphere);
+	ResourceServer::MV1LoadModel(mv1::Ground);
+	ResourceServer::MV1LoadModel(mv1::fusama);
+	ResourceServer::MV1LoadModel(mv1::SM_stagebeta);
+
+	// その他
+	ResourceServer::MV1LoadModel(mv1::tuzura_02);
+	ResourceServer::MV1LoadModel(mv1::Goal);
+
+	
 
 	if(!_soundServer)
 	{
