@@ -238,7 +238,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 
 			// たぬ人間変身時の処理
 			_changeTimeActive = true;// 時間制言を有効化
-			_changeTimeLimit = 20.0f; // 変身時間をリセット
+			_changeTimeLimit = 17.0f; // 変身時間をリセット
 			_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
 			_changeBlinkVisible = true; // 点滅表示フラグリセット
 			auto s = gGlobal._soundServer->Get("1");
@@ -277,7 +277,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 
 			// たぬモノ変身時の処理
 			_changeTimeActive = true;
-			_changeTimeLimit = 10.0f;
+			_changeTimeLimit = 12.0f;
 			_changeBlinkTimer = 0.0f;
 			_changeBlinkVisible = true;
 			auto s = gGlobal._soundServer->Get("1");

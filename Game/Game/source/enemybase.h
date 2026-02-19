@@ -163,7 +163,7 @@ protected:
 	bool _isInvincible;	// 無敵状態かどうか
 	float _stanTimer; // スタン時間
 	int _attachStage; // ダメージ後のアニメーション名
-	static constexpr float STAN_DURATION = 60.0f; // スタン時間
+	static constexpr float STAN_DURATION = 15.0f; // スタン時間
 
 	// アニメーション名
 	std::string _attachAnimDamage;// ダメージアニメーション名

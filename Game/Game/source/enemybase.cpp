@@ -394,7 +394,7 @@ void EnemyBase::UpdateDamageAnimation()
 				damageSound->Play();
 			}
 
-			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 1000.0f, 50.0f); // ダメージ音を発生させる
+			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 300.0f, 50.0f); // ダメージ音を発生させる
 
 			if(!_attachAnimStan.empty())
 			{

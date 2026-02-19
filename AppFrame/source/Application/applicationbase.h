@@ -27,8 +27,8 @@ public:
 	virtual bool BeforeDXLib_Init() { return true; }
 
 	virtual bool AppWindowed() { return true; }
-	virtual int DispSizeW() { return 640; }
-	virtual int DispSizeH() { return 480; }
+	virtual int DispSizeW() { return 1920; }
+	virtual int DispSizeH() { return 1080; }
 
 	static	ApplicationBase	*GetInstance() { return _lp_instance; }
 	virtual int GetKey() { return _gKey; }
