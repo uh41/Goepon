@@ -22,7 +22,7 @@ public:
 protected:
 	Camera* _cam;
 	// マップ用
-
+	std::string _mapName;
 
 	// シャドウマップ用
 

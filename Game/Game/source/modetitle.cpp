@@ -1,5 +1,5 @@
 #include "modetitle.h"
-#include "modeopscenario.h"
+#include "modeloading.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -84,7 +84,7 @@ bool ModeTitle::Process()
 	case ModeBase::State::DONE:
 		
 		// ŽŸ‚Ìƒ‚[ƒh‚ÖˆÚs
-		ModeServer::GetInstance()->Add(NEW ModeOpScenario(), 1, "opscenario");
+		ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
 		ModeServer::GetInstance()->Del(this);
 		break;
 	}

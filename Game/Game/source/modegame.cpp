@@ -27,6 +27,9 @@
 // 初期化
 bool ModeGame::Initialize()
 {
+	// **ロード時間計測開始**
+	const LONGLONG startTime = GetNowHiPerformanceCount();
+
 	if(!base::Initialize()) { return false; }
 
 	ObjectInitialize();	// オブジェクト初期化
@@ -113,6 +116,10 @@ bool ModeGame::Initialize()
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
 
+	// **ロード時間計測終了**
+	const LONGLONG endTime = GetNowHiPerformanceCount();
+	_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
+
 	return true;
 }
 
@@ -176,42 +183,36 @@ bool ModeGame::Terminate()
 
 bool ModeGame::LoadStageData()
 {
-	std::string path = "res/map/";
-	std::string jsonFile = "markerbeta2.json";
-	std::string jsonObjectName = "stage";
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
+	if(stageData == nullptr)
+	{
+		return false;
+	}
 
-	std::ifstream ifs(path + jsonFile);
-	nlohmann::json jsonData;
-	ifs >> jsonData;
-	nlohmann::json stage = jsonData.at(jsonObjectName);
+	const auto& patrolGroup = stageData->patrolGroup;
+	const auto& objectList = stageData->object;
 
-	// customId（文字列）ごとの巡回点リストを保持
-	std::unordered_map<std::string, at::vet<vec::Vec3>> patrolGroups;
+	// **最適化: メモリ予約で再割り当てを削減**
+	const size_t objCount = objectList.size();
+	_enemyBase.reserve(objCount / 4);
+	_treasure.reserve(objCount / 8);
+	_makimono.reserve(objCount / 8);
 
 	// 敵の JSON を一時保存して後で巡回グループを割り当てる
 	std::vector<nlohmann::json> enemyObjects;
+	enemyObjects.reserve(objCount / 4);
 
-	uint32_t nextEnemyId = 1; // 敵IDのカウンタ（1からスタート）
+	uint32_t nextEnemyId = 1;
 
-	for(auto& object : stage)
+	// **修正: 二重ループを削除し、1回のループで全オブジェクトを処理**
+	for(auto&& objData : stageData->object)
 	{
-		const std::string& name = object.at("objectName");
+		const std::string& name = objData.objectName;
+		const nlohmann::json& object = objData.json;
 
-		// ★ S_MarkerR を検出 — customId でグループ化
+		// S_MarkerRは既にpatrolGroupsに格納済みなのでスキップ
 		if(name == "S_MarkerR")
 		{
-			vec::Vec3 pos;
-			object.at("translate").at("x").get_to(pos.x);
-			object.at("translate").at("y").get_to(pos.z); // UE:y -> DXLib:z
-			object.at("translate").at("z").get_to(pos.y); // UE:z -> DXLib:y
-			pos.z *= -1.0f;
-
-			std::string gid = "";
-			if(object.contains("customId"))
-			{
-				object.at("customId").get_to(gid);
-			}
-			patrolGroups[gid].push_back(pos);
 			continue;
 		}
 
@@ -221,7 +222,7 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
+		// 敵は一旦保留（後でcustomIdに対応した巡回点を割り当てる）
 		if(name == "S_MarkerB" || name == "S_MarkerRX" || name == "Dog")
 		{
 			enemyObjects.push_back(object);
@@ -234,12 +235,11 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-
 		if(name == "Treasure")
 		{
 			auto treasure = std::make_shared<Treasure>();
-			treasure->Initialize();          // モデル読み込み・当たり判定フレーム設定
-			treasure->SetJsonDataUE(object); // UE座標/回転を反映
+			treasure->Initialize();
+			treasure->SetJsonDataUE(object);
 			_treasure.emplace_back(treasure);
 			continue;
 		}
@@ -247,31 +247,37 @@ bool ModeGame::LoadStageData()
 		if(name == "Item")
 		{
 			auto makimono = std::make_shared<Makimono>();
-			makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
-			makimono->SetJsonDataUE(object); // UE座標/回転を反映
+			makimono->Initialize();
+			makimono->SetJsonDataUE(object);
 			makimono->SetCamera(_camera);
 			_makimono.emplace_back(makimono);
 			continue;
 		}
 	}
 
-	// 敵を生成して、customId にマッチする巡回点を割り当てる
-	for(auto& object : enemyObjects)
+	// **最適化: センサー生成を共通化するヘルパー関数**
+	auto* mapPtr = _objectServer->GetMap();
+	auto createSensors = [mapPtr](float soundArea) -> std::pair<std::shared_ptr<EnemySensor>, std::shared_ptr<EnemySoundSensor>>
 	{
-		// センサー類の生成
 		auto sensor = std::make_shared<EnemySensor>();
 		sensor->Initialize();
-		sensor->SetMap(_objectServer->GetMap());
+		sensor->SetMap(mapPtr);
 
 		auto soundSensor = std::make_shared<EnemySoundSensor>();
 		soundSensor->Initialize();
-		soundSensor->SetMap(_objectServer->GetMap());
-		soundSensor->SetSoundSensorArea(300.0f);
+		soundSensor->SetMap(mapPtr);
+		soundSensor->SetSoundSensorArea(soundArea);
 
+		return {sensor, soundSensor};
+	};
+
+	// 敵を生成して、customIdにマッチする巡回点を割り当てる
+	for(auto& object : enemyObjects)
+	{
 		const std::string& name = object.at("objectName");
 
-		// customId を取得（無ければ空文字 "" を使う）
-		std::string gid = "";
+		// customIdを取得（無ければ空文字""を使う）
+		std::string gid;
 		if(object.contains("customId"))
 		{
 			object.at("customId").get_to(gid);
@@ -279,6 +285,8 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerRX")
 		{
+			auto [sensor, soundSensor] = createSensors(300.0f);
+
 			auto enemy = std::make_shared<Enemy>();
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
@@ -295,21 +303,11 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
+			auto [sensor, soundSensor] = createSensors(300.0f);
+
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
-
-			auto sensor = std::make_shared<EnemySensor>();
-			sensor->Initialize();
-			sensor->SetMap(_objectServer->GetMap());
-			//enemy->SetEnemySensor(sensor);
-			enemyMove->SetEnemySensor(sensor);
-
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(_objectServer->GetMap());
-			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
-			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEnemySensor(sensor);
 			enemyMove->SetEnemySoundSensor(soundSensor);
 			soundSensor->SetPos(enemyMove->GetPos());
@@ -318,44 +316,36 @@ bool ModeGame::LoadStageData()
 			enemyMove->SetDirSequenceFromJson(object);
 
 			// グループに対応する巡回点があれば割り当てる
-			auto it = patrolGroups.find(gid);
-			if(it != patrolGroups.end() && !it->second.empty())
+			auto it = patrolGroup.find(gid);
+			if(it != patrolGroup.end() && !it->second.empty())
 			{
 				enemyMove->SetPatrolPoint(it->second);
 				enemyMove->CaptureInitialTransform();
 			}
 
-			_enemyBase.emplace_back(enemyMove);
+			_enemyBase.emplace_back(std::move(enemyMove));
+			continue;
 		}
 
 		if(name == "Dog")
 		{
+			auto [sensor, soundSensor] = createSensors(900.0f);
+
 			auto enemyDog = std::make_shared<EnemyDog>();
 			enemyDog->Initialize();
 			enemyDog->SetJsonDataUE(object);
-
-			auto sensor = std::make_shared<EnemySensor>();
-			sensor->Initialize();
-			sensor->SetMap(_objectServer->GetMap());
-			enemyDog->SetEnemySensor(sensor);
-
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(_objectServer->GetMap());
-			soundSensor->SetSoundSensorArea(900.0f);
-			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEnemySensor(sensor);
 			enemyDog->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEffect(_hensinEffect);
+			enemyDog->SetEnemyId(nextEnemyId++);
 
-			enemyDog->SetEnemyId(nextEnemyId++); // ★追加：敵IDを必ず付与
-
-			_enemyBase.emplace_back(enemyDog);
+			_enemyBase.emplace_back(std::move(enemyDog));
 		}
 	}
 
 	// 互換のため全敵に初期トランスフォームを確実にキャプチャ
-	for(auto& enemy : _enemyBase)
+	for(auto&& enemy : _enemyBase)
 	{
 		if(enemy) enemy->CaptureInitialTransform();
 	}
@@ -398,6 +388,9 @@ bool ModeGame::Process()
 {
 	base::Process();
 
+	// **処理全体の時間計測開始**
+	const LONGLONG totalStartTime = GetNowHiPerformanceCount();
+
 	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
 	if (_requestResetStage)
 	{
@@ -409,18 +402,30 @@ bool ModeGame::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
+	// カメラ処理
+	LONGLONG startTime = GetNowHiPerformanceCount();
 	_camera->Process();
+	_processCameraMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	DebugProcess();
 	DebugCameraControl();
 
 	//_soundServer->Update();
+	// アニメーション処理
+	startTime = GetNowHiPerformanceCount();
 	AnimationManager::GetInstance()->Update(1.0f);
-	// Effekseer 更新
-	EffekseerManager::GetInstance()->Update();
+	_processAnimationMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
+	// Effekseer 更新
+	startTime = GetNowHiPerformanceCount();
+	EffekseerManager::GetInstance()->Update();
+	_processEffekseerMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
+
+	// 敵サウンド処理
+	startTime = GetNowHiPerformanceCount();
 	EnemySoundManager::GetInstance()->Update(1.0f/60.0f);
 
+	// 敵の音検出処理
 	for(auto& e : _enemyBase)
 	{
 		if(!e || !e->IsAlive())
@@ -442,11 +447,16 @@ bool ModeGame::Process()
 			}
 		}
 	}
+	_processEnemySoundMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
+	// オブジェクトサーバー処理
+	startTime = GetNowHiPerformanceCount();
 	_objectServer->ProcessInit(); // 追加・削除予約の確定
 	_objectServer->Process();
+	_processObjectServerMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// 3Dサウンドリスナー位置の設定（毎フレーム更新）
+	startTime = GetNowHiPerformanceCount();
 	PlayerBase* activePlayer = nullptr;
 	if(_bShowTanuki)
 	{
@@ -470,20 +480,31 @@ bool ModeGame::Process()
 			DxlibConverter::VecToDxLib(listenerFront)
 		);
 	}
+	_processSoundListenerMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
-	PlayerTransform(); // プレイヤー変身処理
-	ObjectProcess();   // オブジェクト処理
+	// プレイヤー変身処理
+	startTime = GetNowHiPerformanceCount();
+	PlayerTransform();
+	_processPlayerTransformMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
+
+	// オブジェクト処理
+	startTime = GetNowHiPerformanceCount();
+	ObjectProcess();
+	_processObjectProcessMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 	
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
+	startTime = GetNowHiPerformanceCount();
 	if(_d_use_collision)
 	{
 		CheckAllDetections();
 	}
+	_processSectorDetectionMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 
 	// 敵AI（追跡/移動はここで実行される）
+	startTime = GetNowHiPerformanceCount();
 	for(auto& enemy : _enemy)
 	{
 		if(enemy->IsAlive())
@@ -491,6 +512,7 @@ bool ModeGame::Process()
 			enemy->Process();
 		}
 	}
+	_processEnemyAIMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 	
 	if(_bShowTanuki)
 	{
@@ -532,7 +554,10 @@ bool ModeGame::Process()
 
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
+	_processPlayerCollisionMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
+	// プレイヤーと敵の接触処理
+	startTime = GetNowHiPerformanceCount();
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)
@@ -596,6 +621,7 @@ bool ModeGame::Process()
 			}
 		}
 	}
+	_processPlayerEnemyMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// デバック用タイマー（転ばせる）
 	if(_showKnockdownMessage)
@@ -610,6 +636,7 @@ bool ModeGame::Process()
 	}
 
 	// ゴールとの当たり判定
+	startTime = GetNowHiPerformanceCount();
 	if (CanGoal() && !_isGameClear)
 	{
 		// いま操作/表示しているプレイヤーで判定
@@ -638,7 +665,10 @@ bool ModeGame::Process()
 	{
 		IsPlayerAttack(_player.get(), _enemyBase);
 	}
+	_processAttackMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
+	// 3Dサウンド処理
+	startTime = GetNowHiPerformanceCount();
 	if(_sound3D)
 	{
 		// 全ての EnemyBase 系に対して、歩行中のみ3D音を再生する
@@ -675,7 +705,10 @@ bool ModeGame::Process()
 			}
 		}
 	}
+	_process3DSoundMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
+	// 変身時間制限処理
+	startTime = GetNowHiPerformanceCount();
 	if(_changeTimeActive)
 	{
 		float dt = 1.0f / 60.0f; // 60FPS想定
@@ -759,8 +792,16 @@ bool ModeGame::Process()
 			}
 		}
 	}
+	_processChangeTimeMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
+	// BGM変更処理
+	startTime = GetNowHiPerformanceCount();
 	ChangeBGM();
+	_processBGMMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
+
+	// **処理全体の時間計測終了**
+	_processTotalMs = static_cast<float>(GetNowHiPerformanceCount() - totalStartTime) / 1000.0f;
+
 	return true;
 }
 
@@ -783,6 +824,38 @@ bool ModeGame::Render()
 
 	ObjectRender();// オブジェクト描画処理
 	//DebugRender(); // デバック描画処理
+
+	// **ロード時間と各処理の実行時間を画面に表示**
+	int y = 40;
+	const int lineHeight = 18;
+	const unsigned int colorYellow = GetColor(255, 255, 0);
+	const unsigned int colorWhite = GetColor(255, 255, 255);
+	const unsigned int colorRed = GetColor(255, 100, 100);
+
+	DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
+	DrawFormatString(10, y, colorYellow, "LoadTime: %.2f ms", _loadTimeMs); y += lineHeight;
+	y += lineHeight / 2; // 空行
+
+	// 処理時間が0.5ms以上の項目は赤色で表示
+	DrawFormatString(10, y, _processTotalMs >= 0.5f ? colorRed : colorYellow, "Total Process: %.3f ms", _processTotalMs); y += lineHeight;
+	DrawFormatString(10, y, _processCameraMs >= 0.5f ? colorRed : colorWhite, "  Camera: %.3f ms", _processCameraMs); y += lineHeight;
+	DrawFormatString(10, y, _processAnimationMs >= 0.5f ? colorRed : colorWhite, "  Animation: %.3f ms", _processAnimationMs); y += lineHeight;
+	DrawFormatString(10, y, _processEffekseerMs >= 0.5f ? colorRed : colorWhite, "  Effekseer: %.3f ms", _processEffekseerMs); y += lineHeight;
+	DrawFormatString(10, y, _processEnemySoundMs >= 0.5f ? colorRed : colorWhite, "  EnemySound: %.3f ms", _processEnemySoundMs); y += lineHeight;
+	DrawFormatString(10, y, _processObjectServerMs >= 0.5f ? colorRed : colorWhite, "  ObjectServer: %.3f ms", _processObjectServerMs); y += lineHeight;
+	DrawFormatString(10, y, _processSoundListenerMs >= 0.5f ? colorRed : colorWhite, "  SoundListener: %.3f ms", _processSoundListenerMs); y += lineHeight;
+	DrawFormatString(10, y, _processPlayerTransformMs >= 0.5f ? colorRed : colorWhite, "  PlayerTransform: %.3f ms", _processPlayerTransformMs); y += lineHeight;
+	DrawFormatString(10, y, _processObjectProcessMs >= 0.5f ? colorRed : colorWhite, "  ObjectProcess: %.3f ms", _processObjectProcessMs); y += lineHeight;
+	DrawFormatString(10, y, _processCollisionMs >= 0.5f ? colorRed : colorWhite, "  Collision: %.3f ms", _processCollisionMs); y += lineHeight;
+	DrawFormatString(10, y, _processEnemyAIMs >= 0.5f ? colorRed : colorWhite, "  EnemyAI: %.3f ms", _processEnemyAIMs); y += lineHeight;
+	DrawFormatString(10, y, _processPlayerCollisionMs >= 0.5f ? colorRed : colorWhite, "  PlayerCollision: %.3f ms", _processPlayerCollisionMs); y += lineHeight;
+	DrawFormatString(10, y, _processPlayerEnemyMs >= 0.5f ? colorRed : colorWhite, "  PlayerEnemy: %.3f ms", _processPlayerEnemyMs); y += lineHeight;
+	DrawFormatString(10, y, _processGoalMs >= 0.5f ? colorRed : colorWhite, "  Goal: %.3f ms", _processGoalMs); y += lineHeight;
+	DrawFormatString(10, y, _processAttackMs >= 0.5f ? colorRed : colorWhite, "  Attack: %.3f ms", _processAttackMs); y += lineHeight;
+	DrawFormatString(10, y, _process3DSoundMs >= 0.5f ? colorRed : colorWhite, "  3DSound: %.3f ms", _process3DSoundMs); y += lineHeight;
+	DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
+	DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
+	DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
 
 	if(_d_view_collision)
 	{
