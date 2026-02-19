@@ -381,6 +381,10 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 	_savePatrolIndex = _patrolIndex;
 	_isPatroll = false;
 
+	// 巡回待機状態をリセット（追加）
+	_isPatrolWaiting = false;
+	_patrolWaitTimer = 0.0f;
+
 	// 巡回ターゲット座標を保存（復帰時に使う）
 	if(_patroll && _patroll->IsValid())
 	{
@@ -489,6 +493,10 @@ bool EnemyMove::Process()
 				_savePatrolIndex = _patrolIndex;
 				_isPatroll = false;
 
+				// 巡回待機状態をリセット（追加）
+				_isPatrolWaiting = false;
+				_patrolWaitTimer = 0.0f;
+
 				// 巡回ターゲット座標を保存（復帰時に使う）
 				if(_patroll && _patroll->IsValid())
 				{
@@ -521,7 +529,7 @@ bool EnemyMove::Process()
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
 	if(_isMovingToSound || _waitingAtSound)
 	{
-		if(_waitingAtSound|| _isPatrolWaiting)
+		if(_waitingAtSound)
 		{
 			_status = STATUS::WAIT;
 		}

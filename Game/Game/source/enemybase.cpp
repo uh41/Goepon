@@ -680,16 +680,24 @@ void EnemyBase::UpdateMovingToSound()
 		}
 	}
 
-	// 移動可能な方向が見つからない場合は初期位置に戻る
-	if (!validMovementFound)
-	{
-		_isMovingToSound = false;
-		_waitingAtSound = false;
-		_soundDetectionActive = false;
-		_soundDetectionTimer = 0.0f;
-		StartReturningToInitialPosition();
-		return;
-	}
+	//// 移動可能な方向が見つからない場合は初期位置に戻る
+	//if (!validMovementFound)
+	//{
+	//	_isMovingToSound = false;
+	//	_waitingAtSound = false;
+	//	_soundDetectionActive = false;
+	//	_soundDetectionTimer = 0.0f;
+	//	StartReturningToInitialPosition();
+	//	return;
+	//}
+
+	// 移動可能な方向が見つからない場合はその場で待機
+		if (!validMovementFound)
+		{
+			// すぐに初期位置に戻さず、その場で待機して音検知タイマーに任せる
+			_status = STATUS::WAIT;
+			return;
+		}
 
 	// 実際に移動を実行
 	_vPos = vec3::VAdd(_vPos, finalMovement);
