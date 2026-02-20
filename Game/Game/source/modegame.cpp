@@ -27,21 +27,6 @@
 // 初期化
 bool ModeGame::Initialize()
 {
-	// **ロード時間計測開始**
-	const LONGLONG startTime = GetNowHiPerformanceCount();
-
-	//ModeBase* gameload = ModeServer::GetInstance()->Get("gameload");
-	//if(gameload)
-	//{
-	//	_modeGameLoad = dynamic_cast<ModeGameLoad*>(gameload);
-	//}
-	//else
-	//{
-	//	_modeGameLoad = NEW ModeGameLoad();
-	//	ModeServer::GetInstance()->Add(_modeGameLoad, 99, "gameload");
-	//}
-	//_isLoadComplete = false;
-
 	_hasRenderOnce = false;
 	_requestResetStage = false;
 
@@ -52,7 +37,7 @@ bool ModeGame::Initialize()
 
 	// オブジェクトサーバー初期化
 	_objectServer = NEW ObjectServer(this);
-	_objectServer->LoadDate("stage");
+	_objectServer->LoadDate("Stage1");
 	_objectServer->ProcessInit();
 
 	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
@@ -100,7 +85,7 @@ bool ModeGame::Initialize()
 	}
 
 	// カメラセット
-	if (auto* map = _objectServer->GetMap())
+	if(auto* map = _objectServer->GetMap())
 	{
 		map->SetCamera(_camera);
 	}
@@ -131,10 +116,6 @@ bool ModeGame::Initialize()
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
-
-	// **ロード時間計測終了**
-	const LONGLONG endTime = GetNowHiPerformanceCount();
-	_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
 
 	return true;
 }
@@ -168,7 +149,7 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	
+
 	for(auto& charaShadow : _charaShadow)
 	{
 		charaShadow->Terminate();
@@ -184,12 +165,12 @@ bool ModeGame::Terminate()
 	delete _camera;
 
 	// 索敵システムの終了処理
-	if (_enemySensor)
+	if(_enemySensor)
 	{
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-	if(_sound3D)	{
+	if(_sound3D) {
 		_sound3D->StopAll();
 		_sound3D.reset();
 	}
@@ -280,18 +261,18 @@ bool ModeGame::LoadStageData()
 	// **最適化: センサー生成を共通化するヘルパー関数**
 	auto* mapPtr = _objectServer->GetMap();
 	auto createSensors = [mapPtr](float soundArea) -> std::pair<std::shared_ptr<EnemySensor>, std::shared_ptr<EnemySoundSensor>>
-	{
-		auto sensor = std::make_shared<EnemySensor>();
-		sensor->Initialize();
-		sensor->SetMap(mapPtr);
+		{
+			auto sensor = std::make_shared<EnemySensor>();
+			sensor->Initialize();
+			sensor->SetMap(mapPtr);
 
-		auto soundSensor = std::make_shared<EnemySoundSensor>();
-		soundSensor->Initialize();
-		soundSensor->SetMap(mapPtr);
-		soundSensor->SetSoundSensorArea(soundArea);
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+			soundSensor->Initialize();
+			soundSensor->SetMap(mapPtr);
+			soundSensor->SetSoundSensorArea(soundArea);
 
-		return {sensor, soundSensor};
-	};
+			return { sensor, soundSensor };
+		};
 
 	// 敵を生成して、customIdにマッチする巡回点を割り当てる
 	for(auto& object : enemyObjects)
@@ -422,11 +403,9 @@ bool ModeGame::Process()
 	//	return true; // 最初のフレームは他の処理をスキップ
 	//}
 
-	// **処理全体の時間計測開始**
-	const LONGLONG totalStartTime = GetNowHiPerformanceCount();
 
 	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
-	if (_requestResetStage)
+	if(_requestResetStage)
 	{
 		_requestResetStage = false;
 		ResetStage();
@@ -437,27 +416,22 @@ bool ModeGame::Process()
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// カメラ処理
-	LONGLONG startTime = GetNowHiPerformanceCount();
 	_camera->Process();
-	_processCameraMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	DebugProcess();
 	DebugCameraControl();
 
 	//_soundServer->Update();
 	// アニメーション処理
-	startTime = GetNowHiPerformanceCount();
+
 	AnimationManager::GetInstance()->Update(1.0f);
-	_processAnimationMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// Effekseer 更新
-	startTime = GetNowHiPerformanceCount();
+
 	EffekseerManager::GetInstance()->Update();
-	_processEffekseerMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// 敵サウンド処理
-	startTime = GetNowHiPerformanceCount();
-	EnemySoundManager::GetInstance()->Update(1.0f/60.0f);
+	EnemySoundManager::GetInstance()->Update(1.0f / 60.0f);
 
 	// 敵の音検出処理
 	for(auto& e : _enemyBase)
@@ -481,16 +455,14 @@ bool ModeGame::Process()
 			}
 		}
 	}
-	_processEnemySoundMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
+
 
 	// オブジェクトサーバー処理
-	startTime = GetNowHiPerformanceCount();
 	_objectServer->ProcessInit(); // 追加・削除予約の確定
 	_objectServer->Process();
-	_processObjectServerMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
+
 
 	// 3Dサウンドリスナー位置の設定（毎フレーム更新）
-	startTime = GetNowHiPerformanceCount();
 	PlayerBase* activePlayer = nullptr;
 	if(_bShowTanuki)
 	{
@@ -514,40 +486,23 @@ bool ModeGame::Process()
 			DxlibConverter::VecToDxLib(listenerFront)
 		);
 	}
-	_processSoundListenerMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// プレイヤー変身処理
-	startTime = GetNowHiPerformanceCount();
 	PlayerTransform();
-	_processPlayerTransformMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
-
 	// オブジェクト処理
-	startTime = GetNowHiPerformanceCount();
 	ObjectProcess();
-	_processObjectProcessMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
-	
+
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
-	startTime = GetNowHiPerformanceCount();
+
 	if(_d_use_collision)
 	{
 		CheckAllDetections();
 	}
-	_processSectorDetectionMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
-
 
 	// 敵AI（追跡/移動はここで実行される）
-	startTime = GetNowHiPerformanceCount();
-	for(auto& enemy : _enemy)
-	{
-		if(enemy->IsAlive())
-		{
-			enemy->Process();
-		}
-	}
-	_processEnemyAIMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
-	
+
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
@@ -588,10 +543,8 @@ bool ModeGame::Process()
 
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
-	_processPlayerCollisionMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// プレイヤーと敵の接触処理
-	startTime = GetNowHiPerformanceCount();
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)
@@ -641,7 +594,7 @@ bool ModeGame::Process()
 						_sound3D->StopAll();
 					}
 					//ここでゲームオーバー処理へ移行
-					ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
+					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
 					return true;
 				}
@@ -655,7 +608,6 @@ bool ModeGame::Process()
 			}
 		}
 	}
-	_processPlayerEnemyMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// デバック用タイマー（転ばせる）
 	if(_showKnockdownMessage)
@@ -670,18 +622,17 @@ bool ModeGame::Process()
 	}
 
 	// ゴールとの当たり判定
-	startTime = GetNowHiPerformanceCount();
-	if (CanGoal() && !_isGameClear)
+	if(CanGoal() && !_isGameClear)
 	{
 		// いま操作/表示しているプレイヤーで判定
 		PlayerBase* goalPlayer = nullptr;
 
 		// ゴール判定を行うプレイヤーを明示的に選択（タヌキ / Mono / 通常）
-		if (_bShowTanuki)
+		if(_bShowTanuki)
 		{
 			goalPlayer = _playerTanuki.get();
 		}
-		else if (_showMonoPlayer)
+		else if(_showMonoPlayer)
 		{
 			goalPlayer = _playerMono.get();
 		}
@@ -693,16 +644,16 @@ bool ModeGame::Process()
 		// ゴール判定を行うプレイヤーが有効なら当たり判定をチェック
 		UpdateGoalConfirm(goalPlayer);
 	}
-	
+
 	// 攻撃判定は「表示中のプレイヤーが人間プレイヤー(_player) のときのみ」実行する
 	if(playerBase == _player.get())
 	{
 		IsPlayerAttack(_player.get(), _enemyBase);
 	}
-	_processAttackMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
+	
 
 	// 3Dサウンド処理
-	startTime = GetNowHiPerformanceCount();
+
 	if(_sound3D)
 	{
 		// 全ての EnemyBase 系に対して、歩行中のみ3D音を再生する
@@ -739,10 +690,8 @@ bool ModeGame::Process()
 			}
 		}
 	}
-	_process3DSoundMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// 変身時間制限処理
-	startTime = GetNowHiPerformanceCount();
 	if(_changeTimeActive)
 	{
 		float dt = 1.0f / 60.0f; // 60FPS想定
@@ -817,24 +766,18 @@ bool ModeGame::Process()
 		}
 		else if(_changeTimeLimit <= 10.0f)
 		{
-			// 正しくタイマーで点滅を制御する
 			_changeBlinkTimer += dt;
 			if(_changeBlinkTimer >= _changeBlinkInterval)
 			{
-				_changeBlinkTimer = 0.0f; // タイマーリセット
-				_changeBlinkVisible = !_changeBlinkVisible; // 点滅反転
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = !_changeBlinkVisible;
 			}
 		}
 	}
-	_processChangeTimeMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
 	// BGM変更処理
-	startTime = GetNowHiPerformanceCount();
-	ChangeBGM();
-	_processBGMMs = static_cast<float>(GetNowHiPerformanceCount() - startTime) / 1000.0f;
 
-	// **処理全体の時間計測終了**
-	_processTotalMs = static_cast<float>(GetNowHiPerformanceCount() - totalStartTime) / 1000.0f;
+	ChangeBGM();
 
 	return true;
 }
@@ -859,37 +802,35 @@ bool ModeGame::Render()
 	ObjectRender();// オブジェクト描画処理
 	//DebugRender(); // デバック描画処理
 
-	// **ロード時間と各処理の実行時間を画面に表示**
+	// 処理時間を画面に表示
 	int y = 40;
 	const int lineHeight = 18;
 	const unsigned int colorYellow = GetColor(255, 255, 0);
 	const unsigned int colorWhite = GetColor(255, 255, 255);
 	const unsigned int colorRed = GetColor(255, 100, 100);
 
-	DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
-	DrawFormatString(10, y, colorYellow, "LoadTime: %.2f ms", _loadTimeMs); y += lineHeight;
-	y += lineHeight / 2; // 空行
+	//DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
 
-	// 処理時間が0.5ms以上の項目は赤色で表示
-	DrawFormatString(10, y, _processTotalMs >= 0.5f ? colorRed : colorYellow, "Total Process: %.3f ms", _processTotalMs); y += lineHeight;
-	DrawFormatString(10, y, _processCameraMs >= 0.5f ? colorRed : colorWhite, "  Camera: %.3f ms", _processCameraMs); y += lineHeight;
-	DrawFormatString(10, y, _processAnimationMs >= 0.5f ? colorRed : colorWhite, "  Animation: %.3f ms", _processAnimationMs); y += lineHeight;
-	DrawFormatString(10, y, _processEffekseerMs >= 0.5f ? colorRed : colorWhite, "  Effekseer: %.3f ms", _processEffekseerMs); y += lineHeight;
-	DrawFormatString(10, y, _processEnemySoundMs >= 0.5f ? colorRed : colorWhite, "  EnemySound: %.3f ms", _processEnemySoundMs); y += lineHeight;
-	DrawFormatString(10, y, _processObjectServerMs >= 0.5f ? colorRed : colorWhite, "  ObjectServer: %.3f ms", _processObjectServerMs); y += lineHeight;
-	DrawFormatString(10, y, _processSoundListenerMs >= 0.5f ? colorRed : colorWhite, "  SoundListener: %.3f ms", _processSoundListenerMs); y += lineHeight;
-	DrawFormatString(10, y, _processPlayerTransformMs >= 0.5f ? colorRed : colorWhite, "  PlayerTransform: %.3f ms", _processPlayerTransformMs); y += lineHeight;
-	DrawFormatString(10, y, _processObjectProcessMs >= 0.5f ? colorRed : colorWhite, "  ObjectProcess: %.3f ms", _processObjectProcessMs); y += lineHeight;
-	DrawFormatString(10, y, _processCollisionMs >= 0.5f ? colorRed : colorWhite, "  Collision: %.3f ms", _processCollisionMs); y += lineHeight;
-	DrawFormatString(10, y, _processEnemyAIMs >= 0.5f ? colorRed : colorWhite, "  EnemyAI: %.3f ms", _processEnemyAIMs); y += lineHeight;
-	DrawFormatString(10, y, _processPlayerCollisionMs >= 0.5f ? colorRed : colorWhite, "  PlayerCollision: %.3f ms", _processPlayerCollisionMs); y += lineHeight;
-	DrawFormatString(10, y, _processPlayerEnemyMs >= 0.5f ? colorRed : colorWhite, "  PlayerEnemy: %.3f ms", _processPlayerEnemyMs); y += lineHeight;
-	DrawFormatString(10, y, _processGoalMs >= 0.5f ? colorRed : colorWhite, "  Goal: %.3f ms", _processGoalMs); y += lineHeight;
-	DrawFormatString(10, y, _processAttackMs >= 0.5f ? colorRed : colorWhite, "  Attack: %.3f ms", _processAttackMs); y += lineHeight;
-	DrawFormatString(10, y, _process3DSoundMs >= 0.5f ? colorRed : colorWhite, "  3DSound: %.3f ms", _process3DSoundMs); y += lineHeight;
-	DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
-	DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
-	DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
+	//// 処理時間が0.5ms以上の項目は赤色で表示
+	//DrawFormatString(10, y, _processTotalMs >= 0.5f ? colorRed : colorYellow, "Total Process: %.3f ms", _processTotalMs); y += lineHeight;
+	//DrawFormatString(10, y, _processCameraMs >= 0.5f ? colorRed : colorWhite, "  Camera: %.3f ms", _processCameraMs); y += lineHeight;
+	//DrawFormatString(10, y, _processAnimationMs >= 0.5f ? colorRed : colorWhite, "  Animation: %.3f ms", _processAnimationMs); y += lineHeight;
+	//DrawFormatString(10, y, _processEffekseerMs >= 0.5f ? colorRed : colorWhite, "  Effekseer: %.3f ms", _processEffekseerMs); y += lineHeight;
+	//DrawFormatString(10, y, _processEnemySoundMs >= 0.5f ? colorRed : colorWhite, "  EnemySound: %.3f ms", _processEnemySoundMs); y += lineHeight;
+	//DrawFormatString(10, y, _processObjectServerMs >= 0.5f ? colorRed : colorWhite, "  ObjectServer: %.3f ms", _processObjectServerMs); y += lineHeight;
+	//DrawFormatString(10, y, _processSoundListenerMs >= 0.5f ? colorRed : colorWhite, "  SoundListener: %.3f ms", _processSoundListenerMs); y += lineHeight;
+	//DrawFormatString(10, y, _processPlayerTransformMs >= 0.5f ? colorRed : colorWhite, "  PlayerTransform: %.3f ms", _processPlayerTransformMs); y += lineHeight;
+	//DrawFormatString(10, y, _processObjectProcessMs >= 0.5f ? colorRed : colorWhite, "  ObjectProcess: %.3f ms", _processObjectProcessMs); y += lineHeight;
+	//DrawFormatString(10, y, _processCollisionMs >= 0.5f ? colorRed : colorWhite, "  Collision: %.3f ms", _processCollisionMs); y += lineHeight;
+	//DrawFormatString(10, y, _processEnemyAIMs >= 0.5f ? colorRed : colorWhite, "  EnemyAI: %.3f ms", _processEnemyAIMs); y += lineHeight;
+	//DrawFormatString(10, y, _processPlayerCollisionMs >= 0.5f ? colorRed : colorWhite, "  PlayerCollision: %.3f ms", _processPlayerCollisionMs); y += lineHeight;
+	//DrawFormatString(10, y, _processPlayerEnemyMs >= 0.5f ? colorRed : colorWhite, "  PlayerEnemy: %.3f ms", _processPlayerEnemyMs); y += lineHeight;
+	//DrawFormatString(10, y, _processGoalMs >= 0.5f ? colorRed : colorWhite, "  Goal: %.3f ms", _processGoalMs); y += lineHeight;
+	//DrawFormatString(10, y, _processAttackMs >= 0.5f ? colorRed : colorWhite, "  Attack: %.3f ms", _processAttackMs); y += lineHeight;
+	//DrawFormatString(10, y, _process3DSoundMs >= 0.5f ? colorRed : colorWhite, "  3DSound: %.3f ms", _process3DSoundMs); y += lineHeight;
+	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
+	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
+	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
 
 	if(_d_view_collision)
 	{
@@ -907,24 +848,24 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 	bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 
 	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
-	if (!hitGoal)
+	if(!hitGoal)
 	{
 		_notGoalFlag = false;
 	}
 
 	// 抑制中は確認を開かない（No直後に乗りっぱなしでも再表示しない）
-	if (_notGoalFlag)
+	if(_notGoalFlag)
 	{
 		return false;
 	}
 
-	 // 踏んだ瞬間に確認モードを開く
+	// 踏んだ瞬間に確認モードを開く
 	if(hitGoal && !_goalConfirmOpened)
 	{
 		_goalConfirmOpened = true;
 		_goalConfirmResult = ModeGoalConfirm::Result::None;
 
-		ModeServer::GetInstance()->Add(new ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
+		ModeServer::GetInstance()->Add(NEW ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
 		return true;
 	}
 
@@ -937,7 +878,7 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 			_goalConfirmResult = ModeGoalConfirm::Result::None;
 
 			_isGameClear = true;
-			ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");	
+			ModeServer::GetInstance()->Add(NEW ModeGameClear(this), 255, "ModeGameClear");
 			return true;
 		}
 		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
@@ -948,7 +889,7 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 			// 抑制フラグを立てる（ゴールから離れたら解除される）
 			_notGoalFlag = true;
 		}
-		
+
 	}
 
 	return false;
@@ -968,22 +909,22 @@ bool ModeGame::ResetStage()
 	}
 
 	// キャラ/オブジェクト/UI/エフェクトを廃棄
-	for(auto& chara       : _chara      ) { if(chara) chara->Terminate();             }
+	for(auto& chara : _chara) { if(chara) chara->Terminate(); }
 	_chara.clear();
-	 
-	for(auto& object      : _object     ) { if(object) object->Terminate();           }
+
+	for(auto& object : _object) { if(object) object->Terminate(); }
 	_object.clear();
 
-	for(auto& player_base : _playerBase ) { if(player_base) player_base->Terminate(); }
+	for(auto& player_base : _playerBase) { if(player_base) player_base->Terminate(); }
 	_playerBase.clear();
 
-	for(auto& ui_base     : _uiBase     ) { if(ui_base) ui_base->Terminate();         }
+	for(auto& ui_base : _uiBase) { if(ui_base) ui_base->Terminate(); }
 	_uiBase.clear();
 
-	for (auto& shadow     : _charaShadow) { if(shadow) shadow->Terminate();           }
+	for(auto& shadow : _charaShadow) { if(shadow) shadow->Terminate(); }
 	_charaShadow.clear();
 
-	for (auto& effectBase : _effectBase ) { if(effectBase) effectBase->Terminate();   }
+	for(auto& effectBase : _effectBase) { if(effectBase) effectBase->Terminate(); }
 	_effectBase.clear();
 
 	_enemyBase.clear();
@@ -1020,19 +961,19 @@ bool ModeGame::ResetStage()
 	}
 
 	// 再構築
-	_bShowTanuki    = true;
+	_bShowTanuki = true;
 	_showMonoPlayer = false;
 
 	// オブジェクトサーバーの再ロード　
 	if(_objectServer == nullptr)
 	{
-		_objectServer = new ObjectServer(this);
+		_objectServer = NEW ObjectServer(this);
 	}
-	_objectServer->LoadDate("stage");
+	_objectServer->LoadDate("Stage1");
 	_objectServer->ProcessInit();
 
 	// カメラセット
-	if (auto* map = _objectServer->GetMap())
+	if(auto* map = _objectServer->GetMap())
 	{
 		map->SetCamera(_camera);
 	}
@@ -1040,31 +981,31 @@ bool ModeGame::ResetStage()
 	ObjectInitialize();	// オブジェクト初期化
 
 	// 各種　initialize
-	for(auto& chara       : _chara     ) { if(chara) chara->Initialize();             }
-	for(auto& object      : _object    ) { if(object) object->Initialize();           }
+	for(auto& chara : _chara) { if(chara) chara->Initialize(); }
+	for(auto& object : _object) { if(object) object->Initialize(); }
 	for(auto& player_base : _playerBase) { if(player_base) player_base->Initialize(); }
-	for(auto& ui_base     : _uiBase    ) { if(ui_base) ui_base->Initialize();         }
+	for(auto& ui_base : _uiBase) { if(ui_base) ui_base->Initialize(); }
 	for(auto& _effectBase : _effectBase) { if(_effectBase) _effectBase->Initialize(); }
 
 	LoadStageData(); // ステージデータ読み込み
 
 	// カメラをプレイヤーがいる位置に合わせる
-	if(_player      )       _player->SetCamera(_camera);
+	if(_player)       _player->SetCamera(_camera);
 	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
-	if(_playerMono  )   _playerMono->SetCamera(_camera);
+	if(_playerMono)   _playerMono->SetCamera(_camera);
 
 	// エフェクトに対象をセット
-	if (_treasureEffect             )_treasureEffect->SetTreasure(_treasure);
-	if (_findEffect					) _findEffect->SetEnemy(_enemyBase);
-	if (_hatenaEffect				) _hatenaEffect->Enemy(_enemyBase);
-	if(_walkEffect					) _walkEffect->SetPlayerPos(_playerTanuki.get());
-	if (_aseEffect					)
+	if(_treasureEffect)_treasureEffect->SetTreasure(_treasure);
+	if(_findEffect) _findEffect->SetEnemy(_enemyBase);
+	if(_hatenaEffect) _hatenaEffect->Enemy(_enemyBase);
+	if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+	if(_aseEffect)
 	{
 		_aseEffect->SetEnemy(_enemyBase);
 		_aseEffect->SetPlayer(_playerTanuki.get());
 	}
 
-    // 宝箱も閉じる（全宝箱）
+	// 宝箱も閉じる（全宝箱）
 	for(auto& t : _treasure)
 	{
 		if(t) t->SetOpen(false);

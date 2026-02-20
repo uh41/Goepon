@@ -21,7 +21,7 @@
 #include<algorithm>
 #include<fstream>
 #include "Map1.h"
-
+#include "applicationglobal.h"
 
 ObjectServer::ObjectServer(ModeGame* game)
 	: _player(nullptr)
@@ -180,39 +180,36 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(std::string stageName)
 {
-	// マップデータ読み込み
-	_sPath = "res/map/";
-	_sJsonFile = "marker0127_2.json";
-	_sJsonObjectName = "stage";
-
-	// JSONファイル読み込み
-	const std::string jsonPath = _sPath + _sJsonFile;
-	std::ifstream file(jsonPath);
-	if(!file) { return false; }
-
-	// JSONデータ解析
-	nlohmann::json jsonData;
-	file >> jsonData;
-
-	// マップオブジェクト生成
-	if(_map == nullptr)
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(stageName);
+	if(stageData != nullptr)
 	{
-		_map = NEW Map1();
-		AddObject(_map);
-	}
+		// マップオブジェクト生成（未生成なら）
+		if(_map == nullptr)
+		{
+			_map = NEW Map1();
+			AddObject(_map);
+		}
 
-	// ステージデータ検索・設定
-	if (!jsonData.contains(_sJsonObjectName)) { return false; } // キー存在確認
-	const auto& stage = jsonData.at(_sJsonObjectName);          // ステージデータ取得
+		// StageData 内のオブジェクトリストから指定のオブジェクト名を探す
+		for(const auto& objData : stageData->object)
+		{
+			// StageObjectData::objectName と一致するものを探す
+			if(objData.objectName == stageName)
+			{
+				_map->SetJsonDataUE(objData.json);
+				return true;
+			}
+		}
 
-	for(const auto& data : stage)
-	{
-		const std::string name = data.at("objectName").get<std::string>(); // オブジェクト名取得
-		if(name != stageName) { continue; }
+		// 見つからなかった場合はフォールバックとして最初のオブジェクトを使う（安全策）
+		if(!stageData->object.empty())
+		{
+			_map->SetJsonDataUE(stageData->object.front().json);
+			return true;
+		}
 
-		// マップデータ設定
-		_map->SetJsonDataUE(data); 
-		break;
+		// stageData が空なら失敗
+		return false;
 	}
 
 	return true;

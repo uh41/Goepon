@@ -276,31 +276,6 @@ protected:
 	// 巻物関連
 	bool _subMakimono = false; // 変身開始時に巻物を消費する予約をする
 
-	// ロード時間計測用
-	float _loadTimeMs = 0.0f; // ロードにかかった時間（ミリ秒）
-
-	// Process内の各処理セクション実行時間計測用（マイクロ秒）
-	float _processCameraMs = 0.0f;
-	float _processAnimationMs = 0.0f;
-	float _processEffekseerMs = 0.0f;
-	float _processEnemySoundMs = 0.0f;
-	float _processObjectServerMs = 0.0f;
-	float _processSoundListenerMs = 0.0f;
-	float _processPlayerTransformMs = 0.0f;
-	float _processObjectProcessMs = 0.0f;
-	float _processCollisionMs = 0.0f;
-	float _processEnemyAIMs = 0.0f;
-	float _processPlayerCollisionMs = 0.0f;
-	float _processPlayerEnemyMs = 0.0f;
-	float _processGoalMs = 0.0f;
-	float _processAttackMs = 0.0f;
-	float _process3DSoundMs = 0.0f;
-	float _processChangeTimeMs = 0.0f;
-	float _processBGMMs = 0.0f;
-	float _processTotalMs = 0.0f;
-	float _processSectorDetectionMs = 0.0f; // 扇形検出処理の時間
-
-
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
 
