@@ -137,6 +137,13 @@ bool ModeGame::Initialize()
 	const LONGLONG endTime = GetNowHiPerformanceCount();
 	_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
 
+	_stageManager.SetStages
+	({
+	   "stage01",
+	   "stage02",
+	   "stage03",
+	});
+
 	return true;
 }
 
@@ -202,8 +209,8 @@ bool ModeGame::Terminate()
 
 bool ModeGame::LoadStageData()
 {
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
-	//const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
+
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
 	if(stageData == nullptr)
 	{
 		return false;

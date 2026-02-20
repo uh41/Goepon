@@ -116,6 +116,7 @@
     <ClInclude Include="source\enemysoundmanager.h" />
     <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modegameload.h" />
+    <ClInclude Include="source\StageManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

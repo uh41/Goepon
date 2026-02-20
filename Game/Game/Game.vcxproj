@@ -67,6 +67,7 @@
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
     <ClInclude Include="source\soundserver3D.h" />
+    <ClInclude Include="source\StageManager.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\UIActionButton.h" />

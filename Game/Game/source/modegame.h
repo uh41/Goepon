@@ -49,6 +49,8 @@
 #include "enemysoundmanager.h"
 #include "modegameload.h"
 
+#include "StageManager.h"
+
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
 class ModeGame : public ModeBase
@@ -300,9 +302,11 @@ protected:
 	float _processTotalMs = 0.0f;
 	float _processSectorDetectionMs = 0.0f; // 扇形検出処理の時間
 
-
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
+
+	
+	StageManager _stageManager; // ステージ管理
 
 };
 
