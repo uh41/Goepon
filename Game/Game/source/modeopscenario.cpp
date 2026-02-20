@@ -1,5 +1,6 @@
 #include "modeopscenario.h"
 #include "modegame.h"
+#include "modegameload.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -30,10 +31,10 @@ bool ModeOpScenario::Initialize()
 	_page =
 	{
 		{ LoadGraph(img::Op1), "" },// 画像読み込み, 音声ファイル
-		{ LoadGraph(img::Op2), "" },
+		/*{ LoadGraph(img::Op2), "" },
 		{ LoadGraph(img::Op3), "" },
 		{ LoadGraph(img::Op4), "" },
-		{ LoadGraph(img::Op5), "" },
+		{ LoadGraph(img::Op5), "" },*/
 		//{ LoadGraph(img::Op6), "" },
 		//{ LoadGraph(img::Op7), "" },
 		//{ LoadGraph(img::Op8), "" },
@@ -128,7 +129,8 @@ bool ModeOpScenario::Process()
 	case ModeBase::State::DONE:
 	{
 		// 次のモードへ移行
-		ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
+		ModeServer::GetInstance()->Add(NEW ModeGameLoad(), 99, "gameload");
+		//ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
 		ModeServer::GetInstance()->Del(this);
 		break;
 	}

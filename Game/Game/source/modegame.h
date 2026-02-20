@@ -47,6 +47,7 @@
 #include "nakieffect.h"
 #include "Makimono.h"
 #include "enemysoundmanager.h"
+#include "modegameload.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -144,6 +145,7 @@ public:
 
 	// ステージリセット要求フラグのセッター（Process内でこのフラグをチェックしてリセット処理を行う）
 	void RequestResetStage() { _requestResetStage = true; }
+	bool HasRenderOnce() const { return _hasRenderOnce; }
 
 protected:
 	Camera* _camera;
@@ -151,6 +153,9 @@ protected:
     vec::Vec3 _savedCamPos;
     vec::Vec3 _savedCamTarget;
     bool _hasSavedCameraState;
+
+	bool _hasRenderOnce;
+	bool _requestResetStage; // ステージリセット要求フラグ
 
 	// キャラクタ管理
 	at::vspc<CharaBase> _chara;
@@ -295,9 +300,9 @@ protected:
 	float _processTotalMs = 0.0f;
 	float _processSectorDetectionMs = 0.0f; // 扇形検出処理の時間
 
-private:
-	// class ModeGameのメンバに追加
-	bool _requestResetStage = false; // ステージリセット要求フラグ	
+
+	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
+	ModeGameLoad* _modeGameLoad;
 
 };
 

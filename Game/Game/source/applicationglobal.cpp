@@ -244,6 +244,7 @@ bool ApplicationGlobal::Init()
 	// その他
 	ResourceServer::MV1LoadModel(mv1::tuzura_02);
 	ResourceServer::MV1LoadModel(mv1::Goal);
+	ResourceServer::LoadGraph(img::work);
 
 
 	if(!_soundServer)

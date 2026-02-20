@@ -39,6 +39,7 @@
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeGoalConfirm.h" />
     <ClInclude Include="source\findeffect.h" />
@@ -95,6 +96,7 @@
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
+    <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeGoalConfirm.cpp" />
     <ClCompile Include="source\findeffect.cpp" />
