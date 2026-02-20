@@ -220,15 +220,11 @@ bool EnemyDog::Process()
 		}
 	}
 
-	// 優先順位: 音源への移動 > プレイヤー検出 > 初期位置への帰還 > ランダムウォーク
-	if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
+	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
 	{
-		UpdateMovingToSound();
-	}
-	else if (_detectedPlayer)
-	{
-		// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
-		UpdateRotationToPlayer();
+		// プレイヤーを追跡する（EnemyBaseの追跡処理を使用）
+		UpdateChasing();
 
 		// EnemySoundManagerを使用して音波を発生させる
 		auto soundManager = EnemySoundManager::GetInstance();
@@ -238,7 +234,12 @@ bool EnemyDog::Process()
 		}
 
 		_isRandomWalking = false; // ランダム移動を停止
-		_status = STATUS::WALK;
+		_isMovingToSound = false; // 音源への移動を停止
+		// ステータスはUpdateChasing()内で設定される
+	}
+	else if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	{
+		UpdateMovingToSound();
 	}
 	else if (_isReturningToInitialPos)
 	{
