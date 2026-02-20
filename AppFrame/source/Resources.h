@@ -24,6 +24,7 @@ namespace img
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* teamlogo = "res/teamlogo.png";
   inline constexpr const char* title = "res/title.png";
+  inline constexpr const char* work = "res/work.png";
 }
 
 namespace mv1

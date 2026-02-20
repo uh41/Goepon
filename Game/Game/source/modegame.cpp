@@ -30,6 +30,22 @@ bool ModeGame::Initialize()
 	// **ロード時間計測開始**
 	const LONGLONG startTime = GetNowHiPerformanceCount();
 
+	//ModeBase* gameload = ModeServer::GetInstance()->Get("gameload");
+	//if(gameload)
+	//{
+	//	_modeGameLoad = dynamic_cast<ModeGameLoad*>(gameload);
+	//}
+	//else
+	//{
+	//	_modeGameLoad = NEW ModeGameLoad();
+	//	ModeServer::GetInstance()->Add(_modeGameLoad, 99, "gameload");
+	//}
+	//_isLoadComplete = false;
+
+	_hasRenderOnce = false;
+	_requestResetStage = false;
+
+
 	if(!base::Initialize()) { return false; }
 
 	ObjectInitialize();	// オブジェクト初期化
@@ -177,6 +193,12 @@ bool ModeGame::Terminate()
 		_sound3D->StopAll();
 		_sound3D.reset();
 	}
+
+	//if(_modeGameLoad)
+	//{
+	//	ModeServer::GetInstance()->Del(_modeGameLoad);
+	//	_modeGameLoad = nullptr;
+	//}
 
 	return true;
 }
@@ -387,6 +409,18 @@ bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 bool ModeGame::Process()
 {
 	base::Process();
+
+	//// **ロード完了後の最初のフレームでロード画面を削除**
+	//if(!_isLoadComplete)
+	//{
+	//	_isLoadComplete = true;
+	//	if(_modeGameLoad)
+	//	{
+	//		ModeServer::GetInstance()->Del(_modeGameLoad);
+	//		_modeGameLoad = nullptr;
+	//	}
+	//	return true; // 最初のフレームは他の処理をスキップ
+	//}
 
 	// **処理全体の時間計測開始**
 	const LONGLONG totalStartTime = GetNowHiPerformanceCount();
@@ -861,6 +895,8 @@ bool ModeGame::Render()
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
+
+	_hasRenderOnce = true;
 
 	return true;
 }
