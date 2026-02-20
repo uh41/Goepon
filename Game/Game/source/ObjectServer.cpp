@@ -43,21 +43,15 @@ bool ObjectServer::Intialize()
 
 bool ObjectServer::Terminate()
 {
-	//�Ǘ����Ă���I�u�W�F�N�g����ׂč폜
 	ClearObject();
 	return true;
 }
 
 bool ObjectServer::Process()
 {
-	// �I�u�W�F�N�g����񏈗�
-	for(auto iter = _objects.begin(); iter != _objects.end(); ++iter)
+	for(auto* obj : _objects)
 	{
-		if((*iter)->Process())
-		{
-
-		}
-		else
+		if(!obj->Process())
 		{
 			return false;
 		}
@@ -67,10 +61,9 @@ bool ObjectServer::Process()
 
 bool ObjectServer::Render()
 {
-	// �I�u�W�F�N�g�����`��
-	for(int i = 0; i < _objects.size(); ++i)
+	for(auto* obj : _objects)
 	{
-		if(!_objects[i]->Render())
+		if(!obj->Render())
 		{
 			return false;
 		}
@@ -124,31 +117,48 @@ void ObjectServer::DeleteObject(ObjectBase* obj)
 
 bool ObjectServer::ClearObject()
 {
-	for (auto&& obj : _objects)
+	// まずポインタを退避してからコンテナを空にする（破棄中の再入に強くする）
+	std::vector<ObjectBase*> objects = std::move(_objects);
+	std::vector<ObjectBase*> addObj = std::move(_addObj);
+	std::vector<ObjectBase*> delObj = std::move(_deleteObj);
+
+	_objects.clear();
+	_addObj.clear();
+	_deleteObj.clear();
+
+	// _map が objects/addObj/delObj のどれで消されてもよいように監視
+	for(auto* obj : objects)
 	{
-		// Mapもここで delete される可能性があるので、先に監視
-		if (obj == _map)
+		if(obj == _map)
 		{
 			_map = nullptr;
 		}
 		delete obj;
 	}
-	_objects.clear();
 
-	for (auto&& obj : _objects) 
+	for(auto* obj : addObj)
 	{
-		delete obj;
-	}
-	_objects.clear();
-
-	for (auto&& obj : _addObj) 
-	{
+		if(!obj) { continue; }
 		obj->Terminate();
+		if(obj == _map)
+		{
+			_map = nullptr;
+		}
 		delete obj;
 	}
-	_addObj.clear();
 
-	_deleteObj.clear();
+	// DeleteObject() で _deleteObj に積んだものが残って終了するケースを想定して破棄
+	for(auto* obj : delObj)
+	{
+		if(!obj) { continue; }
+		obj->Terminate();
+		if(obj == _map)
+		{
+			_map = nullptr;
+		}
+		delete obj;
+	}
+
 	return true;
 }
 
@@ -184,6 +194,8 @@ bool ObjectServer::LoadDate(std::string stageName)
 	_sPath = "res/map/";
 	_sJsonFile = "marker0127_2.json";
 	_sJsonObjectName = "stage";
+	/*_sJsonFile = "stagebeta.json";
+	_sJsonObjectName = "SM_stagebeta";*/
 
 	// JSONファイル読み込み
 	const std::string jsonPath = _sPath + _sJsonFile;

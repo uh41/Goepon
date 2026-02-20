@@ -51,9 +51,10 @@ bool ModeGame::Initialize()
 	ObjectInitialize();	// オブジェクト初期化
 
 	// オブジェクトサーバー初期化
-	_objectServer = NEW ObjectServer(this);
-	_objectServer->LoadDate("stage");
-	_objectServer->ProcessInit();
+	/*_objectServer = NEW ObjectServer(this);
+	_objectServer->LoadDate("SM_stagebeta");
+	_objectServer->ProcessInit();*/
+	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
 	// gGlobal._soundServer は ApplicationGlobal::Init() 内で生成されている想定
@@ -143,10 +144,6 @@ bool ModeGame::Initialize()
 bool ModeGame::Terminate()
 {
 	base::Terminate();
-
-	delete _objectServer;
-	_objectServer = nullptr;
-
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -206,6 +203,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
+	//const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
 	if(stageData == nullptr)
 	{
 		return false;
@@ -1028,7 +1026,7 @@ bool ModeGame::ResetStage()
 	{
 		_objectServer = new ObjectServer(this);
 	}
-	_objectServer->LoadDate("stage");
+	_objectServer->LoadDate("SM_stagebeta");
 	_objectServer->ProcessInit();
 
 	// カメラセット
