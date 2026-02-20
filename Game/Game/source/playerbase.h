@@ -26,6 +26,8 @@ public:
 	int GetMakimonoCount() const { return _makimonoCount; } // まきものの所持数を取得する
 	void AddMakimono(int addCount);                         // まきものの所持数を増やす
 	void SubMakimono(int subCount);                         // まきものの所持数を減らす	
+
+	int GetModelHandle() const { return _handle; }
 protected:
 
 	//アナログスティック関係

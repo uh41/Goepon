@@ -1,13 +1,13 @@
 #include "Map1.h"
 #include "applicationglobal.h"
 
-// ‰Šú‰»
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 bool Map1::Initialize()
 {
-	// Šî’êƒNƒ‰ƒX‰Šú‰»
+	// ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(!base::Initialize()) { return false; }
 
-	// ƒXƒJƒCƒXƒtƒBƒA“Ç‚İ‚İ
+	// ï¿½Xï¿½Jï¿½Cï¿½Xï¿½tï¿½Bï¿½Aï¿½Ç‚İï¿½ï¿½ï¿½
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
 	const ApplicationGlobal::MapData* map = gGlobal.GetMapData("Map1");
@@ -16,7 +16,7 @@ bool Map1::Initialize()
 		_mModelHandle = map->modelHandle;
 		_vBlockPos = map->blockPos;
 
-		// ƒRƒŠƒWƒ‡ƒ“î•ñ‚ÌXV
+		// ï¿½Rï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÌXï¿½V
 		for(auto& block : _vBlockPos)
 		{
 			if(block.modelHandle >= 0)
@@ -29,34 +29,34 @@ bool Map1::Initialize()
 		}
 	}
 	_ground_handle = LoadGraph(img::BG_stone);
-	// ˆÈ~‚Ì‰Šú‰»iÈ—ª‚¹‚¸Œ³‚Ìˆ—‚ğ“ü‚ê‚Ä‚­‚¾‚³‚¢j
+	// ï¿½È~ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½È—ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½j
 	_half_polygon_size = GROUND_POLYGON_SIZE * 0.5f;
 	_start_x = -_half_polygon_size * StCas<float>(GROUND_X);
 	_start_z = -_half_polygon_size * StCas<float>(GROUND_Z);
 	_ground_normal = VGet(0.0f, 1.0f, 0.0f);
 	_diffuse = GetColorU8(255, 255, 255, 255);
 	_specular = GetColorU8(0, 0, 0, 0);
-	_ground_pos_0 = VGet(0.0f, -20.0f, 0.0f);
-	_ground_pos_1 = VGet(0.0f, -20.0f, GROUND_POLYGON_SIZE);
-	_ground_pos_2 = VGet(GROUND_POLYGON_SIZE, -20.0f, 0.0f);
-	_ground_pos_3 = VGet(GROUND_POLYGON_SIZE, -20.0f, GROUND_POLYGON_SIZE);
+	_ground_pos_0 = VGet(0.0f, -100.0f, 0.0f);
+	_ground_pos_1 = VGet(0.0f, -100.0f, GROUND_POLYGON_SIZE);
+	_ground_pos_2 = VGet(GROUND_POLYGON_SIZE, -100.0f, 0.0f);
+	_ground_pos_3 = VGet(GROUND_POLYGON_SIZE, -100.0f, GROUND_POLYGON_SIZE);
 	_ground_pos_list = { _ground_pos_0, _ground_pos_1, _ground_pos_2, _ground_pos_3 };
 	_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 	_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì¶¬
+	// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ìï¿½ï¿½ï¿½
 	_iHandleShadowMap = MakeShadowMap(2048, 2048);
 
-	// ƒ‰ƒCƒg‰Šúİ’è
+	// ï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½
 	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
 
-	// ŠÂ‹«Œõiã‚ßj
+	// ï¿½Â‹ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ßj
 	_mainLight.SetAmbient(VGet(0.05f, 0.03f, 0.02f), 1.0f);
 
-	// ŠgUŒõiƒIƒŒƒ“ƒWŠñ‚èj
+	// ï¿½gï¿½Uï¿½ï¿½ï¿½iï¿½Iï¿½ï¿½ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½j
 	_mainLight.SetDiffuse(VGet(1.0f, 0.75f, 0.45f), 1.0f);
 
-	// ‹¾–Ê”½Ëi”’Šñ‚è‚É­‚µj
+	// ï¿½ï¿½ï¿½Ê”ï¿½ï¿½Ëiï¿½ï¿½ï¿½ï¿½ï¿½Éï¿½ï¿½ï¿½ï¿½j
 	_mainLight.SetSpecular(VGet(0.8f, 0.8f, 0.8f), 1.0f);
 
 	_mainLight.SetCastShadow(true);
@@ -64,14 +64,14 @@ bool Map1::Initialize()
 	return true;
 }
 
-// I—¹
+// ï¿½Iï¿½ï¿½
 bool Map1::Terminate()
 {
 	base::Terminate();
 	return true;
 }
 
-// XVˆ—
+// ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½
 bool Map1::Process()
 {
 	base::Process();
@@ -82,18 +82,18 @@ bool Map1::Process()
 	//_ground_vertex.reserve(static_cast<int>(GROUND_Z * GROUND_X) * 4);
 	//_ground_index.reserve(static_cast<int>(GROUND_Z * GROUND_X) * 6);
 
-	// ’n–Êƒ|ƒŠƒSƒ“‚Ì’¸“_EƒCƒ“ƒfƒbƒNƒXì¬
+	// ï¿½nï¿½Êƒ|ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½Ì’ï¿½ï¿½_ï¿½Eï¿½Cï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½Xï¿½ì¬
 	for(int i = 0; i < GROUND_Z * GROUND_X; i++)
 	{
-		// s‚Æ—ñ‚ÌŒvZ
-		int z = i / StCas<int>(GROUND_X);// s
-		int x = i % StCas<int>(GROUND_X);// —ñ
+		// ï¿½sï¿½Æ—ï¿½ÌŒvï¿½Z
+		int z = i / StCas<int>(GROUND_X);// ï¿½s
+		int x = i % StCas<int>(GROUND_X);// ï¿½ï¿½
 
-		// ƒIƒtƒZƒbƒgŒvZ
+		// ï¿½Iï¿½tï¿½Zï¿½bï¿½gï¿½vï¿½Z
 		auto offset_x = _start_x + StCas<float>(x) * GROUND_POLYGON_SIZE;
 		auto offset_z = _start_z + StCas<float>(z) * GROUND_POLYGON_SIZE;
 
-		// 4’¸“_‚Ìì¬
+		// 4ï¿½ï¿½ï¿½_ï¿½Ìì¬
 		for(int j = 0; j < 4; j++)
 		{
 			VERTEX3D vertex;
@@ -112,7 +112,7 @@ bool Map1::Process()
 			_ground_vertex.push_back(vertex);
 		}
 
-		// 2–‡‚ÌOŠpŒ`‚ÌƒCƒ“ƒfƒbƒNƒX
+		// 2ï¿½ï¿½ï¿½ÌOï¿½pï¿½`ï¿½ÌƒCï¿½ï¿½ï¿½fï¿½bï¿½Nï¿½X
 		auto index = StCas<unsigned short>(i * 4);
 		_ground_index.push_back(StCas<unsigned short>(index + 0));
 		_ground_index.push_back(StCas<unsigned short>(index + 1));
@@ -122,88 +122,88 @@ bool Map1::Process()
 		_ground_index.push_back(StCas<unsigned short>(index + 3));
 	}
 
-	// ƒuƒƒbƒN‚ÌˆÊ’uE‰ñ“]EƒXƒP[ƒ‹İ’è
+	// ï¿½uï¿½ï¿½ï¿½bï¿½Nï¿½ÌˆÊ’uï¿½Eï¿½ï¿½]ï¿½Eï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½İ’ï¿½
 	for(auto& block : _vBlockPos)
 	{
-		// ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ª–³Œø‚È‚çƒXƒLƒbƒv
+		// ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½nï¿½ï¿½ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½Xï¿½Lï¿½bï¿½v
 		if(block.modelHandle < 0)
 		{
 			continue;
 		}
-		// ˆÊ’uE‰ñ“]EƒXƒP[ƒ‹İ’è
+		// ï¿½Ê’uï¿½Eï¿½ï¿½]ï¿½Eï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½İ’ï¿½
 		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
 
-		// ƒRƒŠƒWƒ‡ƒ“î•ñ‚ğ transform Œã‚Ìó‘Ô‚ÉXVid—vj
+		// ï¿½Rï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ transform ï¿½ï¿½Ìï¿½Ô‚ÉXï¿½Vï¿½iï¿½dï¿½vï¿½j
 		MV1RefreshCollInfo(block.modelHandle, -1);
 	}
 
-	// SkySphereiƒXƒP[ƒ‹EˆÊ’ujİ’è
+	// SkySphereï¿½iï¿½Xï¿½Pï¿½[ï¿½ï¿½ï¿½Eï¿½Ê’uï¿½jï¿½İ’ï¿½
 	if(_iHandleSkySphere >= 0)
 	{
-		// —áF200”{i•K—v‚È’l‚É’²®j
+		// ï¿½ï¿½F200ï¿½{ï¿½iï¿½Kï¿½vï¿½È’lï¿½É’ï¿½ï¿½ï¿½ï¿½j
 		float kSkySphereScale = 200.0f;
 		MV1SetScale(_iHandleSkySphere, VGet(kSkySphereScale, kSkySphereScale, kSkySphereScale));
 
-		// Œ´“_ŒÅ’è‚¾‚ÆˆÚ“®‚Å’[‚ªŒ©‚¦‚é‚Ì‚ÅAƒJƒƒ‰‚É’Ç]‚³‚¹‚éi„§j
+		// ï¿½ï¿½ï¿½_ï¿½Å’è‚¾ï¿½ÆˆÚ“ï¿½ï¿½Å’[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì‚ÅAï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½É’Ç]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½ï¿½j
 		if(_cam)
 		{
 			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->_vPos));
 		}
 
-		// •ÏŠ·Œã‚Ì“–‚½‚è”»’èXV‚ª•s—v‚È‚çA‚±‚Ìs‚Í‚¢‚è‚Ü‚¹‚ñ
+		// ï¿½ÏŠï¿½ï¿½ï¿½Ì“ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½sï¿½vï¿½È‚ï¿½Aï¿½ï¿½ï¿½Ìsï¿½Í‚ï¿½ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½
 		// MV1RefreshCollInfo(_iHandleSkySphere, -1);
 	}
 
 	return true;
 }
 
-// •`‰æˆ—
+// ï¿½`ï¿½æˆï¿½ï¿½
 bool Map1::Render()
 {
 	base::Render();
 
-	// 3DŠî–{İ’è
+	// 3Dï¿½ï¿½{ï¿½İ’ï¿½
 	SetUseZBuffer3D(TRUE);
 	SetWriteZBuffer3D(TRUE);
 	SetUseBackCulling(TRUE);
 
-	// ƒ‰ƒCƒgİ’è
-	const int extent = 800; // ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì”ÍˆÍ
+	// ï¿½ï¿½ï¿½Cï¿½gï¿½İ’ï¿½
+	const int extent = 800; // ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ì”Íˆï¿½
 	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->_vTarget), extent);
 
-	// 2‰ñ‚Ü‚í‚µ‚ÄApath = 0; ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æApath = 1; ƒ‚ƒfƒ‹‚Ì•`‰æ(ƒVƒƒƒhƒE“K—pj	
+	// 2ï¿½ï¿½Ü‚í‚µï¿½ÄApath = 0; ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ö‚Ì•`ï¿½ï¿½Apath = 1; ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½Ì•`ï¿½ï¿½(ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½Kï¿½pï¿½j	
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);
-#if 1 // •½sƒ‰ƒCƒg
+#if 1 // ï¿½ï¿½ï¿½sï¿½ï¿½ï¿½Cï¿½g
 	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f));
 	ChangeLightTypeDir(lightdir);
 #endif
-#if 0 // ƒ|ƒCƒ“ƒgƒ‰ƒCƒg
+#if 0 // ï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Cï¿½g
 	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f));
 	ChangeLightTypePoint(VAdd(_pos, VGet(0.50f, 0)), 1000.f, 0.f, 0.005f, 0.f);
 #endif
 
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚ª‘z’è‚·‚éƒ‰ƒCƒg‚Ì•ûŒü‚àƒZƒbƒg
+	// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½zï¿½è‚·ï¿½éƒ‰ï¿½Cï¿½gï¿½Ì•ï¿½ï¿½ï¿½ï¿½ï¿½Zï¿½bï¿½g
 	SetShadowMapLightDirection(_iHandleShadowMap, lightdir);
 
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚É•`‰æ‚·‚é”ÍˆÍ‚ğİ’è
-	// ƒJƒƒ‰‚Ì’‹“_‚ğ’†S‚É‚·‚é
+	// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½É•`ï¿½æ‚·ï¿½ï¿½ÍˆÍ‚ï¿½İ’ï¿½
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Ì’ï¿½ï¿½ï¿½ï¿½_ï¿½ğ’†Sï¿½É‚ï¿½ï¿½ï¿½
 	float lenght = 800.f;
 	DxlibConverter::SetShadowMapDrawArea(
 		_iHandleShadowMap,
 		vec3::VAdd(_cam->_vTarget, vec3::VGet(-lenght, -1.0f, -lenght)),
 		vec3::VAdd(_cam->_vTarget, vec3::VGet(lenght, lenght, lenght))
 	);
-	// 2‰ñ‚Ü‚í‚µ‚ÄApath = 0: ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æApath = 1: ƒ‚ƒfƒ‹‚ÌF•`‰æ
+	// 2ï¿½ï¿½Ü‚í‚µï¿½ÄApath = 0: ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ö‚Ì•`ï¿½ï¿½Apath = 1: ï¿½ï¿½ï¿½fï¿½ï¿½ï¿½ÌFï¿½`ï¿½ï¿½
 	for(int path = 0; path < 2; path++)
 	{
 		if(path == 0)
 		{
-			// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æ€”õ
+			// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ö‚Ì•`ï¿½æ€ï¿½ï¿½
 			ShadowMap_DrawSetup(_iHandleShadowMap);
 
-			// ƒVƒƒƒhƒEƒLƒƒƒXƒ^[‚ğ•`‰æ(ƒXƒJƒC‚Í’Êí•`‚©‚È‚¢)
+			// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½Lï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½ï¿½`ï¿½ï¿½(ï¿½Xï¿½Jï¿½Cï¿½Í’Êï¿½`ï¿½ï¿½ï¿½È‚ï¿½)
 			if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
 			for(auto& block : _vBlockPos)
 			{
@@ -215,16 +215,16 @@ bool Map1::Render()
 		}
 		else // path == 1
 		{
-			// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚Ì•`‰æI—¹
+			// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ö‚Ì•`ï¿½ï¿½Iï¿½ï¿½
 			ShadowMap_DrawEnd();
 
-			// •`‰æ‚Ég—p‚·‚éƒVƒƒƒhƒEƒ}ƒbƒv‚ğİ’è
+			// ï¿½`ï¿½ï¿½Égï¿½pï¿½ï¿½ï¿½ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½ï¿½İ’ï¿½
 			SetUseShadowMap(0, _iHandleShadowMap);
 
-			// ƒ‰ƒCƒgİ’è‚ğƒŒƒ“ƒ_ƒ‰‚É“K—piƒAƒ“ƒrƒGƒ“ƒgEƒ‰ƒCƒgí•Ê“™j
+			// ï¿½ï¿½ï¿½Cï¿½gï¿½İ’ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½_ï¿½ï¿½ï¿½É“Kï¿½pï¿½iï¿½Aï¿½ï¿½ï¿½rï¿½Gï¿½ï¿½ï¿½gï¿½Eï¿½ï¿½ï¿½Cï¿½gï¿½ï¿½Ê“ï¿½ï¿½j
 			_mainLight.ApplyRenderer();
 
-			// –{•`‰æƒpƒXFƒ}ƒbƒvEƒXƒJƒCƒXƒtƒBƒAEƒuƒƒbƒN‚ğ•`‰æiƒVƒƒƒhƒEƒ}ƒbƒv‚ª“K—p‚³‚ê‚éj
+			// ï¿½{ï¿½`ï¿½ï¿½pï¿½Xï¿½Fï¿½}ï¿½bï¿½vï¿½Eï¿½Xï¿½Jï¿½Cï¿½Xï¿½tï¿½Bï¿½Aï¿½Eï¿½uï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½`ï¿½ï¿½iï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½ï¿½ï¿½Kï¿½pï¿½ï¿½ï¿½ï¿½ï¿½j
 			if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
 			if(_iHandleSkySphere >= 0) MV1DrawModel(_iHandleSkySphere);
 			for(auto& block : _vBlockPos)
@@ -236,7 +236,7 @@ bool Map1::Render()
 			}
 		}
 	}
-	// ƒVƒƒƒhƒEƒ}ƒbƒv‚Ì‰ğœ
+	// ï¿½Vï¿½ï¿½ï¿½hï¿½Eï¿½}ï¿½bï¿½vï¿½Ì‰ï¿½ï¿½
 	SetUseShadowMap(0, -1);
 
 	if(_ground_handle == -1)
@@ -244,11 +244,11 @@ bool Map1::Render()
 		return false;
 	}
 
-	// ’n–Ê‚ğ•`‰æ
+	// ï¿½nï¿½Ê‚ï¿½`ï¿½ï¿½
 	auto vertex_num = StCas<int>(_ground_vertex.size());
 	auto index_num = StCas<int>(_ground_index.size());
 
-	// ƒ|ƒŠƒSƒ“‚ª1‚Â‚à‚È‚¯‚ê‚Î•`‰æ‚µ‚È‚¢
+	// ï¿½|ï¿½ï¿½ï¿½Sï¿½ï¿½ï¿½ï¿½1ï¿½Â‚ï¿½È‚ï¿½ï¿½ï¿½Î•`ï¿½æ‚µï¿½È‚ï¿½
 	if(3 > vertex_num || 3 > index_num)
 	{
 		return false;
@@ -258,7 +258,7 @@ bool Map1::Render()
 
 	for(auto& block : _vBlockPos)
 	{
-		// ƒuƒƒbƒNƒ‚ƒfƒ‹‚ğ•`‰æ
+		// ï¿½uï¿½ï¿½ï¿½bï¿½Nï¿½ï¿½ï¿½fï¿½ï¿½ï¿½ï¿½`ï¿½ï¿½
 		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
