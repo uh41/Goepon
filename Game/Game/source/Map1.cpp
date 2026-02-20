@@ -143,7 +143,7 @@ bool Map1::Initialize()
 	//	}
 	//}
 
-	_ground_handle = LoadGraph(img::BG_stone);
+_ground_handle = LoadGraph(img::BG_niwa);
 	// à»ç~ÇÃèâä˙âªÅiè»ó™ÇπÇ∏å≥ÇÃèàóùÇì¸ÇÍÇƒÇ≠ÇæÇ≥Ç¢Åj
 	_half_polygon_size = GROUND_POLYGON_SIZE * 0.5f;
 	_start_x = -_half_polygon_size * StCas<float>(GROUND_X);
@@ -151,10 +151,10 @@ bool Map1::Initialize()
 	_ground_normal = VGet(0.0f, 1.0f, 0.0f);
 	_diffuse = GetColorU8(255, 255, 255, 255);
 	_specular = GetColorU8(0, 0, 0, 0);
-	_ground_pos_0 = VGet(0.0f, -20.0f, 0.0f);
-	_ground_pos_1 = VGet(0.0f, -20.0f, GROUND_POLYGON_SIZE);
-	_ground_pos_2 = VGet(GROUND_POLYGON_SIZE, -20.0f, 0.0f);
-	_ground_pos_3 = VGet(GROUND_POLYGON_SIZE, -20.0f, GROUND_POLYGON_SIZE);
+	_ground_pos_0 = VGet(0.0f, -100.0f, 0.0f);
+	_ground_pos_1 = VGet(0.0f, -100.0f, GROUND_POLYGON_SIZE);
+	_ground_pos_2 = VGet(GROUND_POLYGON_SIZE, -100.0f, 0.0f);
+	_ground_pos_3 = VGet(GROUND_POLYGON_SIZE, -100.0f, GROUND_POLYGON_SIZE);
 	_ground_pos_list = { _ground_pos_0, _ground_pos_1, _ground_pos_2, _ground_pos_3 };
 	_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 	_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
