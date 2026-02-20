@@ -149,12 +149,6 @@ bool ModeGame::DebugProcess()
 		}
 	}
 
-	if(auto* soundMgr = EnemySoundManager::GetInstance())
-	{
-		soundMgr->RenderDebug();
-		soundMgr->RenderDebugEnemyHearing(_enemyBase);
-	}
-
 	return true;
 }
 
@@ -381,6 +375,13 @@ bool ModeGame::DebugRender()
 				DrawFormatString(x, y, color, "変身残り: %.1f s", _changeTimeLimit);
 			}
 		}
+	}
+
+	// 敵の聴覚範囲の描画
+	if (auto* soundMgr = EnemySoundManager::GetInstance())
+	{
+		soundMgr->RenderDebug();
+		soundMgr->RenderDebugEnemyHearing(_enemyBase);
 	}
 
 	return true;

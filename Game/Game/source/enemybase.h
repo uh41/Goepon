@@ -156,14 +156,14 @@ protected:
 	// 音検知からの経過時間管理
 	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
 	float _soundDetectionTimer;		// 音検知からの経過時間
-	static constexpr float SOUND_RETURN_TIME = 60.0f; // 音検知から初期位置に戻るまでの時間
+	static constexpr float SOUND_RETURN_TIME = 5.0f; // 音検知から初期位置に戻るまでの時間
 
 	at::spc<EffectBase> _effect;
 
 	bool _isInvincible;	// 無敵状態かどうか
 	float _stanTimer; // スタン時間
 	int _attachStage; // ダメージ後のアニメーション名
-	static constexpr float STAN_DURATION = 60.0f; // スタン時間
+	static constexpr float STAN_DURATION = 10.0f; // スタン時間
 
 	// アニメーション名
 	std::string _attachAnimDamage;// ダメージアニメーション名

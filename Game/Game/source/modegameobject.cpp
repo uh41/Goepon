@@ -719,17 +719,17 @@ bool ModeGame::ObjectRender()
 		_enemySensor->RenderDetectionUI();
 	}
 
-	for(auto& enemy : _enemyBase)
-	{
-		if(enemy->IsAlive())
-		{
-			// 音センサーの描画
-			if(enemy->GetEnemySoundSensor())
-			{
-				enemy->GetEnemySoundSensor()->Render();
-			}
-		}
-	}
+	//for(auto& enemy : _enemyBase)
+	//{
+	//	if(enemy->IsAlive())
+	//	{
+	//		// 音センサーの描画
+	//		if(enemy->GetEnemySoundSensor())
+	//		{
+	//			enemy->GetEnemySoundSensor()->Render();
+	//		}
+	//	}
+	//}
 
 	// 各敵のセンサーを個別に描画
 	for(auto& enemy : _enemyBase)

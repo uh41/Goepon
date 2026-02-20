@@ -177,7 +177,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 	std::string path = "res/map/";
-	std::string jsonFile = "markerbeta2.json";
+	std::string jsonFile = "markerbetaS.json";
 	std::string jsonObjectName = "stage";
 
 	std::ifstream ifs(path + jsonFile);
@@ -589,10 +589,10 @@ bool ModeGame::Process()
 				// 実際の押し出し（カプセル）
 				// 敵に接触したときに実際に行う処理はここで記入
 				// デバッグ用：メッセージ表示
-				if(!enemy->IsShowingYouDiedMessage())
+				/*if(!enemy->IsShowingYouDiedMessage())
 				{
 					enemy->TriggerYouDiedMessage();
-				}
+				}*/
 			}
 		}
 	}
@@ -782,7 +782,7 @@ bool ModeGame::Render()
 	_objectServer->Render();
 
 	ObjectRender();// オブジェクト描画処理
-	//DebugRender(); // デバック描画処理
+	DebugRender(); // デバック描画処理
 
 	if(_d_view_collision)
 	{
