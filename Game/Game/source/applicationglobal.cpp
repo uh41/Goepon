@@ -224,8 +224,8 @@ bool ApplicationGlobal::Init()
 	SetUseASyncLoadFlag(TRUE);
 	_iCgCursor = LoadGraph("res/cursor.png");
 
-	LoadMapData("Map1", "stagebeta.json", "stage");// 1ステージ目
-	LoadStageData("Stage1", "markerbetaS.json", "stage");// 1ステージ目
+	LoadMapData("Map1", "stage1_1.json", "stage");// 1ステージ目
+	LoadStageData("Stage1", "marker1_1.json", "stage");// 1ステージ目
 
 	// キャラクター関連モデル読み込み
 	ResourceServer::MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
