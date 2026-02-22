@@ -118,9 +118,9 @@ bool ModeGame::Initialize()
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
 
-	// **ロード時間計測終了**
-	const LONGLONG endTime = GetNowHiPerformanceCount();
-	_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
+	//// **ロード時間計測終了**
+	//const LONGLONG endTime = GetNowHiPerformanceCount();
+	//_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
 
 	_stageManager.SetStages
 	({
