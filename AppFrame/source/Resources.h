@@ -51,6 +51,7 @@ namespace mv1
   inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
+  inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
   inline constexpr const char* SM_stage_arufa2 = "res/map/SM_stage_arufa2.mv1";
