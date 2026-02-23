@@ -21,6 +21,7 @@ namespace mymath
         cnt /= frames;
         return -(end - start) * cnt * (cnt - 2) + start;
     }
+    
     float EasingInOutQuad(float cnt, float start, float end, float frames)
     {
         cnt /= StCas<float>(frames) / 2.0f; // C³: doubleƒŠƒeƒ‰ƒ‹‚ğfloat‚É

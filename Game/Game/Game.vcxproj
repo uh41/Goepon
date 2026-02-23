@@ -25,6 +25,7 @@
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
+    <ClInclude Include="source\CinematicCamera.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
@@ -83,6 +84,7 @@
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
+    <ClCompile Include="source\CinematicCamera.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />

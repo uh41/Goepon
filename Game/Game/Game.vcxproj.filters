@@ -59,6 +59,7 @@
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
+    <ClCompile Include="source\CinematicCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -117,6 +118,7 @@
     <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\StageManager.h" />
+    <ClInclude Include="source\CinematicCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
