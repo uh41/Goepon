@@ -12,7 +12,13 @@ public:
 
 	const std::string& GetCurrentStageId() const
 	{
-		return _stages.at(_index);
+		// ˆÀ‘SôF–¢Ý’è/”ÍˆÍŠO‚Ìê‡‚Í‹ó•¶Žš‚ð•Ô‚·
+		static const std::string empty;
+		if (_stages.empty() || _index >= _stages.size())
+		{
+			return empty;
+		}
+		return _stages[_index];
 	}
 
 	bool CanGoNext() const

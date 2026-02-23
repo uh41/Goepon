@@ -147,7 +147,9 @@ public:
 
 	// ステージリセット要求フラグのセッター（Process内でこのフラグをチェックしてリセット処理を行う）
 	void RequestResetStage() { _requestResetStage = true; }
-	bool HasRenderOnce() const { return _hasRenderOnce; }
+
+	void RequestNextStage()  { _requestNextStage  = true; }
+	bool HasRenderOnce() const { return _hasRenderOnce; }	
 
 protected:
 	Camera* _camera;
@@ -158,7 +160,7 @@ protected:
 
 	bool _hasRenderOnce;
 	bool _requestResetStage; // ステージリセット要求フラグ
-
+	bool _requestNextStage; // 次のステージ要求フラグ
 	// キャラクタ管理
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;

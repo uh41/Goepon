@@ -15,6 +15,7 @@
 #include "ModeGameClear.h"
 #include "applicationglobal.h"
 #include "ModeGameOver.h"
+#include "ModeTitle.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -29,16 +30,19 @@ bool ModeGame::Initialize()
 {
 	_hasRenderOnce = false;
 	_requestResetStage = false;
-
+	_requestNextStage  = false;
 
 	if(!base::Initialize()) { return false; }
 
+	_stageManager.SetStages
+	({
+	   "stage01",
+	   "stage02",
+	   "stage03",
+	});
+
 	ObjectInitialize();	// オブジェクト初期化
 
-	// オブジェクトサーバー初期化
-	/*_objectServer = NEW ObjectServer(this);
-	_objectServer->LoadDate("SM_stagebeta");
-	_objectServer->ProcessInit();*/
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
@@ -121,14 +125,6 @@ bool ModeGame::Initialize()
 	//// **ロード時間計測終了**
 	//const LONGLONG endTime = GetNowHiPerformanceCount();
 	//_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
-
-	_stageManager.SetStages
-	({
-	   "stage01",
-	   "stage02",
-	   "stage03",
-	});
-
 	return true;
 }
 
@@ -195,7 +191,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
 	if(stageData == nullptr)
 	{
 		return false;
@@ -414,6 +410,24 @@ bool ModeGame::Process()
 
 
 	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
+	if (_requestNextStage)
+	{
+		_requestNextStage = false;
+
+		// 次のステージがあるなら進めて再構築
+		if(_stageManager.GoNext())
+		{
+			ResetStage();
+		}
+		// 次のステージがないならタイトルに戻る
+	/*	else
+		{
+			ModeServer::GetInstance()->Add(new ModeTitle(), 0, "ModeTitle");
+		}*/
+
+		return true;
+	}
+
 	if(_requestResetStage)
 	{
 		_requestResetStage = false;
@@ -978,7 +992,7 @@ bool ModeGame::ResetStage()
 	{
 		_objectServer = NEW ObjectServer(this);
 	}
-	_objectServer->LoadDate("SM_stagebeta");
+	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
 	_objectServer->ProcessInit();
 
 	// カメラセット
