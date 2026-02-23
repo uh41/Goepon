@@ -36,9 +36,10 @@ bool ModeGame::Initialize()
 	ObjectInitialize();	// オブジェクト初期化
 
 	// オブジェクトサーバー初期化
-	_objectServer = NEW ObjectServer(this);
-	_objectServer->LoadDate("Stage1");
-	_objectServer->ProcessInit();
+	/*_objectServer = NEW ObjectServer(this);
+	_objectServer->LoadDate("SM_stagebeta");
+	_objectServer->ProcessInit();*/
+	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
 	// gGlobal._soundServer は ApplicationGlobal::Init() 内で生成されている想定
@@ -117,6 +118,17 @@ bool ModeGame::Initialize()
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
 
+	//// **ロード時間計測終了**
+	//const LONGLONG endTime = GetNowHiPerformanceCount();
+	//_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
+
+	_stageManager.SetStages
+	({
+	   "stage01",
+	   "stage02",
+	   "stage03",
+	});
+
 	return true;
 }
 
@@ -124,10 +136,6 @@ bool ModeGame::Initialize()
 bool ModeGame::Terminate()
 {
 	base::Terminate();
-
-	delete _objectServer;
-	_objectServer = nullptr;
-
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -186,7 +194,8 @@ bool ModeGame::Terminate()
 
 bool ModeGame::LoadStageData()
 {
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
+
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
 	if(stageData == nullptr)
 	{
 		return false;
@@ -969,7 +978,7 @@ bool ModeGame::ResetStage()
 	{
 		_objectServer = NEW ObjectServer(this);
 	}
-	_objectServer->LoadDate("Stage1");
+	_objectServer->LoadDate("SM_stagebeta");
 	_objectServer->ProcessInit();
 
 	// カメラセット

@@ -10,10 +10,13 @@
 #pragma once
 #include "appframe.h"
 
+class ObjectServer;
+
 class ApplicationMain : public ApplicationBase
 {
 	typedef ApplicationBase base;
 public:
+	static ApplicationMain* GetInstance();
 	virtual bool Initialize(HINSTANCE hInstance);
 	virtual bool Terminate();
 	virtual bool Input();
@@ -26,5 +29,7 @@ public:
 
 	virtual bool BeforeDXLib_Init()override;
 
+	ObjectServer* GetObjectServer() const { return _objectServer; }
 protected:
+	ObjectServer* _objectServer;
 };
