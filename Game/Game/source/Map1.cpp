@@ -1,4 +1,4 @@
-#include "Map1.h"
+﻿#include "Map1.h"
 #include "applicationglobal.h"
 
 // ������
