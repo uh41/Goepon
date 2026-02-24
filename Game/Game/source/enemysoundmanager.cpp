@@ -7,7 +7,7 @@ EnemySoundManager* EnemySoundManager::GetInstance()
 	return &instance;
 }
 
-void EnemySoundManager::EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed)
+void EnemySoundManager::EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed, uint32_t emitterId)
 {
 	Wave* wave = nullptr;
 	for(auto&& w : _wave)
@@ -38,6 +38,7 @@ void EnemySoundManager::EmitSound(const vec::Vec3& pos, int soundLevel, float ma
 	wave->speed = speed;
 	wave->soundLevel = soundLevel;
 	wave->isActive = true;
+	wave->emitterId = emitterId;
 
 	_waveDetectionMap.emplace(wave->id, at::ust<uint32_t>{}); // 新しい波の検知済み敵IDセットを初期化
 }
@@ -87,6 +88,12 @@ bool EnemySoundManager::TryDetectForEnemy(const EnemyBase& enemy, DetectionInfo&
 	for(auto&& wave : _wave)
 	{
 		if(!wave.isActive)
+		{
+			continue;
+		}
+
+		// 自分が発した音は検知しない
+		if (wave.emitterId == enemyId)
 		{
 			continue;
 		}

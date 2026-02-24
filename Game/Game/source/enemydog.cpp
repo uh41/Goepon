@@ -230,7 +230,7 @@ bool EnemyDog::Process()
 		auto soundManager = EnemySoundManager::GetInstance();
 		if (soundManager)
 		{
-			soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f);
+			soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
 		}
 
 		_isRandomWalking = false; // ƒ‰ƒ“ƒ_ƒ€ˆÚ“®‚ð’âŽ~

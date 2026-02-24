@@ -20,6 +20,7 @@ public:
 		float speed = 0.0f;									// ‰¹”g‚ÌŠgŽU‘¬“x
 		int soundLevel = 0;									// ‰¹‚Ì‘å‚«‚³ƒŒƒxƒ‹
 		bool isActive = false;								// ‰¹”g‚ª—LŒø‚©‚Ç‚¤‚©
+		uint32_t emitterId = 0;
 	};
 
 	struct DetectionInfo
@@ -34,7 +35,7 @@ public:
 
 	EnemySoundManager() = default;
 
-	void EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed);
+	void EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed, uint32_t emitterId = 0);
 	void Update(float deltaTime);
 
 	bool TryDetectForEnemy(const EnemyBase& enemy, DetectionInfo& inoutInfo);
