@@ -61,7 +61,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 
 	// ObjectServer を起動時に生成・ロード
 	_objectServer = NEW ObjectServer(nullptr);
-	_objectServer->LoadDate("SM_stagebeta");
+	_objectServer->LoadDate("SM_stage1");
 	_objectServer->ProcessInit();
 
 	ModeServer::GetInstance()->Add(new ModeTitle(), 2, "title");

@@ -195,7 +195,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
 	if(stageData == nullptr)
 	{
 		return false;
@@ -978,7 +978,7 @@ bool ModeGame::ResetStage()
 	{
 		_objectServer = NEW ObjectServer(this);
 	}
-	_objectServer->LoadDate("SM_stagebeta");
+	_objectServer->LoadDate("SM_stage1");
 	_objectServer->ProcessInit();
 
 	// カメラセット
