@@ -56,7 +56,17 @@ protected:
 	// Shake用パラメータ
 	float _shakeIntensity = 0.0f; // 揺れの強さ
 
-	// イージング
-	static float EaseInOutQuad(float t); // tは0.0～1.0の正規化された時間
+private:
+	static constexpr int kDebugTrailMax = 180;
+
+	bool _debugDrawEnabled = true;
+	int _debugTrailCount = 0;
+	int _debugTrailHead = 0;
+	vec::Vec3 _debugTrail[kDebugTrailMax]{};
+
+	void DebugPushTrail(const vec::Vec3& pos);
+	void DebugDraw3D() const;
+	void DebugDrawText2D(int x, int y, int line) const;
+	static const char* DebugStateName(State s);
 
 };

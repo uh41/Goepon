@@ -146,9 +146,9 @@ void CinematicCamera::StartZoom(const vec::Vec3& target, float durationSeconds, 
 
 void CinematicCamera::StartRotateSpeed(float radiansPerSec, float durationSeconds)
 {
-	_state = State::Rotate;
-	_timer = 0.0f;
-	_duration = durationSeconds;
+	_state       = State::Rotate;
+	_timer       = 0.0f;
+	_duration	 = durationSeconds;
 	_rotateSpeed = radiansPerSec;
 }
 
