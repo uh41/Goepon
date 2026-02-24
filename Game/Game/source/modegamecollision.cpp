@@ -34,8 +34,8 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 
 		float rad = atan2((float)v.z, (float)v.x);
 		float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
-		float sx = _camera->_vPos.x - _camera->_vTarget.x;
-		float sz = _camera->_vPos.z - _camera->_vTarget.z;
+		float sx = _camera->GetPos().x - _camera->GetTarget().x;
+		float sz = _camera->GetPos().z - _camera->GetTarget().z;
 		float camrad = atan2(sz, sx);
 
 		float escape_rad = DEG2RAD(escapeTbl[i]);
@@ -293,8 +293,8 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Trea
 
 			float rad = atan2((float)v.z, (float)v.x);
 			float length = chara->GetMoveSpeed() * sqrt(v.z * v.z + v.x * v.x);
-			float sx = _camera->_vPos.x - _camera->_vTarget.x;
-			float sz = _camera->_vPos.z - _camera->_vTarget.z;
+			float sx = _camera->GetPos().x - _camera->GetTarget().x;
+			float sz = _camera->GetPos().z - _camera->GetTarget().z;
 			float camrad = atan2(sz, sx);
 
 			// escapeTbl[i] の分だけ移動量 v を回転

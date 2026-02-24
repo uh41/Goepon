@@ -21,7 +21,7 @@ public:
 	virtual bool Render();
 
 
-	void SetCamera(Camera* cam)  override { _cam = cam; if(_cam) { _camOffset = vec3::VSub(_cam->_vPos, _vPos); _camTargetOffset = vec3::VSub(_cam->_vTarget, _vPos); } }
+	void SetCamera(Camera* cam)  override { _cam = cam; if(_cam) { _camOffset = vec3::VSub(_cam->GetPos(), _vPos); _camTargetOffset = vec3::VSub(_cam->GetTarget(), _vPos); } }
 
 	bool PlayerSoundMove();
 
