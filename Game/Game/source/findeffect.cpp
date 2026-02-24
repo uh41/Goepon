@@ -21,16 +21,7 @@ bool FindEffect::Initialize()
 bool FindEffect::Terminate()
 {
 	base::Terminate();
-	if(_playHandle != -1)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->StopEffect(_playHandle);
-			_playHandleMap.clear();
-			_playHandle = -1;
-		}
-	}
+	StopPlaying();
 	return true;
 }
 
@@ -107,6 +98,31 @@ bool FindEffect::Process()
 				_playHandleMap.erase(it);
 			}
 		}
+	}
+	return true;
+}
+
+bool FindEffect::StopPlaying()
+{
+	auto em = EffekseerManager::GetInstance();
+	if(em)
+	{
+		// マップ内の全ハンドルを停止
+		for(auto&& phm : _playHandleMap)
+		{
+			if(phm.second != -1)
+			{
+				em->StopEffect(phm.second);
+			}
+		}
+	}
+	_playHandleMap.clear();
+
+	// base クラスの単一ハンドルも念のため停止
+	if(_playHandle != -1 && em)
+	{
+		em->StopEffect(_playHandle);
+		_playHandle = -1;
 	}
 	return true;
 }

@@ -9,6 +9,7 @@ bool DoyaEffect::Initialize()
 {
 	base::Initialize();
 	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::EF_doya, 1.0f);
+	_playHandle = -1;
 	return true;
 }
 
@@ -23,6 +24,7 @@ bool DoyaEffect::Terminate()
 		_handle = -1;
 	}
 
+	StopPlaying();
 	return true;
 }
 
@@ -33,7 +35,7 @@ void DoyaEffect::PlayEffect(const vec::Vec3& pos)
 	{
 		return;
 	}
-	em->PlayEffect3DPos(_handle, pos);
+	_playHandle = em->PlayEffect3DPos(_handle, pos);
 }
 
 

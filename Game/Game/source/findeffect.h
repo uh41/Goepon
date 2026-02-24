@@ -14,6 +14,8 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
+	virtual bool StopPlaying() override;
+
 	void SetEnemy(at::vspc<EnemyBase> enemy) { _enemy = enemy; }
 
 protected:

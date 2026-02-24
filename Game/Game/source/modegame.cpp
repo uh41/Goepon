@@ -195,7 +195,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("SM_stagebeta");
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
 	if(stageData == nullptr)
 	{
 		return false;
@@ -602,6 +602,14 @@ bool ModeGame::Process()
 					{
 						_sound3D->StopAll();
 					}
+
+					for(auto& ef : _effectBase)
+					{
+						if(ef)
+						{
+							ef->StopPlaying();
+						}
+					}
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
@@ -917,24 +925,56 @@ bool ModeGame::ResetStage()
 		_objectServer->ClearObject();
 	}
 
-	// キャラ/オブジェクト/UI/エフェクトを廃棄
-	for(auto& chara : _chara) { if(chara) chara->Terminate(); }
+	// キャラ/オブジェクト/UI を廃棄
+	for(auto& chara : _chara) {
+		if(chara) chara->Terminate();
+	}
 	_chara.clear();
 
-	for(auto& object : _object) { if(object) object->Terminate(); }
+	for(auto& object : _object) {
+		if(object) object->Terminate();
+	}
 	_object.clear();
 
-	for(auto& player_base : _playerBase) { if(player_base) player_base->Terminate(); }
+	for(auto& player_base : _playerBase) {
+		if(player_base) player_base->Terminate();
+	}
 	_playerBase.clear();
 
-	for(auto& ui_base : _uiBase) { if(ui_base) ui_base->Terminate(); }
+	for(auto& ui_base : _uiBase) {
+		if(ui_base) ui_base->Terminate();
+	}
 	_uiBase.clear();
 
-	for(auto& shadow : _charaShadow) { if(shadow) shadow->Terminate(); }
+	for(auto& shadow : _charaShadow) {
+		if(shadow) shadow->Terminate();
+	}
 	_charaShadow.clear();
 
-	for(auto& effectBase : _effectBase) { if(effectBase) effectBase->Terminate(); }
+	// --- エフェクトの確実な破棄 ---
+	// 個々の EffectBase インスタンスを終了させ、コンテナとメンバ shared_ptr を解放する
+	for(auto& effectBase : _effectBase)
+	{
+		if(effectBase)
+		{
+			effectBase->Terminate();
+		}
+	}
 	_effectBase.clear();
+
+	// メンバで保持しているエフェクト shared_ptr をリセットして参照を切る
+	_hensinEffect.reset();
+	_walkEffect.reset();
+	_findEffect.reset();
+	_hatenaEffect.reset();
+	_aseEffect.reset();
+	_doyaEffect.reset();
+	_nakiEffect.reset();
+	_treasureEffect.reset();
+
+	// Effekseer に登録されているエフェクトリソースも全削除しておく
+	// （再構築時に再ロードさせるため）
+	EffekseerManager::GetInstance()->DeleteAllEffect();
 
 	_enemyBase.clear();
 	_enemy.clear();
@@ -990,11 +1030,21 @@ bool ModeGame::ResetStage()
 	ObjectInitialize();	// オブジェクト初期化
 
 	// 各種　initialize
-	for(auto& chara : _chara) { if(chara) chara->Initialize(); }
-	for(auto& object : _object) { if(object) object->Initialize(); }
-	for(auto& player_base : _playerBase) { if(player_base) player_base->Initialize(); }
-	for(auto& ui_base : _uiBase) { if(ui_base) ui_base->Initialize(); }
-	for(auto& _effectBase : _effectBase) { if(_effectBase) _effectBase->Initialize(); }
+	for(auto& chara : _chara) {
+		if(chara) chara->Initialize();
+	}
+	for(auto& object : _object) {
+		if(object) object->Initialize();
+	}
+	for(auto& player_base : _playerBase) {
+		if(player_base) player_base->Initialize();
+	}
+	for(auto& ui_base : _uiBase) {
+		if(ui_base) ui_base->Initialize();
+	}
+	for(auto& effectBase : _effectBase) {
+		if(effectBase) effectBase->Initialize();
+	}
 
 	LoadStageData(); // ステージデータ読み込み
 
