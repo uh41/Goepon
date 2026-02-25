@@ -235,6 +235,7 @@ bool ModeGame::Terminate()
 bool ModeGame::LoadStageData()
 {
 
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
 	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
 	if(stageData == nullptr)
 	{
@@ -476,6 +477,8 @@ bool ModeGame::Process()
 
 		return true;
 	}
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	if(_requestResetStage)
 	{
@@ -483,9 +486,6 @@ bool ModeGame::Process()
 		ResetStage();
 		return true;
 	}
-
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// カメラ処理
 	_camera->Process();
@@ -665,6 +665,15 @@ bool ModeGame::Process()
 					{
 						_sound3D->StopAll();
 					}
+
+					for(auto& effectBase : _effectBase)
+					{
+						if(effectBase)
+						{
+							effectBase->StopPlaying();
+						}
+					}
+
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
@@ -989,24 +998,75 @@ bool ModeGame::ResetStage()
 		_objectServer->ClearObject();
 	}
 
-	// キャラ/オブジェクト/UI/エフェクトを廃棄
-	for(auto& chara : _chara) { if(chara) chara->Terminate(); }
+	// --- 再生中のエフェクトを途中でもいいから即時停止 ---
+	// _effectBase 内の全エフェクトに対して StopPlaying を呼ぶ（途中停止を許容）
+	//for(auto& effectBase : _effectBase)
+	//{
+	//	if(effectBase)
+	//	{
+	//		effectBase->StopPlaying();
+	//	}
+	//}
+	//// メンバで保持しているエフェクトハンドルにも念のため停止を要求
+	//if(_hensinEffect) _hensinEffect->StopPlaying();
+	//if(_walkEffect)  _walkEffect->StopPlaying();
+	//if(_findEffect)  _findEffect->StopPlaying();
+	//if(_hatenaEffect) _hatenaEffect->StopPlaying();
+	//if(_aseEffect)   _aseEffect->StopPlaying();
+	//if(_doyaEffect)  _doyaEffect->StopPlaying();
+	//if(_nakiEffect)  _nakiEffect->StopPlaying();
+
+	// キャラ/オブジェクト/UI を廃棄
+	for(auto& chara : _chara) {
+		if(chara) chara->Terminate();
+	}
 	_chara.clear();
 
-	for(auto& object : _object) { if(object) object->Terminate(); }
+	for(auto& object : _object) {
+		if(object) object->Terminate();
+	}
 	_object.clear();
 
-	for(auto& player_base : _playerBase) { if(player_base) player_base->Terminate(); }
+	for(auto& player_base : _playerBase) {
+		if(player_base) player_base->Terminate();
+	}
 	_playerBase.clear();
 
-	for(auto& ui_base : _uiBase) { if(ui_base) ui_base->Terminate(); }
+	for(auto& ui_base : _uiBase) {
+		if(ui_base) ui_base->Terminate();
+	}
 	_uiBase.clear();
 
-	for(auto& shadow : _charaShadow) { if(shadow) shadow->Terminate(); }
+	for(auto& shadow : _charaShadow) {
+		if(shadow) shadow->Terminate();
+	}
 	_charaShadow.clear();
 
-	for(auto& effectBase : _effectBase) { if(effectBase) effectBase->Terminate(); }
+	// --- エフェクトの確実な破棄 ---
+	// 個々の EffectBase インスタンスを終了させ、コンテナとメンバ shared_ptr を解放する
+	for(auto& effectBase : _effectBase)
+	{
+		if(effectBase)
+		{
+			effectBase->Terminate();
+		}
+	}
 	_effectBase.clear();
+
+	// メンバで保持しているエフェクト shared_ptr をリセットして参照を切る
+	_hensinEffect.reset();
+	_walkEffect.reset();
+	_findEffect.reset();
+	_hatenaEffect.reset();
+	_aseEffect.reset();
+	_doyaEffect.reset();
+	_nakiEffect.reset();
+
+	// Effekseer に登録されているエフェクトリソースも全削除しておく
+	// （再構築時に再ロードさせるため）
+	EffekseerManager::GetInstance()->DeleteAllEffect();
+	EffekseerManager::GetInstance()->Update();
+	EffekseerManager::GetInstance()->StopAllPlayingEffect();
 
 	_enemyBase.clear();
 	_enemy.clear();
@@ -1050,6 +1110,7 @@ bool ModeGame::ResetStage()
 	{
 		_objectServer = NEW ObjectServer(this);
 	}
+	_objectServer->LoadDate("SM_stage1");
 	//_objectServer->LoadDate(_stageManager.GetCurrentStageId(), "stage1_1.json");
 	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
 	_objectServer->ProcessInit();
@@ -1063,15 +1124,38 @@ bool ModeGame::ResetStage()
 	ObjectInitialize();	// オブジェクト初期化
 
 	// 各種　initialize
-	for(auto& chara : _chara) { if(chara) chara->Initialize(); }
-	for(auto& object : _object) { if(object) object->Initialize(); }
-	for(auto& player_base : _playerBase) { if(player_base) player_base->Initialize(); }
-	for(auto& ui_base : _uiBase) { if(ui_base) ui_base->Initialize(); }
-	for(auto& _effectBase : _effectBase) { if(_effectBase) _effectBase->Initialize(); }
+	for(auto& chara : _chara) {
+		if(chara) chara->Initialize();
+	}
+	for(auto& object : _object) {
+		if(object) object->Initialize();
+	}
+	for(auto& player_base : _playerBase) {
+		if(player_base) player_base->Initialize();
+	}
+	for(auto& ui_base : _uiBase) {
+		if(ui_base) ui_base->Initialize();
+	}
+	for(auto& effectBase : _effectBase) {
+		if(effectBase) effectBase->Initialize();
+	}
 
 	LoadStageData(); // ステージデータ読み込み
 
 	// カメラをプレイヤーがいる位置に合わせる
+
+	if(_camera != nullptr && _playerTanuki)
+	{
+		// 現在のカメラオフセットを保存（pos - target）
+		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+
+		// ターゲットはタヌキの高さを少し上げた位置にする
+		vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+		_camera->_vTarget = target;
+
+		// pos をターゲット + オフセットで再計算
+		_camera->_vPos = vec3::VAdd(target, camDelta);
+	}
 	if(_player)       _player->SetCamera(_camera);
 	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
 	if(_playerMono)   _playerMono->SetCamera(_camera);

@@ -9,54 +9,49 @@ def generate_header():
     if not os.path.exists(IMG_DIR):
         return
 
-    lines = ["#pragma once\n\n"]
+    ns_dict = {
+        "img": [],
+        "texture": [],
+        "ef": [],
+        "mv1": [],
+        "mp3": [],
+        "wav": []
+    }
 
-    lines.append("namespace img\n{\n")
-    for file in sorted(os.listdir(IMG_DIR)):
-        if file.endswith(".png"):
+    for root, _, files in os.walk(IMG_DIR):
+        rel_dir = os.path.relpath(root, IMG_DIR).lower().replace("\\", "/")
+        
+        for file in sorted(files):
+            ext = os.path.splitext(file)[1].lower()
             name_base = os.path.splitext(file)[0]
-            lines.append(f'  inline constexpr const char* {name_base} = "res/{file}";\n')
-    lines.append("}\n\n")
+            
+            full_rel_path = os.path.relpath(os.path.join(root, file), IMG_DIR).replace("\\", "/")
+            line = f'  inline constexpr const char* {name_base} = "res/{full_rel_path}";\n'
 
-    lines.append("namespace mv1\n{\n")
-    for root, _, files in os.walk(IMG_DIR):
-        for file in sorted(files):
-            if file.endswith(".mv1"):
-                name_base = os.path.splitext(file)[0]
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
-                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
-    lines.append("}\n\n")
+            if ext == ".png":
+                if rel_dir == ".":
+                    ns_dict["img"].append(line)
+                elif "texture" in rel_dir:
+                    ns_dict["texture"].append(line)
+            
+            elif ext == ".efkefc":
+                ns_dict["ef"].append(line)
+            
+            elif ext == ".mv1":
+                ns_dict["mv1"].append(line)
+                
+            elif ext == ".mp3":
+                ns_dict["mp3"].append(line)
+                
+            elif ext == ".wav":
+                ns_dict["wav"].append(line)
 
-    lines.append("namespace ef\n{\n")
-    for root, _, files in os.walk(IMG_DIR):
-        for file in sorted(files):
-            if file.endswith(".efkefc"):
-                name_base = os.path.splitext(file)[0]
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
-                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
-    lines.append("}\n\n")
-
-    lines.append("namespace mp3\n{\n")
-    for root, _, files in os.walk(IMG_DIR):
-        for file in sorted(files):
-            if file.endswith(".mp3"):
-                name_base = os.path.splitext(file)[0]
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
-                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
-    lines.append("}\n\n")
-
-    lines.append("namespace wav\n{\n")
-    for root, _, files in os.walk(IMG_DIR):
-        for file in sorted(files):
-            if file.endswith(".wav"):
-                name_base = os.path.splitext(file)[0]
-                full_path = os.path.join(root, file)
-                rel_path = os.path.relpath(full_path, IMG_DIR).replace("\\", "/")
-                lines.append(f'  inline constexpr const char* {name_base} = "res/{rel_path}";\n')
-    lines.append("}\n")
+    lines = ["#pragma once\n\n"]
+    for ns_name, content in ns_dict.items():
+        if content:
+            lines.append(f"namespace {ns_name}\n{{\n")
+            lines.extend(content)
+            lines.append("}\n\n")
 
     new_content = "".join(lines)
 

@@ -1,5 +1,5 @@
 #include "aseeffect.h"
-#include "enemysensor.h"
+#include "playertanuki.h"
 
 AseEffect::AseEffect()
 {
@@ -50,19 +50,14 @@ bool AseEffect::Process()
 		return true;
 	}
 
-	bool chasing = false;
-	for(auto&& enemy : _enemy)
+	// タヌキのダッシュ時に汗エフェクトを出す（敵に見つかった判定は廃止）
+	bool needEffect = false;
+	PlayerTanuki* tan = dynamic_cast<PlayerTanuki*>(_player);
+	if(tan != nullptr)
 	{
-		if(!enemy)
+		if(tan->GetDashCoolDownTime() > 0.0f)
 		{
-			continue;
-		}
-
-		auto sensor = enemy->GetEnemySensor();
-		if((sensor && sensor->IsChasing()) || enemy->IsDetectPlayer())
-		{
-			chasing = true;
-			break;
+			needEffect = true;
 		}
 	}
 
@@ -85,13 +80,11 @@ bool AseEffect::Process()
 	playerPos.z += forward.z * forwardOffset;
 	playerPos.y += headOffsetY;
 
-	if(chasing)
+	if(needEffect)
 	{
-
 		float yaw = atan2(playerDir.x, playerDir.z);
 
 		// 右向き（XZ平面で正のX成分が強い）ならエフェクトを180度回転させる
-		// 条件は必要に応じて閾値を調整してください（現状は forward.x > 0.0f）
 		if(forward.x > 0.5f)
 		{
 			yaw += PI; // 180度回転
@@ -121,7 +114,7 @@ bool AseEffect::Process()
 	}
 	else
 	{
-		// 追跡が無ければ確実に停止（ハンドル有効時のみ）
+		// 条件が満たされなければ確実に停止（ハンドル有効時のみ）
 		if(_playHandle != -1)
 		{
 			if(em->IsPlayingEffect(_playHandle))

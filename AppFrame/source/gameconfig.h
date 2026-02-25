@@ -2,8 +2,8 @@
 #pragma once
 //#include "TextUtil.h"
 
-const constexpr auto SCREEN_WIDTH = 1920;// 1280
-const constexpr auto SCREEN_HEIGHT = 1080;//720
+const constexpr auto SCREEN_WIDTH = 1280;// 1280
+const constexpr auto SCREEN_HEIGHT = 720;//720
 const constexpr auto FADE_FRAME = 120;
 const constexpr auto FADE_WAIT = 60;
 const constexpr auto FADE_OUT_WAIT = 30;

@@ -13,6 +13,8 @@ public:
 	virtual bool Process()override;
 	virtual bool Render()override;
 
+	virtual bool StopPlaying() override;
+
 	void SetPlayerPos(PlayerBase* player) { _playerBase = player; }
 
 protected:
@@ -21,4 +23,6 @@ protected:
 	// 足音等を出す間隔（フレーム）とカウンタ
 	int _stepIntervalFrames;
 	int _stepCounter;
+	at::vet<int> _playHandles;
+	bool _wasDash; // 前フレームのダッシュ状態を記録するフラグ
 };

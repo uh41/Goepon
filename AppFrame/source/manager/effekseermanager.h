@@ -45,6 +45,9 @@ public:
 	// 一時停止/再開
 	bool SetPauseEffect(int handle, bool pause);
 
+	// 再生中全てのエフェクトを停止
+	void StopAllPlayingEffect();
+
 	// 回転
 	bool SetRotationEffect(int handle, const vec::Vec3& rad);
 	vec::Vec3 GetRotationEffect(int handle) const;

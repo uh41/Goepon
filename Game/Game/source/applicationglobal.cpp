@@ -240,13 +240,21 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel(mv1::skysphere);
 	ResourceServer::MV1LoadModel(mv1::Ground);
 	ResourceServer::MV1LoadModel(mv1::fusama);
-	ResourceServer::MV1LoadModel(mv1::SM_stagebeta);
+	ResourceServer::MV1LoadModel(mv1::SM_stage1);
 
 	// その他
 	ResourceServer::MV1LoadModel(mv1::tuzura_02);
 	ResourceServer::MV1LoadModel(mv1::Goal);
 	ResourceServer::LoadGraph(img::work);
-
+	ResourceServer::LoadGraph(texture::makimono);
+	ResourceServer::LoadGraph(texture::TX_Tresure4);
+	ResourceServer::LoadGraph(texture::TX_ase);
+	ResourceServer::LoadGraph(texture::TX_change);
+	ResourceServer::LoadGraph(texture::TX_doyax);
+	ResourceServer::LoadGraph(texture::TX_find);
+	ResourceServer::LoadGraph(texture::TX_hatena);
+	ResourceServer::LoadGraph(texture::TX_nakix);
+	ResourceServer::LoadGraph(texture::TX_walk);
 
 	if(!_soundServer)
 	{

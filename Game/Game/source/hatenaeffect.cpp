@@ -24,7 +24,7 @@ bool HatenaEffect::Terminate()
 		em->DeleteEffect(_handle);
 		_handle = -1;
 	}
-	_playHandleMap.clear();
+	StopPlaying();
 	return true;
 }
 

@@ -16,6 +16,10 @@ public:
 
 	virtual void PlayEffect(const vec::Vec3& pos) {}
 
+	virtual bool StopPlaying();
+
+	bool IsPlaying() const;
+
 protected:
 	bool _effekseerLaunche;
 	int _playHandle;

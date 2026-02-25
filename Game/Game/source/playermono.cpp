@@ -219,9 +219,9 @@ bool PlayerMono::Render()
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
-	MATRIX mRotY = MGetRotY(vorty);
+	MATRIX mRotY = MGetRotY(DX_PI_F);
 
-	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f);
+	//MATRIX mRotX = MGetRotX(DX_PI_F);
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos)); // 平行移動行列
 
@@ -229,8 +229,9 @@ bool PlayerMono::Render()
 
 	MATRIX m = MGetIdent();
 
-	//m = MMult(m, mRotZ);
+
 	m = MMult(m, mRotY);
+	//m = MMult(m, mRotX);
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);
 

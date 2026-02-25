@@ -22,6 +22,15 @@ bool PlayerTanuki::Initialize()
 	_cam = nullptr;
 	_fMvSpeed = 8.0f;
 
+	_normalSpeed = _fMvSpeed;
+	_dash = false;
+	_dashTimer = 0.0f;
+	_dashDuration = 3.0f;
+	_dashSpeed = 2.0f;// ダッシュ中は通常速度の2倍
+	_dashCount = 0;
+
+	_dashCoolDownTime = 0.0f;
+
 	_bLand = true;
 
 	return true;
@@ -80,7 +89,7 @@ bool PlayerTanuki::Process()
 	base::Process();
 
 	int key = ApplicationBase::GetInstance()->GetKey();
-
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 
 	_vOldPos = _vPos;
 
@@ -156,6 +165,14 @@ bool PlayerTanuki::Process()
 
 		_vDir = _v;
 		_status = STATUS::WALK;
+
+		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+		{
+			_dash = true;
+			_dashTimer = _dashDuration;
+			_fMvSpeed = _normalSpeed * _dashSpeed; // ダッシュ開始時に速度を上げる
+			_dashCount++;
+		}
 	}
 	else
 	{
@@ -164,9 +181,25 @@ bool PlayerTanuki::Process()
 		_status = STATUS::WAIT;
 	}
 
-	if(_fPlayTime >= _fTotalTime)
+	if(_dash)
 	{
-		_fPlayTime = 0.0f;
+		_dashTimer -= 1.0f/ 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
+		if(_dashTimer <= 0.0f)
+		{
+			_dash = false;
+			_dashTimer = 0.0f;
+			_fMvSpeed = _normalSpeed;
+			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
+		}
+	}
+
+	if(_dashCoolDownTime > 0.0f)
+	{
+		_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
+		if(_dashCoolDownTime < 0.0f)
+		{
+			_dashCoolDownTime = 0.0f;
+		}
 	}
 
 	if(old_status != _status)
@@ -221,6 +254,10 @@ bool PlayerTanuki::Process()
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
+		if(_dash && _status == STATUS::WALK)
+		{
+			anim_speed *= _dashSpeed; // ダッシュ中はアニメーション速度も速くする
+		}
 		_fPlayTime += anim_speed;
 		switch(_status)
 		{
@@ -270,6 +307,17 @@ bool PlayerTanuki::Render()
 	MV1SetMatrix(_handle, m);
 
 	MV1DrawModel(_handle);
+
+#ifdef _DEBUG
+	// ダッシュ時間とクールダウンをデバッグ表示
+	{
+		unsigned int col = GetColor(255, 255, 0);
+		// 表示位置は必要に応じて調整してください
+		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, _dashDuration);
+		DrawFormatString(10, 56, col, "Dash cooldown: %.2f", _dashCoolDownTime);
+		DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, dash::DASH_MAX);
+	}
+#endif
 
 	return true;
 }
