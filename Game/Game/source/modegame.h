@@ -13,6 +13,7 @@
 #include "charabase.h"
 #include "objectbase.h"
 #include "camera.h"
+#include "CinematicCamera.h"
 #include "playerbase.h"
 #include "player.h"
 #include "playertanuki.h"
@@ -124,7 +125,7 @@ public:
 	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
 	bool DebugCameraControl();
-
+	bool DebugCinematicCameraControl();
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();
 	void EndCameraControlAndRestore();
@@ -147,18 +148,26 @@ public:
 
 	// ステージリセット要求フラグのセッター（Process内でこのフラグをチェックしてリセット処理を行う）
 	void RequestResetStage() { _requestResetStage = true; }
-	bool HasRenderOnce() const { return _hasRenderOnce; }
+
+	void RequestNextStage()  { _requestNextStage  = true; }
+	bool HasRenderOnce() const { return _hasRenderOnce; }	
 
 protected:
 	Camera* _camera;
+	Camera* _originalCamera;
+	std::unique_ptr<CinematicCamera> _cinematicCamera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
     vec::Vec3 _savedCamPos;
     vec::Vec3 _savedCamTarget;
     bool _hasSavedCameraState;
+	bool _useCinematicCamera; // 演出カメラ切り替えフラグ
+	// デバッグ用演出カメラ制御用変数
+	bool _debugF1KeyPressed = false; // F1キーの連続入力防止用
+	bool _debugZoomActive = false;   // ズーム演出が実行中かどうか
 
 	bool _hasRenderOnce;
 	bool _requestResetStage; // ステージリセット要求フラグ
-
+	bool _requestNextStage; // 次のステージ要求フラグ
 	// キャラクタ管理
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;

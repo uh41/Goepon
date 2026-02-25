@@ -213,6 +213,9 @@
     <ClCompile Include="source\mymath.cpp">
       <Filter>ソース ファイル\数学</Filter>
     </ClCompile>
+    <ClCompile Include="source\FrameRateController.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\aliastemplate.h">
@@ -313,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="source\manager\effekseermanager.h">
       <Filter>ヘッダー ファイル\エフェクト管理</Filter>
+    </ClInclude>
+    <ClInclude Include="source\FrameRateController.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
