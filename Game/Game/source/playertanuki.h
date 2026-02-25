@@ -15,6 +15,7 @@
 namespace dash
 {
 	static constexpr auto DASH_MAX = 5.0f; // 最大ダッシュ回数
+	static constexpr auto DASH_COOL_DOWN_DURATION = 5.0f;
 }
 
 class PlayerTanuki : public PlayerBase
@@ -45,7 +46,8 @@ protected:
 	float _dashDuration; // ダッシュ状態の持続時間
 	float _dashSpeed; // ダッシュ中の移動速度
 	float _normalSpeed; // 元の移動速度を保持
-
 	int _dashCount; // ダッシュ回数
+
+	float _dashCoolDownTime; // ダッシュクールダウンの持続時間
 };
 

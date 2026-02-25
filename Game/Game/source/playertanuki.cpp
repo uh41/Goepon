@@ -29,6 +29,8 @@ bool PlayerTanuki::Initialize()
 	_dashSpeed = 2.0f;// ダッシュ中は通常速度の2倍
 	_dashCount = 0;
 
+	_dashCoolDownTime = 0.0f;
+
 	_bLand = true;
 
 	return true;
@@ -164,7 +166,7 @@ bool PlayerTanuki::Process()
 		_vDir = _v;
 		_status = STATUS::WALK;
 
-		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX)
+		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
 		{
 			_dash = true;
 			_dashTimer = _dashDuration;
@@ -187,12 +189,17 @@ bool PlayerTanuki::Process()
 			_dash = false;
 			_dashTimer = 0.0f;
 			_fMvSpeed = _normalSpeed;
+			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
 		}
 	}
 
-	if(_fPlayTime >= _fTotalTime)
+	if(_dashCoolDownTime > 0.0f)
 	{
-		_fPlayTime = 0.0f;
+		_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
+		if(_dashCoolDownTime < 0.0f)
+		{
+			_dashCoolDownTime = 0.0f;
+		}
 	}
 
 	if(old_status != _status)
@@ -302,13 +309,13 @@ bool PlayerTanuki::Render()
 	MV1DrawModel(_handle);
 
 #ifdef _DEBUG
-	// ダッシュ時間をデバッグ表示（現在のタイマーと設定された持続時間）
+	// ダッシュ時間とクールダウンをデバッグ表示
 	{
 		unsigned int col = GetColor(255, 255, 0);
 		// 表示位置は必要に応じて調整してください
 		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, _dashDuration);
-		// ダッシュ残回数も表示
-		DrawFormatString(10, 56, col, "Dash used: %d / %d", _dashCount, dash::DASH_MAX);
+		DrawFormatString(10, 56, col, "Dash cooldown: %.2f", _dashCoolDownTime);
+		DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, dash::DASH_MAX);
 	}
 #endif
 
