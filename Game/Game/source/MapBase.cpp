@@ -4,6 +4,7 @@
 bool MapBase::Initialize()
 {
 	if(!base::Initialize()) { return false; }
+	_mapName.clear();
 	return true;
 }
 

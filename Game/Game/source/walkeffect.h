@@ -18,5 +18,7 @@ public:
 protected:
 	PlayerBase* _playerBase;
 
+	// 足音等を出す間隔（フレーム）とカウンタ
+	int _stepIntervalFrames;
+	int _stepCounter;
 };
-

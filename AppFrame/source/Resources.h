@@ -3,6 +3,7 @@
 namespace img
 {
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
+  inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* Logo = "res/Logo.png";
   inline constexpr const char* Op1 = "res/Op1.png";
@@ -24,6 +25,7 @@ namespace img
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* teamlogo = "res/teamlogo.png";
   inline constexpr const char* title = "res/title.png";
+  inline constexpr const char* work = "res/work.png";
 }
 
 namespace mv1
