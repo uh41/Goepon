@@ -33,6 +33,7 @@ public:
 	bool SoundWalk();// 歩行音の再生
 
 	virtual bool IsDash() const override { return _dash; } // ダッシュ中かどうかを返す（狸は常にダッシュ状態）
+	float GetDashCoolDownTime() const { return _dashCoolDownTime; }
 
 protected:
 	Camera* _cam;
