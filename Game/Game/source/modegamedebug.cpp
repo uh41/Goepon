@@ -269,138 +269,120 @@ bool ModeGame::DebugRender()
 		if (ifs.is_open())
 		{
 			nlohmann::json jsonData;
-			try
+
+			ifs >> jsonData;
+
+			// JSONが正しく読み込めたかデバッグ表示
+			DrawFormatString(10, 200, GetColor(255, 255, 0), "JSON loaded success");
+
+			if (jsonData.contains(jsonObjectName))
 			{
-				ifs >> jsonData;
+				nlohmann::json stage = jsonData.at(jsonObjectName);
 
-				// JSONが正しく読み込めたかデバッグ表示
-				DrawFormatString(10, 200, GetColor(255, 255, 0), "JSON loaded successfully");
+				// customIdごとのmarkerDGRポイントをグループ化
+				std::unordered_map<std::string, std::vector<vec::Vec3>> rangeGroups;
 
-				if (jsonData.contains(jsonObjectName))
+				for (auto& object : stage)
 				{
-					nlohmann::json stage = jsonData.at(jsonObjectName);
+					if (!object.contains("objectName")) continue;
 
-					// customIdごとのmarkerDGRポイントをグループ化
-					std::unordered_map<std::string, std::vector<vec::Vec3>> rangeGroups;
+					const std::string& name = object.at("objectName");
 
-					for (auto& object : stage)
+					if (name == "S_MarkerDGR")
 					{
-						if (!object.contains("objectName")) continue;
+						vec::Vec3 pos;
 
-						const std::string& name = object.at("objectName");
-
-						if (name == "S_MarkerDGR")
+						// 座標の取得（エラーハンドリング付き）
+						if (object.contains("translate"))
 						{
-							vec::Vec3 pos;
+							auto& trans = object.at("translate");
+							if (trans.contains("x")) trans.at("x").get_to(pos.x);
+							if (trans.contains("y")) trans.at("y").get_to(pos.z);
+							if (trans.contains("z")) trans.at("z").get_to(pos.y);
+							pos.z *= -1.0f;
 
-							// 座標の取得（エラーハンドリング付き）
-							if (object.contains("translate"))
+							std::string gid = "";
+							if (object.contains("customId"))
 							{
-								auto& trans = object.at("translate");
-								if (trans.contains("x")) trans.at("x").get_to(pos.x);
-								if (trans.contains("y")) trans.at("y").get_to(pos.z);
-								if (trans.contains("z")) trans.at("z").get_to(pos.y);
-								pos.z *= -1.0f;
-
-								std::string gid = "";
-								if (object.contains("customId"))
-								{
-									object.at("customId").get_to(gid);
-								}
-								rangeGroups[gid].push_back(pos);
+								object.at("customId").get_to(gid);
 							}
+							rangeGroups[gid].push_back(pos);
 						}
-					}
-
-					// デバッグ表示：検出されたグループ数
-					DrawFormatString(10, 220, GetColor(255, 255, 0),
-						"Range groups found: %d", static_cast<int>(rangeGroups.size()));
-
-					// 各グループの範囲を描画
-					unsigned int colors[] = {
-						GetColor(255, 0, 0),    // 赤
-						GetColor(0, 255, 0),    // 緑
-						GetColor(0, 0, 255),    // 青
-						GetColor(255, 255, 0),  // 黄
-						GetColor(255, 0, 255),  // マゼンタ
-						GetColor(0, 255, 255),  // シアン
-					};
-					int colorIndex = 0;
-					int groupIdx = 0;
-
-					for (const auto& [customId, points] : rangeGroups)
-					{
-						DrawFormatString(10, 240 + groupIdx * 20, GetColor(255, 255, 0),
-							"Group[%d] ID:'%s' Points:%d",
-							groupIdx, customId.c_str(), static_cast<int>(points.size()));
-
-						if (points.size() < 2)
-						{
-							groupIdx++;
-							continue;
-						}
-
-						unsigned int color = colors[colorIndex % 6];
-						colorIndex++;
-
-						const float heightOffset = 50.0f; // 床から十分浮かせる
-
-						// 隣り合うポイント間に線を描画
-						for (size_t i = 0; i < points.size(); ++i)
-						{
-							size_t nextIdx = (i + 1) % points.size();
-
-							vec::Vec3 p1 = vec3::VAdd(points[i], vec3::VGet(0.0f, heightOffset, 0.0f));
-							vec::Vec3 p2 = vec3::VAdd(points[nextIdx], vec3::VGet(0.0f, heightOffset, 0.0f));
-
-							// DxLib形式に変換して描画
-							VECTOR v1 = DxlibConverter::VecToDxLib(p1);
-							VECTOR v2 = DxlibConverter::VecToDxLib(p2);
-							DrawLine3D(v1, v2, color);
-
-							// マーカー点も描画（太い線で）
-							const float markerSize = 20.0f;
-							vec::Vec3 marker1 = vec3::VAdd(p1, vec3::VGet(-markerSize, 0.0f, 0.0f));
-							vec::Vec3 marker2 = vec3::VAdd(p1, vec3::VGet(markerSize, 0.0f, 0.0f));
-							vec::Vec3 marker3 = vec3::VAdd(p1, vec3::VGet(0.0f, 0.0f, -markerSize));
-							vec::Vec3 marker4 = vec3::VAdd(p1, vec3::VGet(0.0f, 0.0f, markerSize));
-
-							VECTOR m1 = DxlibConverter::VecToDxLib(marker1);
-							VECTOR m2 = DxlibConverter::VecToDxLib(marker2);
-							VECTOR m3 = DxlibConverter::VecToDxLib(marker3);
-							VECTOR m4 = DxlibConverter::VecToDxLib(marker4);
-
-							DrawLine3D(m1, m2, color);
-							DrawLine3D(m3, m4, color);
-
-							// 縦線も追加（見やすくするため）
-							vec::Vec3 markerDown = vec3::VAdd(p1, vec3::VGet(0.0f, -20.0f, 0.0f));
-							VECTOR md = DxlibConverter::VecToDxLib(markerDown);
-							DrawLine3D(v1, md, color);
-						}
-
-						groupIdx++;
 					}
 				}
-				else
+
+				// デバッグ表示：検出されたグループ数
+				DrawFormatString(10, 220, GetColor(255, 255, 0),
+					"Range groups found: %d", static_cast<int>(rangeGroups.size()));
+
+				// 各グループの範囲を描画
+				unsigned int colors[] = {
+					GetColor(255, 0, 0),    // 赤
+					GetColor(0, 255, 0),    // 緑
+					GetColor(0, 0, 255),    // 青
+					GetColor(255, 255, 0),  // 黄
+					GetColor(255, 0, 255),  // マゼンタ
+					GetColor(0, 255, 255),  // シアン
+				};
+				int colorIndex = 0;
+				int groupIdx = 0;
+
+				for (const auto& [customId, points] : rangeGroups)
 				{
-					DrawFormatString(10, 200, GetColor(255, 0, 0),
-						"JSON key '%s' not found", jsonObjectName.c_str());
+					DrawFormatString(10, 240 + groupIdx * 20, GetColor(255, 255, 0),
+						"Group[%d] ID:'%s' Points:%d",
+						groupIdx, customId.c_str(), static_cast<int>(points.size()));
+
+					if (points.size() < 2)
+					{
+						groupIdx++;
+						continue;
+					}
+
+					unsigned int color = colors[colorIndex % 6];
+					colorIndex++;
+
+					const float heightOffset = 50.0f; // 床から十分浮かせる
+
+					// 隣り合うポイント間に線を描画
+					for (size_t i = 0; i < points.size(); ++i)
+					{
+						size_t nextIdx = (i + 1) % points.size();
+
+						vec::Vec3 p1 = vec3::VAdd(points[i], vec3::VGet(0.0f, heightOffset, 0.0f));
+						vec::Vec3 p2 = vec3::VAdd(points[nextIdx], vec3::VGet(0.0f, heightOffset, 0.0f));
+
+						// DxLib形式に変換して描画
+						VECTOR v1 = DxlibConverter::VecToDxLib(p1);
+						VECTOR v2 = DxlibConverter::VecToDxLib(p2);
+						DrawLine3D(v1, v2, color);
+
+						// マーカー点も描画（太い線で）
+						const float markerSize = 20.0f;
+						vec::Vec3 marker1 = vec3::VAdd(p1, vec3::VGet(-markerSize, 0.0f, 0.0f));
+						vec::Vec3 marker2 = vec3::VAdd(p1, vec3::VGet(markerSize, 0.0f, 0.0f));
+						vec::Vec3 marker3 = vec3::VAdd(p1, vec3::VGet(0.0f, 0.0f, -markerSize));
+						vec::Vec3 marker4 = vec3::VAdd(p1, vec3::VGet(0.0f, 0.0f, markerSize));
+
+						VECTOR m1 = DxlibConverter::VecToDxLib(marker1);
+						VECTOR m2 = DxlibConverter::VecToDxLib(marker2);
+						VECTOR m3 = DxlibConverter::VecToDxLib(marker3);
+						VECTOR m4 = DxlibConverter::VecToDxLib(marker4);
+
+						DrawLine3D(m1, m2, color);
+						DrawLine3D(m3, m4, color);
+
+						// 縦線も追加（見やすくするため）
+						vec::Vec3 markerDown = vec3::VAdd(p1, vec3::VGet(0.0f, -20.0f, 0.0f));
+						VECTOR md = DxlibConverter::VecToDxLib(markerDown);
+						DrawLine3D(v1, md, color);
+					}
+					groupIdx++;
 				}
 			}
-			catch (const std::exception& e)
-			{
-				DrawFormatString(10, 200, GetColor(255, 0, 0),
-					"JSON parse error: %s", e.what());
-			}
-			ifs.close();
-		}
-		else
-		{
-			DrawFormatString(10, 200, GetColor(255, 0, 0),
-				"Failed to open: %s", (path + jsonFile).c_str());
 		}
 	}
+
 	// タヌキプレイヤーのカプセル当たり判定を表示
 	if(_bShowTanuki && _d_view_collision)
 	{

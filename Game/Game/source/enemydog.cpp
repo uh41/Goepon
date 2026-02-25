@@ -355,6 +355,9 @@ bool EnemyDog::Process()
 		// プレイヤーを追跡する（EnemyBaseの追跡処理を使用）
 		UpdateChasing();
 
+		// 犬専用：プレイヤーの方向に即座に向く
+		LookAtPlayer();
+
 		_isRandomWalking = false; // ランダム移動を停止
 		_isMovingToSound = false; // 音源への移動を停止
 		// ステータスはUpdateChasing()内で設定される
