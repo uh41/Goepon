@@ -1098,6 +1098,12 @@ void EnemyBase::UpdateDirectionSequence()
 // 音源の位置と音レベルに応じて処理を開始するメソッド
 void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel)
 {
+	// プレイヤー追跡中は音検知を無視
+	if (_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		return;
+	}
+
 	// 音レベルごとに異なる処理を実行
 	switch (soundLevel)
 	{
