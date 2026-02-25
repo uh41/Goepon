@@ -30,6 +30,7 @@ bool ModeGameOver::Process()
 			if(auto* game = dynamic_cast<ModeGame*>(_ownerGame))
 			{
 				game->RequestResetStage();
+				ModeServer::GetInstance()->Add(new ModeGameLoad(), ModeServer::GetInstance()->LayerTop(), "gameload");
 			}
 			// ゲームオーバー画面を閉じる
 			ModeServer::GetInstance()->Del(this);
