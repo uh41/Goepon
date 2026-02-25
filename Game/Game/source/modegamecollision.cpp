@@ -433,6 +433,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			// エフェクト再生
 			if (_doyaEffect)
 			{
+				_doyaEffect->SetTargetPlayer(player);
 				_doyaEffect->PlayEffect(treasure->GetPos());
 			}
 
