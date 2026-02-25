@@ -240,6 +240,17 @@ bool EnemyDog::Process()
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
+
+		// 音検知から一定時間経過したら初期位置に戻る
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME && !_detectedPlayer)
+		{
+			_isMovingToSound = false;
+			_waitingAtSound = false;
+			_soundWaitTimer = 0.0f;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			StartReturningToInitialPosition();
+		}
 	}
 
 	// 音源到達後の待機処理
@@ -248,8 +259,43 @@ bool EnemyDog::Process()
 		// 待機中はWAITステータスに設定
 		_status = STATUS::WAIT;
 
-		// 待機中はプレイヤー検出されたら割り込み可能
-		// この処理は下のEnemySensorの処理で行われる
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_soundWaitTimer -= dt;
+
+		// 待機時間が終了したら初期位置に戻る
+		if (_soundWaitTimer <= 0.0f)
+		{
+			_waitingAtSound = false;
+			_soundWaitTimer = 0.0f;
+			_isMovingToSound = false;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			StartReturningToInitialPosition();
+		}
+	}
+
+	// 検知終了後の待機処理（帰還前の待機）
+	if (_waitingBeforeReturn)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_returnWaitTimer -= dt;
+
+		_status = STATUS::WAIT;
+
+		if (_returnWaitTimer <= 0.0f)
+		{
+			_waitingBeforeReturn = false;
+			_returnWaitTimer = 0.0f;
+			StartReturningToInitialPosition();
+			_playSightOffOnReturn = true;
+		}
+		// 待機中にプレイヤーを再検出したら待機をキャンセル
+		if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
+		{
+			_waitingBeforeReturn = false;
+			_returnWaitTimer = 0.0f;
+		}
+		return true;
 	}
 
 	// EnemySoundSensorから音の検知情報を取得
