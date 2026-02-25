@@ -1,6 +1,7 @@
 #include "ModeGameOver.h"
 #include "ApplicationMain.h"
 #include "modegame.h"
+#include "modegameoverload.h"
 
 bool ModeGameOver::Initialize()
 {
@@ -29,13 +30,20 @@ bool ModeGameOver::Process()
 		{
 			if(auto* game = dynamic_cast<ModeGame*>(_ownerGame))
 			{
+
 				game->RequestResetStage();
-				ModeServer::GetInstance()->Add(new ModeGameLoad(), ModeServer::GetInstance()->LayerTop(), "gameload");
+				if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
+				{
+					ModeServer::GetInstance()->Add(new ModeGameOverLoad(), 99, "gameoverload");
+					ModeServer::GetInstance()->RenderInit();
+				}
 			}
 			// ゲームオーバー画面を閉じる
 			ModeServer::GetInstance()->Del(this);
 		}
 	}
+
+
 	return true;
 }
 

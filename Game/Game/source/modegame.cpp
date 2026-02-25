@@ -673,6 +673,8 @@ bool ModeGame::Process()
 						}
 					}
 
+					_hasRenderOnce = false;
+
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
@@ -990,6 +992,7 @@ bool ModeGame::ResetStage()
 	_isGameClear = false;
 	_goalConfirmOpened = false;
 	_goalConfirmResult = ModeGoalConfirm::Result::None;
+	_hasRenderOnce = false;
 
 	// オブジェクトサーバーは以下を全消去
 	if(_objectServer)

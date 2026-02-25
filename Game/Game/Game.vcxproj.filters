@@ -60,6 +60,7 @@
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
+    <ClCompile Include="source\modegameoverload.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -293,6 +294,7 @@
     <ClCompile Include="source\walkeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
+    <ClInclude Include="source\modegameoverload.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">

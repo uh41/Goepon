@@ -42,6 +42,7 @@
     <ClInclude Include="source\enemysoundsensor.h" />
     <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\ModeGameOver.h" />
+    <ClInclude Include="source\modegameoverload.h" />
     <ClInclude Include="source\ModeGoalConfirm.h" />
     <ClInclude Include="source\findeffect.h" />
     <ClInclude Include="source\hatenaeffect.h" />
@@ -101,6 +102,7 @@
     <ClCompile Include="source\enemysoundsensor.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
+    <ClCompile Include="source\modegameoverload.cpp" />
     <ClCompile Include="source\ModeGoalConfirm.cpp" />
     <ClCompile Include="source\findeffect.cpp" />
     <ClCompile Include="source\hatenaeffect.cpp" />
