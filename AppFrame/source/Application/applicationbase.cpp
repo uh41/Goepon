@@ -27,11 +27,12 @@ ApplicationBase::ApplicationBase()
 	_gKey = 0;
 	_gTrg = 0;
 	_serverMode = nullptr;
+	_frameRateController = std::make_unique<FrameRateController>(60.0);  // 追加
 }
 
 ApplicationBase::~ApplicationBase()
 {
-	// 何もしない
+	
 }
 
 bool ApplicationBase::Initialize(HINSTANCE hInstance)
@@ -84,6 +85,7 @@ bool ApplicationBase::Initialize(HINSTANCE hInstance)
 	// モードサーバの初期化
 	_serverMode = NEW ModeServer();
 
+	_frameRateController->Initialize();
 	return true;
 }
 

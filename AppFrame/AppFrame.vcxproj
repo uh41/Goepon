@@ -166,6 +166,7 @@
     <ClInclude Include="source\CFile\TextUtil.h" />
     <ClInclude Include="source\container.h" />
     <ClInclude Include="source\fade\fade.h" />
+    <ClInclude Include="source\FrameRateController.h" />
     <ClInclude Include="source\gameconfig.h" />
     <ClInclude Include="source\manager\collisionmanager.h" />
     <ClInclude Include="source\manager\effekseermanager.h">
@@ -203,6 +204,7 @@
     <ClCompile Include="source\CFile\cfile.cpp" />
     <ClCompile Include="source\CFile\TextUtil.cpp" />
     <ClCompile Include="source\fade\fade.cpp" />
+    <ClCompile Include="source\FrameRateController.cpp" />
     <ClCompile Include="source\manager\collisionmanager.cpp" />
     <ClCompile Include="source\manager\effekseermanager.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
