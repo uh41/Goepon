@@ -9,7 +9,7 @@ bool Map1::Initialize()
 	// スカイスフィア読み込み
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 	_sPath = "res/map/";
-	_sJsonFile = "beta.json";
+	_sJsonFile = "stageDGR.json";
 	_sJsonObjectName = "stage";
 
 	// JSONファイル読み込み

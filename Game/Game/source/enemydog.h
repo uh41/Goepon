@@ -25,6 +25,9 @@ public:
 
 	virtual float GetHearingRadius() const override { return 1000.0f; }
 
+	// 移動範囲を設定（markerDGRから）
+	void SetMovementArea(const std::vector<vec::Vec3>& areaPoints);
+
 private:
 	// ランダムウォーク用の変数
 	float _randomWalkTimer;			// ランダム移動のタイマー
@@ -34,9 +37,17 @@ private:
 	float _randomWalkDistance;		// ランダム移動の距離
 	float _randomWalkTraveledDistance;	// 移動した距離
 
+	// 移動範囲制限用の変数
+	std::vector<vec::Vec3> _movementAreaPoints;	// 移動可能範囲のポリゴン頂点
+	bool _hasMovementArea;						// 移動範囲が設定されているか
+
 	// ランダムウォークの処理
 	void ProcessRandomWalk();
+
 	// 新しいランダム方向を設定
 	void SetNewRandomDirection();
+
+	// 指定した位置が移動範囲内かチェック
+	bool IsPositionInArea(const vec::Vec3& pos) const;
 };
 

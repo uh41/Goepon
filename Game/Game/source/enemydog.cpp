@@ -31,6 +31,10 @@ bool EnemyDog::Initialize()
 	_randomWalkDistance = 0.0f;
 	_randomWalkTraveledDistance = 0.0f;
 
+	// 移動範囲制限の初期化
+	_hasMovementArea = false;
+	_movementAreaPoints.clear();
+
 	// 整合性のため他は base に委譲済み
 	// タイマー初期化等は base にて行われている
 	return true;
@@ -47,6 +51,51 @@ void EnemyDog::CaptureInitialTransform()
 void EnemyDog::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 {
 	_enemySensor = sensor;
+}
+
+// 移動範囲を設定
+void EnemyDog::SetMovementArea(const std::vector<vec::Vec3>& areaPoints)
+{
+	_movementAreaPoints = areaPoints;
+	_hasMovementArea = (areaPoints.size() >= 3);
+}
+
+// 指定した位置が移動範囲内かチェック（2D平面でのポリゴン内外判定）
+bool EnemyDog::IsPositionInArea(const vec::Vec3& pos) const
+{
+	if (!_hasMovementArea || _movementAreaPoints.size() < 3)
+	{
+		return true; // 範囲が設定されていない場合は常にtrue
+	}
+
+	// レイキャスティング法（Ray Casting Algorithm）を使用
+	// X-Z平面で判定（Y座標は無視）
+	int intersections = 0;
+	size_t n = _movementAreaPoints.size();
+
+	for (size_t i = 0; i < n; ++i)
+	{
+		size_t j = (i + 1) % n;
+
+		const vec::Vec3& p1 = _movementAreaPoints[i];
+		const vec::Vec3& p2 = _movementAreaPoints[j];
+
+		// 点が線分のY範囲内にあるかチェック（Z座標で判定）
+		if ((p1.z > pos.z) != (p2.z > pos.z))
+		{
+			// 交点のX座標を計算
+			float intersectX = (p2.x - p1.x) * (pos.z - p1.z) / (p2.z - p1.z) + p1.x;
+
+			// 点のX座標より右側に交点がある場合、カウント
+			if (pos.x < intersectX)
+			{
+				intersections++;
+			}
+		}
+	}
+
+	// 交点の数が奇数なら内側、偶数なら外側
+	return (intersections % 2) == 1;
 }
 
 bool EnemyDog::Terminate()
@@ -84,7 +133,7 @@ void EnemyDog::SetNewRandomDirection()
 	else
 	{
 		// 床がない場合は別の方向を試す（最大8回まで試行）
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 16; i++)
 		{
 			randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
 			testDir.x = sin(randomAngle);
@@ -133,7 +182,7 @@ void EnemyDog::ProcessRandomWalk()
 		vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
 
 		// 床の存在を確認
-		if (CheckFloorExistence(newPos))
+		if (CheckFloorExistence(newPos) && IsPositionInArea(newPos))
 		{
 			_vPos = newPos;
 			_randomWalkTraveledDistance += _moveSpeed;
