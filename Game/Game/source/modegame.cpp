@@ -41,9 +41,10 @@ bool ModeGame::Initialize()
 	_debugZoomActive = false;
 	_debugF1KeyPressed = false;
 
+	// ステージマネージャーにステージを登録
 	_stageManager.SetStages
 	({
-	   "stage01",
+	   "Stage1",
 	   "stage02",
 	   "stage03",
 	});
@@ -234,8 +235,6 @@ bool ModeGame::Terminate()
 
 bool ModeGame::LoadStageData()
 {
-
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData("Stage1");
 	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
 	if(stageData == nullptr)
 	{
@@ -1110,8 +1109,7 @@ bool ModeGame::ResetStage()
 	{
 		_objectServer = NEW ObjectServer(this);
 	}
-	_objectServer->LoadDate("SM_stage1");
-	//_objectServer->LoadDate(_stageManager.GetCurrentStageId(), "stage1_1.json");
+	//_objectServer->LoadDate("SM_stage1");
 	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
 	_objectServer->ProcessInit();
 
@@ -1147,14 +1145,14 @@ bool ModeGame::ResetStage()
 	if(_camera != nullptr && _playerTanuki)
 	{
 		// 現在のカメラオフセットを保存（pos - target）
-		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
 		// ターゲットはタヌキの高さを少し上げた位置にする
 		vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-		_camera->_vTarget = target;
+		_camera->SetTarget(target);
 
 		// pos をターゲット + オフセットで再計算
-		_camera->_vPos = vec3::VAdd(target, camDelta);
+		_camera->SetPos(vec3::VAdd(target, camDelta));
 	}
 	if(_player)       _player->SetCamera(_camera);
 	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
