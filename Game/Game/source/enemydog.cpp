@@ -298,35 +298,59 @@ bool EnemyDog::Process()
 		return true;
 	}
 
-	// EnemySoundSensorから音の検知情報を取得
-	if (_enemySoundSensor)
-	{
-		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
-		{
-			if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
-			{
-				_isMovingToSound = true;
-				_soundSourcePosition = detectionInfo.soundSourcePosition;
-				_soundDetectionActive = true;
-				_soundDetectionTimer = 0.0f;
-				_isRandomWalking = false; // ランダム移動を停止
-			}
-		}
-	}
+	//// EnemySoundSensorから音の検知情報を取得
+	//if (_enemySoundSensor)
+	//{
+	//	const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
+	//	if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+	//	{
+	//		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+	//		{
+	//			_isMovingToSound = true;
+	//			_soundSourcePosition = detectionInfo.soundSourcePosition;
+	//			_soundDetectionActive = true;
+	//			_soundDetectionTimer = 0.0f;
+	//			_isRandomWalking = false; // ランダム移動を停止
+	//		}
+	//	}
+	//}
 
 	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
 	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
 	{
+		// 追跡中の音波発生処理（一定間隔で発生）
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+
+		if (!_wasChasing)
+		{
+			// 追跡開始時：即座に音波を発生
+			auto soundManager = EnemySoundManager::GetInstance();
+			if (soundManager)
+			{
+				soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+			}
+			_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
+			_wasChasing = true;
+		}
+		else
+		{
+			// 追跡中：タイマーで管理して一定間隔で音波を発生
+			_soundEmitTimer -= dt;
+
+			if (_soundEmitTimer <= 0.0f)
+			{
+				// タイマーが0以下になったら音波を発生
+				auto soundManager = EnemySoundManager::GetInstance();
+				if (soundManager)
+				{
+					soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+				}
+				_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
+			}
+		}
+
 		// プレイヤーを追跡する（EnemyBaseの追跡処理を使用）
 		UpdateChasing();
-
-		// EnemySoundManagerを使用して音波を発生させる
-		auto soundManager = EnemySoundManager::GetInstance();
-		if (soundManager)
-		{
-			soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
-		}
 
 		_isRandomWalking = false; // ランダム移動を停止
 		_isMovingToSound = false; // 音源への移動を停止

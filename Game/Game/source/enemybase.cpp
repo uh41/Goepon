@@ -704,7 +704,7 @@ void EnemyBase::UpdateMovingToSound()
 	// 実際に移動を実行
 	_vPos = vec3::VAdd(_vPos, finalMovement);
 
-	// 追加: 実際に移動した方向に即座に向ける（壁回避で曲がった場合の向きずれ防止）
+	// 実際に移動した方向に即座に向ける（壁回避で曲がった場合の向きずれ防止）
 	if (vec3::VSize(finalMovement) > 0.001f)
 	{
 		vec::Vec3 moveDir = vec3::VNorm(finalMovement);
@@ -737,6 +737,7 @@ bool EnemyBase::Process()
 		_enemySoundSensor->SetDir(_vDir);
 	}
 
+	// プレイヤーの方向に徐々に回転
 	UpdateDirectionSequence();
 
 	return true;

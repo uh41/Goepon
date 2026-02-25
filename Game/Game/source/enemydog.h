@@ -41,6 +41,11 @@ private:
 	std::vector<vec::Vec3> _movementAreaPoints;	// 移動可能範囲のポリゴン頂点
 	bool _hasMovementArea;						// 移動範囲が設定されているか
 
+	// 音波発生用の変数
+	bool _wasChasing;				// 前フレームで追跡中だったか
+	float _soundEmitTimer;			// 音波発生タイマー
+	static constexpr float SOUND_EMIT_INTERVAL = 1.0f; // 音波発生間隔
+
 	// ランダムウォークの処理
 	void ProcessRandomWalk();
 
