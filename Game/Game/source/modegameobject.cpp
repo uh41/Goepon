@@ -74,6 +74,9 @@ bool ModeGame::ObjectInitialize()
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
 
+	_doyaEffect->SetTargetPlayer(_playerTanuki.get());
+	_nakiEffect->SetTargetPlayer(_playerTanuki.get());
+
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -233,7 +236,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_player->SetDir(_playerTanuki->GetDir());
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
-			_aseEffect->SetPlayer(_player.get());
+			_doyaEffect->SetTargetPlayer(_player.get());
+			_nakiEffect->SetTargetPlayer(_player.get());
 			_player->Process(); // 変身直後の一フレーム更新
 
 			// たぬ人間変身時の処理
@@ -270,7 +274,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_playerMono->SetDir(_playerTanuki->GetDir());
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
-			_aseEffect->SetPlayer(_playerMono.get());
+			_doyaEffect->SetTargetPlayer(_playerMono.get());
+			_nakiEffect->SetTargetPlayer(_playerMono.get());
 
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
@@ -957,6 +962,7 @@ bool ModeGame::CheckAllDetections()
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
+						_nakiEffect->SetTargetPlayer(player);
 						_nakiEffect->PlayEffect(player->GetPos());
 					}
 

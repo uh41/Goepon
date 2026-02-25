@@ -15,7 +15,8 @@
 namespace dash
 {
 	static constexpr auto DASH_MAX = 5.0f; // 最大ダッシュ回数
-	static constexpr auto DASH_COOL_DOWN_DURATION = 5.0f;
+	static constexpr auto DASH_COOL_DOWN_DURATION = 5.0f;// ダッシュクールダウンの持続時間（秒）
+	static constexpr auto DASH_RECOVER_INTERVAL = 5.0f;// ダッシュ回復のインターバル（秒）
 }
 
 class PlayerTanuki : public PlayerBase
@@ -50,5 +51,8 @@ protected:
 	int _dashCount; // ダッシュ回数
 
 	float _dashCoolDownTime; // ダッシュクールダウンの持続時間
+
+	float _dashRecoverTime; // ダッシュ回復のタイマー
+	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
 };
 

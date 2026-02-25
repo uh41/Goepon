@@ -31,6 +31,9 @@ bool PlayerTanuki::Initialize()
 
 	_dashCoolDownTime = 0.0f;
 
+	_dashRecoverTime = 0.0f;
+	_dashRecoverActive = false;
+
 	_bLand = true;
 
 	return true;
@@ -172,6 +175,8 @@ bool PlayerTanuki::Process()
 			_dashTimer = _dashDuration;
 			_fMvSpeed = _normalSpeed * _dashSpeed; // ダッシュ開始時に速度を上げる
 			_dashCount++;
+			_dashRecoverTime = 0.0f;
+			_dashRecoverActive = false;
 		}
 	}
 	else
@@ -190,15 +195,50 @@ bool PlayerTanuki::Process()
 			_dashTimer = 0.0f;
 			_fMvSpeed = _normalSpeed;
 			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
+			_dashRecoverTime = 0.0f;
+			_dashRecoverActive = false;
 		}
 	}
 
+	// ダッシュ時のクールタイム
 	if(_dashCoolDownTime > 0.0f)
 	{
 		_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
 		if(_dashCoolDownTime < 0.0f)
 		{
 			_dashCoolDownTime = 0.0f;
+			if(_dashCount > 0 && !_dashRecoverActive)
+			{
+				_dashRecoverActive = true; // クールダウンが終わったら回復開始
+				_dashRecoverTime = dash::DASH_RECOVER_INTERVAL;
+			}
+		}
+	}
+
+	// ダッシュ回復処理
+	if(_dashRecoverActive)
+	{
+		_dashRecoverTime -= 1.0f / 60.0f; // 回復タイマーも進める
+		if(_dashRecoverTime <= 0.0f)
+		{
+			if(_dashCount > 0)
+			{
+				_dashCount = _dashCount - 1;
+			}
+			else
+			{
+				_dashCount = 0;
+			}
+
+			if(_dashCount > 0)
+			{
+				_dashRecoverTime = dash::DASH_RECOVER_INTERVAL; // 回復インターバルをリセットして次の回復まで待つ
+			}
+			else
+			{
+				_dashRecoverActive = false; // 全て回復したら回復終了
+				_dashRecoverTime = 0.0f;
+			}
 		}
 	}
 
@@ -315,7 +355,12 @@ bool PlayerTanuki::Render()
 		// 表示位置は必要に応じて調整してください
 		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, _dashDuration);
 		DrawFormatString(10, 56, col, "Dash cooldown: %.2f", _dashCoolDownTime);
-		DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, dash::DASH_MAX);
+		DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, (int)dash::DASH_MAX);
+		// 回復タイマー表示（アクティブな場合）
+		if(_dashRecoverActive)
+		{
+			DrawFormatString(10, 88, col, "Recover in: %.2f", _dashRecoverTime);
+		}
 	}
 #endif
 
