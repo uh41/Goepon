@@ -280,7 +280,7 @@ bool Map::Process()
 		// 原点固定だと移動で端が見えるので、カメラに追従させる（推奨）
 		if(_cam)
 		{
-			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->_vPos));
+			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->GetPos()));
 		}
 
 		// 変換後の当たり判定更新が不要なら、この行はいりません
@@ -303,7 +303,7 @@ bool Map::Render()
 
 	// ライト設定
 	const int extent = 800; // シャドウマップの範囲
-	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->_vTarget), extent);
+	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->GetTarget()), extent);
 
 	// 2回まわして、path = 0; シャドウマップへの描画、path = 1; モデルの描画(シャドウ適用）	
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);
@@ -324,8 +324,8 @@ bool Map::Render()
 	float lenght = 800.f;
 	DxlibConverter::SetShadowMapDrawArea(
 		_iHandleShadowMap,
-		vec3::VAdd(_cam->_vTarget, vec3::VGet(-lenght, -1.0f, -lenght)),
-		vec3::VAdd(_cam->_vTarget, vec3::VGet(lenght, lenght, lenght))
+		vec3::VAdd(_cam->GetTarget(), vec3::VGet(-lenght, -1.0f, -lenght)),
+		vec3::VAdd(_cam->GetTarget(), vec3::VGet(lenght, lenght, lenght))
 	);
 	// 2回まわして、path = 0: シャドウマップへの描画、path = 1: モデルの：描画
 	for(int path = 0; path < 2; path++)

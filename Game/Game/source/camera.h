@@ -24,12 +24,30 @@ public:
 	void MoveBy(const vec::Vec3& delta);                 // カメラ位置とターゲットを同量だけ移動（パン）
 	void ZoomTowardsTarget(float amount);             // ターゲット方向にカメラ位置を移動（プラスで近づく、マイナスで遠ざかる）
 	void RotateAroundTarget(float deltaRad);         // ターゲットを中心にY軸回転（ラジアン）
+
+	// 視野角の設定・取得
 	void SetForvScele(float forv) { _fForvScale = forv; } //視野角設定
 	float GetForvScale() const { return _fForvScale; }
 
+	// カメラ位置の設定・取得
+	void SetPos(const vec::Vec3& pos) { _vPos = pos; }
+	const vec::Vec3& GetPos() const { return _vPos; }
+
+	// ターゲット位置の設定・取得
+	void SetTarget(const vec::Vec3& target) { _vTarget = target; }
+	const vec::Vec3& GetTarget() const { return _vTarget; }
+
+	// クリップ距離の設定・取得
+	void SetClipNear(float nearClip) { _fClipNear = nearClip; }
+	float GetClipNear() const { return _fClipNear; }
+
+	void SetClipFar(float farClip) { _fClipFar = farClip; }
+	float GetClipFar() const { return _fClipFar; }
+
+protected:
 	vec::Vec3 _vPos;
 	vec::Vec3 _vTarget;
 	float _fClipNear;
 	float _fClipFar;
-	float _fForvScale;
+	float _fForvScale;	// 視野角のスケール（値が大きいほど広く見える）
 };

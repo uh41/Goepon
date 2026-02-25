@@ -149,7 +149,7 @@ bool Map1::Process()
 		// ���_�Œ肾�ƈړ��Œ[��������̂ŁA�J�����ɒǏ]������i�����j
 		if(_cam)
 		{
-			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->_vPos));
+			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->GetPos()));
 		}
 
 		// �ϊ���̓����蔻��X�V���s�v�Ȃ�A���̍s�͂���܂���
@@ -171,7 +171,7 @@ bool Map1::Render()
 
 	// ���C�g�ݒ�
 	const int extent = 800; // �V���h�E�}�b�v�͈̔�
-	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->_vTarget), extent);
+	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->GetTarget()), extent);
 
 	// 2��܂킵�āApath = 0; �V���h�E�}�b�v�ւ̕`��Apath = 1; ���f���̕`��(�V���h�E�K�p�j	
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);
@@ -192,8 +192,8 @@ bool Map1::Render()
 	float lenght = 800.f;
 	DxlibConverter::SetShadowMapDrawArea(
 		_iHandleShadowMap,
-		vec3::VAdd(_cam->_vTarget, vec3::VGet(-lenght, -1.0f, -lenght)),
-		vec3::VAdd(_cam->_vTarget, vec3::VGet(lenght, lenght, lenght))
+		vec3::VAdd(_cam->GetTarget(), vec3::VGet(-lenght, -1.0f, -lenght)),
+		vec3::VAdd(_cam->GetTarget(), vec3::VGet(lenght, lenght, lenght))
 	);
 	// 2��܂킵�āApath = 0: �V���h�E�}�b�v�ւ̕`��Apath = 1: ���f���́F�`��
 	for(int path = 0; path < 2; path++)
