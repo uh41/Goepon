@@ -318,6 +318,9 @@ bool EnemyDog::Process()
 	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
 	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
 	{
+		// 追跡時の移動速度を確保（他の処理で変更されている可能性に対応）
+		_moveSpeed = 4.0f; // 追跡時の速度を明示的に設定
+
 		// 追跡中の音波発生処理（一定間隔で発生）
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 
