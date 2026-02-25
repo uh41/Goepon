@@ -27,6 +27,8 @@ public:
 	void AddMakimono(int addCount);                         // まきものの所持数を増やす
 	void SubMakimono(int subCount);                         // まきものの所持数を減らす	
 
+	virtual bool IsDash() const { return false; } // ダッシュ中かどうかを返す（デフォルトはfalse）
+
 	int GetModelHandle() const { return _handle; }
 protected:
 

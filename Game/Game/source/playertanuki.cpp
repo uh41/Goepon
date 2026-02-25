@@ -22,6 +22,13 @@ bool PlayerTanuki::Initialize()
 	_cam = nullptr;
 	_fMvSpeed = 8.0f;
 
+	_normalSpeed = _fMvSpeed;
+	_dash = false;
+	_dashTimer = 0.0f;
+	_dashDuration = 3.0f;
+	_dashSpeed = 2.0f;// ダッシュ中は通常速度の2倍
+	_dashCount = 0;
+
 	_bLand = true;
 
 	return true;
@@ -80,7 +87,7 @@ bool PlayerTanuki::Process()
 	base::Process();
 
 	int key = ApplicationBase::GetInstance()->GetKey();
-
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 
 	_vOldPos = _vPos;
 
@@ -156,12 +163,31 @@ bool PlayerTanuki::Process()
 
 		_vDir = _v;
 		_status = STATUS::WALK;
+
+		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX)
+		{
+			_dash = true;
+			_dashTimer = _dashDuration;
+			_fMvSpeed = _normalSpeed * _dashSpeed; // ダッシュ開始時に速度を上げる
+			_dashCount++;
+		}
 	}
 	else
 	{
 		_v = { 0.0f, 0.0f, 0.0f };
 		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
+	}
+
+	if(_dash)
+	{
+		_dashTimer -= 1.0f/ 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
+		if(_dashTimer <= 0.0f)
+		{
+			_dash = false;
+			_dashTimer = 0.0f;
+			_fMvSpeed = _normalSpeed;
+		}
 	}
 
 	if(_fPlayTime >= _fTotalTime)
@@ -221,6 +247,10 @@ bool PlayerTanuki::Process()
 	if(old_status == _status)
 	{
 		float anim_speed = 0.5f;
+		if(_dash && _status == STATUS::WALK)
+		{
+			anim_speed *= _dashSpeed; // ダッシュ中はアニメーション速度も速くする
+		}
 		_fPlayTime += anim_speed;
 		switch(_status)
 		{
@@ -270,6 +300,17 @@ bool PlayerTanuki::Render()
 	MV1SetMatrix(_handle, m);
 
 	MV1DrawModel(_handle);
+
+#ifdef _DEBUG
+	// ダッシュ時間をデバッグ表示（現在のタイマーと設定された持続時間）
+	{
+		unsigned int col = GetColor(255, 255, 0);
+		// 表示位置は必要に応じて調整してください
+		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, _dashDuration);
+		// ダッシュ残回数も表示
+		DrawFormatString(10, 56, col, "Dash used: %d / %d", _dashCount, dash::DASH_MAX);
+	}
+#endif
 
 	return true;
 }

@@ -39,13 +39,20 @@ void NakiEffect::PlayEffect(const vec::Vec3& pos)
 		return;
 	}
 
-	em->PlayEffect3DPos(_handle, pos);
-	_isPlay = true; // 再生済みにする
+	// 変更点: PlayEffect3DPos の戻り値（再生インスタンスのハンドル）を保存する
+	int playHandle = em->PlayEffect3DPos(_handle, pos);
+	if(playHandle != -1)
+	{
+		_playHandle = playHandle; // リソースハンドルではなく再生ハンドルを保持する
+		_isPlay = true; // 再生済みにする
+	}
 }
 
 void NakiEffect::ResetEffect()
 {
-	_isPlay = false; // 再生フラグをリセット
+	StopPlaying();
+	_isPlay = false;
+	_playHandle = -1;
 }
 
 bool NakiEffect::Process()
@@ -59,5 +66,3 @@ bool NakiEffect::Render()
 	base::Render();
 	return true;
 }
-
-

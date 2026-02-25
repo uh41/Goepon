@@ -1,10 +1,12 @@
 #include "walkeffect.h"
+#include "playertanuki.h"
 
 WalkEffect::WalkEffect()
 {
 	_playerBase = nullptr;
 	_stepIntervalFrames = 12; // 約0.2秒(60fps想定)。必要なら調整してください。
 	_stepCounter = 0;
+	_wasDash = false;
 	Initialize();
 }
 
@@ -19,6 +21,7 @@ bool WalkEffect::Initialize()
 bool WalkEffect::Terminate()
 {
 	base::Terminate();
+	StopPlaying();
 
 	auto em = EffekseerManager::GetInstance();
 	if(em && _handle != -1)
@@ -30,12 +33,67 @@ bool WalkEffect::Terminate()
 	return true;
 }
 
+bool WalkEffect::StopPlaying()
+{
+	bool isStop = false;
+	auto em = EffekseerManager::GetInstance();
+
+	// このインスタンスが記録している全ての再生ハンドルを停止
+	for(auto h : _playHandles)
+	{
+		if(h != -1 && em)
+		{
+			em->StopEffect(h);
+			isStop = true;
+		}
+	}
+	_playHandles.clear();
+
+	// EffectBase が持つ単一ハンドルも停止（念のため）
+	if(base::StopPlaying())
+	{
+		isStop = true;
+	}
+	_playHandle = -1;
+
+	return isStop;
+}
+
 bool WalkEffect::Process()
 {
 	base::Process();
 
 	// プレイヤー未設定なら何もしない
 	if(!_playerBase) return true;
+
+	PlayerTanuki* tanuki = dynamic_cast<PlayerTanuki*>(_playerBase);
+	bool isDash;
+	if(tanuki != nullptr)
+	{
+		isDash = tanuki->IsDash();
+	}
+	else
+	{
+		isDash = false; // プレイヤーが PlayerTanuki でない場合はダッシュしていないとみなす
+	}
+
+	if(isDash && !_wasDash)
+	{
+		vec::Vec3 pos = _playerBase->GetPos();
+		auto em = EffekseerManager::GetInstance();
+		if(em && _handle != -1)
+		{
+			int playHandle = em->PlayEffect3DPos(_handle, pos);
+			if(playHandle != -1)
+			{
+				_playHandles.emplace_back(playHandle);
+			}
+		}
+
+		_stepCounter = _stepIntervalFrames; // ダッシュ開始時にカウンタリセットして即発生させる
+	}
+
+	_wasDash = isDash; // 今のダッシュ状態を記録して次フレームで比較するために保存
 
 	// プレイヤーが歩行中なら一定間隔でエフェクトを発生（発生位置はその瞬間の座標を渡し固定する）
 	if(_playerBase->_status == CharaBase::STATUS::WALK)
@@ -49,7 +107,12 @@ bool WalkEffect::Process()
 			auto em = EffekseerManager::GetInstance();
 			if(em && _handle != -1)
 			{
-				em->PlayEffect3DPos(_handle, pos);
+				// ResetStage 等で StopPlaying() が有効に働くようにする
+				int playHandle = em->PlayEffect3DPos(_handle, pos);
+				if(playHandle != -1)
+				{
+					_playHandles.emplace_back(playHandle);
+				}
 			}
 
 			// カウンタリセット

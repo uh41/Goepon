@@ -414,15 +414,22 @@ bool ModeGame::Process()
 
 
 	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
+	//if(_requestResetStage)
+	//{
+	//	_requestResetStage = false;
+	//	ResetStage();
+	//	return true;
+	//}
+
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
 	if(_requestResetStage)
 	{
 		_requestResetStage = false;
 		ResetStage();
 		return true;
 	}
-
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// カメラ処理
 	_camera->Process();
@@ -603,13 +610,14 @@ bool ModeGame::Process()
 						_sound3D->StopAll();
 					}
 
-					for(auto& ef : _effectBase)
+					for(auto& effectBase : _effectBase)
 					{
-						if(ef)
+						if(effectBase)
 						{
-							ef->StopPlaying();
+							effectBase->StopPlaying();
 						}
 					}
+
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
@@ -925,6 +933,24 @@ bool ModeGame::ResetStage()
 		_objectServer->ClearObject();
 	}
 
+	// --- 再生中のエフェクトを途中でもいいから即時停止 ---
+	// _effectBase 内の全エフェクトに対して StopPlaying を呼ぶ（途中停止を許容）
+	//for(auto& effectBase : _effectBase)
+	//{
+	//	if(effectBase)
+	//	{
+	//		effectBase->StopPlaying();
+	//	}
+	//}
+	//// メンバで保持しているエフェクトハンドルにも念のため停止を要求
+	//if(_hensinEffect) _hensinEffect->StopPlaying();
+	//if(_walkEffect)  _walkEffect->StopPlaying();
+	//if(_findEffect)  _findEffect->StopPlaying();
+	//if(_hatenaEffect) _hatenaEffect->StopPlaying();
+	//if(_aseEffect)   _aseEffect->StopPlaying();
+	//if(_doyaEffect)  _doyaEffect->StopPlaying();
+	//if(_nakiEffect)  _nakiEffect->StopPlaying();
+
 	// キャラ/オブジェクト/UI を廃棄
 	for(auto& chara : _chara) {
 		if(chara) chara->Terminate();
@@ -970,11 +996,12 @@ bool ModeGame::ResetStage()
 	_aseEffect.reset();
 	_doyaEffect.reset();
 	_nakiEffect.reset();
-	_treasureEffect.reset();
 
 	// Effekseer に登録されているエフェクトリソースも全削除しておく
 	// （再構築時に再ロードさせるため）
 	EffekseerManager::GetInstance()->DeleteAllEffect();
+	EffekseerManager::GetInstance()->Update();
+	EffekseerManager::GetInstance()->StopAllPlayingEffect();
 
 	_enemyBase.clear();
 	_enemy.clear();
@@ -1049,6 +1076,19 @@ bool ModeGame::ResetStage()
 	LoadStageData(); // ステージデータ読み込み
 
 	// カメラをプレイヤーがいる位置に合わせる
+
+	if(_camera != nullptr && _playerTanuki)
+	{
+		// 現在のカメラオフセットを保存（pos - target）
+		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+
+		// ターゲットはタヌキの高さを少し上げた位置にする
+		vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+		_camera->_vTarget = target;
+
+		// pos をターゲット + オフセットで再計算
+		_camera->_vPos = vec3::VAdd(target, camDelta);
+	}
 	if(_player)       _player->SetCamera(_camera);
 	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
 	if(_playerMono)   _playerMono->SetCamera(_camera);
