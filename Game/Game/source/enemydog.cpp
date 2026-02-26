@@ -25,7 +25,7 @@ bool EnemyDog::Initialize()
 
 	// ランダムウォーク用の初期化
 	_randomWalkTimer = 0.0f;
-	_randomWalkInterval = 3.0f;		// 3秒ごとに方向変更
+	_randomWalkInterval = 3.0f;
 	_randomWalkDir = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_isRandomWalking = false;
 	_randomWalkDistance = 0.0f;
@@ -132,7 +132,7 @@ void EnemyDog::SetNewRandomDirection()
 	}
 	else
 	{
-		// 床がない場合は別の方向を試す（最大8回まで試行）
+		// 床がない場合は別の方向を試す
 		for (int i = 0; i < 16; i++)
 		{
 			randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
@@ -364,10 +364,12 @@ bool EnemyDog::Process()
 	}
 	else if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
 	{
+		// 音源に向かって移動する処理を開始
 		UpdateMovingToSound();
 	}
 	else if (_isReturningToInitialPos)
 	{
+		// 初期位置に戻る処理を更新
 		UpdateReturningToInitialPosition();
 		_isRandomWalking = false; // ランダム移動を停止
 	}

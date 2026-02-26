@@ -240,9 +240,6 @@ bool ModeGame::LoadStageData()
 	{
 		return false;
 	}
-	std::string path = "res/map/";
-	std::string jsonFile = "markerDGR.json";
-	std::string jsonObjectName = "stage";
 
 	const auto& patrolGroup = stageData->patrolGroup;
 	const auto& objectList = stageData->object;
@@ -257,7 +254,6 @@ bool ModeGame::LoadStageData()
 	std::vector<nlohmann::json> enemyObjects;
 	enemyObjects.reserve(objCount / 4);
 
-	uint32_t nextEnemyId = 1;
 	// 犬用の移動範囲を保持
 	std::unordered_map<std::string, std::vector<vec::Vec3>> dogMovementAreas;
 
@@ -417,9 +413,6 @@ bool ModeGame::LoadStageData()
 			enemyDog->SetEffect(_hensinEffect);
 			enemyDog->SetEnemyId(nextEnemyId++);
 
-			_enemyBase.emplace_back(std::move(enemyDog));
-			enemyDog->SetEnemyId(nextEnemyId++); // ★追加：敵IDを必ず付与
-
 			// 犬用の移動範囲を設定
 			auto dogAreaIt = dogMovementAreas.find(gid);
 			if (dogAreaIt != dogMovementAreas.end() && !dogAreaIt->second.empty())
@@ -427,7 +420,8 @@ bool ModeGame::LoadStageData()
 				enemyDog->SetMovementArea(dogAreaIt->second);
 			}
 
-			_enemyBase.emplace_back(enemyDog);
+			_enemyBase.emplace_back(std::move(enemyDog));
+			continue;
 		}
 	}
 
