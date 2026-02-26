@@ -59,7 +59,9 @@
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
-    <ClCompile Include="source\CinematicCamera.cpp" />
+    <ClCompile Include="source\CinematicCamera.cpp">
+      <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -118,7 +120,6 @@
     <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\StageManager.h" />
-    <ClInclude Include="source\CinematicCamera.h" />
     <ClCompile Include="source\cube.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
@@ -293,6 +294,9 @@
     <ClCompile Include="source\walkeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
+    <ClInclude Include="source\CinematicCamera.h">
+      <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -800,6 +804,12 @@
     </Filter>
     <Filter Include="Python">
       <UniqueIdentifier>{d7344469-51bb-4072-bcf2-91ac6fcdd0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\カメラ\演出用">
+      <UniqueIdentifier>{0fd5bede-c39e-4052-bab7-caf01b3bb70a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\カメラ\演出用">
+      <UniqueIdentifier>{6bdced03-28fa-46f2-acd7-cd2290420910}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

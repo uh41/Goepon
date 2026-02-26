@@ -125,6 +125,9 @@ public:
 	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
 	bool DebugCameraControl();
+	//　演出カメラ
+	bool TreasureOpeningCameraControl();
+	bool EndCinematicCamera();
 	bool DebugCinematicCameraControl();
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();

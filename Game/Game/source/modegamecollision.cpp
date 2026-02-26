@@ -409,6 +409,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 		if(!_isOpeningTreasure)
 		{
+			TreasureOpeningCameraControl();
 			_isOpeningTreasure = true;
 			_treasureHoldSec = 0.0f; // 開始時点でリセットしておく
 
@@ -445,6 +446,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
 	if (!inAnyTreasure || !holdA)
 	{
+		EndCinematicCamera();
 		_isOpeningTreasure = false;
 		_treasureHoldSec = 0.0f;
 		auto sound = gGlobal._soundServer->Get("60");

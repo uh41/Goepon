@@ -203,6 +203,54 @@ bool Map::Initialize()
 // 終了
 bool Map::Terminate()
 {
+	// スカイスフィアモデルの削除
+	if(_iHandleSkySphere >= 0)
+	{
+		MV1DeleteModel(_iHandleSkySphere);
+		_iHandleSkySphere = -1;
+	}
+
+	// メインマップモデルの削除
+	if(_iHandleMap >= 0)
+	{
+		MV1DeleteModel(_iHandleMap);
+		_iHandleMap = -1;
+	}
+
+	// シャドウマップの削除
+	if(_iHandleShadowMap >= 0)
+	{
+		DeleteShadowMap(_iHandleShadowMap);
+		_iHandleShadowMap = -1;
+	}
+
+	// 地面テクスチャハンドルの削除
+	if(_ground_handle >= 0)
+	{
+		DeleteGraph(_ground_handle);
+		_ground_handle = -1;
+	}
+
+	// 個別モデルハンドルの削除
+	for(auto& pair : _mModelHandle)
+	{
+		if(pair.second >= 0)
+		{
+			MV1DeleteModel(pair.second);
+		}
+	}
+	_mModelHandle.clear();
+
+	// ベクターのクリア
+	_ground_vertex.clear();
+	_ground_index.clear();
+	_vBlockPos.clear();
+
+	// ファイルストリームのクローズ
+	if(_iFile.is_open())
+	{
+		_iFile.close();
+	}
 
 	base::Terminate();
 	return true;

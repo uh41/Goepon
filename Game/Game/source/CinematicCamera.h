@@ -38,7 +38,7 @@ protected:
 	float _duration = 0.0f;     // 演出の継続時間（秒）
 
 	//　共通パラメータ
-	vec::Vec3 _effectTarget; // 演出の対象（ターゲット位置）
+	vec::Vec3 _targetPos; // 演出の対象（ターゲット位置）
 
 	// Orbit用パラメータ
 	float _orbitStartRadius = 0.0f; // ターゲットからの距離の開始値

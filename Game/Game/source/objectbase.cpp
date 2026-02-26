@@ -17,6 +17,7 @@ bool ObjectBase::Initialize()
 {
 	_cam = nullptr;
 	_handle = -1;
+	_attachIndex = -1;
 	_half_polygon_size = 0.0f;
 	_diffuse = GetColorU8(255, 255, 255, 255);
 	_specular = GetColorU8(0, 0, 0, 0);
@@ -31,7 +32,12 @@ bool ObjectBase::Initialize()
 // 終了
 bool ObjectBase::Terminate()
 {
-	ResourceServer::MV1DeleteModel(_handle);
+	if(_handle >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_handle);
+		_handle = -1;
+		_attachIndex = -1;
+	}
 	return true;
 }
 
@@ -105,7 +111,11 @@ void ObjectBase::ModelMatrixSetUp()
 	matrix = MMult(matrix, MGetRotY(_vEulerAngle.y + PI));
 	MV1SetMatrix(_handle, matrix);
 
-	MV1RefreshCollInfo(_handle, _attachIndex);
+	// アタッチフレームが有効な場合のみ当たり判定を更新
+	if(_attachIndex >= 0)
+	{
+		MV1RefreshCollInfo(_handle, _attachIndex);
+	}
 }
 
 // モデルの読み込み

@@ -23,6 +23,7 @@
 #include "Map1.h"
 #include "applicationglobal.h"
 
+// コンストラクタ・デストラクタ
 ObjectServer::ObjectServer(ModeGame* game)
 	: _player(nullptr)
 	, _game(game)
@@ -71,23 +72,24 @@ bool ObjectServer::Render()
 	return true;
 }
 
+// オブジェクトの追加
 void ObjectServer::AddObject(ObjectBase* obj)
 {
 	if(obj == nullptr) { return; }
 
-	// ���ɖ{�o�^����Ă���
+	// 既に本登録されている
 	if(std::find(_objects.begin(), _objects.end(), obj) != _objects.end())
 	{
 		return;
 	}
 
-	// ���ɒǉ��\�񂳂�Ă���
+	// 既に追加予約されている
 	if(std::find(_addObj.begin(), _addObj.end(), obj) != _addObj.end())
 	{
 		return;
 	}
 
-	// �폜�\�񂳂�Ă���i���ǉ����Ȃ��j
+	// 削除予約されている（追加しない）
 	if(std::find(_deleteObj.begin(), _deleteObj.end(), obj) != _deleteObj.end())
 	{
 		return;
@@ -98,15 +100,15 @@ void ObjectServer::AddObject(ObjectBase* obj)
 
 void ObjectServer::DeleteObject(ObjectBase* obj)
 {
-	//���ɍ폜�\�񂳂�Ă��邩
+	//既に削除予約されているか
 	auto iter = std::find(_deleteObj.begin(), _deleteObj.end(), obj);
-	if (iter != _deleteObj.end()) 
+	if(iter != _deleteObj.end())
 	{
 		return;
 	}
 
 	iter = std::find(_addObj.begin(), _addObj.end(), obj);
-	if (iter != _addObj.end()) {
+	if(iter != _addObj.end()) {
 		(*iter)->Terminate();
 		delete (*iter);
 		_addObj.erase(iter);
@@ -164,7 +166,7 @@ bool ObjectServer::ClearObject()
 
 bool ObjectServer::ProcessInit()
 {
-	// ���񏈗������O�ɃI�u�W�F�N�g�̒ǉ��ƍ폜����Ă���
+	// 追加されたオブジェクトを初期化してから _objects に移す
 	for(auto && addObj : _addObj)
 	{
 		//���ۂɒǉ�����Ă���A����������
@@ -190,41 +192,32 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(std::string stageName)
 {
-	// マップデータ読み込み
-	_sPath = "res/map/";
-	_sJsonFile = "marker1_1.json";
-	_sJsonObjectName = "stage";
-	/*_sJsonFile = "stagebeta.json";
-	_sJsonObjectName = "SM_stagebeta";*/
-
-	// JSONファイル読み込み
-	const std::string jsonPath = _sPath + _sJsonFile;
-	std::ifstream file(jsonPath);
-	if (!file) { return false; }
-
-	// JSONデータ解析
-	nlohmann::json jsonData;
-	file >> jsonData;
+	// ApplicationGlobalから既に読み込まれたステージデータを取得
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(stageName);
+	if(stageData == nullptr)
+	{
+		return false; // ステージデータが見つからない
+	}
 
 	// マップオブジェクト生成
-	if (_map == nullptr)
+	if(_map == nullptr)
 	{
 		_map = NEW Map1();
 		AddObject(_map);
 	}
 
-	// ステージデータ検索・設定
-	if (!jsonData.contains(_sJsonObjectName)) { return false; } // キー存在確認
-	const auto& stage = jsonData.at(_sJsonObjectName);          // ステージデータ取得
-
-	for (const auto& data : stage)
+	// ステージデータからマップデータを検索・設定
+	for(const auto& objectData : stageData->object)
 	{
-		const std::string name = data.at("objectName").get<std::string>(); // オブジェクト名取得
-		if (name != stageName) { continue; }
-
-		// マップデータ設定
-		_map->SetJsonDataUE(data);
-		break;
+		// ステージ名に一致するオブジェクトを探す
+		// 注意: stageName の比較方法によってはカスタマイズが必要
+		if(objectData.objectName.find(stageName) != std::string::npos ||
+			objectData.objectName == stageName)
+		{
+			// マップデータ設定（ApplicationGlobalから取得したJSONデータを使用）
+			_map->SetJsonDataUE(objectData.json);
+			break;
+		}
 	}
 
 	return true;

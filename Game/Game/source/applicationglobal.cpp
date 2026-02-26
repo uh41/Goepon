@@ -26,6 +26,22 @@ ApplicationGlobal::ApplicationGlobal()
 // デストラクタ
 ApplicationGlobal::~ApplicationGlobal()
 {
+	for(auto& mapPair : _mapData)
+	{
+		for(auto& modelPair : mapPair.second.modelHandle)
+		{
+			if(modelPair.second >= 0)
+			{
+				MV1DeleteModel(modelPair.second);
+			}
+		}
+		mapPair.second.modelHandle.clear();
+		mapPair.second.blockPos.clear();
+	}
+	_mapData.clear();
+
+	// ステージデータのクリア
+	_stageData.clear();
 	//ResourceServer::Release();
 	// 何もしない
 }

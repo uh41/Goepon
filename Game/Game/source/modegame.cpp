@@ -1247,15 +1247,16 @@ bool ModeGame::DebugCinematicCameraControl()
 					// 現在位置のカメラの位置からプレイヤーの位置への距離を計算
 					vec::Vec3 currentPos = _cinematicCamera->GetPos();
 					float currentDist = vec3::VSize(vec3::VSub(currentPos, target)); 
-					float endDist = currentDist * 0.5f; // 最終的な距離（半分にする例）
+					float endDist = currentDist * 0.25f; // 最終的な距離（半分にする例）
 					if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
 
 					// ズーム演出：現在距離から近距離へ
-					_cinematicCamera->StartZoom(target, 3.0f, currentDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
+					_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
 				}
 			}
 			else
 			{
+
 				// ズーム解除
 				_debugZoomActive = false;
 				_useCinematicCamera = false;
@@ -1277,5 +1278,95 @@ bool ModeGame::DebugCinematicCameraControl()
 	{
 		_debugF1KeyPressed = false;
 	}
+	return true;
+}
+
+bool ModeGame::TreasureOpeningCameraControl()
+{
+	if(_isOpeningTreasure)
+	{
+		return false; // またはすでに開いている場合は処理しない
+	}
+
+	// シネマティックカメラが初期化されていない場合は作成
+	if(!_cinematicCamera)
+	{
+		_cinematicCamera = std::make_unique<CinematicCamera>();
+		if(!_cinematicCamera->Initialize())
+		{
+			_cinematicCamera.reset(); 
+			return false;
+		}
+	}
+
+	// 元のカメラを保存
+	if(!_useCinematicCamera)
+	{
+		if(_cinematicCamera && _camera)
+		{
+			// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
+			_cinematicCamera->SetPos(_camera->GetPos());
+			_cinematicCamera->SetTarget(_camera->GetTarget());
+			_cinematicCamera->SetClipNear(_camera->GetClipNear());
+			_cinematicCamera->SetClipFar(_camera->GetClipFar());
+
+			_originalCamera = _camera;
+			_useCinematicCamera = true;
+			_camera = _cinematicCamera.get();
+		}
+		else
+		{
+			// カメラがない場合は処理をスキップ
+			return false;
+		}
+
+		// 現在のプレイヤー位置を取得
+		PlayerBase* targetPlayer = nullptr;
+		if(_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
+		{
+			targetPlayer = _playerTanuki.get();
+		}
+		else if(_showMonoPlayer && _playerMono && _playerMono->IsAlive())
+		{
+			targetPlayer = _playerMono.get();
+		}
+		else if(_player && _player->IsAlive())
+		{
+			targetPlayer = _player.get();
+		}
+
+		if(targetPlayer && _cinematicCamera)
+		{
+			vec::Vec3 target = targetPlayer->GetPos();
+			vec::Vec3 currentPos = _cinematicCamera->GetPos();
+			float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
+			float endDist = currentDist * 0.5f; // 最終的な距離（半分にする例）
+			if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
+
+			// ズーム演出：現在距離から近距離へ
+			_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist);
+		}
+	}
+	return true;
+}
+
+bool ModeGame::EndCinematicCamera()
+{
+	if(!_useCinematicCamera || !_cinematicCamera)
+	{
+		return false;
+	}
+
+	// 元のカメラに戻す
+	if(_originalCamera)
+	{
+		_camera = _originalCamera;
+		_originalCamera = nullptr;
+	}
+
+	_useCinematicCamera = false;
+
+	//　シネマティックカメラをリセット
+	_cinematicCamera->StopAll();
 	return true;
 }

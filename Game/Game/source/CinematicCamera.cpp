@@ -6,7 +6,7 @@ CinematicCamera::CinematicCamera()
 	_state = State::Idle;
 	_timer = 0.0f;
 	_duration = 0.0f;
-	_effectTarget = vec::Vec3{ 0.0f, 0.0f, 0.0f };
+	_targetPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
 	_orbitStartRadius = _orbitEndRadius = _orbitRevolutions = _orbitStartAngle = 0.0f;
 	_zoomStartDist = _zoomEndDist = 0.0f;
 	_rotateSpeed = 0.0f;
@@ -42,32 +42,33 @@ bool CinematicCamera::Process()
 		case State::Orbit:
 		{
 			// 半径を mymath のイージングで補間
-			float radius = mymath::EasingInOutQuad(cnt, _orbitStartRadius, _orbitEndRadius, frames);
+			float radius = mymath::EasingOutQuad(cnt, _orbitStartRadius, _orbitEndRadius, frames);
 
 			// 回転進行量もイージングしたい場合は revolutions をイージング（0->_orbitRevolutions）
 			float easedRevs = mymath::EasingInOutQuad(cnt, 0.0f, _orbitRevolutions, frames);
 			float angle = _orbitStartAngle + 2.0f * DX_PI_F * easedRevs;
 
-			_vTarget = _effectTarget;
-			_vPos.x = _effectTarget.x + cosf(angle) * radius;
-			_vPos.z = _effectTarget.z + sinf(angle) * radius;
-			_vPos.y = _effectTarget.y + 200.0f;
+			_vTarget = _targetPos;
+			_vPos.x = _targetPos.x + cosf(angle) * radius;
+			_vPos.z = _targetPos.z + sinf(angle) * radius;
+			_vPos.y = _targetPos.y + 200.0f;
 			break;
 		}
 		case State::Zoom:
 		{
 			// 距離を mymath で補間
-			float dist = mymath::EasingInOutQuad(cnt, _zoomStartDist, _zoomEndDist, frames);
+			float dist = mymath::EasingOutBounce(cnt, _zoomStartDist, _zoomEndDist, frames);
 
 			// target からの方向ベクトル（現在位置を基準）
-			vec::Vec3 dir = vec3::VSub(_vPos, _effectTarget);
+			vec::Vec3 dir = vec3::VSub(_vPos, _targetPos);
 			float len = vec3::VSize(dir);
+			// 長さが十分あれば正規化して距離をかける
 			if (len > 1e-6f)
 			{
-				vec::Vec3 nd = vec3::VScale(dir, 1.0f / len);
-				_vPos = vec3::VAdd(_effectTarget, vec::Vec3{ nd.x * dist, nd.y * dist, nd.z * dist });
+				vec::Vec3 nd = vec3::VScale(dir, 1.0f / len); 
+				_vPos = vec3::VAdd(_targetPos, vec::Vec3{ nd.x * dist, nd.y * dist, nd.z * dist });
 			}
-			_vTarget = _effectTarget;
+			_vTarget = _targetPos;
 			break;
 		}
 		case State::Rotate:
@@ -122,14 +123,14 @@ void CinematicCamera::StartOrbit(const vec::Vec3& target, float durationSeconds,
 	_state = State::Orbit;
 	_timer = 0.0f;
 	_duration = durationSeconds;
-	_effectTarget = target;
+	_targetPos = target;
 	_orbitStartRadius = startRadius;
 	_orbitEndRadius = endRadius;
 	_orbitRevolutions = revolutions;
 	
 	// 現在のカメラ位置から見たターゲットの角度を計算して保存
-	float sx = _vPos.x - _effectTarget.x;
-	float sz = _vPos.z - _effectTarget.z;
+	float sx = _vPos.x - _targetPos.x;
+	float sz = _vPos.z - _targetPos.z;
 	_orbitStartAngle = atan2f(sz, sx);
 
 }
@@ -139,7 +140,7 @@ void CinematicCamera::StartZoom(const vec::Vec3& target, float durationSeconds, 
 	_state = State::Zoom;
 	_timer = 0.0f;
 	_duration = durationSeconds;
-	_effectTarget = target;
+	_targetPos = target;
 	_zoomStartDist = startDist;
 	_zoomEndDist = endDist;
 }
