@@ -331,13 +331,24 @@ bool ModeGame::LoadStageData()
 	// **最適化: センサー生成を共通化するヘルパー関数**
 	auto* mapPtr = _objectServer->GetMap();
 	auto createSensors = [mapPtr](float soundArea) -> std::shared_ptr<EnemySensor>
-		{
-			auto sensor = std::make_shared<EnemySensor>();
-			sensor->Initialize();
-			sensor->SetMap(mapPtr);
+	{
+		auto sensor = std::make_shared<EnemySensor>();
+		sensor->Initialize();
+		sensor->SetMap(mapPtr);
+		
+		return sensor;
+	};
 
-			return sensor;
-		};
+	//索敵範囲の設定
+	auto SetDetectionSector = [](EnemySensor* sensor, const nlohmann::json& object)
+	{
+		if(object.contains("detectionRadius") && object.contains("detectionAngle"))
+		{
+			float radius = object.at("detectionRadius").get<float>();
+			float angle = object.at("detectionAngle").get<float>();
+			sensor->SetDetectionSector(radius, angle);
+		}
+	};
 
 	// 敵を生成して、customIdにマッチする巡回点を割り当てる
 	for(auto& object : enemyObjects)
@@ -362,6 +373,7 @@ bool ModeGame::LoadStageData()
 			enemy->SetEffect(_hensinEffect);
 			enemy->SetEnemyId(nextEnemyId++);
 			enemy->SetDirSequenceFromJson(object);
+			sensor->SetDetectionSector(400.0f, 120.0f);
 
 			_enemyBase.emplace_back(enemy);
 			continue;
@@ -378,6 +390,7 @@ bool ModeGame::LoadStageData()
 			enemyMove->SetEffect(_hensinEffect);
 			enemyMove->SetEnemyId(nextEnemyId++);
 			enemyMove->SetDirSequenceFromJson(object);
+			sensor->SetDetectionSector(400.0f, 120.0f);
 
 			// グループに対応する巡回点があれば割り当てる
 			auto it = patrolGroup.find(gid);
@@ -401,6 +414,7 @@ bool ModeGame::LoadStageData()
 			enemyDog->SetEnemySensor(sensor);
 			enemyDog->SetEffect(_hensinEffect);
 			enemyDog->SetEnemyId(nextEnemyId++);
+			sensor->SetDetectionSector(400.0f, 120.0f);
 
 			// 犬用の移動範囲を設定
 			auto dogAreaIt = dogMovementAreas.find(gid);
