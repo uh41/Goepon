@@ -254,7 +254,10 @@ bool ModeGame::LoadStageData()
 	std::vector<nlohmann::json> enemyObjects;
 	enemyObjects.reserve(objCount / 4);
 
-	uint32_t nextEnemyId = 1;
+	// 犬用の移動範囲を保持
+	std::unordered_map<std::string, std::vector<vec::Vec3>> dogMovementAreas;
+
+	uint32_t nextEnemyId = 1; // 敵IDのカウンタ（1からスタート）
 
 	// **修正: 二重ループを削除し、1回のループで全オブジェクトを処理**
 	for(auto&& objData : stageData->object)
@@ -265,6 +268,24 @@ bool ModeGame::LoadStageData()
 		// S_MarkerRは既にpatrolGroupsに格納済みなのでスキップ
 		if(name == "S_MarkerR")
 		{
+			continue;
+		}
+
+		// ★ S_MarkerDGR を検出 — 犬の移動範囲
+		if (name == "S_MarkerDGR")
+		{
+			vec::Vec3 pos;
+			object.at("translate").at("x").get_to(pos.x);
+			object.at("translate").at("y").get_to(pos.z);
+			object.at("translate").at("z").get_to(pos.y);
+			pos.z *= -1.0f;
+
+			std::string gid = "";
+			if (object.contains("customId"))
+			{
+				object.at("customId").get_to(gid);
+			}
+			dogMovementAreas[gid].push_back(pos);
 			continue;
 		}
 
@@ -309,19 +330,25 @@ bool ModeGame::LoadStageData()
 
 	// **最適化: センサー生成を共通化するヘルパー関数**
 	auto* mapPtr = _objectServer->GetMap();
-	auto createSensors = [mapPtr](float soundArea) -> std::pair<std::shared_ptr<EnemySensor>, std::shared_ptr<EnemySoundSensor>>
+	auto createSensors = [mapPtr](float soundArea) -> std::shared_ptr<EnemySensor>
+	{
+		auto sensor = std::make_shared<EnemySensor>();
+		sensor->Initialize();
+		sensor->SetMap(mapPtr);
+		
+		return sensor;
+	};
+
+	//索敵範囲の設定
+	auto SetDetectionSector = [](EnemySensor* sensor, const nlohmann::json& object)
+	{
+		if(object.contains("detectionRadius") && object.contains("detectionAngle"))
 		{
-			auto sensor = std::make_shared<EnemySensor>();
-			sensor->Initialize();
-			sensor->SetMap(mapPtr);
-
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(mapPtr);
-			soundSensor->SetSoundSensorArea(soundArea);
-
-			return { sensor, soundSensor };
-		};
+			float radius = object.at("detectionRadius").get<float>();
+			float angle = object.at("detectionAngle").get<float>();
+			sensor->SetDetectionSector(radius, angle);
+		}
+	};
 
 	// 敵を生成して、customIdにマッチする巡回点を割り当てる
 	for(auto& object : enemyObjects)
@@ -337,17 +364,16 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerRX")
 		{
-			auto [sensor, soundSensor] = createSensors(300.0f);
+			auto sensor = createSensors(300.0f);
 
 			auto enemy = std::make_shared<Enemy>();
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 			enemy->SetEnemySensor(sensor);
-			enemy->SetEnemySoundSensor(soundSensor);
-			soundSensor->SetPos(enemy->GetPos());
 			enemy->SetEffect(_hensinEffect);
 			enemy->SetEnemyId(nextEnemyId++);
 			enemy->SetDirSequenceFromJson(object);
+			sensor->SetDetectionSector(400.0f, 120.0f);
 
 			_enemyBase.emplace_back(enemy);
 			continue;
@@ -355,17 +381,16 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			auto [sensor, soundSensor] = createSensors(300.0f);
+			auto sensor = createSensors(300.0f);
 
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
 			enemyMove->SetEnemySensor(sensor);
-			enemyMove->SetEnemySoundSensor(soundSensor);
-			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEffect(_hensinEffect);
 			enemyMove->SetEnemyId(nextEnemyId++);
 			enemyMove->SetDirSequenceFromJson(object);
+			sensor->SetDetectionSector(400.0f, 120.0f);
 
 			// グループに対応する巡回点があれば割り当てる
 			auto it = patrolGroup.find(gid);
@@ -381,18 +406,25 @@ bool ModeGame::LoadStageData()
 
 		if(name == "Dog")
 		{
-			auto [sensor, soundSensor] = createSensors(900.0f);
+			auto sensor = createSensors(900.0f);
 
 			auto enemyDog = std::make_shared<EnemyDog>();
 			enemyDog->Initialize();
 			enemyDog->SetJsonDataUE(object);
 			enemyDog->SetEnemySensor(sensor);
-			enemyDog->SetEnemySoundSensor(soundSensor);
-			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEffect(_hensinEffect);
 			enemyDog->SetEnemyId(nextEnemyId++);
+			sensor->SetDetectionSector(400.0f, 120.0f);
+
+			// 犬用の移動範囲を設定
+			auto dogAreaIt = dogMovementAreas.find(gid);
+			if (dogAreaIt != dogMovementAreas.end() && !dogAreaIt->second.empty())
+			{
+				enemyDog->SetMovementArea(dogAreaIt->second);
+			}
 
 			_enemyBase.emplace_back(std::move(enemyDog));
+			continue;
 		}
 	}
 
@@ -681,10 +713,10 @@ bool ModeGame::Process()
 				// 実際の押し出し（カプセル）
 				// 敵に接触したときに実際に行う処理はここで記入
 				// デバッグ用：メッセージ表示
-				if(!enemy->IsShowingYouDiedMessage())
+				/*if(!enemy->IsShowingYouDiedMessage())
 				{
 					enemy->TriggerYouDiedMessage();
-				}
+				}*/
 			}
 		}
 	}
@@ -838,8 +870,6 @@ bool ModeGame::Process()
 			{
 				if(enemy && enemy->IsAlive())
 				{
-					enemy->GetSoundSensor()->TriggerSoundWave(_playerTanuki->GetPos(), 500.0f, 10.0f);
-					enemy->GetSoundSensor()->SetSoundLevel(5);
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}
@@ -889,7 +919,7 @@ bool ModeGame::Render()
 	}
 
 	ObjectRender();// オブジェクト描画処理
-	//DebugRender(); // デバック描画処理
+	DebugRender(); // デバック描画処理
 
 	// 処理時間を画面に表示
 	int y = 40;

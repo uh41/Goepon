@@ -25,9 +25,6 @@ bool EnemySensor::Initialize()
 	_detectionFrameCount = 0;
 	_CanDetectionResult = false;
 
-	// デフォルトの索敵範囲設定
-	SetDetectionSector(400.0f, 90.0f);//半径、角度
-
 	return true;
 }
 

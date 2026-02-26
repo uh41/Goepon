@@ -10,7 +10,6 @@
 
 #include "enemy.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
 
 // 初期化
 bool Enemy::Initialize()
@@ -106,22 +105,6 @@ bool Enemy::Process()
 
 		// 待機中はプレイヤー検出されたら割り込み可能
 		// この処理は下のEnemySensorの処理で行われる
-	}
-
-	// EnemySoundSensorから音の検知情報を取得
-	if(_enemySoundSensor)
-	{
-		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
-		{
-			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
-			{
-				_isMovingToSound = true;
-				_soundSourcePosition = detectionInfo.soundSourcePosition;
-				_soundDetectionActive = true;
-				_soundDetectionTimer = 0.0f;
-			}
-		}
 	}
 
 	// 音源への移動処理（プレイヤー検出より優先度は低い）

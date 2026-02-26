@@ -404,7 +404,22 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		{
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
+
 			continue;
+		}
+		else 
+		{
+			// 開け始めの1回だけ音波を発生
+			if (!_isOpeningTreasure)
+			{
+				// 宝箱を開けた時の音波を発生
+				EnemySoundManager::GetInstance()->EmitSound(
+					treasure->GetPos(),  // 宝箱の位置
+					5,                   // 音の大きさレベル（1-3で調整）
+					1000.0f,             // 音波の最大半径
+					10.0f                // 音波の速度
+				);
+			}
 		}
 
 		if(!_isOpeningTreasure)
@@ -431,6 +446,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			_treasureHoldSec = 0.0f;    // 開けるのに必要な時間のカウンタをリセット
 			treasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
 			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
+
 			// エフェクト再生
 			if (_doyaEffect)
 			{

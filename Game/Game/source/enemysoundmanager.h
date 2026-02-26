@@ -20,6 +20,7 @@ public:
 		float speed = 0.0f;									// 音波の拡散速度
 		int soundLevel = 0;									// 音の大きさレベル
 		bool isActive = false;								// 音波が有効かどうか
+		uint32_t emitterId = 0;
 	};
 
 	struct DetectionInfo
@@ -34,9 +35,13 @@ public:
 
 	EnemySoundManager() = default;
 
-	void EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed);
+	// 音を発生させる関数。必要に応じて、音の大きさレベルや最大半径、拡散速度などを引数で指定できるようにする。
+	void EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed, uint32_t emitterId = 0);
+
+	// 音波の更新関数。時間経過で波が広がる処理を行う。必要に応じて、波の寿命や減衰などの追加処理もここで行う。
 	void Update(float deltaTime);
 
+	// 敵が音を検知できるか試す関数。敵が音を検知できる場合は、inoutInfoに検知情報をセットしてtrueを返す。そうでない場合はfalseを返す。
 	bool TryDetectForEnemy(const EnemyBase& enemy, DetectionInfo& inoutInfo);
 
 	void RenderDebug(); // デバッグ用の描画関数（必要に応じて実装）

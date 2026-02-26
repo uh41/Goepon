@@ -9,7 +9,6 @@
 
 #include "enemybase.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
 #include "applicationglobal.h"
 #include "enemysoundmanager.h"
 
@@ -163,12 +162,6 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 void EnemyBase::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 {
 	_enemySensor = sensor;
-}
-
-// EnemySoundSensorを設定するメソッドを追加
-void EnemyBase::SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor)
-{
-	_enemySoundSensor = sensor;
 }
 
 // プレイヤーが検出範囲外になった時の処理
@@ -350,12 +343,6 @@ void EnemyBase::StartDamage()
 		_enemySensor->SetSensorEnabled(false); // センサーを無効化
 	}
 
-	if(_enemySoundSensor)
-	{
-		_enemySoundSensor->SetSoundLevel(0); // 音センサーを無効化
-		_enemySoundSensor->SetSoundSensorArea(0.0f);
-	}
-
 	_isMoving = false; // 移動を停止
 	_isMovingToSound = false; // 音源への移動も停止
 	_waitingAtSound = false;
@@ -440,12 +427,6 @@ void EnemyBase::UpdateDamageAnimation()
 			{
 				_enemySensor->SetSensorEnabled(true);
 				_enemySensor->ResetDetection();
-			}
-
-			if(_enemySoundSensor)
-			{
-				_enemySoundSensor->SetSoundLevel(0);
-				_enemySoundSensor->SetSoundSensorArea(0.0f);
 			}
 
 			OnDamageEnd();
@@ -624,6 +605,8 @@ void EnemyBase::UpdateMovingToSound()
 		60.0f,    // 右60度
 		-90.0f,   // 左90度
 		90.0f,    // 右90度
+		-120.0f,  // 左120度
+		120.0f,   // 右120度
 	};
 
 	vec::Vec3 finalMovement;
@@ -699,10 +682,18 @@ void EnemyBase::UpdateMovingToSound()
 			return;
 		}
 
+	//// 移動可能な方向が見つからない場合はその場で待機
+	//if (!validMovementFound)
+	//{
+	//	// すぐに初期位置に戻さず、その場で待機して音検知タイマーに任せる
+	//	_status = STATUS::WAIT;
+	//	return;
+	//}
+
 	// 実際に移動を実行
 	_vPos = vec3::VAdd(_vPos, finalMovement);
 
-	// 追加: 実際に移動した方向に即座に向ける（壁回避で曲がった場合の向きずれ防止）
+	// 実際に移動した方向に即座に向ける（壁回避で曲がった場合の向きずれ防止）
 	if (vec3::VSize(finalMovement) > 0.001f)
 	{
 		vec::Vec3 moveDir = vec3::VNorm(finalMovement);
@@ -728,13 +719,7 @@ bool EnemyBase::Process()
 		return true;
 	}
 
-	// EnemySoundSensorの位置も同期
-	if (_enemySoundSensor)
-	{
-		_enemySoundSensor->SetPos(_vPos);
-		_enemySoundSensor->SetDir(_vDir);
-	}
-
+	// プレイヤーの方向に徐々に回転
 	UpdateDirectionSequence();
 
 	return true;
@@ -802,7 +787,7 @@ void EnemyBase::MoveTowardsTarget(const vec::Vec3& target)
 			finalMovement = testMovement;
 			validMovementFound = true;
 
-// 直進以外の方向で移動する場合、その方向を向く
+			// 直進以外の方向で移動する場合、その方向を向く
 			if(i > 0)
 			{
 				if(!IsStun())
@@ -1092,31 +1077,111 @@ void EnemyBase::UpdateDirectionSequence()
 	}
 }
 
+// 音源の位置と音レベルに応じて処理を開始するメソッド
 void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel)
 {
-	// 今のゲームでは 5 のみ反応（既存ロジック踏襲）
-	if(soundLevel != 5)
+	// プレイヤー追跡中は音検知を無視
+	if (_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{
 		return;
 	}
 
-	// 音優先：追跡/検出/帰還中でも上書きする
-	_detectedPlayer = false;
-	_isReturningToInitialPos = false;
-
-	if(_enemySensor)
+	// 音レベルごとに異なる処理を実行
+	switch (soundLevel)
 	{
-		_enemySensor->ResetDetection();
+	case 1:
+		// レベル1: 小さな音（例：足音）- 向きだけ変える
+		if (!_detectedPlayer && !_isReturningToInitialPos && !_isMovingToSound)
+		{
+			vec::Vec3 toSound = vec3::VSub(soundPos, _vPos);
+			toSound.y = 0.0f;
+			if (vec3::VSize(toSound) > 0.01f)
+			{
+				_vDir = vec3::VNorm(toSound);
+			}
+		}
+		break;
+
+	case 2:
+		// レベル2: 中程度の音 - 短時間待機して様子見
+		if (!_detectedPlayer && !_isReturningToInitialPos)
+		{
+			_waitingAtSound = true;
+			_soundWaitTimer = 1.0f; // 1秒だけ待機
+			_status = STATUS::WAIT;
+		}
+		break;
+
+	case 3:
+		// レベル3: やや大きな音 - 音源の方向を向いて待機
+		if (!_detectedPlayer && !_isReturningToInitialPos)
+		{
+			vec::Vec3 toSound = vec3::VSub(soundPos, _vPos);
+			toSound.y = 0.0f;
+			if (vec3::VSize(toSound) > 0.01f)
+			{
+				_vDir = vec3::VNorm(toSound);
+			}
+			_waitingAtSound = true;
+			_soundWaitTimer = 2.0f; // 2秒待機
+			_status = STATUS::WAIT;
+		}
+		break;
+
+	case 4:
+		// レベル4: 大きな音 - 音源に近づく（距離制限あり）
+		if (!_detectedPlayer)
+		{
+			float distance = vec3::VSize(vec3::VSub(soundPos, _vPos));
+			if (distance < 500.0f) // 500.0f以内なら反応
+			{
+				_detectedPlayer = false;
+				_isReturningToInitialPos = false;
+
+				if (_enemySensor)
+				{
+					_enemySensor->ResetDetection();
+				}
+
+				ResetTeleport();
+
+				_isMovingToSound = true;
+				_soundSourcePosition = soundPos;
+
+				_soundDetectionActive = true;
+				_soundDetectionTimer = 0.0f;
+
+				_waitingAtSound = false;
+				_soundWaitTimer = 0.0f;
+			}
+		}
+		break;
+
+	case 5:
+		// レベル5: 非常に大きな音 - 優先的に音源に向かう（既存の動作）
+		_detectedPlayer = false;
+		_isReturningToInitialPos = false;
+
+		if (_enemySensor)
+		{
+			_enemySensor->ResetDetection();
+		}
+
+		ResetTeleport();
+
+		_isMovingToSound = true;
+		_soundSourcePosition = soundPos;
+
+		_soundDetectionActive = true;
+		_soundDetectionTimer = 0.0f;
+
+		_waitingAtSound = false;
+		_soundWaitTimer = 0.0f;
+		break;
+
+	default:
+		// 未定義の音レベルは無視
+		break;
 	}
-
-	ResetTeleport();
-
-	_isMovingToSound = true;
-	_soundSourcePosition = soundPos;
-
-	_soundDetectionActive = true;
-	_soundDetectionTimer = 0.0f;
-
-	_waitingAtSound = false;
-	_soundWaitTimer = 0.0f;
+	//現在はレベル５のみ機能している
 }

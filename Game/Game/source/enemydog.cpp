@@ -1,6 +1,6 @@
 #include "enemydog.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
+#include "enemysoundmanager.h"
 
 bool EnemyDog::Initialize()
 {
@@ -21,6 +21,19 @@ bool EnemyDog::Initialize()
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
 	_rotationSpeed = 0.5f;                     // 回転速度（調整可能）
 	_moveSpeed = 2.0f;
+
+	// ランダムウォーク用の初期化
+	_randomWalkTimer = 0.0f;
+	_randomWalkInterval = 3.0f;
+	_randomWalkDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_isRandomWalking = false;
+	_randomWalkDistance = 0.0f;
+	_randomWalkTraveledDistance = 0.0f;
+
+	// 移動範囲制限の初期化
+	_hasMovementArea = false;
+	_movementAreaPoints.clear();
+
 	// 整合性のため他は base に委譲済み
 	// タイマー初期化等は base にて行われている
 	return true;
@@ -39,11 +52,174 @@ void EnemyDog::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 	_enemySensor = sensor;
 }
 
+// 移動範囲を設定
+void EnemyDog::SetMovementArea(const std::vector<vec::Vec3>& areaPoints)
+{
+	_movementAreaPoints = areaPoints;
+	_hasMovementArea = (areaPoints.size() >= 3);
+}
+
+// 指定した位置が移動範囲内かチェック（2D平面でのポリゴン内外判定）
+bool EnemyDog::IsPositionInArea(const vec::Vec3& pos) const
+{
+	if (!_hasMovementArea || _movementAreaPoints.size() < 3)
+	{
+		return true; // 範囲が設定されていない場合は常にtrue
+	}
+
+	// レイキャスティング法（Ray Casting Algorithm）を使用
+	// X-Z平面で判定（Y座標は無視）
+	int intersections = 0;
+	size_t n = _movementAreaPoints.size();
+
+	for (size_t i = 0; i < n; ++i)
+	{
+		size_t j = (i + 1) % n;
+
+		const vec::Vec3& p1 = _movementAreaPoints[i];
+		const vec::Vec3& p2 = _movementAreaPoints[j];
+
+		// 点が線分のY範囲内にあるかチェック（Z座標で判定）
+		if ((p1.z > pos.z) != (p2.z > pos.z))
+		{
+			// 交点のX座標を計算
+			float intersectX = (p2.x - p1.x) * (pos.z - p1.z) / (p2.z - p1.z) + p1.x;
+
+			// 点のX座標より右側に交点がある場合、カウント
+			if (pos.x < intersectX)
+			{
+				intersections++;
+			}
+		}
+	}
+
+	// 交点の数が奇数なら内側、偶数なら外側
+	return (intersections % 2) == 1;
+}
+
 bool EnemyDog::Terminate()
 {
 	base::Terminate();
 	// モデルリソース解放など必要ならここで
 	return true;
+}
+
+// 新しいランダム方向を設定
+void EnemyDog::SetNewRandomDirection()
+{
+	// ランダムな角度を生成（0～360度）
+	float randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
+
+	// ランダムな距離を設定（50～200の範囲）
+	_randomWalkDistance = 50.0f + (float)(rand() % 151);
+	_randomWalkTraveledDistance = 0.0f;
+
+	// 角度から方向ベクトルを計算
+	vec::Vec3 testDir;
+	testDir.x = sin(randomAngle);
+	testDir.y = 0.0f;
+	testDir.z = cos(randomAngle);
+
+	// 移動先の床の存在を確認
+	vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(testDir, _moveSpeed * 10.0f));
+
+	if (CheckFloorExistence(testPos))
+	{
+		// 床がある場合は新しい方向を設定
+		_randomWalkDir = testDir;
+		_isRandomWalking = true;
+	}
+	else
+	{
+		// 床がない場合は別の方向を試す
+		for (int i = 0; i < 16; i++)
+		{
+			randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
+			testDir.x = sin(randomAngle);
+			testDir.y = 0.0f;
+			testDir.z = cos(randomAngle);
+
+			testPos = vec3::VAdd(_vPos, vec3::VScale(testDir, _moveSpeed * 10.0f));
+
+			if (CheckFloorExistence(testPos))
+			{
+				_randomWalkDir = testDir;
+				_isRandomWalking = true;
+				return;
+			}
+		}
+
+		// すべて失敗した場合は待機
+		_isRandomWalking = false;
+	}
+
+	// 次の方向変更までの時間をランダムに設定（2～5秒）
+	_randomWalkInterval = 2.0f + (float)(rand() % 31) / 10.0f;
+	_randomWalkTimer = _randomWalkInterval;
+}
+
+// ランダムウォークの処理
+void EnemyDog::ProcessRandomWalk()
+{
+	const float deltaTime = 1.0f / 60.0f; // 60FPS
+
+	// タイマーを更新
+	_randomWalkTimer -= deltaTime;
+
+	// タイマーが0以下、または目標距離に到達したら新しい方向を設定
+	if (_randomWalkTimer <= 0.0f || _randomWalkTraveledDistance >= _randomWalkDistance)
+	{
+		SetNewRandomDirection();
+		return;
+	}
+
+	// ランダム移動中の場合
+	if (_isRandomWalking)
+	{
+		// 移動量を計算
+		vec::Vec3 movement = vec3::VScale(_randomWalkDir, _moveSpeed);
+		vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
+
+		// 床の存在を確認
+		if (CheckFloorExistence(newPos) && IsPositionInArea(newPos))
+		{
+			_vPos = newPos;
+			_randomWalkTraveledDistance += _moveSpeed;
+
+			// 徐々に移動方向を向く
+			float currentAngle = atan2f(_vDir.x, _vDir.z);
+			float targetAngle = atan2f(_randomWalkDir.x, _randomWalkDir.z);
+
+			// 角度差を計算（-π から π の範囲に正規化）
+			float angleDiff = targetAngle - currentAngle;
+			while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+			while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+			// 回転速度を制限
+			if (abs(angleDiff) > _rotationSpeed)
+			{
+				angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
+			}
+
+			// 新しい角度を計算
+			float newAngle = currentAngle + angleDiff;
+			_vDir.x = sin(newAngle);
+			_vDir.z = cos(newAngle);
+
+			// ステータスをWALKに設定
+			_status = STATUS::WALK;
+		}
+		else
+		{
+			// 床がない場合は新しい方向を設定
+			SetNewRandomDirection();
+		}
+	}
+	else
+	{
+		// 待機中
+		_status = STATUS::WAIT;
+	}
 }
 
 bool EnemyDog::Process()
@@ -64,16 +240,16 @@ bool EnemyDog::Process()
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
-		//// 10秒経過したら初期位置への帰還を開始
-		//if (_soundDetectionTimer >= SOUND_RETURN_TIME)
-		//{
-		//	_soundDetectionActive = false;
-		//	_soundDetectionTimer = 0.0f;
-		//	_isMovingToSound = false;
-		//	_waitingAtSound = false;
-
-		//	StartReturningToInitialPosition();
-		//}
+		// 音検知から一定時間経過したら初期位置に戻る
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME && !_detectedPlayer)
+		{
+			_isMovingToSound = false;
+			_waitingAtSound = false;
+			_soundWaitTimer = 0.0f;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			StartReturningToInitialPosition();
+		}
 	}
 
 	// 音源到達後の待機処理
@@ -82,45 +258,113 @@ bool EnemyDog::Process()
 		// 待機中はWAITステータスに設定
 		_status = STATUS::WAIT;
 
-		// 待機中はプレイヤー検出されたら割り込み可能
-		// この処理は下のEnemySensorの処理で行われる
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_soundWaitTimer -= dt;
+
+		// 待機時間が終了したら初期位置に戻る
+		if (_soundWaitTimer <= 0.0f)
+		{
+			_waitingAtSound = false;
+			_soundWaitTimer = 0.0f;
+			_isMovingToSound = false;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
+			StartReturningToInitialPosition();
+		}
 	}
 
-	// EnemySoundSensorから音の検知情報を取得
-	if(_enemySoundSensor)
+	// 検知終了後の待機処理（帰還前の待機）
+	if (_waitingBeforeReturn)
 	{
-		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_returnWaitTimer -= dt;
+
+		_status = STATUS::WAIT;
+
+		if (_returnWaitTimer <= 0.0f)
 		{
-			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
+			_waitingBeforeReturn = false;
+			_returnWaitTimer = 0.0f;
+			StartReturningToInitialPosition();
+			_playSightOffOnReturn = true;
+		}
+		// 待機中にプレイヤーを再検出したら待機をキャンセル
+		if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
+		{
+			_waitingBeforeReturn = false;
+			_returnWaitTimer = 0.0f;
+		}
+		return true;
+	}
+
+	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
+	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
+	{
+		// 追跡時の移動速度を確保（他の処理で変更されている可能性に対応）
+		_moveSpeed = 4.0f; // 追跡時の速度を明示的に設定
+
+		// 追跡中の音波発生処理（一定間隔で発生）
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+
+		if (!_wasChasing)
+		{
+			// 追跡開始時：即座に音波を発生
+			auto soundManager = EnemySoundManager::GetInstance();
+			if (soundManager)
 			{
-				_isMovingToSound = true;
-				_soundSourcePosition = detectionInfo.soundSourcePosition;
-				_soundDetectionActive = true;
-				_soundDetectionTimer = 0.0f;
+				soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+			}
+			_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
+			_wasChasing = true;
+		}
+		else
+		{
+			// 追跡中：タイマーで管理して一定間隔で音波を発生
+			_soundEmitTimer -= dt;
+
+			if (_soundEmitTimer <= 0.0f)
+			{
+				// タイマーが0以下になったら音波を発生
+				auto soundManager = EnemySoundManager::GetInstance();
+				if (soundManager)
+				{
+					soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+				}
+				_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
 			}
 		}
-	}
 
-	// 音源への移動処理（プレイヤー検出より優先度は低い）
-	if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+		// プレイヤーを追跡する（EnemyBaseの追跡処理を使用）
+		UpdateChasing();
+
+		// 犬専用：プレイヤーの方向に即座に向く
+		LookAtPlayer();
+
+		_isRandomWalking = false; // ランダム移動を停止
+		_isMovingToSound = false; // 音源への移動を停止
+		// ステータスはUpdateChasing()内で設定される
+	}
+	else if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
 	{
+		// 音源に向かって移動する処理を開始
 		UpdateMovingToSound();
 	}
-
-	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
-	if (_detectedPlayer)
+	else if (_isReturningToInitialPos)
 	{
-		UpdateRotationToPlayer(); // 徐々に回転
-		// または即座に向きたい場合は LookAtPlayer(); を使用
-
-		// センサーの存在を確認してから音波を発生させる（音量設定を先に行う）
-		auto soundSensor = GetSoundSensor();
-		if (soundSensor)
-		{
-			soundSensor->SetSoundLevel(5); // 先にレベルをセット
-			soundSensor->TriggerSoundWave(GetPos(), 1000.0f, 10.0f); // そのレベルで波を生成
-		}
+		// 初期位置に戻る処理を更新
+		UpdateReturningToInitialPosition();
+		_isRandomWalking = false; // ランダム移動を停止
+	}
+	else if (!IsStun())
+	{
+		// 通常時はランダムウォーク
+		ProcessRandomWalk();
+	}
+	else
+	{
+		// スタン中は待機
+		_status = STATUS::WAIT;
+		_isRandomWalking = false;
 	}
 
 	// ステータスが変わっていないか？
@@ -200,39 +444,6 @@ bool EnemyDog::Process()
 	if (_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
-	}
-
-	// 定期的に方向を90度変える処理
-	DirChangeTimer -= 1.0f / 60.0f;
-
-	// タイマーが0以下になったら方向を変える
-	if (DirChangeTimer <= 0.0f)
-	{
-		// タイマーをリセット（15秒ごとに変更）
-		DirChangeTimer = 15.0f;
-
-		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
-		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
-		{
-			// 回転先の方向を計算
-			float currentAngle = atan2f(_vDir.x, _vDir.z);
-			float newAngle = currentAngle + DX_PI_F / 2.0f;
-
-			// 新しい向きベクトルを計算
-			vec::Vec3 newDir;
-			newDir.x = sin(newAngle);
-			newDir.y = 0.0f;
-			newDir.z = cos(newAngle);
-
-			// 新しい方向に少し移動した位置で床の存在を確認
-			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-
-			// 床がある場合のみ回転を実行
-			if (CheckFloorExistence(testPos))
-			{
-				_vDir = newDir;
-			}
-		}
 	}
 
 	return true;

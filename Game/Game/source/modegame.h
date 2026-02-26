@@ -25,7 +25,6 @@
 #include "map.h"
 #include "cube.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
 #include "uibase.h"
 #include "uihp.h"
 #include "UiMakimono.h"	
@@ -245,7 +244,6 @@ protected:
 
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
-
 	at::spc<soundserver::SoundServer> _soundServer;
 	soundserver::SoundItemBase* _bgmInitialize;
 	soundserver::SoundItemBase* _bgmChenge;
@@ -317,9 +315,6 @@ protected:
 
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
-
-	
 	StageManager _stageManager; // ステージ管理
-
 };
 

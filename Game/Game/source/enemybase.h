@@ -16,7 +16,6 @@
 
 // 前方宣言
 class EnemySensor;
-class EnemySoundSensor;
 class PlayerBase;
 class EnemySoundManager;
 
@@ -32,7 +31,6 @@ public:
 	virtual bool Render();
 
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensorを設定
-	void SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor);
 	void OnPlayerDetected(const vec::Vec3& playerPos);			// プレイヤー検出時の処理
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
@@ -77,8 +75,6 @@ public:
 	void CaptureInitialTransform();
 
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
-	std::shared_ptr<EnemySoundSensor> GetEnemySoundSensor() const { return _enemySoundSensor; }
-	std::shared_ptr<EnemySoundSensor> GetSoundSensor() const { return _enemySoundSensor; }
 
 	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
 
@@ -107,7 +103,6 @@ protected:
 
 	// センサー関連
 	std::shared_ptr<EnemySensor> _enemySensor;	// 敵のセンサー
-	std::shared_ptr<EnemySoundSensor> _enemySoundSensor;
 
 	bool _detectedPlayer;	// プレイヤーを検出したか
 	vec::Vec3 _playerPos;	// 検出したプレイヤーの位置
@@ -156,7 +151,7 @@ protected:
 	// 音検知からの経過時間管理
 	bool _soundDetectionActive;		// 音検知タイマーが有効かどうか
 	float _soundDetectionTimer;		// 音検知からの経過時間
-	static constexpr float SOUND_RETURN_TIME = 60.0f; // 音検知から初期位置に戻るまでの時間
+	static constexpr float SOUND_RETURN_TIME = 5.0f; // 音検知から初期位置に戻るまでの時間
 
 	at::spc<EffectBase> _effect;
 
