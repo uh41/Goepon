@@ -33,7 +33,7 @@ public:
 	// 初期位置と向きをキャプチャ
 	void CaptureInitialTransform();
 
-	virtual float GetHearingRadius() const override { return 1000.0f; } // 音検知の半径をオーバーライド
+	virtual float GetHearingRadius() const override { return 300.0f; } // 音検知の半径をオーバーライド
 
 protected:
 

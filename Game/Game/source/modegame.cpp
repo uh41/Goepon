@@ -15,6 +15,7 @@
 #include "ModeGameClear.h"
 #include "applicationglobal.h"
 #include "ModeGameOver.h"
+#include "ModeTitle.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -27,14 +28,31 @@
 // 初期化
 bool ModeGame::Initialize()
 {
+	_hasRenderOnce = false;
+	_requestResetStage = false;
+	_requestNextStage  = false;
+
 	if(!base::Initialize()) { return false; }
+
+	_originalCamera = nullptr;
+	_cinematicCamera = nullptr;
+	_camera = nullptr;
+	_useCinematicCamera = false;
+	_debugZoomActive = false;
+	_debugF1KeyPressed = false;
+
+	// ステージマネージャーにステージを登録
+	_stageManager.SetStages
+	({
+	   "Stage1",
+	   "stage02",
+	   "stage03",
+	});
+
 
 	ObjectInitialize();	// オブジェクト初期化
 
-	// オブジェクトサーバー初期化
-	_objectServer = NEW ObjectServer(this);
-	_objectServer->LoadDate("stage");
-	_objectServer->ProcessInit();
+	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
 	// gGlobal._soundServer は ApplicationGlobal::Init() 内で生成されている想定
@@ -58,7 +76,7 @@ bool ModeGame::Initialize()
 	if(_camera != nullptr)
 	{
 		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
-		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
 		// 初期表示プレイヤー（タヌキ／人間）に合わせる
 		PlayerBase* startPlayer = nullptr;
@@ -75,16 +93,24 @@ bool ModeGame::Initialize()
 		{
 			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
 			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			_camera->_vTarget = target;
-			_camera->_vPos = vec3::VAdd(target, camDelta);
+			_camera->SetTarget(target);
+			_camera->SetPos(vec3::VAdd(target, camDelta));
 		}
 	}
 
 	// カメラセット
-	if (auto* map = _objectServer->GetMap())
+	if(auto* map = _objectServer->GetMap())
 	{
 		map->SetCamera(_camera);
 	}
+	
+	// 設定
+	//_cinematicCamera->_vPos = vec::Vec3(0.0f, 100.0f, 0.0f);      // 例：初期位置
+	//_cinematicCamera->_vTarget = vec::Vec3(0.0f, 0.0f, 0.0f);     // 例：注視点
+	//_cinematicCamera->_fClipNear = 1.0f;
+	//_cinematicCamera->_fClipFar = 1000.0f;
+	
+
 	_bShowTanuki = true;
 
 	_player->SetCamera(_camera);
@@ -113,6 +139,9 @@ bool ModeGame::Initialize()
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
 
+	//// **ロード時間計測終了**
+	//const LONGLONG endTime = GetNowHiPerformanceCount();
+	//_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
 	return true;
 }
 
@@ -121,9 +150,21 @@ bool ModeGame::Terminate()
 {
 	base::Terminate();
 
-	delete _objectServer;
-	_objectServer = nullptr;
+	// 演出カメラの安全な削除
+	if(_cinematicCamera)
+	{
+		_cinematicCamera->StopAll();
 
+		// _cameraが_cinematicCamera.get()を指している場合、元のカメラに戻す
+		if(_camera == _cinematicCamera.get())
+		{
+			_camera = _originalCamera; // nullptrではなく元のカメラを設定
+		}
+
+		_cinematicCamera.reset();
+	}
+
+	_useCinematicCamera = false;
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -145,7 +186,7 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-	
+
 	for(auto& charaShadow : _charaShadow)
 	{
 		charaShadow->Terminate();
@@ -158,63 +199,79 @@ bool ModeGame::Terminate()
 	}
 	_effectBase.clear();
 
-	delete _camera;
+	// カメラの削除を最後に行う
+	if(_camera && _camera != _originalCamera)
+	{
+		// _cameraが_originalCameraと同じでない場合のみ削除
+		delete _camera;
+	}
+	_camera = nullptr;
+
+	if(_originalCamera)
+	{
+		delete _originalCamera;
+		_originalCamera = nullptr;
+	}
 
 	// 索敵システムの終了処理
-	if (_enemySensor)
+	if(_enemySensor)
 	{
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-	if(_sound3D)	{
+	if(_sound3D) {
 		_sound3D->StopAll();
 		_sound3D.reset();
 	}
+
+	//if(_modeGameLoad)
+	//{
+	//	ModeServer::GetInstance()->Del(_modeGameLoad);
+	//	_modeGameLoad = nullptr;
+	//}
 
 	return true;
 }
 
 bool ModeGame::LoadStageData()
 {
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
+	if(stageData == nullptr)
+	{
+		return false;
+	}
 	std::string path = "res/map/";
 	std::string jsonFile = "markerDGR.json";
 	std::string jsonObjectName = "stage";
 
-	std::ifstream ifs(path + jsonFile);
-	nlohmann::json jsonData;
-	ifs >> jsonData;
-	nlohmann::json stage = jsonData.at(jsonObjectName);
+	const auto& patrolGroup = stageData->patrolGroup;
+	const auto& objectList = stageData->object;
 
-	// customId（文字列）ごとの巡回点リストを保持
-	std::unordered_map<std::string, at::vet<vec::Vec3>> patrolGroups;
+	// **最適化: メモリ予約で再割り当てを削減**
+	const size_t objCount = objectList.size();
+	_enemyBase.reserve(objCount / 4);
+	_treasure.reserve(objCount / 8);
+	_makimono.reserve(objCount / 8);
 
 	// 敵の JSON を一時保存して後で巡回グループを割り当てる
 	std::vector<nlohmann::json> enemyObjects;
+	enemyObjects.reserve(objCount / 4);
 
+	uint32_t nextEnemyId = 1;
 	// 犬用の移動範囲を保持
 	std::unordered_map<std::string, std::vector<vec::Vec3>> dogMovementAreas;
 
 	uint32_t nextEnemyId = 1; // 敵IDのカウンタ（1からスタート）
 
-	for(auto& object : stage)
+	// **修正: 二重ループを削除し、1回のループで全オブジェクトを処理**
+	for(auto&& objData : stageData->object)
 	{
-		const std::string& name = object.at("objectName");
+		const std::string& name = objData.objectName;
+		const nlohmann::json& object = objData.json;
 
-		// ★ S_MarkerR を検出 — customId でグループ化
+		// S_MarkerRは既にpatrolGroupsに格納済みなのでスキップ
 		if(name == "S_MarkerR")
 		{
-			vec::Vec3 pos;
-			object.at("translate").at("x").get_to(pos.x);
-			object.at("translate").at("y").get_to(pos.z); // UE:y -> DXLib:z
-			object.at("translate").at("z").get_to(pos.y); // UE:z -> DXLib:y
-			pos.z *= -1.0f;
-
-			std::string gid = "";
-			if(object.contains("customId"))
-			{
-				object.at("customId").get_to(gid);
-			}
-			patrolGroups[gid].push_back(pos);
 			continue;
 		}
 
@@ -242,7 +299,7 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-		// 敵は一旦保留（後で customId に対応した巡回点を割り当てる）
+		// 敵は一旦保留（後でcustomIdに対応した巡回点を割り当てる）
 		if(name == "S_MarkerB" || name == "S_MarkerRX" || name == "Dog")
 		{
 			enemyObjects.push_back(object);
@@ -255,12 +312,11 @@ bool ModeGame::LoadStageData()
 			continue;
 		}
 
-
 		if(name == "Treasure")
 		{
 			auto treasure = std::make_shared<Treasure>();
-			treasure->Initialize();          // モデル読み込み・当たり判定フレーム設定
-			treasure->SetJsonDataUE(object); // UE座標/回転を反映
+			treasure->Initialize();
+			treasure->SetJsonDataUE(object);
 			_treasure.emplace_back(treasure);
 			continue;
 		}
@@ -268,31 +324,37 @@ bool ModeGame::LoadStageData()
 		if(name == "Item")
 		{
 			auto makimono = std::make_shared<Makimono>();
-			makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
-			makimono->SetJsonDataUE(object); // UE座標/回転を反映
+			makimono->Initialize();
+			makimono->SetJsonDataUE(object);
 			makimono->SetCamera(_camera);
 			_makimono.emplace_back(makimono);
 			continue;
 		}
 	}
 
-	// 敵を生成して、customId にマッチする巡回点を割り当てる
+	// **最適化: センサー生成を共通化するヘルパー関数**
+	auto* mapPtr = _objectServer->GetMap();
+	auto createSensors = [mapPtr](float soundArea) -> std::pair<std::shared_ptr<EnemySensor>, std::shared_ptr<EnemySoundSensor>>
+		{
+			auto sensor = std::make_shared<EnemySensor>();
+			sensor->Initialize();
+			sensor->SetMap(mapPtr);
+
+			auto soundSensor = std::make_shared<EnemySoundSensor>();
+			soundSensor->Initialize();
+			soundSensor->SetMap(mapPtr);
+			soundSensor->SetSoundSensorArea(soundArea);
+
+			return { sensor, soundSensor };
+		};
+
+	// 敵を生成して、customIdにマッチする巡回点を割り当てる
 	for(auto& object : enemyObjects)
 	{
-		// センサー類の生成
-		auto sensor = std::make_shared<EnemySensor>();
-		sensor->Initialize();
-		sensor->SetMap(_objectServer->GetMap());
-
-		auto soundSensor = std::make_shared<EnemySoundSensor>();
-		soundSensor->Initialize();
-		soundSensor->SetMap(_objectServer->GetMap());
-		soundSensor->SetSoundSensorArea(300.0f);
-
 		const std::string& name = object.at("objectName");
 
-		// customId を取得（無ければ空文字 "" を使う）
-		std::string gid = "";
+		// customIdを取得（無ければ空文字""を使う）
+		std::string gid;
 		if(object.contains("customId"))
 		{
 			object.at("customId").get_to(gid);
@@ -300,6 +362,8 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerRX")
 		{
+			auto [sensor, soundSensor] = createSensors(300.0f);
+
 			auto enemy = std::make_shared<Enemy>();
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
@@ -316,21 +380,11 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
+			auto [sensor, soundSensor] = createSensors(300.0f);
+
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
-
-			auto sensor = std::make_shared<EnemySensor>();
-			sensor->Initialize();
-			sensor->SetMap(_objectServer->GetMap());
-			//enemy->SetEnemySensor(sensor);
-			enemyMove->SetEnemySensor(sensor);
-
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(_objectServer->GetMap());
-			soundSensor->SetSoundSensorArea(300.0f); // 半径300の円形範囲
-			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEnemySensor(sensor);
 			enemyMove->SetEnemySoundSensor(soundSensor);
 			soundSensor->SetPos(enemyMove->GetPos());
@@ -339,36 +393,31 @@ bool ModeGame::LoadStageData()
 			enemyMove->SetDirSequenceFromJson(object);
 
 			// グループに対応する巡回点があれば割り当てる
-			auto it = patrolGroups.find(gid);
-			if(it != patrolGroups.end() && !it->second.empty())
+			auto it = patrolGroup.find(gid);
+			if(it != patrolGroup.end() && !it->second.empty())
 			{
 				enemyMove->SetPatrolPoint(it->second);
 				enemyMove->CaptureInitialTransform();
 			}
 
-			_enemyBase.emplace_back(enemyMove);
+			_enemyBase.emplace_back(std::move(enemyMove));
+			continue;
 		}
 
 		if(name == "Dog")
 		{
+			auto [sensor, soundSensor] = createSensors(900.0f);
+
 			auto enemyDog = std::make_shared<EnemyDog>();
 			enemyDog->Initialize();
 			enemyDog->SetJsonDataUE(object);
-
-			auto sensor = std::make_shared<EnemySensor>();
-			sensor->Initialize();
-			sensor->SetMap(_objectServer->GetMap());
-			enemyDog->SetEnemySensor(sensor);
-
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(_objectServer->GetMap());
-			soundSensor->SetSoundSensorArea(900.0f);
-			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEnemySensor(sensor);
 			enemyDog->SetEnemySoundSensor(soundSensor);
+			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEffect(_hensinEffect);
+			enemyDog->SetEnemyId(nextEnemyId++);
 
+			_enemyBase.emplace_back(std::move(enemyDog));
 			enemyDog->SetEnemyId(nextEnemyId++); // ★追加：敵IDを必ず付与
 
 			// 犬用の移動範囲を設定
@@ -383,7 +432,7 @@ bool ModeGame::LoadStageData()
 	}
 
 	// 互換のため全敵に初期トランスフォームを確実にキャプチャ
-	for(auto& enemy : _enemyBase)
+	for(auto&& enemy : _enemyBase)
 	{
 		if(enemy) enemy->CaptureInitialTransform();
 	}
@@ -416,8 +465,10 @@ bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 {
 	// カメラの位置/視点の移動を、プレイヤーの移動量に追従する
 	vec::Vec3 playermove = vec3::VSub(player->GetPos(), player->GetOldPos());
-	_camera->_vPos = vec3::VAdd(_camera->_vPos, playermove);
-	_camera->_vTarget = vec3::VAdd(_camera->_vTarget, playermove);
+	vec::Vec3 newPos = vec3::VAdd(_camera->GetPos(), playermove);
+	vec::Vec3 newTarget = vec3::VAdd(_camera->GetTarget(), playermove);
+	_camera->SetPos(newPos);
+	_camera->SetTarget(newTarget);
 	return true;
 }
 
@@ -426,29 +477,69 @@ bool ModeGame::Process()
 {
 	base::Process();
 
+	// デバック用カメラ切り替え
+	DebugCinematicCameraControl();
+
+	//// **ロード完了後の最初のフレームでロード画面を削除**
+	//if(!_isLoadComplete)
+	//{
+	//	_isLoadComplete = true;
+	//	if(_modeGameLoad)
+	//	{
+	//		ModeServer::GetInstance()->Del(_modeGameLoad);
+	//		_modeGameLoad = nullptr;
+	//	}
+	//	return true; // 最初のフレームは他の処理をスキップ
+	//}
+
+
 	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
-	if (_requestResetStage)
+	if (_requestNextStage)
+	{
+		_requestNextStage = false;
+
+		// 次のステージがあるなら進めて再構築
+		if(_stageManager.GoNext())
+		{
+			ResetStage();
+		}
+		// 次のステージがないならタイトルに戻る
+	/*	else
+		{
+			ModeServer::GetInstance()->Add(new ModeTitle(), 0, "ModeTitle");
+		}*/
+
+		return true;
+	}
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
+	if(_requestResetStage)
 	{
 		_requestResetStage = false;
 		ResetStage();
 		return true;
 	}
 
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
-
+	// カメラ処理
 	_camera->Process();
 
 	DebugProcess();
 	DebugCameraControl();
 
 	//_soundServer->Update();
+	// アニメーション処理
+
 	AnimationManager::GetInstance()->Update(1.0f);
+
 	// Effekseer 更新
+
 	EffekseerManager::GetInstance()->Update();
 
-	EnemySoundManager::GetInstance()->Update(1.0f/60.0f);
+	// 敵サウンド処理
+	EnemySoundManager::GetInstance()->Update(1.0f / 60.0f);
 
+	// 敵の音検出処理
 	for(auto& e : _enemyBase)
 	{
 		if(!e || !e->IsAlive())
@@ -471,8 +562,11 @@ bool ModeGame::Process()
 		}
 	}
 
+
+	// オブジェクトサーバー処理
 	_objectServer->ProcessInit(); // 追加・削除予約の確定
 	_objectServer->Process();
+
 
 	// 3Dサウンドリスナー位置の設定（毎フレーム更新）
 	PlayerBase* activePlayer = nullptr;
@@ -499,27 +593,22 @@ bool ModeGame::Process()
 		);
 	}
 
-	PlayerTransform(); // プレイヤー変身処理
-	ObjectProcess();   // オブジェクト処理
-	
+	// プレイヤー変身処理
+	PlayerTransform();
+	// オブジェクト処理
+	ObjectProcess();
+
 	// 敵との当たり判定処理（生存している敵のみ）
 	// 	...
 	// 当たり判定の処理をここに書く
+
 	if(_d_use_collision)
 	{
 		CheckAllDetections();
 	}
 
-
 	// 敵AI（追跡/移動はここで実行される）
-	for(auto& enemy : _enemy)
-	{
-		if(enemy->IsAlive())
-		{
-			enemy->Process();
-		}
-	}
-	
+
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
@@ -561,6 +650,7 @@ bool ModeGame::Process()
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
 
+	// プレイヤーと敵の接触処理
 	if(playerBase && playerBase->IsAlive())
 	{
 		for(auto& enemy : _enemyBase)
@@ -609,8 +699,17 @@ bool ModeGame::Process()
 					{
 						_sound3D->StopAll();
 					}
+
+					for(auto& effectBase : _effectBase)
+					{
+						if(effectBase)
+						{
+							effectBase->StopPlaying();
+						}
+					}
+
 					//ここでゲームオーバー処理へ移行
-					ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
+					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
 					return true;
 				}
@@ -638,17 +737,17 @@ bool ModeGame::Process()
 	}
 
 	// ゴールとの当たり判定
-	if (CanGoal() && !_isGameClear)
+	if(CanGoal() && !_isGameClear)
 	{
 		// いま操作/表示しているプレイヤーで判定
 		PlayerBase* goalPlayer = nullptr;
 
 		// ゴール判定を行うプレイヤーを明示的に選択（タヌキ / Mono / 通常）
-		if (_bShowTanuki)
+		if(_bShowTanuki)
 		{
 			goalPlayer = _playerTanuki.get();
 		}
-		else if (_showMonoPlayer)
+		else if(_showMonoPlayer)
 		{
 			goalPlayer = _playerMono.get();
 		}
@@ -660,12 +759,15 @@ bool ModeGame::Process()
 		// ゴール判定を行うプレイヤーが有効なら当たり判定をチェック
 		UpdateGoalConfirm(goalPlayer);
 	}
-	
+
 	// 攻撃判定は「表示中のプレイヤーが人間プレイヤー(_player) のときのみ」実行する
 	if(playerBase == _player.get())
 	{
 		IsPlayerAttack(_player.get(), _enemyBase);
 	}
+	
+
+	// 3Dサウンド処理
 
 	if(_sound3D)
 	{
@@ -704,6 +806,7 @@ bool ModeGame::Process()
 		}
 	}
 
+	// 変身時間制限処理
 	if(_changeTimeActive)
 	{
 		float dt = 1.0f / 60.0f; // 60FPS想定
@@ -748,10 +851,10 @@ bool ModeGame::Process()
 			// カメラを新しいプレイヤー位置に合わせる（オフセットは維持）
 			if(_camera && _playerTanuki)
 			{
-				vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+				vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 				vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-				_camera->_vTarget = target;
-				_camera->_vPos = vec3::VAdd(target, camDelta);
+				_camera->SetTarget(target);
+				_camera->SetPos(vec3::VAdd(target, camDelta));
 			}
 
 			// エフェクト再設定
@@ -778,28 +881,36 @@ bool ModeGame::Process()
 		}
 		else if(_changeTimeLimit <= 10.0f)
 		{
-			// 正しくタイマーで点滅を制御する
 			_changeBlinkTimer += dt;
 			if(_changeBlinkTimer >= _changeBlinkInterval)
 			{
-				_changeBlinkTimer = 0.0f; // タイマーリセット
-				_changeBlinkVisible = !_changeBlinkVisible; // 点滅反転
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = !_changeBlinkVisible;
 			}
 		}
 	}
 
+	// BGM変更処理
+
 	ChangeBGM();
+
 	return true;
 }
 
 // 描画処理
 bool ModeGame::Render()
 {
+	// **カメラの有効性をチェック**
+	if(!_camera)
+	{
+		return false; // カメラが無効な場合は描画をスキップ
+	}
+
 	base::Render();
 
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_camera->_vPos), DxlibConverter::VecToDxLib(_camera->_vTarget));
-	SetCameraNearFar(_camera->_fClipNear, _camera->_fClipFar);
+	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_camera->GetPos()), DxlibConverter::VecToDxLib(_camera->GetTarget()));
+	SetCameraNearFar(_camera->GetClipNear(), _camera->GetClipFar());
 	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);
 	SetupCamera_Perspective(fov_rad);
@@ -807,15 +918,50 @@ bool ModeGame::Render()
 	EffekseerManager::GetInstance()->Render();
 
 	// オブジェクトサーバーの描画
-	_objectServer->Render();
+	if(_objectServer)
+	{
+		_objectServer->Render();
+	}
 
 	ObjectRender();// オブジェクト描画処理
 	DebugRender(); // デバック描画処理
+
+	// 処理時間を画面に表示
+	int y = 40;
+	const int lineHeight = 18;
+	const unsigned int colorYellow = GetColor(255, 255, 0);
+	const unsigned int colorWhite = GetColor(255, 255, 255);
+	const unsigned int colorRed = GetColor(255, 100, 100);
+
+	//DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
+
+	//// 処理時間が0.5ms以上の項目は赤色で表示
+	//DrawFormatString(10, y, _processTotalMs >= 0.5f ? colorRed : colorYellow, "Total Process: %.3f ms", _processTotalMs); y += lineHeight;
+	//DrawFormatString(10, y, _processCameraMs >= 0.5f ? colorRed : colorWhite, "  Camera: %.3f ms", _processCameraMs); y += lineHeight;
+	//DrawFormatString(10, y, _processAnimationMs >= 0.5f ? colorRed : colorWhite, "  Animation: %.3f ms", _processAnimationMs); y += lineHeight;
+	//DrawFormatString(10, y, _processEffekseerMs >= 0.5f ? colorRed : colorWhite, "  Effekseer: %.3f ms", _processEffekseerMs); y += lineHeight;
+	//DrawFormatString(10, y, _processEnemySoundMs >= 0.5f ? colorRed : colorWhite, "  EnemySound: %.3f ms", _processEnemySoundMs); y += lineHeight;
+	//DrawFormatString(10, y, _processObjectServerMs >= 0.5f ? colorRed : colorWhite, "  ObjectServer: %.3f ms", _processObjectServerMs); y += lineHeight;
+	//DrawFormatString(10, y, _processSoundListenerMs >= 0.5f ? colorRed : colorWhite, "  SoundListener: %.3f ms", _processSoundListenerMs); y += lineHeight;
+	//DrawFormatString(10, y, _processPlayerTransformMs >= 0.5f ? colorRed : colorWhite, "  PlayerTransform: %.3f ms", _processPlayerTransformMs); y += lineHeight;
+	//DrawFormatString(10, y, _processObjectProcessMs >= 0.5f ? colorRed : colorWhite, "  ObjectProcess: %.3f ms", _processObjectProcessMs); y += lineHeight;
+	//DrawFormatString(10, y, _processCollisionMs >= 0.5f ? colorRed : colorWhite, "  Collision: %.3f ms", _processCollisionMs); y += lineHeight;
+	//DrawFormatString(10, y, _processEnemyAIMs >= 0.5f ? colorRed : colorWhite, "  EnemyAI: %.3f ms", _processEnemyAIMs); y += lineHeight;
+	//DrawFormatString(10, y, _processPlayerCollisionMs >= 0.5f ? colorRed : colorWhite, "  PlayerCollision: %.3f ms", _processPlayerCollisionMs); y += lineHeight;
+	//DrawFormatString(10, y, _processPlayerEnemyMs >= 0.5f ? colorRed : colorWhite, "  PlayerEnemy: %.3f ms", _processPlayerEnemyMs); y += lineHeight;
+	//DrawFormatString(10, y, _processGoalMs >= 0.5f ? colorRed : colorWhite, "  Goal: %.3f ms", _processGoalMs); y += lineHeight;
+	//DrawFormatString(10, y, _processAttackMs >= 0.5f ? colorRed : colorWhite, "  Attack: %.3f ms", _processAttackMs); y += lineHeight;
+	//DrawFormatString(10, y, _process3DSoundMs >= 0.5f ? colorRed : colorWhite, "  3DSound: %.3f ms", _process3DSoundMs); y += lineHeight;
+	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
+	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
+	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
 
 	if(_d_view_collision)
 	{
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
+
+	_hasRenderOnce = true;
 
 	return true;
 }
@@ -826,24 +972,24 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 	bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 
 	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
-	if (!hitGoal)
+	if(!hitGoal)
 	{
 		_notGoalFlag = false;
 	}
 
 	// 抑制中は確認を開かない（No直後に乗りっぱなしでも再表示しない）
-	if (_notGoalFlag)
+	if(_notGoalFlag)
 	{
 		return false;
 	}
 
-	 // 踏んだ瞬間に確認モードを開く
+	// 踏んだ瞬間に確認モードを開く
 	if(hitGoal && !_goalConfirmOpened)
 	{
 		_goalConfirmOpened = true;
 		_goalConfirmResult = ModeGoalConfirm::Result::None;
 
-		ModeServer::GetInstance()->Add(new ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
+		ModeServer::GetInstance()->Add(NEW ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
 		return true;
 	}
 
@@ -856,7 +1002,7 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 			_goalConfirmResult = ModeGoalConfirm::Result::None;
 
 			_isGameClear = true;
-			ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");	
+			ModeServer::GetInstance()->Add(NEW ModeGameClear(this), 255, "ModeGameClear");
 			return true;
 		}
 		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
@@ -867,7 +1013,7 @@ bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 			// 抑制フラグを立てる（ゴールから離れたら解除される）
 			_notGoalFlag = true;
 		}
-		
+
 	}
 
 	return false;
@@ -886,24 +1032,75 @@ bool ModeGame::ResetStage()
 		_objectServer->ClearObject();
 	}
 
-	// キャラ/オブジェクト/UI/エフェクトを廃棄
-	for(auto& chara       : _chara      ) { if(chara) chara->Terminate();             }
+	// --- 再生中のエフェクトを途中でもいいから即時停止 ---
+	// _effectBase 内の全エフェクトに対して StopPlaying を呼ぶ（途中停止を許容）
+	//for(auto& effectBase : _effectBase)
+	//{
+	//	if(effectBase)
+	//	{
+	//		effectBase->StopPlaying();
+	//	}
+	//}
+	//// メンバで保持しているエフェクトハンドルにも念のため停止を要求
+	//if(_hensinEffect) _hensinEffect->StopPlaying();
+	//if(_walkEffect)  _walkEffect->StopPlaying();
+	//if(_findEffect)  _findEffect->StopPlaying();
+	//if(_hatenaEffect) _hatenaEffect->StopPlaying();
+	//if(_aseEffect)   _aseEffect->StopPlaying();
+	//if(_doyaEffect)  _doyaEffect->StopPlaying();
+	//if(_nakiEffect)  _nakiEffect->StopPlaying();
+
+	// キャラ/オブジェクト/UI を廃棄
+	for(auto& chara : _chara) {
+		if(chara) chara->Terminate();
+	}
 	_chara.clear();
-	 
-	for(auto& object      : _object     ) { if(object) object->Terminate();           }
+
+	for(auto& object : _object) {
+		if(object) object->Terminate();
+	}
 	_object.clear();
 
-	for(auto& player_base : _playerBase ) { if(player_base) player_base->Terminate(); }
+	for(auto& player_base : _playerBase) {
+		if(player_base) player_base->Terminate();
+	}
 	_playerBase.clear();
 
-	for(auto& ui_base     : _uiBase     ) { if(ui_base) ui_base->Terminate();         }
+	for(auto& ui_base : _uiBase) {
+		if(ui_base) ui_base->Terminate();
+	}
 	_uiBase.clear();
 
-	for (auto& shadow     : _charaShadow) { if(shadow) shadow->Terminate();           }
+	for(auto& shadow : _charaShadow) {
+		if(shadow) shadow->Terminate();
+	}
 	_charaShadow.clear();
 
-	for (auto& effectBase : _effectBase ) { if(effectBase) effectBase->Terminate();   }
+	// --- エフェクトの確実な破棄 ---
+	// 個々の EffectBase インスタンスを終了させ、コンテナとメンバ shared_ptr を解放する
+	for(auto& effectBase : _effectBase)
+	{
+		if(effectBase)
+		{
+			effectBase->Terminate();
+		}
+	}
 	_effectBase.clear();
+
+	// メンバで保持しているエフェクト shared_ptr をリセットして参照を切る
+	_hensinEffect.reset();
+	_walkEffect.reset();
+	_findEffect.reset();
+	_hatenaEffect.reset();
+	_aseEffect.reset();
+	_doyaEffect.reset();
+	_nakiEffect.reset();
+
+	// Effekseer に登録されているエフェクトリソースも全削除しておく
+	// （再構築時に再ロードさせるため）
+	EffekseerManager::GetInstance()->DeleteAllEffect();
+	EffekseerManager::GetInstance()->Update();
+	EffekseerManager::GetInstance()->StopAllPlayingEffect();
 
 	_enemyBase.clear();
 	_enemy.clear();
@@ -939,19 +1136,20 @@ bool ModeGame::ResetStage()
 	}
 
 	// 再構築
-	_bShowTanuki    = true;
+	_bShowTanuki = true;
 	_showMonoPlayer = false;
 
 	// オブジェクトサーバーの再ロード　
 	if(_objectServer == nullptr)
 	{
-		_objectServer = new ObjectServer(this);
+		_objectServer = NEW ObjectServer(this);
 	}
-	_objectServer->LoadDate("stage");
+	//_objectServer->LoadDate("SM_stage1");
+	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
 	_objectServer->ProcessInit();
 
 	// カメラセット
-	if (auto* map = _objectServer->GetMap())
+	if(auto* map = _objectServer->GetMap())
 	{
 		map->SetCamera(_camera);
 	}
@@ -959,31 +1157,54 @@ bool ModeGame::ResetStage()
 	ObjectInitialize();	// オブジェクト初期化
 
 	// 各種　initialize
-	for(auto& chara       : _chara     ) { if(chara) chara->Initialize();             }
-	for(auto& object      : _object    ) { if(object) object->Initialize();           }
-	for(auto& player_base : _playerBase) { if(player_base) player_base->Initialize(); }
-	for(auto& ui_base     : _uiBase    ) { if(ui_base) ui_base->Initialize();         }
-	for(auto& _effectBase : _effectBase) { if(_effectBase) _effectBase->Initialize(); }
+	for(auto& chara : _chara) {
+		if(chara) chara->Initialize();
+	}
+	for(auto& object : _object) {
+		if(object) object->Initialize();
+	}
+	for(auto& player_base : _playerBase) {
+		if(player_base) player_base->Initialize();
+	}
+	for(auto& ui_base : _uiBase) {
+		if(ui_base) ui_base->Initialize();
+	}
+	for(auto& effectBase : _effectBase) {
+		if(effectBase) effectBase->Initialize();
+	}
 
 	LoadStageData(); // ステージデータ読み込み
 
 	// カメラをプレイヤーがいる位置に合わせる
-	if(_player      )       _player->SetCamera(_camera);
+
+	if(_camera != nullptr && _playerTanuki)
+	{
+		// 現在のカメラオフセットを保存（pos - target）
+		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
+
+		// ターゲットはタヌキの高さを少し上げた位置にする
+		vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+		_camera->SetTarget(target);
+
+		// pos をターゲット + オフセットで再計算
+		_camera->SetPos(vec3::VAdd(target, camDelta));
+	}
+	if(_player)       _player->SetCamera(_camera);
 	if(_playerTanuki) _playerTanuki->SetCamera(_camera);
-	if(_playerMono  )   _playerMono->SetCamera(_camera);
+	if(_playerMono)   _playerMono->SetCamera(_camera);
 
 	// エフェクトに対象をセット
-	if (_treasureEffect             )_treasureEffect->SetTreasure(_treasure);
-	if (_findEffect					) _findEffect->SetEnemy(_enemyBase);
-	if (_hatenaEffect				) _hatenaEffect->Enemy(_enemyBase);
-	if(_walkEffect					) _walkEffect->SetPlayerPos(_playerTanuki.get());
-	if (_aseEffect					)
+	if(_treasureEffect)_treasureEffect->SetTreasure(_treasure);
+	if(_findEffect) _findEffect->SetEnemy(_enemyBase);
+	if(_hatenaEffect) _hatenaEffect->Enemy(_enemyBase);
+	if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+	if(_aseEffect)
 	{
 		_aseEffect->SetEnemy(_enemyBase);
 		_aseEffect->SetPlayer(_playerTanuki.get());
 	}
 
-    // 宝箱も閉じる（全宝箱）
+	// 宝箱も閉じる（全宝箱）
 	for(auto& t : _treasure)
 	{
 		if(t) t->SetOpen(false);
@@ -995,5 +1216,101 @@ bool ModeGame::ResetStage()
 	_changeBlinkTimer = 0.0f;
 	_changeBlinkVisible = true;
 
+	return true;
+}
+
+bool ModeGame::DebugCinematicCameraControl()
+{
+	if(!_cinematicCamera)
+	{
+		return false; // 演出カメラが存在しない場合は処理しない
+	}
+
+	if(!_originalCamera)
+	{
+		return false;
+	}
+
+	if(!_camera)
+	{
+		return false; // 現在のカメラが存在しない場合は処理しない
+	}
+
+	if(CheckHitKey(KEY_INPUT_F1))
+	{
+		if(!_debugF1KeyPressed)
+		{
+			_debugF1KeyPressed = true;
+			if(!_debugZoomActive)
+			{
+				_debugZoomActive = true;
+				// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
+				if(_cinematicCamera && _camera)
+				{
+					// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
+					_cinematicCamera->SetPos(_camera->GetPos());
+					_cinematicCamera->SetTarget(_camera->GetTarget());
+					_cinematicCamera->SetClipNear(_camera->GetClipNear());
+					_cinematicCamera->SetClipFar(_camera->GetClipFar());
+
+					_useCinematicCamera = true;
+					_camera = _cinematicCamera.get();
+				}
+				else
+				{
+					// カメラが無効な場合は処理をスキップ
+					return false;
+				}
+
+				// 現在のプレイヤー位置を取得してズーム演出
+				PlayerBase* targetPlayer = nullptr;
+				if(_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
+				{
+					targetPlayer = _playerTanuki.get();
+				}
+				else if(_showMonoPlayer && _playerMono && _playerMono->IsAlive())
+				{
+					targetPlayer = _playerMono.get();
+				}
+				else if(_player && _player->IsAlive())
+				{
+					targetPlayer = _player.get();
+				}
+				if(targetPlayer && _cinematicCamera)
+				{
+					vec::Vec3 target = targetPlayer->GetPos();
+					// 現在位置のカメラの位置からプレイヤーの位置への距離を計算
+					vec::Vec3 currentPos = _cinematicCamera->GetPos();
+					float currentDist = vec3::VSize(vec3::VSub(currentPos, target)); 
+					float endDist = currentDist * 0.5f; // 最終的な距離（半分にする例）
+					if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
+
+					// ズーム演出：現在距離から近距離へ
+					_cinematicCamera->StartZoom(target, 3.0f, currentDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
+				}
+			}
+			else
+			{
+				// ズーム解除
+				_debugZoomActive = false;
+				_useCinematicCamera = false;
+
+				if(_cinematicCamera)
+				{
+					_cinematicCamera->StopAll();
+				}
+
+				// 元のカメラに戻す前に有効性をチェック
+				if(_originalCamera)
+				{
+					_camera = _originalCamera;
+				}
+			}
+		}
+	}
+	else
+	{
+		_debugF1KeyPressed = false;
+	}
 	return true;
 }

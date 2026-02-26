@@ -394,7 +394,7 @@ void EnemyBase::UpdateDamageAnimation()
 				damageSound->Play();
 			}
 
-			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 1000.0f, 50.0f); // ダメージ音を発生させる
+			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 300.0f, 50.0f); // ダメージ音を発生させる
 
 			if(!_attachAnimStan.empty())
 			{
@@ -682,16 +682,24 @@ void EnemyBase::UpdateMovingToSound()
 		}
 	}
 
-	// 移動可能な方向が見つからない場合は初期位置に戻る
-	if (!validMovementFound)
-	{
-		_isMovingToSound = false;
-		_waitingAtSound = false;
-		_soundDetectionActive = false;
-		_soundDetectionTimer = 0.0f;
-		StartReturningToInitialPosition();
-		return;
-	}
+	//// 移動可能な方向が見つからない場合は初期位置に戻る
+	//if (!validMovementFound)
+	//{
+	//	_isMovingToSound = false;
+	//	_waitingAtSound = false;
+	//	_soundDetectionActive = false;
+	//	_soundDetectionTimer = 0.0f;
+	//	StartReturningToInitialPosition();
+	//	return;
+	//}
+
+	// 移動可能な方向が見つからない場合はその場で待機
+		if (!validMovementFound)
+		{
+			// すぐに初期位置に戻さず、その場で待機して音検知タイマーに任せる
+			_status = STATUS::WAIT;
+			return;
+		}
 
 	//// 移動可能な方向が見つからない場合はその場で待機
 	//if (!validMovementFound)

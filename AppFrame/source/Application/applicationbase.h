@@ -10,7 +10,7 @@
 #include "../container.h"
 #include "../Mode/ModeServer.h"
 #include "../fade/fade.h"
-
+#include "../FrameRateController.h"
 
 class ApplicationBase
 {
@@ -27,13 +27,14 @@ public:
 	virtual bool BeforeDXLib_Init() { return true; }
 
 	virtual bool AppWindowed() { return true; }
-	virtual int DispSizeW() { return 640; }
-	virtual int DispSizeH() { return 480; }
+	virtual int DispSizeW() { return 1920; }
+	virtual int DispSizeH() { return 1080; }
 
 	static	ApplicationBase	*GetInstance() { return _lp_instance; }
 	virtual int GetKey() { return _gKey; }
 	virtual int GetTrg() { return _gTrg; }
 
+	FrameRateController* GetFrameRateController() { return _frameRateController.get(); }
 protected:
 	static	ApplicationBase	*_lp_instance;
 	static  Fade* _fade;
@@ -42,5 +43,5 @@ protected:
 	int		_gTrg;
 
 	ModeServer* _serverMode;
-
+	at::upc<FrameRateController> _frameRateController;
 };

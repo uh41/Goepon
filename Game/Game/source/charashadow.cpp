@@ -71,6 +71,11 @@ bool CharaShadow::Render()
 	{
 		return true;
 	}
+
+	if(!_target)
+	{
+		return true;
+	}
 	
 		// ƒLƒƒƒ‰‚ª‘¶Ý‚µ‚È‚¢ê‡‚Í•`‰æ‚µ‚È‚¢
 	if(!_target->IsAlive())

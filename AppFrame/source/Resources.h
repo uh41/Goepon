@@ -3,6 +3,7 @@
 namespace img
 {
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
+  inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* Logo = "res/Logo.png";
   inline constexpr const char* Op1 = "res/Op1.png";
@@ -24,6 +25,48 @@ namespace img
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* teamlogo = "res/teamlogo.png";
   inline constexpr const char* title = "res/title.png";
+  inline constexpr const char* work = "res/work.png";
+}
+
+namespace texture
+{
+  inline constexpr const char* Background = "res/Texture/Background.png";
+  inline constexpr const char* ChangeSheet = "res/Texture/ChangeSheet.png";
+  inline constexpr const char* EF_Tresure = "res/Texture/EF_Tresure.png";
+  inline constexpr const char* Front = "res/Texture/Front.png";
+  inline constexpr const char* LaserMain01 = "res/Texture/LaserMain01.png";
+  inline constexpr const char* Particle01 = "res/Texture/Particle01.png";
+  inline constexpr const char* Particle02 = "res/Texture/Particle02.png";
+  inline constexpr const char* TX_Tresure3 = "res/Texture/TX_Tresure3.png";
+  inline constexpr const char* TX_Tresure4 = "res/Texture/TX_Tresure4.png";
+  inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
+  inline constexpr const char* TX_change = "res/Texture/TX_change.png";
+  inline constexpr const char* TX_doya = "res/Texture/TX_doya.png";
+  inline constexpr const char* TX_doyax = "res/Texture/TX_doyax.png";
+  inline constexpr const char* TX_find = "res/Texture/TX_find.png";
+  inline constexpr const char* TX_hatena = "res/Texture/TX_hatena.png";
+  inline constexpr const char* TX_naki = "res/Texture/TX_naki.png";
+  inline constexpr const char* TX_nakix = "res/Texture/TX_nakix.png";
+  inline constexpr const char* TX_walk = "res/Texture/TX_walk.png";
+  inline constexpr const char* earth = "res/Texture/earth.png";
+  inline constexpr const char* explosion = "res/Texture/explosion.png";
+  inline constexpr const char* makimono = "res/Texture/makimono.png";
+  inline constexpr const char* tree = "res/Texture/tree.png";
+}
+
+namespace ef
+{
+  inline constexpr const char* EF_Kizetsu = "res/Effect/EF_Kizetsu.efkefc";
+  inline constexpr const char* EF_Shirimoti = "res/Effect/EF_Shirimoti.efkefc";
+  inline constexpr const char* EF_Tresure = "res/Effect/EF_Tresure.efkefc";
+  inline constexpr const char* EF_ase = "res/Effect/EF_ase.efkefc";
+  inline constexpr const char* EF_doya = "res/Effect/EF_doya.efkefc";
+  inline constexpr const char* EF_find = "res/Effect/EF_find.efkefc";
+  inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
+  inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
+  inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
+  inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
+  inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
 }
 
 namespace mv1
@@ -50,6 +93,7 @@ namespace mv1
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
   inline constexpr const char* SM_stageTRY = "res/map/SM_stageTRY.mv1";
+  inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
   inline constexpr const char* SM_stage_arufa2 = "res/map/SM_stage_arufa2.mv1";
@@ -92,21 +136,6 @@ namespace mv1
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
 }
 
-namespace ef
-{
-  inline constexpr const char* EF_Kizetsu = "res/Effect/EF_Kizetsu.efkefc";
-  inline constexpr const char* EF_Shirimoti = "res/Effect/EF_Shirimoti.efkefc";
-  inline constexpr const char* EF_Tresure = "res/Effect/EF_Tresure.efkefc";
-  inline constexpr const char* EF_ase = "res/Effect/EF_ase.efkefc";
-  inline constexpr const char* EF_doya = "res/Effect/EF_doya.efkefc";
-  inline constexpr const char* EF_find = "res/Effect/EF_find.efkefc";
-  inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
-  inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
-  inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
-  inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
-  inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
-}
-
 namespace mp3
 {
   inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
@@ -138,3 +167,4 @@ namespace wav
 {
   inline constexpr const char* ks010 = "res/BGM/ks010.wav";
 }
+

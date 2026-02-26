@@ -31,7 +31,7 @@ bool ModeGameClear::Process()
 		{
 			if(auto* game = dynamic_cast<ModeGame*>(_ownerGame))
 			{
-				game->RequestResetStage();
+				game->RequestNextStage();
 			}
 			// ƒNƒŠƒA‰æ–Ê‚ð•Â‚¶‚é
 			ModeServer::GetInstance()->Del(this);

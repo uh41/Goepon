@@ -24,26 +24,7 @@ bool EffectBase::Initialize()
 bool EffectBase::Terminate()
 {
 	base::Terminate();
-	if(_handle != -1)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->DeleteEffect(_handle);
-			_handle = -1;
-		}
-	}
-
-	// Effekseer の終了（Initialize で起動していれば）
-	if(_effekseerLaunche)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			em->Terminate();
-			_effekseerLaunche = false;
-		}
-	}
+	StopPlaying();
 	return true;
 }
 
@@ -61,4 +42,27 @@ bool EffectBase::Render()
 	base::Render();
 	EffekseerManager::GetInstance()->Render();
 	return true;
+}
+
+bool EffectBase::StopPlaying()
+{
+	if(_playHandle == -1)
+	{
+		return false;
+	}
+	auto em = EffekseerManager::GetInstance();
+	if(!em)
+	{
+		_playHandle = -1;
+		return false;
+	}
+	// EffekseerManager 側で停止してくれる
+	em->StopEffect(_playHandle);
+	_playHandle = -1;
+	return true;
+}
+
+bool EffectBase::IsPlaying() const
+{
+	return _playHandle != -1;
 }

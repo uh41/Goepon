@@ -17,7 +17,7 @@ namespace
 	constexpr auto DEFAULT_SIZE = 100.0f;
 	constexpr auto GROUND_Z = 50.0f;
 	constexpr auto GROUND_X = 100.0f;
-	constexpr auto GROUND_POLYGON_SIZE = 300.0f;
+	constexpr auto GROUND_POLYGON_SIZE = 1000.0f;
 }
 
 class ObjectBase

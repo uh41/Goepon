@@ -25,6 +25,7 @@
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
+    <ClInclude Include="source\CinematicCamera.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
@@ -39,6 +40,7 @@
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\ModeGoalConfirm.h" />
     <ClInclude Include="source\findeffect.h" />
@@ -50,6 +52,7 @@
     <ClInclude Include="source\menuitembase.h" />
     <ClInclude Include="source\modeeffekseer.h" />
     <ClInclude Include="source\modegame.h" />
+    <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modemenu.h" />
     <ClInclude Include="source\modeopscenario.h" />
     <ClInclude Include="source\modescenariobase.h" />
@@ -65,6 +68,7 @@
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
     <ClInclude Include="source\soundserver3D.h" />
+    <ClInclude Include="source\StageManager.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\UIActionButton.h" />
@@ -80,6 +84,7 @@
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
+    <ClCompile Include="source\CinematicCamera.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
@@ -94,6 +99,7 @@
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\enemysoundsensor.cpp" />
+    <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\ModeGoalConfirm.cpp" />
     <ClCompile Include="source\findeffect.cpp" />
@@ -108,6 +114,7 @@
     <ClCompile Include="source\modegamecollision.cpp" />
     <ClCompile Include="source\modegamedebug.cpp" />
     <ClCompile Include="source\modegameobject.cpp" />
+    <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modemenu.cpp" />
     <ClCompile Include="source\modeopscenario.cpp" />
     <ClCompile Include="source\modescenariobase.cpp" />

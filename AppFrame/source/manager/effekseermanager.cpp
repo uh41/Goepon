@@ -143,7 +143,7 @@ int EffekseerManager::PlayEffect3DPos(int handle, const vec::Vec3& pos)
 	if(playing != -1)
 	{
 		SetPosPlayingEffekseer3DEffect(playing, pos.x, pos.y, pos.z);
-		float speed = 1.0f / 60.0f;
+		float speed = 1.0f;
 		_effectSpeed.emplace(playing, speed);
 	}
 	return playing;
@@ -208,6 +208,31 @@ bool EffekseerManager::SetPauseEffect(int handle, bool pause)
 		}
 	}
 	return true;
+}
+
+void EffekseerManager::StopAllPlayingEffect()
+{
+	if(!_initialize)
+	{
+		return;
+	}
+
+	at::vet<int> playingHandle;
+	playingHandle.reserve(_effectSpeed.size());
+	for(auto& e : _effectSpeed)
+	{
+		playingHandle.emplace_back(e.first);
+	}
+
+	for(auto& handle : playingHandle)
+	{
+		StopEffekseer3DEffect(handle);
+		StopEffekseer3DEffect(handle);
+	}
+
+	_effectSpeed.clear();
+	_effectPos.clear();
+	_effectRotation.clear();
 }
 
 bool EffekseerManager::SetRotationEffect(int handle, const vec::Vec3& rad)

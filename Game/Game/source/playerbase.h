@@ -26,6 +26,10 @@ public:
 	int GetMakimonoCount() const { return _makimonoCount; } // まきものの所持数を取得する
 	void AddMakimono(int addCount);                         // まきものの所持数を増やす
 	void SubMakimono(int subCount);                         // まきものの所持数を減らす	
+
+	virtual bool IsDash() const { return false; } // ダッシュ中かどうかを返す（デフォルトはfalse）
+
+	int GetModelHandle() const { return _handle; }
 protected:
 
 	//アナログスティック関係
@@ -43,5 +47,11 @@ protected:
 	std::string _memoFileName;
 
 	int _makimonoCount; // まきものの所持数	
+	int _padHorizontalSign; // パッドの水平入力の符号（-1, 0, 1）
+	bool _applyYFlip; // Y軸反転を適用するかどうか
+	float _yaw; // プレイヤーの向き（Y軸回転角）
+	float _targetY; // プレイヤーの向きの目標値（Y軸回転角）
+	float _ySpeed; // プレイヤーの向きの回転速度
+	float _yRotation; // プレイヤーのY軸回転角
 };
 

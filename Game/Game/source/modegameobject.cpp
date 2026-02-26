@@ -22,6 +22,12 @@ bool ModeGame::ObjectInitialize()
 	// カメラ初期化
 	_camera = new Camera();
 	_camera->Initialize();
+	// メインカメラ
+	_originalCamera = _camera;
+	// 演出カメラの初期化
+	_cinematicCamera = std::make_unique<CinematicCamera>();
+	_cinematicCamera->Initialize();
+	
 
 	//// マップ初期化
 	//_map = std::make_shared<Map>();
@@ -73,6 +79,9 @@ bool ModeGame::ObjectInitialize()
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
+
+	_doyaEffect->SetTargetPlayer(_playerTanuki.get());
+	_nakiEffect->SetTargetPlayer(_playerTanuki.get());
 
 	// キャラ
 	for(auto& chara : _chara)
@@ -163,7 +172,7 @@ bool ModeGame::CameraInfoInitialize()
 	if(_camera != nullptr)
 	{
 		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
-		vec::Vec3 camDelta = vec3::VSub(_camera->_vPos, _camera->_vTarget);
+		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
 		// 初期表示プレイヤー（タヌキ／人間）に合わせる
 		PlayerBase* startPlayer = nullptr;
@@ -180,8 +189,8 @@ bool ModeGame::CameraInfoInitialize()
 		{
 			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
 			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			_camera->_vTarget = target;
-			_camera->_vPos = vec3::VAdd(target, camDelta);
+			_camera->SetTarget(target);
+			_camera->SetPos(vec3::VAdd(target, camDelta));
 		}
 	}
 	return true;
@@ -233,12 +242,13 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_player->SetDir(_playerTanuki->GetDir());
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
-			_aseEffect->SetPlayer(_player.get());
+			_doyaEffect->SetTargetPlayer(_player.get());
+			_nakiEffect->SetTargetPlayer(_player.get());
 			_player->Process(); // 変身直後の一フレーム更新
 
 			// たぬ人間変身時の処理
 			_changeTimeActive = true;// 時間制言を有効化
-			_changeTimeLimit = 20.0f; // 変身時間をリセット
+			_changeTimeLimit = 17.0f; // 変身時間をリセット
 			_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
 			_changeBlinkVisible = true; // 点滅表示フラグリセット
 			auto s = gGlobal._soundServer->Get("1");
@@ -270,14 +280,15 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_playerMono->SetDir(_playerTanuki->GetDir());
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
-			_aseEffect->SetPlayer(_playerMono.get());
+			_doyaEffect->SetTargetPlayer(_playerMono.get());
+			_nakiEffect->SetTargetPlayer(_playerMono.get());
 
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 
 			// たぬモノ変身時の処理
 			_changeTimeActive = true;
-			_changeTimeLimit = 10.0f;
+			_changeTimeLimit = 12.0f;
 			_changeBlinkTimer = 0.0f;
 			_changeBlinkVisible = true;
 			auto s = gGlobal._soundServer->Get("1");
@@ -637,6 +648,47 @@ bool ModeGame::ObjectRender()
 		object->Render();
 	}
 
+	// 変身時間の点滅処理
+	auto renderPlayerWithBlink = [this](PlayerBase* player)
+		{
+			if(player == nullptr || !player->IsAlive())
+			{
+				return;
+			}
+
+			const bool useBlink = (_changeTimeActive && _changeTimeLimit <= 10.0f);
+
+			int modelHandle = player->GetModelHandle();
+			if(modelHandle >= 0)
+			{
+				int materialNum = MV1GetMaterialNum(modelHandle);
+
+				if(useBlink && !_changeBlinkVisible)
+				{
+					// 各マテリアルに赤色の加算ブレンドを設定
+					for(int i = 0; i < materialNum; i++)
+					{
+						MV1SetMaterialDrawBlendMode(modelHandle, i, DX_BLENDMODE_ADD);
+						MV1SetMaterialDrawBlendParam(modelHandle, i, 128);
+						MV1SetMaterialDifColor(modelHandle, i, GetColorF(255, 0, 0, 255));
+					}
+				}
+				else
+				{
+					// 通常のブレンドモードに戻す
+					for(int i = 0; i < materialNum; i++)
+					{
+						MV1SetMaterialDrawBlendMode(modelHandle, i, DX_BLENDMODE_NOBLEND);
+						MV1SetMaterialDrawBlendParam(modelHandle, i, 255);
+						MV1SetMaterialDifColor(modelHandle, i, GetColorF(255, 255, 255, 255));
+					}
+				}
+			}
+
+			// 描画実行
+			player->Render();
+		};
+
 	// プレイヤーの描画（フラグに応じて片方のみ）
 	for(auto& player_base : _playerBase)
 	{
@@ -649,35 +701,16 @@ bool ModeGame::ObjectRender()
 		}
 		else if(_showMonoPlayer)
 		{
-			if(player_base.get() == _playerMono.get() && player_base->IsAlive())
+			if(player_base.get() == _playerMono.get())
 			{
-				if(_changeTimeActive && _changeTimeLimit <= 10.0f)
-				{
-					// 点滅中で「非表示側」のタイミングなら描画しない
-					if(!_changeBlinkVisible)
-					{
-
-						continue;
-					}
-				}
-				player_base->Render();
+				renderPlayerWithBlink(_playerMono.get());
 			}
 		}
 		else
 		{
-			// 人間プレイヤー描画時に、タイマー点滅中なら描画をスキップする判定を入れる
-			if(player_base.get() == _player.get() && player_base->IsAlive())
+			if(player_base.get() == _player.get())
 			{
-				if(_changeTimeActive && _changeTimeLimit <= 10.0f)
-				{
-					// 点滅中で「非表示側」のタイミングなら描画しない
-					if(!_changeBlinkVisible)
-					{
-
-						continue;
-					}
-				}
-				player_base->Render();
+				renderPlayerWithBlink(_player.get());
 			}
 		}
 	}
@@ -935,6 +968,7 @@ bool ModeGame::CheckAllDetections()
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
+						_nakiEffect->SetTargetPlayer(player);
 						_nakiEffect->PlayEffect(player->GetPos());
 					}
 

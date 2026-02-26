@@ -113,8 +113,8 @@ bool Player::Process()
 	_v = { 0,0,0 };
 
 	// カメラの向いている角度を取得
-	float sx = _cam->_vPos.x - _cam->_vTarget.x;
-	float sz = _cam->_vPos.z - _cam->_vTarget.z;
+	float sx = _cam->GetPos().x - _cam->GetTarget().x;
+	float sz = _cam->GetPos().z - _cam->GetTarget().z;
 	float camrad = atan2(sz, sx);
 	float rad = 0.0f;
 

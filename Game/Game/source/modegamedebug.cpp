@@ -174,8 +174,8 @@ void ModeGame::StartCameraControlAndSave()
 {
 	if(_camera && !_hasSavedCameraState)
 	{
-		_savedCamPos = _camera->_vPos;
-		_savedCamTarget = _camera->_vTarget;
+		_savedCamPos = _camera->GetPos();
+		_savedCamTarget = _camera->GetTarget();
 		_hasSavedCameraState = true;
 		// カメラ操作モードを有効にする
 		_bCameraControlMode = true;
@@ -187,8 +187,8 @@ void ModeGame::EndCameraControlAndRestore()
 {
 	if(_camera && _hasSavedCameraState)
 	{
-		_camera->_vPos = _savedCamPos;
-		_camera->_vTarget = _savedCamTarget;
+		_camera->SetPos(_savedCamPos);
+		_camera->SetTarget(_savedCamTarget);
 		_hasSavedCameraState = false;
 		// カメラ操作モードを無効にする
 		_bCameraControlMode = false;
@@ -224,8 +224,8 @@ bool ModeGame::DebugRender()
 
 		if(_camera)
 		{
-			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Pos : %0.2f, %0.2f, %0.2f", _camera->_vPos.x, _camera->_vPos.y, _camera->_vPos.z); y += line;
-			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Target : %0.2f, %0.2f, %0.2f", _camera->_vTarget.x, _camera->_vTarget.y, _camera->_vTarget.z); y += line;
+			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Pos : %0.2f, %0.2f, %0.2f", _camera->GetPos().x, _camera->GetPos().y, _camera->GetPos().z); y += line;
+			DrawFormatString(sx, y, GetColor(192, 255, 192), "Cam Target : %0.2f, %0.2f, %0.2f", _camera->GetTarget().x, _camera->GetTarget().y, _camera->GetTarget().z); y += line;
 		}
 	}
 
@@ -244,16 +244,16 @@ bool ModeGame::DebugRender()
 		if(_camera)
 		{
 			DxlibConverter::DrawLine3D(
-				vec3::VAdd(_camera->_vTarget, vec3::VGet(-linelength, 0.0f, 0.0f)),
-				vec3::VAdd(_camera->_vTarget, vec3::VGet(linelength, 0.0f, 0.0f)),
+				vec3::VAdd(_camera->GetTarget(), vec3::VGet(-linelength, 0.0f, 0.0f)),
+				vec3::VAdd(_camera->GetTarget(), vec3::VGet(linelength, 0.0f, 0.0f)),
 				GetColor(255, 255, 0));
 			DxlibConverter::DrawLine3D(
-				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, -linelength, 0.0f)),
-				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, linelength, 0.0f)),
+				vec3::VAdd(_camera->GetTarget(), vec3::VGet(0.0f, -linelength, 0.0f)),
+				vec3::VAdd(_camera->GetTarget(), vec3::VGet(0.0f, linelength, 0.0f)),
 				GetColor(255, 255, 0));
 			DxlibConverter::DrawLine3D(
-				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, 0.0f, -linelength)),
-				vec3::VAdd(_camera->_vTarget, vec3::VGet(0.0f, 0.0f, linelength)),
+				vec3::VAdd(_camera->GetTarget(), vec3::VGet(0.0f, 0.0f, -linelength)),
+				vec3::VAdd(_camera->GetTarget(), vec3::VGet(0.0f, 0.0f, linelength)),
 				GetColor(255, 255, 0));
 		}
 	}

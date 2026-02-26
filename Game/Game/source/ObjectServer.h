@@ -50,6 +50,8 @@ public:
 	bool ClearObject();
 
 	MapBase* GetMap() const { return _map; }
+
+
 private:
 	// オブジェクト　
 	std::vector<class ObjectBase*> _objects;
@@ -57,6 +59,10 @@ private:
 	std::vector<class ObjectBase*> _addObj;
 	// 削除するオブジェクトのアドレス
 	std::vector<class ObjectBase*> _deleteObj;
+
+	// 予約重複チェック
+	std::unordered_set<class ObjectBase*> _addSet;
+	std::unordered_set<class ObjectBase*> _deleteSet;
 
 	// 特定のクラスだけほしいので、アドレス登録用配列
 	// 用途は当たり判定やObjectBase*型のポインタから特定のクラスしかできない処理をダウンキャストせずにするため
