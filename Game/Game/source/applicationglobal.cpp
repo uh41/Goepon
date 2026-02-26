@@ -225,7 +225,7 @@ bool ApplicationGlobal::Init()
 	_iCgCursor = LoadGraph("res/cursor.png");
 
 	LoadMapData("Map1", "stage1_1.json", "stage");// 1ステージ目
-	LoadStageData("Stage1", "marker1_1.json", "stage");// 1ステージ目
+	LoadStageData("Stage1", "markerDGR.json", "stage");// 1ステージ目
 	LoadStageData("Stage2", "marker1_2.json", "stage");// 2ステージ目
 
 	// キャラクター関連モデル読み込み

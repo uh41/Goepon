@@ -192,7 +192,7 @@ bool ObjectServer::LoadDate(std::string stageName)
 {
 	// マップデータ読み込み
 	_sPath = "res/map/";
-	_sJsonFile = "markerDGR.json";
+	_sJsonFile = "marker1_1.json";
 	_sJsonObjectName = "stage";
 	/*_sJsonFile = "stagebeta.json";
 	_sJsonObjectName = "SM_stagebeta";*/
