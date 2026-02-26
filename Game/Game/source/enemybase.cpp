@@ -9,7 +9,6 @@
 
 #include "enemybase.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
 #include "applicationglobal.h"
 #include "enemysoundmanager.h"
 
@@ -163,12 +162,6 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 void EnemyBase::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 {
 	_enemySensor = sensor;
-}
-
-// EnemySoundSensorを設定するメソッドを追加
-void EnemyBase::SetEnemySoundSensor(std::shared_ptr<EnemySoundSensor> sensor)
-{
-	_enemySoundSensor = sensor;
 }
 
 // プレイヤーが検出範囲外になった時の処理
@@ -350,12 +343,6 @@ void EnemyBase::StartDamage()
 		_enemySensor->SetSensorEnabled(false); // センサーを無効化
 	}
 
-	if(_enemySoundSensor)
-	{
-		_enemySoundSensor->SetSoundLevel(0); // 音センサーを無効化
-		_enemySoundSensor->SetSoundSensorArea(0.0f);
-	}
-
 	_isMoving = false; // 移動を停止
 	_isMovingToSound = false; // 音源への移動も停止
 	_waitingAtSound = false;
@@ -440,12 +427,6 @@ void EnemyBase::UpdateDamageAnimation()
 			{
 				_enemySensor->SetSensorEnabled(true);
 				_enemySensor->ResetDetection();
-			}
-
-			if(_enemySoundSensor)
-			{
-				_enemySoundSensor->SetSoundLevel(0);
-				_enemySoundSensor->SetSoundSensorArea(0.0f);
 			}
 
 			OnDamageEnd();
@@ -736,13 +717,6 @@ bool EnemyBase::Process()
 	{
 		UpdateDamageAnimation();
 		return true;
-	}
-
-	// EnemySoundSensorの位置も同期
-	if (_enemySoundSensor)
-	{
-		_enemySoundSensor->SetPos(_vPos);
-		_enemySoundSensor->SetDir(_vDir);
 	}
 
 	// プレイヤーの方向に徐々に回転

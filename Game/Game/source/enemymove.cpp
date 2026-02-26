@@ -10,7 +10,6 @@
 
 #include "enemymove.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
 #include "enemysoundmanager.h"
 #include <cmath>
 
@@ -480,51 +479,51 @@ bool EnemyMove::Process()
 		}
 	}
 
-	// EnemySoundSensorから音の検知情報を取得
-	if(_enemySoundSensor)
-	{
-		// 音検知情報を取得
-		const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-		if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
-		{
-			if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
-			{
-				// 巡回を止めて現在の巡回インデックスを保存
-				_savePatrolIndex = _patrolIndex;
-				_isPatroll = false;
+	//// EnemySoundSensorから音の検知情報を取得
+	//if(_enemySoundSensor)
+	//{
+	//	// 音検知情報を取得
+	//	const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
+	//	if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
+	//	{
+	//		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
+	//		{
+	//			// 巡回を止めて現在の巡回インデックスを保存
+	//			_savePatrolIndex = _patrolIndex;
+	//			_isPatroll = false;
 
-				// 巡回待機状態をリセット
-				_isPatrolWaiting = false;
-				_patrolWaitTimer = 0.0f;
+	//			// 巡回待機状態をリセット
+	//			_isPatrolWaiting = false;
+	//			_patrolWaitTimer = 0.0f;
 
-				// 巡回ターゲット座標を保存（復帰時に使う）
-				if(_patroll && _patroll->IsValid())
-				{
-					_savePoint = _patroll->GetTargetPoint();
-				}
-				else
-				{
-					_savePoint = _initialPosition;
-				}
-				_hasSavePoint = true;
+	//			// 巡回ターゲット座標を保存（復帰時に使う）
+	//			if(_patroll && _patroll->IsValid())
+	//			{
+	//				_savePoint = _patroll->GetTargetPoint();
+	//			}
+	//			else
+	//			{
+	//				_savePoint = _initialPosition;
+	//			}
+	//			_hasSavePoint = true;
 
-				// テレポートは行わず、プレイヤー（音源）座標へ向けて移動する
-				_isMovingToSound = true;
-				_soundSourcePosition = detectionInfo.soundSourcePosition;
+	//			// テレポートは行わず、プレイヤー（音源）座標へ向けて移動する
+	//			_isMovingToSound = true;
+	//			_soundSourcePosition = detectionInfo.soundSourcePosition;
 
-				// 音検知タイマー開始
-				_soundDetectionActive = true;
-				_soundDetectionTimer = 0.0f;
+	//			// 音検知タイマー開始
+	//			_soundDetectionActive = true;
+	//			_soundDetectionTimer = 0.0f;
 
-				// 初期位置への帰還待機は中断
-				_waitingBeforeReturn = false;
-				_returnWaitTimer = 0.0f;
+	//			// 初期位置への帰還待機は中断
+	//			_waitingBeforeReturn = false;
+	//			_returnWaitTimer = 0.0f;
 
-				// 移動フラグを設定して UpdateMovingToSound が実際に移動を行えるようにする
-				_waitingAtSound = false;
-			}
-		}
-	}
+	//			// 移動フラグを設定して UpdateMovingToSound が実際に移動を行えるようにする
+	//			_waitingAtSound = false;
+	//		}
+	//	}
+	//}
 
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
 	if(_isMovingToSound || _waitingAtSound)

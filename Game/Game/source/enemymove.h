@@ -7,7 +7,6 @@
 class EnemySensor;
 class PlayerBase;
 
-
 class EnemyMove : public EnemyBase
 {
 	typedef EnemyBase base;

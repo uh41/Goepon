@@ -15,7 +15,6 @@
 
 // 前方宣言
 class EnemySensor;
-class EnemySoundSensor;
 class PlayerBase;
 
 class Enemy : public EnemyBase
@@ -28,21 +27,9 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	//void OnPlayerLost();										// プレイヤー見失い時の処理
-
 	// 初期位置と向きをキャプチャ
 	void CaptureInitialTransform();
 
-	virtual float GetHearingRadius() const override { return 300.0f; } // 音検知の半径をオーバーライド
-
-protected:
-
-	// プレイヤーの方向を向く処理
-	//void UpdateRotationToPlayer();	// 徐々にプレイヤーの方向を向く
-
-	// 移動処理
-	//void MoveTowardsTarget(const vec::Vec3& target);	// 目標位置に向かって移動
-
-	//void StartReturningToInitialPosition();		// 初期位置に戻る処理を開始
-	
+	// 音検知の半径をオーバーライド
+	virtual float GetHearingRadius() const override { return 300.0f; } 
 };

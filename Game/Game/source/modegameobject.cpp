@@ -752,18 +752,6 @@ bool ModeGame::ObjectRender()
 		_enemySensor->RenderDetectionUI();
 	}
 
-	//for(auto& enemy : _enemyBase)
-	//{
-	//	if(enemy->IsAlive())
-	//	{
-	//		// 音センサーの描画
-	//		if(enemy->GetEnemySoundSensor())
-	//		{
-	//			enemy->GetEnemySoundSensor()->Render();
-	//		}
-	//	}
-	//}
-
 	// 各敵のセンサーを個別に描画
 	for(auto& enemy : _enemyBase)
 	{
@@ -879,14 +867,6 @@ bool ModeGame::CheckAllDetections()
 
 				// センサー処理（追跡タイマー更新など）
 				sensor->Process();
-
-				// 音センサーも更新
-				auto soundSensor = eb->GetEnemySoundSensor();
-				if(soundSensor)
-				{
-					soundSensor->SetPos(eb->GetPos());
-					soundSensor->Process();
-				}
 
 				// 視覚検知判定
 				bool detected = false;

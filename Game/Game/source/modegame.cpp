@@ -330,18 +330,13 @@ bool ModeGame::LoadStageData()
 
 	// **最適化: センサー生成を共通化するヘルパー関数**
 	auto* mapPtr = _objectServer->GetMap();
-	auto createSensors = [mapPtr](float soundArea) -> std::pair<std::shared_ptr<EnemySensor>, std::shared_ptr<EnemySoundSensor>>
+	auto createSensors = [mapPtr](float soundArea) -> std::shared_ptr<EnemySensor>
 		{
 			auto sensor = std::make_shared<EnemySensor>();
 			sensor->Initialize();
 			sensor->SetMap(mapPtr);
 
-			auto soundSensor = std::make_shared<EnemySoundSensor>();
-			soundSensor->Initialize();
-			soundSensor->SetMap(mapPtr);
-			soundSensor->SetSoundSensorArea(soundArea);
-
-			return { sensor, soundSensor };
+			return sensor;
 		};
 
 	// 敵を生成して、customIdにマッチする巡回点を割り当てる
@@ -358,14 +353,12 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerRX")
 		{
-			auto [sensor, soundSensor] = createSensors(300.0f);
+			auto sensor = createSensors(300.0f);
 
 			auto enemy = std::make_shared<Enemy>();
 			enemy->Initialize();
 			enemy->SetJsonDataUE(object);
 			enemy->SetEnemySensor(sensor);
-			enemy->SetEnemySoundSensor(soundSensor);
-			soundSensor->SetPos(enemy->GetPos());
 			enemy->SetEffect(_hensinEffect);
 			enemy->SetEnemyId(nextEnemyId++);
 			enemy->SetDirSequenceFromJson(object);
@@ -376,14 +369,12 @@ bool ModeGame::LoadStageData()
 
 		if(name == "S_MarkerB")
 		{
-			auto [sensor, soundSensor] = createSensors(300.0f);
+			auto sensor = createSensors(300.0f);
 
 			auto enemyMove = std::make_shared<EnemyMove>();
 			enemyMove->Initialize();
 			enemyMove->SetJsonDataUE(object);
 			enemyMove->SetEnemySensor(sensor);
-			enemyMove->SetEnemySoundSensor(soundSensor);
-			soundSensor->SetPos(enemyMove->GetPos());
 			enemyMove->SetEffect(_hensinEffect);
 			enemyMove->SetEnemyId(nextEnemyId++);
 			enemyMove->SetDirSequenceFromJson(object);
@@ -402,14 +393,12 @@ bool ModeGame::LoadStageData()
 
 		if(name == "Dog")
 		{
-			auto [sensor, soundSensor] = createSensors(900.0f);
+			auto sensor = createSensors(900.0f);
 
 			auto enemyDog = std::make_shared<EnemyDog>();
 			enemyDog->Initialize();
 			enemyDog->SetJsonDataUE(object);
 			enemyDog->SetEnemySensor(sensor);
-			enemyDog->SetEnemySoundSensor(soundSensor);
-			soundSensor->SetPos(enemyDog->GetPos());
 			enemyDog->SetEffect(_hensinEffect);
 			enemyDog->SetEnemyId(nextEnemyId++);
 
@@ -867,8 +856,6 @@ bool ModeGame::Process()
 			{
 				if(enemy && enemy->IsAlive())
 				{
-					enemy->GetSoundSensor()->TriggerSoundWave(_playerTanuki->GetPos(), 500.0f, 10.0f);
-					enemy->GetSoundSensor()->SetSoundLevel(5);
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
 			}

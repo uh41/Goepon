@@ -5,7 +5,6 @@
 
 // ‘O•ûéŒ¾
 class EnemySensor;
-class EnemySoundSensor;
 class PlayerBase;
 
 class EnemyDog : public EnemyBase

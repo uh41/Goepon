@@ -1,6 +1,5 @@
 #include "enemydog.h"
 #include "enemysensor.h"
-#include "enemysoundsensor.h"
 #include "enemysoundmanager.h"
 
 bool EnemyDog::Initialize()
@@ -297,23 +296,6 @@ bool EnemyDog::Process()
 		}
 		return true;
 	}
-
-	//// EnemySoundSensorから音の検知情報を取得
-	//if (_enemySoundSensor)
-	//{
-	//	const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-	//	if (detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
-	//	{
-	//		if (!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos)
-	//		{
-	//			_isMovingToSound = true;
-	//			_soundSourcePosition = detectionInfo.soundSourcePosition;
-	//			_soundDetectionActive = true;
-	//			_soundDetectionTimer = 0.0f;
-	//			_isRandomWalking = false; // ランダム移動を停止
-	//		}
-	//	}
-	//}
 
 	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
 	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
