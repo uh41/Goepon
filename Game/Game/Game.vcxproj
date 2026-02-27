@@ -35,6 +35,7 @@
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\enemysoundmanager.h" />
     <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\henshinui.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\Map1.h" />
     <ClInclude Include="source\MapBase.h" />
@@ -94,6 +95,7 @@
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\Goal.cpp" />
+    <ClCompile Include="source\henshinui.cpp" />
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\Map1.cpp" />
     <ClCompile Include="source\MapBase.cpp" />
