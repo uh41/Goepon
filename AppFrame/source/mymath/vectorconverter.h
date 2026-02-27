@@ -83,4 +83,14 @@ public:
 		);
 	}
 	
+	static int DrawTriangle3D(vec::Vec3 v1, vec::Vec3 v2, vec::Vec3 v3, unsigned int color, int fill)
+	{
+		return ::DrawTriangle3D(
+			VecToDxLib(v1),
+			VecToDxLib(v2),
+			VecToDxLib(v3),
+			color,
+			fill
+		);
+	}
 };
