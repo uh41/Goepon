@@ -46,13 +46,6 @@ bool Enemy::Initialize()
 	return true;
 }
 
-// 初期位置と向きをキャプチャ
-void Enemy::CaptureInitialTransform()
-{
-	_initialPosition = _vPos;
-	_initialDirection = _vDir;
-}
-
 // 終了
 bool Enemy::Terminate()
 {
@@ -189,17 +182,17 @@ bool Enemy::Process()
 	// --- アニメーション管理: PlayerTanuki と同様に AnimationManager を使うように変更 ---
 	// アニメーション名のマッピング（Enemy用モデルの既存名に合わせる）
 	auto GetAnimName = [](CharaBase::STATUS s) -> std::string
+	{
+		switch(s)
 		{
-			switch(s)
-			{
-			case CharaBase::STATUS::WAIT:
-				return "bushi_idle";
-			case CharaBase::STATUS::WALK:
-				return "bushi_okkake";
-			default:
-				return std::string();
-			}
-		};
+		case CharaBase::STATUS::WAIT:
+			return "bushi_idle";
+		case CharaBase::STATUS::WALK:
+			return "bushi_okkake";
+		default:
+			return std::string();
+		}
+	};
 
 	// 再生状態が終わっていたら再生し直す（ループ想定）
 	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
@@ -267,16 +260,6 @@ bool Enemy::Process()
 		_fPlayTime = 0.0f;
 	}
 	// --- アニメーション管理ここまで ---
-
-	//// YouDied メッセージ時間更新（共通フラグ利用）
-	//if(_showYouDiedMessage)
-	//{
-	//	_youDiedMessageTimer -= 1.0f / 60.0f;
-	//	if(_youDiedMessageTimer <= 0.0f)
-	//	{
-	//		_showYouDiedMessage = false;
-	//	}
-	//}
 
 	return true;
 }

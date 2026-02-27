@@ -1,12 +1,14 @@
 #include "enemysoundmanager.h"
 #include "enemybase.h"
 
+// シングルトンインスタンスの取得
 EnemySoundManager* EnemySoundManager::GetInstance()
 {
 	static EnemySoundManager instance;
 	return &instance;
 }
 
+// 音を発生させる関数
 void EnemySoundManager::EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed, uint32_t emitterId)
 {
 	Wave* wave = nullptr;
@@ -43,6 +45,7 @@ void EnemySoundManager::EmitSound(const vec::Vec3& pos, int soundLevel, float ma
 	_waveDetectionMap.emplace(wave->id, at::ust<uint32_t>{}); // 新しい波の検知済み敵IDセットを初期化
 }
 
+// 音波の更新関数
 void EnemySoundManager::Update(float deltaTime)
 {
 	StCas<void>(deltaTime);// 現状は時間経過で波が広がるだけのシンプルな実装。必要に応じて波の寿命や減衰などを追加可能。
@@ -64,6 +67,7 @@ void EnemySoundManager::Update(float deltaTime)
 	}
 }
 
+// 敵が音を検知できるか試す関数
 bool EnemySoundManager::TryDetectForEnemy(const EnemyBase& enemy, DetectionInfo& inoutInfo)
 {
 	float hearingrad = enemy.GetHearingRadius();
@@ -123,6 +127,7 @@ bool EnemySoundManager::TryDetectForEnemy(const EnemyBase& enemy, DetectionInfo&
 	return false;
 }
 
+// 波が敵に聞こえるかどうかの判定関数
 bool EnemySoundManager::IsAudible(const Wave& wave, const EnemyBase& enemy) const
 {
 	vec::Vec3 wavePos = vec3::VSub(wave.pos, enemy.GetPos());
@@ -134,6 +139,7 @@ bool EnemySoundManager::IsAudible(const Wave& wave, const EnemyBase& enemy) cons
 	return dist <= reach;
 }
 
+// デバッグ用の描画関数
 void EnemySoundManager::RenderDebug()
 {
 	for(const auto& wave : _wave)
@@ -184,6 +190,7 @@ void EnemySoundManager::RenderDebug()
 	}
 }
 
+// 敵の聴覚範囲を描画する関数
 void EnemySoundManager::RenderDebugEnemyHearing(const at::vspc<EnemyBase>& enemies) const
 {
 	for(const auto& e : enemies)
@@ -202,7 +209,15 @@ void EnemySoundManager::RenderDebugEnemyHearing(const at::vspc<EnemyBase>& enemi
 		const vec::Vec3 center = e->GetPos();
 
 		// 直近の音検知中かで色を変える（既存フラグを流用）
-		const unsigned int color = e->IsMovingToSound() ? GetColor(255, 0, 0) : GetColor(255, 255, 0);
+		const unsigned int color = e->IsMovingToSound();
+		if (color) 
+		{
+			GetColor(255, 0, 0);
+		}
+		else 
+		{
+			GetColor(255, 255, 0);
+		}
 
 		constexpr int segments = 32;
 		const float angleStep = (2.0f * DX_PI_F) / segments;

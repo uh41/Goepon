@@ -745,20 +745,12 @@ bool ModeGame::ObjectRender()
 		ui_base->Render();
 	}
 
-	// 索敵システムの描画
-	if(_enemySensor)
-	{
-		_enemySensor->Render();
-		_enemySensor->RenderDetectionUI();
-	}
-
 	// 各敵のセンサーを個別に描画
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive() && enemy->GetEnemySensor())
 		{
 			enemy->GetEnemySensor()->Render();
-			enemy->GetEnemySensor()->RenderDetectionUI();
 		}
 	}
 
@@ -845,7 +837,7 @@ bool ModeGame::CheckAllDetections()
 	constexpr float kMonoMoveDetectThreshold = 0.1f;
 
 	auto processContainer = [&](auto& container) -> bool
-		{
+	{
 			for(auto& item : container)
 			{
 				EnemyBase* eb = StCas<EnemyBase*>(item.get());
@@ -875,7 +867,13 @@ bool ModeGame::CheckAllDetections()
 				if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
 				{
 					// PlayerMono のときは「扇形内にいて、かつプレイヤーが動いた場合のみ」検知させる
-					if(sensor->IsPlayerInDetectionRange(player->GetPos()))
+					// プレイヤーのカプセル情報を取得
+					vec::Vec3 playerPos = player->GetPos();
+					vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
+					vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
+					float capsuleRadius = player->GetCollisionR();
+
+					if (sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
 					{
 						// プレイヤーの移動量をチェック（座標差だけでなく入力でも判定）
 						vec::Vec3 delta = vec3::VSub(player->GetPos(), player->GetOldPos());
@@ -910,7 +908,12 @@ bool ModeGame::CheckAllDetections()
 					if(player != nullptr && sensor != nullptr)
 					{
 						// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
-						if(sensor->IsPlayerInDetectionRange(player->GetPos()))
+						vec::Vec3 playerPos = player->GetPos();
+						vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
+						vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
+						float capsuleRadius = player->GetCollisionR();
+
+						if (sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
 						{
 							vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
 							toEnemy.y = 0.0f;

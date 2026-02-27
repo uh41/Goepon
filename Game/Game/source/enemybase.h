@@ -58,13 +58,10 @@ public:
 
 	// ダメージ受けたときの処理
 	void StartDamage();
+
 	// 無敵中かどうか
 	bool GetIsInvincible() const { return _isInvincible; }
 
-	// デバッグ用：YouDiedメッセージ表示関連
-	void TriggerYouDiedMessage();
-	void RenderYouDiedMessage();
-	bool IsShowingYouDiedMessage() const { return _showYouDiedMessage; }
 	void RenderDamageTime();
 
 	bool IsDetectPlayer() const { return _detectedPlayer; }
@@ -72,7 +69,7 @@ public:
 	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
 	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
 
-	void CaptureInitialTransform();
+	virtual	void CaptureInitialTransform();
 
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
 
@@ -124,15 +121,6 @@ protected:
 	float _returnWaitTimer;        // 帰還前の待機タイマー
 	static constexpr float RETURN_WAIT_TIME = 3.0f; // 待機時間
 
-	//	デバッグ用：YouDiedメッセージ表示関連
-	bool _showYouDiedMessage;
-	float _youDiedMessageTimer;
-	static constexpr float YOU_DIED_DISPLAY_TIME = 2.0f; // 表示時間
-
-	// 敵の向き変更タイマー
-	float DirChangeTimer;
-	static constexpr float DirChangeInterval = 15.0f; // 向き変更の間隔
-
 	// テレポート関連
 	bool _waitingForTeleport;		// テレポート待機中フラグ
 	float _teleportTimer;			// テレポートまでの待機時間
@@ -153,11 +141,11 @@ protected:
 	float _soundDetectionTimer;		// 音検知からの経過時間
 	static constexpr float SOUND_RETURN_TIME = 5.0f; // 音検知から初期位置に戻るまでの時間
 
-	at::spc<EffectBase> _effect;
+	at::spc<EffectBase> _effect;	// エフェクト
 
-	bool _isInvincible;	// 無敵状態かどうか
-	float _stanTimer; // スタン時間
-	int _attachStage; // ダメージ後のアニメーション名
+	bool _isInvincible;		// 無敵状態かどうか
+	float _stanTimer;		// スタン時間
+	int _attachStage;		// ダメージ後のアニメーション名
 	static constexpr float STAN_DURATION = 15.0f; // スタン時間
 
 	// アニメーション名
@@ -165,6 +153,7 @@ protected:
 	std::string _attachAnimStan;  // スタンアニメーション名
 	std::string _attachAnimGetUp; // 起き上がりアニメーション名
 
+	// 向き変更のシーケンス関連
 	at::vet<int> _dirSequence;		// 向き変更のシーケンス
 	size_t _dirSeqIndex;			// 向き変更のシーケンスの現在のインデックス
 	float _dirSeqTimer;				// 向き変更のシーケンスのタイマー
