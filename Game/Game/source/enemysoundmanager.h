@@ -48,8 +48,8 @@ public:
 	void RenderDebugEnemyHearing(const at::vspc<EnemyBase>& enemies) const; // 敵の聴覚範囲を描画する関数（必要に応じて実装）
 
 protected:
-	at::vet<Wave> _wave; // 現在存在する音波のリスト
-	std::atomic<uint32_t> _nextWaveId = 1; // 次に発生する音波のID
+	at::vet<Wave> _wave;					// 現在存在する音波のリスト
+	std::atomic<uint32_t> _nextWaveId = 1;  // 次に発生する音波のID
 
 	// waveId->検知済みの敵IDのセット
 	at::umtt<uint32_t, at::ust<uint32_t>> _waveDetectionMap;// 音波IDと、その音波を検知した敵のIDのセット
@@ -57,9 +57,8 @@ protected:
 	bool IsAudible(const Wave& wave, const EnemyBase& enemy) const;
 
 private:
-	uint32_t _debugLastEmitWaveId = 0;
-	float _debugLastEmitTimer = 0.0f;
-	static constexpr float DEBUG_LAST_EMIT_HIGHLIGHT_TIME = 0.35f;
-	
+	uint32_t _debugLastEmitWaveId = 0;	// デバッグ用：直近で発生させた音波のID
+	float _debugLastEmitTimer = 0.0f;	// デバッグ用：直近で発生させた音波のタイマー
+	static constexpr float DEBUG_LAST_EMIT_HIGHLIGHT_TIME = 0.35f;	// デバッグ用：直近で発生させた音波をハイライトする時間
 };
 
