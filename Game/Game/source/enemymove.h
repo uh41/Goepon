@@ -41,7 +41,6 @@ public:
 	void StartMoveToSound(const vec::Vec3& soundPos, int soundLevel);
 
 protected:
-
 	// 巡回ルート関連
 	at::spc<MovePointControll> _patroll;// 巡回ポイント管理クラス
 	bool _isPatroll;					// 巡回中かどうか

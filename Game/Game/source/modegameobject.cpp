@@ -745,20 +745,12 @@ bool ModeGame::ObjectRender()
 		ui_base->Render();
 	}
 
-	// 索敵システムの描画
-	if(_enemySensor)
-	{
-		_enemySensor->Render();
-		_enemySensor->RenderDetectionUI();
-	}
-
 	// 各敵のセンサーを個別に描画
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive() && enemy->GetEnemySensor())
 		{
 			enemy->GetEnemySensor()->Render();
-			enemy->GetEnemySensor()->RenderDetectionUI();
 		}
 	}
 

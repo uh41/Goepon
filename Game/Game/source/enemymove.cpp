@@ -69,13 +69,6 @@ bool EnemyMove::Initialize()
 	_waitingForTeleport = false;
 	_teleportTimer = 0.0f;
 
-	// YouDiedメッセージ関連の初期化
-	_showYouDiedMessage = false;
-	_youDiedMessageTimer = 0.0f;
-
-	// 敵の向き変更タイマーの初期化
-	DirChangeTimer = DirChangeInterval;
-
 	_patroll = std::make_shared<MovePointControll>();
 	_isPatroll = false;
 	_patrolSpeed = 5.0f;
@@ -479,52 +472,6 @@ bool EnemyMove::Process()
 		}
 	}
 
-	//// EnemySoundSensorから音の検知情報を取得
-	//if(_enemySoundSensor)
-	//{
-	//	// 音検知情報を取得
-	//	const auto& detectionInfo = _enemySoundSensor->GetDetectionInfo();
-	//	if(detectionInfo.isDetected && detectionInfo.detectedSoundLevel == 5)
-	//	{
-	//		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
-	//		{
-	//			// 巡回を止めて現在の巡回インデックスを保存
-	//			_savePatrolIndex = _patrolIndex;
-	//			_isPatroll = false;
-
-	//			// 巡回待機状態をリセット
-	//			_isPatrolWaiting = false;
-	//			_patrolWaitTimer = 0.0f;
-
-	//			// 巡回ターゲット座標を保存（復帰時に使う）
-	//			if(_patroll && _patroll->IsValid())
-	//			{
-	//				_savePoint = _patroll->GetTargetPoint();
-	//			}
-	//			else
-	//			{
-	//				_savePoint = _initialPosition;
-	//			}
-	//			_hasSavePoint = true;
-
-	//			// テレポートは行わず、プレイヤー（音源）座標へ向けて移動する
-	//			_isMovingToSound = true;
-	//			_soundSourcePosition = detectionInfo.soundSourcePosition;
-
-	//			// 音検知タイマー開始
-	//			_soundDetectionActive = true;
-	//			_soundDetectionTimer = 0.0f;
-
-	//			// 初期位置への帰還待機は中断
-	//			_waitingBeforeReturn = false;
-	//			_returnWaitTimer = 0.0f;
-
-	//			// 移動フラグを設定して UpdateMovingToSound が実際に移動を行えるようにする
-	//			_waitingAtSound = false;
-	//		}
-	//	}
-	//}
-
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
 	if(_isMovingToSound || _waitingAtSound)
 	{
@@ -661,50 +608,6 @@ bool EnemyMove::Process()
 		_fPlayTime = 0.0f;
 	}
 
-	//// YouDiedメッセージのタイマー更新
-	//if(_showYouDiedMessage)
-	//{
-	//	_youDiedMessageTimer -= 1.0f / 60.0f;
-
-	//	// タイマーが0以下になったらメッセージ非表示
-	//	if(_youDiedMessageTimer <= 0.0f)
-	//	{
-	//		_showYouDiedMessage = false;
-	//	}
-	//}
-
-//	// 定期的に方向を90度変える処理
-//	DirChangeTimer -= 1.0f / 60.0f;
-//
-//	// タイマーが0以下になったら方向を変える
-//	if(DirChangeTimer <= 0.0f)
-//	{
-//		// タイマーをリセット（15秒ごとに変更）
-//		DirChangeTimer = 15.0f;
-//
-//		// プレイヤーを検出していない、かつ追跡中でもない、かつ初期位置に戻り中でもない場合のみ回転
-//		if(!_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()) && !_isReturningToInitialPos && !_isMovingToSound)
-//		{
-//			// 回転先の方向を計算
-//			float currentAngle = atan2f(_vDir.x, _vDir.z);
-//			float newAngle = currentAngle + DX_PI_F / 2.0f;
-//
-//			// 新しい向きベクトルを計算
-//			vec::Vec3 newDir;
-//			newDir.x = sin(newAngle);
-//			newDir.y = 0.0f;
-//			newDir.z = cos(newAngle);
-//
-//			// 新しい方向に少し移動した位置で床の存在を確認
-//			vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(newDir, _moveSpeed * 5.0f));
-//
-//			// 床がある場合のみ回転を実行
-//			if(CheckFloorExistence(testPos))
-//			{
-//				_vDir = newDir;
-//			}
-//		}
-//	}
 	return true;
 }
 
@@ -714,19 +617,16 @@ bool EnemyMove::Render()
 	base::Render();
 	// 再生時間をセット
 	MV1SetAttachAnimTime(_handle, StCas<int>(_iAttachIndex), _fPlayTime);
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// ���f�����W���łǂ��������Ă��邩�Ŏ����ς��(�����-z������Ă���ꍇ)
+	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
 
 	MATRIX mRotY = MGetRotY(vorty);
 
 	// 位置
 	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
 	// 向きからY軸回転を算出
-	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); // -90�x�i�K�v�ɉ����ĕ����𔽓]�j
-
+	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f); 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-
 	MATRIX mScale = MGetScale(VGet(8.0f, 8.0f, 8.0f));
-
 	MATRIX m = MGetIdent();
 
 	//m = MMult(m, mRotZ);

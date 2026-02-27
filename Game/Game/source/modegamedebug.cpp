@@ -437,12 +437,12 @@ bool ModeGame::DebugRender()
 		CollisionManager::GetInstance()->SetDebugDraw(false);
 	}
 
-	// デバッグ用：YouDiedメッセージの描画（最前面に表示）
-	for(auto& enemy : _enemyBase)
+	// 各敵のセンサーを個別に描画
+	for (auto& enemy : _enemyBase)
 	{
-		if(enemy->IsAlive() && enemy->IsShowingYouDiedMessage())
+		if (enemy->IsAlive() && enemy->GetEnemySensor())
 		{
-			enemy->RenderYouDiedMessage();
+			enemy->GetEnemySensor()->RenderDetectionUI();
 		}
 	}
 

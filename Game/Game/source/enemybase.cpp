@@ -51,13 +51,6 @@ bool EnemyBase::Initialize()
 	_waitingForTeleport = false;
 	_teleportTimer = 0.0f;
 
-	// YouDiedメッセージ関連の初期化
-	_showYouDiedMessage = false;
-	_youDiedMessageTimer = 0.0f;
-
-	// 敵の向き変更タイマーの初期化
-	DirChangeTimer = DirChangeInterval;
-
 	_waitingBeforeReturn = false;
 	_returnWaitTimer = 0.0f;
 
@@ -83,6 +76,7 @@ bool EnemyBase::Initialize()
 
 	_effect = nullptr;
 
+	// 向き変更のシーケンス関連の初期化
 	_dirSequence.clear();
 	_dirSeqIndex = 0;
 	_dirSeqTimer = 0.0f;
@@ -101,6 +95,7 @@ bool EnemyBase::Terminate()
 	return true;
 }
 
+// 初期位置と初期向きをキャプチャする関数
 void EnemyBase::CaptureInitialTransform()
 {
 	_initialPosition = _vPos;
@@ -336,6 +331,7 @@ void EnemyBase::StartDamage()
 	_waitingForTeleport = false;
 	_teleportTimer = 0.0f;
 
+	// ダメージ開始時の処理
 	OnDamageStart();
 
 	if(_enemySensor)
@@ -343,10 +339,10 @@ void EnemyBase::StartDamage()
 		_enemySensor->SetSensorEnabled(false); // センサーを無効化
 	}
 
-	_isMoving = false; // 移動を停止
-	_isMovingToSound = false; // 音源への移動も停止
-	_waitingAtSound = false;
-	_detectedPlayer = false; // プレイヤー検出もリセット
+	_isMoving = false;			// 移動を停止
+	_isMovingToSound = false;	// 音源への移動も停止
+	_waitingAtSound = false;	// 音源到達後の待機も停止
+	_detectedPlayer = false;	// プレイヤー検出もリセット
 
 	// ダメージアニメーションの再生
 	if(!_attachAnimDamage.empty())
@@ -356,6 +352,7 @@ void EnemyBase::StartDamage()
 	}
 }
 
+// ダメージアニメーションの更新
 void EnemyBase::UpdateDamageAnimation()
 {
 	if(!_isInvincible) { return; }
@@ -429,6 +426,7 @@ void EnemyBase::UpdateDamageAnimation()
 				_enemySensor->ResetDetection();
 			}
 
+			// ダメージ終了時の処理
 			OnDamageEnd();
 		}
 	}
@@ -457,10 +455,10 @@ void EnemyBase::UpdateReturningToInitialPosition()
 			{
 				_vDir = _initialDirection;
 			}
-			_isReturningToInitialPos = false;
-			_waitingForTeleport = false;
-			_teleportTimer = 0.0f;
-			_effect->PlayEffect(_vPos); // テレポート後のエフェクト
+			_isReturningToInitialPos = false;	// 初期位置に戻り完了
+			_waitingForTeleport = false;		// テレポート待機終了
+			_teleportTimer = 0.0f;				// テレポート完了後のタイマーリセット
+			_effect->PlayEffect(_vPos);			// テレポート後のエフェクト
 		}
 		return;
 	}
@@ -481,7 +479,7 @@ void EnemyBase::UpdateReturningToInitialPosition()
 		_detectedPlayer = false;
 		if(_enemySensor)
 		{
-			_enemySensor->ResetDetection();
+			_enemySensor->ResetDetection();	// センサーの検出状態もリセット
 		}
 
 		if(_playSightOffOnReturn && gGlobal._soundServer)
@@ -489,7 +487,7 @@ void EnemyBase::UpdateReturningToInitialPosition()
 			auto sightOff = gGlobal._soundServer->Get("33");
 			if(sightOff && !sightOff->IsPlay())
 			{
-				sightOff->Play();
+				sightOff->Play();	// 初期位置に戻ったときのSEを再生
 			}
 		}
 		_playSightOffOnReturn = false;
@@ -663,32 +661,13 @@ void EnemyBase::UpdateMovingToSound()
 		}
 	}
 
-	//// 移動可能な方向が見つからない場合は初期位置に戻る
-	//if (!validMovementFound)
-	//{
-	//	_isMovingToSound = false;
-	//	_waitingAtSound = false;
-	//	_soundDetectionActive = false;
-	//	_soundDetectionTimer = 0.0f;
-	//	StartReturningToInitialPosition();
-	//	return;
-	//}
-
 	// 移動可能な方向が見つからない場合はその場で待機
-		if (!validMovementFound)
-		{
-			// すぐに初期位置に戻さず、その場で待機して音検知タイマーに任せる
-			_status = STATUS::WAIT;
-			return;
-		}
-
-	//// 移動可能な方向が見つからない場合はその場で待機
-	//if (!validMovementFound)
-	//{
-	//	// すぐに初期位置に戻さず、その場で待機して音検知タイマーに任せる
-	//	_status = STATUS::WAIT;
-	//	return;
-	//}
+	if (!validMovementFound)
+	{
+		// すぐに初期位置に戻さず、その場で待機して音検知タイマーに任せる
+		_status = STATUS::WAIT;
+		return;
+	}
 
 	// 実際に移動を実行
 	_vPos = vec3::VAdd(_vPos, finalMovement);
@@ -713,6 +692,7 @@ bool EnemyBase::Process()
 {
 	base::Process();
 
+	// ダメージアニメーションの更新
 	if(_isInvincible)
 	{
 		UpdateDamageAnimation();
@@ -873,59 +853,13 @@ bool EnemyBase::Render()
 	return true;
 }
 
-// デバッグ用：YouDiedメッセージを表示開始
-void EnemyBase::TriggerYouDiedMessage()
-{
-	_showYouDiedMessage = true;
-	_youDiedMessageTimer = YOU_DIED_DISPLAY_TIME;
-}
-
-// デバッグ用：YouDiedメッセージの描画処理
-void EnemyBase::RenderYouDiedMessage()
-{
-	if(!_showYouDiedMessage) return;
-
-	// 画面サイズを取得
-	int screenWidth = ApplicationMain::GetInstance()->DispSizeW();
-	int screenHeight = ApplicationMain::GetInstance()->DispSizeH();
-
-	// フォントサイズを大きく設定
-	SetFontSize(72);
-
-	// 表示テキスト
-	const char* youDiedText = "YOU DIED";
-	int textWidth = GetDrawStringWidth(youDiedText, StCas<int>(strlen(youDiedText)));
-
-	// 画面中央に配置
-	int x = (screenWidth - textWidth) / 2;
-	int y = (screenHeight - 72) / 2; // フォントサイズ分考慮
-
-	// 文字に影をつけて見やすくする
-	for(int dx = -2; dx <= 2; dx++)
-	{
-		for(int dy = -2; dy <= 2; dy++)
-		{
-			if(dx != 0 || dy != 0)
-			{
-				DrawString(x + dx, y + dy, youDiedText, GetColor(0, 0, 0));
-			}
-		}
-	}
-
-	// メインの文字（赤色）
-	DrawString(x, y, youDiedText, GetColor(255, 0, 0));
-
-	// フォントサイズを元に戻す
-	SetFontSize(16);
-
-	// 残り時間表示（デバッグ用、必要に応じてコメントアウト可能）
-	DrawFormatString(10, 10, GetColor(255, 255, 0),
-		"YOU DIED残り時間: %.1f", _youDiedMessageTimer);
-}
+// プレイヤーを追跡中かどうかを返すメソッド
 bool EnemyBase::IsPlayerChasing() const
 {
 	return (_enemySensor && _enemySensor->IsChasing());
 }
+
+// ダメージ時間の描画処理
 void EnemyBase::RenderDamageTime()
 {
 	// 無敵＋スタンステージ(2) のときのみ表示
@@ -935,10 +869,11 @@ void EnemyBase::RenderDamageTime()
 	SetFontSize(16);
 	
 	//// 画面左上に表示（位置は調整可）
-	//DrawFormatString(10, 40, GetColor(255, 200, 0),
-	//"STAN残り時間: %.1f", _stanTimer);
+	DrawFormatString(10, 40, GetColor(255, 200, 0),
+	"STAN残り時間: %.1f", _stanTimer);
 }
 
+// 方向IDをベクトルに変換するヘルパー関数
 static vec::Vec3 DirIdToVec3(int id)
 {
 	switch(id)
@@ -947,20 +882,25 @@ static vec::Vec3 DirIdToVec3(int id)
 	case 2: return vec::Vec3(1.0f, 0.0f, 0.0f);    // 右
 	case 3: return vec::Vec3(0.0f, 0.0f, 1.0f);    // 下
 	case 4: return vec::Vec3(-1.0f, 0.0f, 0.0f);   // 左
-	default: return vec::Vec3(0.0f, 0.0f, -1.0f);   // 無効なID
+	default: return vec::Vec3(0.0f, 0.0f, -1.0f);  // 無効なID
 	}
 }
 
+// 方向IDのシーケンスを設定するメソッド
 void EnemyBase::SetDirSequence(const std::vector<int>& sequence, float waitTime)
 {
+	// シーケンスが空の場合はシーケンスを無効化
 	if(sequence.empty())
 	{
 		_dirSequence.clear();
 		_dirSeqActive = false;
 		return;
 	}
-	_dirSequence = sequence;
-	_dirSeqIndex = 0;
+
+	_dirSequence = sequence;	// シーケンスを保存
+	_dirSeqIndex = 0;			// 待機時間を設定（0以下なら待機なし）
+
+	// 待機時間を設定
 	if(waitTime > 0.0f)
 	{
 		_dirSeqWaitTime = waitTime;
@@ -969,13 +909,15 @@ void EnemyBase::SetDirSequence(const std::vector<int>& sequence, float waitTime)
 	{
 		_dirSeqWaitTime = 0.0f;
 	}
+
 	_dirSeqTimer = _dirSeqWaitTime;
 	_dirSeqActive = true;
 
-	int id = _dirSequence[_dirSeqIndex];
-	_vDir = DirIdToVec3(id);
+	int id = _dirSequence[_dirSeqIndex];	// 最初の方向IDをベクトルに変換して設定
+	_vDir = DirIdToVec3(id);				// 最初の方向を設定
 }
 
+// JSONから方向IDのシーケンスを設定するメソッド
 void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
 {
 	if(!j.is_object()) { return; }
@@ -1055,6 +997,7 @@ void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
 	}
 }
 
+// 方向IDのシーケンスを更新するメソッド
 void EnemyBase::UpdateDirectionSequence()
 {
 	if(!_dirSeqActive || _dirSequence.empty()) { return; }

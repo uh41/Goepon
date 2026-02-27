@@ -63,38 +63,6 @@ bool EnemySensor::Render()
 		RenderDetectionSector();
 	}
 
-	//{
-	//	DrawFormatString(
-	//		20,
-	//		90,
-	//		GetColor(255, 255, 255),
-	//		"Enemy Pos: (%.2f, %.2f, %.2f)  Dir: (%.2f, %.2f, %.2f)",
-	//		_vPos.x, _vPos.y, _vPos.z,
-	//		_vDir.x, _vDir.y, _vDir.z
-	//	);
-	//}
-
-	//// デバッグ表示：Collision_01(床)に乗っているか
-	//{
-	//	float floorY = 0.0f;
-	//	const float colSubY = 100.0f;
-	//	const bool onCollision01 = GetFloorYCollision(_vPos, colSubY, floorY);
-
-	//	const unsigned int color = onCollision01 ? GetColor(0, 255, 0) : GetColor(255, 0, 0);
-	//	const float diffY = onCollision01 ? (_vPos.y - floorY) : 0.0f;
-
-	//	DrawFormatString(
-	//		20,
-	//		120,
-	//		color,
-	//		"Enemy On Collision_01: %s  EnemyY: %.2f  FloorY: %.2f  DiffY: %.2f",
-	//		onCollision01 ? "TRUE" : "FALSE",
-	//		_vPos.y,
-	//		floorY,
-	//		diffY
-	//	);
-	//}
-
 	return true;
 }
 
@@ -632,35 +600,35 @@ void EnemySensor::RenderDetectionSector() const
 // 検出UI表示
 void EnemySensor::RenderDetectionUI() const
 {
-	//if (_detectionInfo.isDetected && _detectionInfo.timer > 0.0f)
-	//{
-	//	// 画面中央に大きく「found」を表示
-	//	int screenWidth = 1920;  // 画面幅
-	//	int screenHeight = 1080; // 画面高さ
+	if (_detectionInfo.isDetected && _detectionInfo.timer > 0.0f)
+	{
+		// 画面中央に大きく「found」を表示
+		int screenWidth = 1920;  // 画面幅
+		int screenHeight = 1080; // 画面高さ
 
-	//	// フォントサイズを大きく設定
-	//	SetFontSize(64);
+		// フォントサイズを大きく設定
+		SetFontSize(64);
 
-	//	// 「found」の文字列の幅を取得して中央揃え
-	//	const char* foundText = "found";
-	//	int textWidth = GetDrawStringWidth(foundText, StCas<int>(strlen(foundText)));
-	//	int x = (screenWidth - textWidth) / 2;
-	//	int y = screenHeight / 2 - 32;
+		// 「found」の文字列の幅を取得して中央揃え
+		const char* foundText = "found";
+		int textWidth = GetDrawStringWidth(foundText, StCas<int>(strlen(foundText)));
+		int x = (screenWidth - textWidth) / 2;
+		int y = screenHeight / 2 - 32;
 
-	//	// 背景色で縁取り
-	//	DrawString(x - 2, y - 2, foundText, GetColor(0, 0, 0));
-	//	DrawString(x + 2, y - 2, foundText, GetColor(0, 0, 0));
-	//	DrawString(x - 2, y + 2, foundText, GetColor(0, 0, 0));
-	//	DrawString(x + 2, y + 2, foundText, GetColor(0, 0, 0));
+		// 背景色で縁取り
+		DrawString(x - 2, y - 2, foundText, GetColor(0, 0, 0));
+		DrawString(x + 2, y - 2, foundText, GetColor(0, 0, 0));
+		DrawString(x - 2, y + 2, foundText, GetColor(0, 0, 0));
+		DrawString(x + 2, y + 2, foundText, GetColor(0, 0, 0));
 
-	//	// メイン文字（赤色）
-	//	DrawString(x, y, foundText, GetColor(255, 0, 0));
+		// メイン文字（赤色）
+		DrawString(x, y, foundText, GetColor(255, 0, 0));
 
-	//	// フォントサイズを元に戻す
-	//	SetFontSize(16);
+		// フォントサイズを元に戻す
+		SetFontSize(16);
 
-	//	// タイマー情報
-	//	DrawFormatString(x, y + 80, GetColor(255, 255, 0),
-	//		"Timer: %.1f", _detectionInfo.timer);
-	//}
+		// タイマー情報
+		DrawFormatString(x, y + 80, GetColor(255, 255, 0),
+			"Timer: %.1f", _detectionInfo.timer);
+	}
 }
