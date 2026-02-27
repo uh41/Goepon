@@ -5,6 +5,7 @@ namespace img
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
+  inline constexpr const char* L_UI = "res/L_UI.png";
   inline constexpr const char* Logo = "res/Logo.png";
   inline constexpr const char* Op1 = "res/Op1.png";
   inline constexpr const char* Op10 = "res/Op10.png";
@@ -16,6 +17,9 @@ namespace img
   inline constexpr const char* Op7 = "res/Op7.png";
   inline constexpr const char* Op8 = "res/Op8.png";
   inline constexpr const char* Op9 = "res/Op9.png";
+  inline constexpr const char* UI_Makimono = "res/UI_Makimono.png";
+  inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
+  inline constexpr const char* UI_Tanumono = "res/UI_Tanumono.png";
   inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* gameoverload = "res/gameoverload.png";
   inline constexpr const char* scenario1 = "res/scenario1.png";
