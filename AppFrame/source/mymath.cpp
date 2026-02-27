@@ -285,7 +285,7 @@ namespace mymath
     {
 		for(int i = 0; i <= 60; i++) // 0フレームから60フレームまでのイージング値をテスト表示
         {
-            float val = EasingInOutQuad(i, 0.0f, 100.0f, 60.0f);
+            float val = EasingInOutQuad(static_cast<float>(i), 0.0f, 100.0f, 60.0f);
             printf("Frame %d: %f\n", i, val);
 		}
     }
