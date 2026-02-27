@@ -9,5 +9,5 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+protected:
 };
-

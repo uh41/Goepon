@@ -4,11 +4,11 @@
 class TitleCamera : public Camera
 {
 	typedef Camera base;	
-public: 
+public:
 	virtual bool Initialize() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
 protected:
-};
 
+};

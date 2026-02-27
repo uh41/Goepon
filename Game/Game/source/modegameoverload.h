@@ -17,5 +17,5 @@ protected:
 	int _handle;
 	int _frameShow;
 	bool _requestedReset;
-	bool _spawnedGame;
+	bool _spawnedGame; // ModeGameを一度だけ生成するためのフラグ
 };

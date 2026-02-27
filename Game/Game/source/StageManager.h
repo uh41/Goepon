@@ -44,6 +44,27 @@ public:
 		_index = 0;
 	}
 
+	// 現在のステージインデックスを設定する
+	void SetCurrentStageIndex(size_t index)
+	{
+		if(index < _stages.size())
+		{
+			_index = index;
+		}
+	}
+
+	size_t GetStageIndex(const std::string& stageId)const
+	{
+		for(size_t i = 0; i < _stages.size(); ++i)
+		{
+			if(_stages[i] == stageId)
+			{
+				return i;
+			}
+		}
+		return 0; // 見つからない場合は0を返す（デフォルトのステージ）
+	}
+
 private:
 	std::vector<std::string> _stages;
 	size_t _index = 0; // 現在のステージインデックス

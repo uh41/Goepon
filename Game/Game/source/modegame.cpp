@@ -1409,3 +1409,19 @@ bool ModeGame::EndCinematicCamera()
 	_cinematicCamera->StopAll();
 	return true;
 }
+
+// 初期ステージIDを設定
+void ModeGame::SetInitialStageId(const std::string& stageId)
+{
+	// ステージマネージャーにステージリストを設定
+	_stageManager.SetStages
+	({
+		"Stage1",
+		"stage02",
+		"stage03",
+	});
+
+	// 指定されたステージIDのインデックスを設定
+	size_t index = _stageManager.GetStageIndex(stageId);
+	_stageManager.SetCurrentStageIndex(index);
+}

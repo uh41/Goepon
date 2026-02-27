@@ -40,33 +40,44 @@ bool ModeGameOverLoad::Process()
 {
 	base::Process();
 
-	// owner を使った RequestResetStage() は使わない仕様に変更したため削除しました。
-
-	// ModeGame が存在するか確認
+	// ModeGameが保存するか確認
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");
 	if(gameBase == nullptr)
 	{
-		// game が無ければ一度だけ新しく追加してロードを開始する
+		// gameがなければ一度だけ新しく追加してロードを開始
 		if(!_spawnedGame)
 		{
-			ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
-			// 同フレームで初期化を行い描画リストへ移す（オーバーレイ表示と同時に初期化したい場合）
-			ModeServer::GetInstance()->ProcessInit();
+			std::string currentStageId = "Stage1"; //　デフォルト
+
+			// オーナーがModeGameの場合、現在のステージ情報を取得
+			if(_owner != nullptr)
+			{
+				auto* ownerGame = dynamic_cast<ModeGame*>(_owner);
+				if(ownerGame != nullptr)
+				{
+					currentStageId = ownerGame->GetCurrentStageId(); // オーナーから現在のステージIDを取得
+				}
+			}
+
+			// 現在のステージIDを指定して新しいModeGameを作成
+			auto* newGame = new ModeGame();
+			newGame->SetInitialStageId(currentStageId);
+
+			ModeServer::GetInstance()->Add(newGame, 0, "game"); 
+			ModeServer::GetInstance()->ProcessInit(); // 追加したモードのInitializeを呼び出す
 			_spawnedGame = true;
 		}
 		// 追加直後はロードが進むまで待つ
 		return true;
 	}
-
 	auto* game = dynamic_cast<ModeGame*>(gameBase);
-	if(game == nullptr) return true;
+	if(game == nullptr) return false;
 
 	// 新しく追加された ModeGame がロード完了したらオーバーレイを削除する
 	if(game->IsLoadComplete())
 	{
-		ModeServer::GetInstance()->Del(this);
+		ModeServer::GetInstance()->Del(this); // 自分自身を削除予約	
 	}
-
 	return true;
 }
 

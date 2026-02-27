@@ -2,18 +2,22 @@
 
 bool TitleCamera::Initialize()
 {
-	// カメラの設定
-	_vPos = vec3::VGet(0.0f, 100.0f, 0.0f);
-	_vTarget = vec3::VGet(0.0f, 0.0f, -1.0f);
-	_clipNear = 2.0f;
-	_clipFar = 10000.0f;
-	_forvScale = -10.0f;
+	base::Initialize();
 
+	// タイトルカメラの初期設定
+	_vPos = vec::Vec3(0.0f, 150.0f, -300.0f);
+	_vTarget = vec::Vec3(0.0f, 50.0f, 0.0f);
+	_clipNear = 1.0f;
+	_clipFar = 10000.0f;
+	_forvScale = 1.0f;
+
+	
 	return true;
 }
 
 bool TitleCamera::Process()
 {
+	base::Process();
 	return true;
 }
 
