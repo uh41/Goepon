@@ -1,5 +1,6 @@
 #pragma once
 #include "appframe.h"
+#include "playertanuki.h"
 class ModeTitle : public ModeBase
 {
 public:
@@ -9,5 +10,9 @@ public:
 	virtual bool Terminate() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
+
+protected:
+	at::spc<PlayerTanuki> _playerTanuki;
+
 };
 
