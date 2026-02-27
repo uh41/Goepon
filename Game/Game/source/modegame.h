@@ -48,8 +48,8 @@
 #include "Makimono.h"
 #include "enemysoundmanager.h"
 #include "modegameload.h"
-
 #include "StageManager.h"
+#include "henshinui.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -201,6 +201,7 @@ protected:
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
 	at::spc<UiMakimono> _uiMakimono;
+	at::spc<HenshinUi> _henshinUi;
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
 
