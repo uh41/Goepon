@@ -59,6 +59,8 @@
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
+    <ClCompile Include="source\CinematicCamera.cpp" />
+    <ClCompile Include="source\modegameoverload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
     </ClCompile>
@@ -297,6 +299,7 @@
     <ClInclude Include="source\CinematicCamera.h">
       <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
     </ClInclude>
+    <ClInclude Include="source\modegameoverload.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">

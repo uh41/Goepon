@@ -139,6 +139,8 @@ bool ModeGame::Initialize()
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
 
+	_isLoadComplete = true; // ロード完了フラグを立てる
+
 	//// **ロード時間計測終了**
 	//const LONGLONG endTime = GetNowHiPerformanceCount();
 	//_loadTimeMs = static_cast<float>(endTime - startTime) / 1000.0f; // ミリ秒に変換
@@ -705,8 +707,10 @@ bool ModeGame::Process()
 						}
 					}
 
+					_hasRenderOnce = false;
+
 					//ここでゲームオーバー処理へ移行
-					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
+					ModeServer::GetInstance()->Add(NEW ModeGameOver(), 255, "ModeGameOver");
 
 					return true;
 				}
@@ -956,7 +960,16 @@ bool ModeGame::Render()
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
 
-	_hasRenderOnce = true;
+	bool noOverlayAbove =
+		(ModeServer::GetInstance()->Get("gameover") == nullptr) &&
+		(ModeServer::GetInstance()->Get("gameoverload") == nullptr);
+
+	if(noOverlayAbove)
+	{
+		// opscenario など最初のロードで即時描画済み扱いにしたい場合はここで true にする
+		_hasRenderOnce = true;
+		_isLoadComplete = true;
+	}
 
 	return true;
 }
@@ -1020,6 +1033,7 @@ bool ModeGame::ResetStage()
 	_isGameClear = false;
 	_goalConfirmOpened = false;
 	_goalConfirmResult = ModeGoalConfirm::Result::None;
+	_hasRenderOnce = false;
 
 	// オブジェクトサーバーは以下を全消去
 	if(_objectServer)
