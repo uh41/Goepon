@@ -150,7 +150,10 @@ public:
 	void RequestResetStage() { _requestResetStage = true; }
 
 	void RequestNextStage()  { _requestNextStage  = true; }
-	bool HasRenderOnce() const { return _hasRenderOnce; }	
+	bool HasRenderOnce() const { return _hasRenderOnce; }
+
+	bool IsLoadComplete() const { return _isLoadComplete; }
+	void SetLoadComplete(bool b) { _isLoadComplete = b; }
 
 protected:
 	Camera* _camera;
@@ -238,7 +241,6 @@ protected:
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;
-	bool _isEffectAll; // エフェクト再生するか
 
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
