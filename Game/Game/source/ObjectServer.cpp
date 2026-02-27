@@ -192,12 +192,21 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(std::string stageName)
 {
-	// ApplicationGlobalから既に読み込まれたステージデータを取得
-	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(stageName);
-	if(stageData == nullptr)
-	{
-		return false; // ステージデータが見つからない
-	}
+	// マップデータ読み込み
+	_sPath = "res/map/";
+	_sJsonFile = "marker1_1.json";
+	_sJsonObjectName = "stage";
+	/*_sJsonFile = "stagebeta.json";
+	_sJsonObjectName = "SM_stagebeta";*/
+
+	// JSONファイル読み込み
+	const std::string jsonPath = _sPath + _sJsonFile;
+	std::ifstream file(jsonPath);
+	if(!file) { return false; }
+
+	// JSONデータ解析
+	nlohmann::json jsonData;
+	file >> jsonData;
 
 	// マップオブジェクト生成
 	if(_map == nullptr)
@@ -206,20 +215,19 @@ bool ObjectServer::LoadDate(std::string stageName)
 		AddObject(_map);
 	}
 
-	// ステージデータからマップデータを検索・設定
-	for(const auto& objectData : stageData->object)
+	// ステージデータ検索・設定
+	if(!jsonData.contains(_sJsonObjectName)) { return false; } // キー存在確認
+	const auto& stage = jsonData.at(_sJsonObjectName);          // ステージデータ取得
+
+	for(const auto& data : stage)
 	{
-		// ステージ名に一致するオブジェクトを探す
-		// 注意: stageName の比較方法によってはカスタマイズが必要
-		if(objectData.objectName.find(stageName) != std::string::npos ||
-			objectData.objectName == stageName)
-		{
-			// マップデータ設定（ApplicationGlobalから取得したJSONデータを使用）
-			_map->SetJsonDataUE(objectData.json);
-			break;
-		}
+		const std::string name = data.at("objectName").get<std::string>(); // オブジェクト名取得
+		if(name != stageName) { continue; }
+
+		// マップデータ設定
+		_map->SetJsonDataUE(data);
+		break;
 	}
 
 	return true;
-
 }
