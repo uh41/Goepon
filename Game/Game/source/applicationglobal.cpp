@@ -271,6 +271,7 @@ bool ApplicationGlobal::Init()
 	ResourceServer::LoadGraph(texture::TX_hatena);
 	ResourceServer::LoadGraph(texture::TX_nakix);
 	ResourceServer::LoadGraph(texture::TX_walk);
+	ResourceServer::LoadGraph(img::UI_Makimono);
 
 	if(!_soundServer)
 	{

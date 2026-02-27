@@ -59,6 +59,9 @@ bool ModeGame::ObjectInitialize()
 	_uiMakimono->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiMakimono);
 
+	_henshinUi = std::make_shared<HenshinUi>();
+	_uiBase.emplace_back(_henshinUi);
+
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
