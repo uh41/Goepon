@@ -17,9 +17,6 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	// 初期位置と向きをキャプチャ
-	void CaptureInitialTransform();
-
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);
 
 	virtual float GetHearingRadius() const override { return 1000.0f; }
