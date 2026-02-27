@@ -17,6 +17,7 @@ namespace img
   inline constexpr const char* Op7 = "res/Op7.png";
   inline constexpr const char* Op8 = "res/Op8.png";
   inline constexpr const char* Op9 = "res/Op9.png";
+  inline constexpr const char* Title_kari = "res/Title_kari.png";
   inline constexpr const char* UI_Makimono = "res/UI_Makimono.png";
   inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
   inline constexpr const char* UI_Tanumono = "res/UI_Tanumono.png";
@@ -99,6 +100,7 @@ namespace mv1
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
   inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
+  inline constexpr const char* SM_stageDGR = "res/map/SM_stageDGR.mv1";
   inline constexpr const char* SM_stageTRY = "res/map/SM_stageTRY.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
   inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";

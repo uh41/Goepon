@@ -48,8 +48,8 @@
 #include "Makimono.h"
 #include "enemysoundmanager.h"
 #include "modegameload.h"
-
 #include "StageManager.h"
+#include "henshinui.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -207,6 +207,7 @@ protected:
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
 	at::spc<UiMakimono> _uiMakimono;
+	at::spc<HenshinUi> _henshinUi;
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
 
@@ -267,7 +268,7 @@ protected:
 	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
 	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
 	// クリアに必要な宝箱の数
-	int _treasureRequiredCount = 0;
+	int _treasureRequiredCount = 1;
 
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;

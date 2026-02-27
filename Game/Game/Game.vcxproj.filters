@@ -67,6 +67,7 @@
       <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
     </ClCompile>
     <ClCompile Include="source\TitleTanuki.cpp" />
+    <ClCompile Include="source\henshinui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -303,6 +304,7 @@
       <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
     </ClInclude>
     <ClInclude Include="source\TitleTanuki.h" />
+    <ClInclude Include="source\henshinui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">

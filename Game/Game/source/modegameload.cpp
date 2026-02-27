@@ -33,9 +33,6 @@ bool ModeGameLoad::Process()
 {
 	base::Process();
 
-	//ModeServer::GetInstance()->SkipProcessUnderLayer();
-	//ModeServer::GetInstance()->SkipRenderUnderLayer();
-
 	// ‚Ü‚¾ƒQ[ƒ€‚ª‹‚È‚¯‚ê‚Î’Ç‰Ái1‰ñ‚¾‚¯j
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");
 	if(gameBase == nullptr)

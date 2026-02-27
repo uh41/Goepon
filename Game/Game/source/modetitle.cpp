@@ -20,31 +20,31 @@ ModeTitle::~ModeTitle()
 
 bool ModeTitle::Initialize()
 {
-	// ”wŒi‰æ‘œ‚ğ“Ç‚İ‚ŞiƒpƒX‚ÍƒvƒƒWƒFƒNƒg‚ÌƒŠƒ\[ƒX”z’u‚É‡‚í‚¹‚Ä•ÏXj
+	// ï¿½wï¿½iï¿½æ‘œï¿½ï¿½Ç‚İï¿½ï¿½Şiï¿½pï¿½Xï¿½Íƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìƒï¿½ï¿½\ï¿½[ï¿½Xï¿½zï¿½uï¿½Éï¿½ï¿½í‚¹ï¿½Ä•ÏXï¿½j
 	_handle = LoadGraph("res/Title/BG_op.png");
 	if(_handle == -1)
 	{
 		return false;
 	}
 
-	// ’KƒLƒƒƒ‰ƒf[ƒ^‚ğì¬
+	// ï¿½Kï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½ì¬
 	_player = std::make_shared<TitleTanuki>();
 	if(_player)
 	{
 		_player->Initialize();
-		// ŒÅ’èˆÊ’u‚É”z’uiYÀ•W‚ğ“KØ‚Éİ’èj
+		// ï¿½Å’ï¿½Ê’uï¿½É”zï¿½uï¿½iYï¿½ï¿½ï¿½Wï¿½ï¿½Kï¿½Ø‚Éİ’ï¿½j
 		_player->SetPos(vec::Vec3(0.0f, 0.0f, 0.0f));
 		_player->SetDir(vec::Vec3(0.0f, 0.0f, 1.0f));
 	}
 
-	// ƒ^ƒCƒgƒ‹—p‚ÌƒJƒƒ‰‚ğì¬
+	// ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½pï¿½ÌƒJï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
 	_cam = new TitleCamera();
 	if(_cam)
 	{
 		_cam->Initialize();
 	}
 
-	// ƒtƒF[ƒh‚È‚µ - ‘¦À‚É•\¦
+	// ï¿½tï¿½Fï¿½[ï¿½hï¿½È‚ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½É•\ï¿½ï¿½
 	_state = ModeBase::State::WAIT;
 
 	return true;
@@ -58,14 +58,14 @@ bool ModeTitle::Terminate()
 		_handle = -1;
 	}
 
-	// ’KƒLƒƒƒ‰ŠJ•ú
+	// ï¿½Kï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 	if(_player)
 	{
 		_player->Terminate();
 		_player.reset();
 	}
 
-	// ƒJƒƒ‰ŠJ•ú
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
 	if(_cam)
 	{
 		delete _cam;
@@ -77,28 +77,28 @@ bool ModeTitle::Terminate()
 
 bool ModeTitle::Process()
 {
-	// ƒ^ƒCƒgƒ‹‚ÍÅ‘O–ÊƒŒƒCƒ„[‚Æ‚µ‚Ä‰æ–Ê‚Ìˆ—‚Æ•`‰æƒXƒLƒbƒv
+	// ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½ÍÅ‘Oï¿½Êƒï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Æ‚ï¿½ï¿½Ä‰ï¿½Ê‚Ìï¿½ï¿½ï¿½ï¿½Æ•`ï¿½ï¿½Xï¿½Lï¿½bï¿½v
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
-	// ƒJƒƒ‰‚ÆƒvƒŒƒCƒ„[‚Ìˆ—
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Æƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½
 	if(_cam) { _cam->Process(); }
 	if(_player) { _player->Process(); }
 
-	// ƒXƒe[ƒgˆ—
+	// ï¿½Xï¿½eï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½
 	switch(_state)
 	{
 		case ModeBase::State::WAIT:
-			// ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚é‚Ü‚Å‘Ò‹@
+			// ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Å‘Ò‹@
 			if(trg & PAD_INPUT_2)
 			{
 				_state = ModeBase::State::DONE;
 			}
 			break;
 		case ModeBase::State::DONE:
-			// Ÿ‚Ìƒ‚[ƒh‚ÖˆÚs
+			// ï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½ÖˆÚs
 			ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
 			ModeServer::GetInstance()->Del(this);
 			break;
@@ -116,22 +116,22 @@ bool ModeTitle::Render()
 
 	base::Render();
 
-	// ”wŒi‰æ‘œ•`‰æ
+	// ï¿½wï¿½iï¿½æ‘œï¿½`ï¿½ï¿½
 	if(_handle != -1)
 	{
 		DrawGraph(0, 0, _handle, TRUE);
 	}
 
-	// ƒJƒƒ‰İ’èXV
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½Xï¿½V
 	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_cam->GetPos()), DxlibConverter::VecToDxLib(_cam->GetTarget()));
 	SetCameraNearFar(_cam->GetClipNear(), _cam->GetClipFar());
 
-	// ‹–ìŠpİ’è
+	// ï¿½ï¿½ï¿½ï¿½pï¿½İ’ï¿½
 	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);
 	SetupCamera_Perspective(fov_rad);
 
-	// ’Kƒ‚ƒfƒ‹•`‰æ
+	// ï¿½Kï¿½ï¿½ï¿½fï¿½ï¿½ï¿½`ï¿½ï¿½
 	if(_player)
 	{
 		_player->Render();
