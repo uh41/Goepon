@@ -11,6 +11,21 @@ public:
 		_index = 0;
 	}
 
+	// ステージIDのリストを設定（現在のindexを維持）
+	void SetStagesKeepIndex(std::vector<std::string> stages)
+	{
+		const size_t prevIndex = _index;
+		_stages = std::move(stages);
+
+		if(_stages.empty())
+		{
+			_index = 0;
+			return;
+		}
+
+		_index = (prevIndex < _stages.size()) ? prevIndex : (_stages.size() - 1);
+	}
+
 	// 現在のステージIDを取得。未設定/範囲外の場合は空文字を返す
 	const std::string& GetCurrentStageId() const
 	{
@@ -21,6 +36,26 @@ public:
 			return empty;
 		}
 		return _stages[_index];
+	}
+
+	// 現在のステージインデックスを取得
+	size_t GetCurrentStageIndex() const
+	{
+		return _index;
+	}
+
+	// ステージIDからインデックスを設定。成功すれば true、見つからない場合は false
+	bool SetCurrentStageId(const std::string& stageId)
+	{
+		for(size_t i = 0; i < _stages.size(); ++i)
+		{
+			if(_stages[i] == stageId)
+			{
+				_index = i;
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// 次のステージがあれば true、最後なら false
@@ -53,6 +88,7 @@ public:
 		}
 	}
 
+	// ステージIDからインデックスを取得。見つからない場合は0を返す
 	size_t GetStageIndex(const std::string& stageId)const
 	{
 		for(size_t i = 0; i < _stages.size(); ++i)

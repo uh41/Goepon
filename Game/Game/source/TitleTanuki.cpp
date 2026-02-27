@@ -17,7 +17,6 @@ bool TitleTanuki::Initialize()
 
 bool TitleTanuki::Terminate()
 {
-	base::Terminate();
 	return true;
 }
 
@@ -38,7 +37,7 @@ bool TitleTanuki::Render()
 	MATRIX mRotY = MGetRotY(vorty);
 	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f);
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
-	MATRIX mScale = MGetScale(VGet(1.2f, 1.2f, 1.2f)); // è≠ÇµëÂÇ´Ç≠ï\é¶
+	MATRIX mScale = MGetScale(VGet(0.7f, 0.7f, 0.7f)); // è≠ÇµëÂÇ´Ç≠ï\é¶
 
 	MATRIX m = MGetIdent();
 	m = MMult(m, mRotY);

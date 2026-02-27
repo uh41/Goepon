@@ -31,10 +31,14 @@ bool ModeTitle::Initialize()
 	_player = std::make_shared<TitleTanuki>();
 	if(_player)
 	{
-		_player->Initialize();
+		if(!_player->Initialize())
+		{
+			_player.reset();
+			return false;
+		}
 		// �Œ�ʒu�ɔz�u�iY���W��K�؂ɐݒ�j
-		_player->SetPos(vec::Vec3(0.0f, 0.0f, 0.0f));
-		_player->SetDir(vec::Vec3(0.0f, 0.0f, 1.0f));
+		_player->SetPos(vec::Vec3(70.0f, 0.0f, 0.0f));
+		_player->SetDir(vec::Vec3(0.0f, 0.0f, 0.0f));
 	}
 
 	// �^�C�g���p�̃J������쐬
@@ -77,6 +81,11 @@ bool ModeTitle::Terminate()
 
 bool ModeTitle::Process()
 {
+	if(!_cam || !_player)
+	{
+		return false;
+	}
+
 	// �^�C�g���͍őO�ʃ��C���[�Ƃ��ĉ�ʂ̏����ƕ`��X�L�b�v
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();

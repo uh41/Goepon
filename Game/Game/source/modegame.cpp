@@ -42,11 +42,10 @@ bool ModeGame::Initialize()
 	_debugF1KeyPressed = false;
 
 	// ステージマネージャーにステージを登録
-	_stageManager.SetStages
+	_stageManager.SetStagesKeepIndex
 	({
 	   "Stage1",
 	   "Stage2",
-	   "Stage3",
 	});
 
 
@@ -710,7 +709,7 @@ bool ModeGame::Process()
 					_hasRenderOnce = false;
 
 					//ここでゲームオーバー処理へ移行
-					ModeServer::GetInstance()->Add(NEW ModeGameOver(), 255, "ModeGameOver");
+					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
 					return true;
 				}
@@ -1413,14 +1412,6 @@ bool ModeGame::EndCinematicCamera()
 // 初期ステージIDを設定
 void ModeGame::SetInitialStageId(const std::string& stageId)
 {
-	// ステージマネージャーにステージリストを設定
-	_stageManager.SetStages
-	({
-		"Stage1",
-		"stage02",
-		"stage03",
-	});
-
 	// 指定されたステージIDのインデックスを設定
 	size_t index = _stageManager.GetStageIndex(stageId);
 	_stageManager.SetCurrentStageIndex(index);

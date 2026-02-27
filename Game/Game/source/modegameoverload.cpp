@@ -2,14 +2,16 @@
 #include "ModeGame.h"
 #include "applicationglobal.h"
 
-ModeGameOverLoad::ModeGameOverLoad(ModeBase* ownerGame)
+ModeGameOverLoad::ModeGameOverLoad(ModeBase* ownerGame, const std::string& stageId)
 {
 	_owner = ownerGame;
+	_stageId = stageId.empty() ? "Stage1" : stageId; // コンストラクタで設定
 	_handle = -1;
 	_frameShow = 0;
 	_requestedReset = false;
 	_spawnedGame = false;
 }
+
 
 ModeGameOverLoad::~ModeGameOverLoad()
 {
@@ -19,7 +21,6 @@ ModeGameOverLoad::~ModeGameOverLoad()
 bool ModeGameOverLoad::Initialize()
 {
 	if(!base::Initialize()) return false;
-
 	_handle = LoadGraph(img::gameoverload);
 
 	return true;
@@ -47,23 +48,11 @@ bool ModeGameOverLoad::Process()
 		// gameがなければ一度だけ新しく追加してロードを開始
 		if(!_spawnedGame)
 		{
-			std::string currentStageId = "Stage1"; //　デフォルト
-
-			// オーナーがModeGameの場合、現在のステージ情報を取得
-			if(_owner != nullptr)
-			{
-				auto* ownerGame = dynamic_cast<ModeGame*>(_owner);
-				if(ownerGame != nullptr)
-				{
-					currentStageId = ownerGame->GetCurrentStageId(); // オーナーから現在のステージIDを取得
-				}
-			}
-
-			// 現在のステージIDを指定して新しいModeGameを作成
+			// 保存されたステージIDを使用して新しいModeGameを作成
 			auto* newGame = new ModeGame();
-			newGame->SetInitialStageId(currentStageId);
+			newGame->SetInitialStageId(_stageId);
 
-			ModeServer::GetInstance()->Add(newGame, 0, "game"); 
+			ModeServer::GetInstance()->Add(newGame, 0, "game");
 			ModeServer::GetInstance()->ProcessInit(); // 追加したモードのInitializeを呼び出す
 			_spawnedGame = true;
 		}

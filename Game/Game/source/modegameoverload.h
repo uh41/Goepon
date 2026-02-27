@@ -5,7 +5,7 @@ class ModeGameOverLoad : public ModeBase
 {
 	typedef ModeBase base;
 public:
-	explicit ModeGameOverLoad(ModeBase* ownerGame = nullptr);
+	explicit ModeGameOverLoad(ModeBase* ownerGame, const std::string& stageId);
 	virtual ~ModeGameOverLoad();
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
@@ -14,6 +14,7 @@ public:
 
 protected:
 	ModeBase* _owner;
+	std::string _stageId; // 再開するステージID
 	int _handle;
 	int _frameShow;
 	bool _requestedReset;

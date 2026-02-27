@@ -6,6 +6,17 @@
 bool ModeGameOver::Initialize()
 {
 	if(!base::Initialize()) return false;
+
+	_debugCurrentStageId = "Stage1"; // デフォルト
+	if(_ownerGame)
+	{
+		auto* game = dynamic_cast<ModeGame*>(_ownerGame);
+		if(game)
+		{
+			_debugCurrentStageId = game->GetCurrentStageId();
+		}
+	}
+
 	return true;
 }
 
@@ -31,26 +42,48 @@ bool ModeGameOver::Process()
 
 	if(trg & PAD_INPUT_1)
 	{
-		// 1) 所有している ModeGame があれば削除予約（安全に予約する）
+		// 1) 現在のステージIDを保存（削除前に取得）
+		std::string currentStageId = "Stage1"; // デフォルト値
+		if(_ownerGame)
+		{
+			auto* game = dynamic_cast<ModeGame*>(_ownerGame);
+			if(game)
+			{
+				currentStageId = game->GetCurrentStageId();
+				// デバッグ出力：取得したステージID
+				DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Current Stage ID = %s", currentStageId.c_str());
+			}
+			else
+			{
+				DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Failed to cast _ownerGame to ModeGame");
+			}
+		}
+		else
+		{
+			DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: _ownerGame is null, using default Stage1");
+		}
+		// 2) 所有している ModeGame があれば削除予約（安全に予約する）
 		if(_ownerGame)
 		{
 			ModeServer::GetInstance()->Del(_ownerGame);
 			_ownerGame = nullptr; // 所有参照を切る
 		}
 
-		// 2) 名前 "game" で登録されているモードがあれば削除予約
+		// 3) 名前 "game" で登録されているモードがあれば削除予約
 		ModeBase* existing = ModeServer::GetInstance()->Get("game");
 		if(existing)
 		{
 			ModeServer::GetInstance()->Del(existing);
 		}
 
-		// 3) オーバーレイを予約追加（ProcessInit は呼ばない：メインループで安全に削除→追加が実行される）
+		// デバッグ出力：最終的に使用するステージID
+		DrawFormatString(10, 140, GetColor(255, 255, 0), "DEBUG: Final Stage ID = %s", currentStageId.c_str());
+
+		// 4) オーバーレイを予約追加時に現在のステージIDを渡す
 		if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
 		{
-			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr), 300, "gameoverload");
+			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, currentStageId), 300, "gameoverload");
 			ModeServer::GetInstance()->ProcessInit();
-
 		}
 
 		// 5) 自分自身を削除予約
@@ -67,6 +100,10 @@ bool ModeGameOver::Process()
 bool ModeGameOver::Render()
 {
 	base::Render();
+
+	// デバッグ情報の表示（Render内で行う）
+	DrawFormatString(10, 50, GetColor(255, 255, 0), "DEBUG: Detected Stage ID = %s", _debugCurrentStageId.c_str());
+	DrawFormatString(10, 70, GetColor(255, 255, 0), "DEBUG: _ownerGame = %s", _ownerGame ? "Valid" : "NULL");
 
 	// 背景(半透明に設定)
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BackgroundAlpha);

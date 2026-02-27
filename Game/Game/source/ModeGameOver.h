@@ -23,4 +23,5 @@ private:
 	ModeGame* _ownerGame; // 所有している ModeGame への参照（必要に応じて使用）
 	int _overlayHandle;
 	bool _showOverlayImmediate;
+	std::string _debugCurrentStageId; // デバッグ用：検出したステージID
 };
