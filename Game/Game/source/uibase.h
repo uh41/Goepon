@@ -9,6 +9,7 @@
 
 #pragma once
 #include "charabase.h"
+
 class UiBase : public CharaBase
 {
 	typedef CharaBase base;
@@ -22,6 +23,6 @@ public:
 	virtual bool Render();
 
 protected: 
-	int handle;
+
 };
 

@@ -35,7 +35,7 @@ bool UIActionButton::Render()
 {
 	base::Render();
 	if(!_playerBase) { return true; }
-	if(handle == -1) { return true; }
+	if(_handle == -1) { return true; }
 
 	// TODO: 3D->2D•ÏŠ·‚ª‚ ‚é‚È‚ç‚±‚±‚Å•ÏŠ·‚·‚é
 	// int screenX, screenY; = ...

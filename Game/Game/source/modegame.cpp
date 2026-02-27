@@ -45,8 +45,8 @@ bool ModeGame::Initialize()
 	_stageManager.SetStages
 	({
 	   "Stage1",
-	   "stage02",
-	   "stage03",
+	   "Stage2",
+	   "Stage3",
 	});
 
 

@@ -22,7 +22,7 @@ ModeTitle::~ModeTitle()
 bool ModeTitle::Initialize()
 {
 	// 背景画像を読み込む（パスはプロジェクトのリソース配置に合わせて変更）
-	_handle = LoadGraph(img::title);
+	_handle = LoadGraph(img::Title_kari);
 	if(_handle == -1)
 	{
 		// 読み込み失敗時は false を返して呼び出し元で判定できるようにする
