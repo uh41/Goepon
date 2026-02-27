@@ -39,13 +39,6 @@ bool EnemyDog::Initialize()
 	return true;
 }
 
-// 初期位置と向きをキャプチャ
-void EnemyDog::CaptureInitialTransform()
-{
-	_initialPosition = _vPos;
-	_initialDirection = _vDir;
-}
-
 // EnemySensorを設定
 void EnemyDog::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
 {

@@ -202,7 +202,7 @@ bool ObjectServer::LoadDate(std::string stageName)
 	// JSONファイル読み込み
 	const std::string jsonPath = _sPath + _sJsonFile;
 	std::ifstream file(jsonPath);
-	if (!file) { return false; }
+	if(!file) { return false; }
 
 	// JSONデータ解析
 	nlohmann::json jsonData;
@@ -216,13 +216,13 @@ bool ObjectServer::LoadDate(std::string stageName)
 	}
 
 	// ステージデータ検索・設定
-	if (!jsonData.contains(_sJsonObjectName)) { return false; } // キー存在確認
+	if(!jsonData.contains(_sJsonObjectName)) { return false; } // キー存在確認
 	const auto& stage = jsonData.at(_sJsonObjectName);          // ステージデータ取得
 
-	for (const auto& data : stage)
+	for(const auto& data : stage)
 	{
 		const std::string name = data.at("objectName").get<std::string>(); // オブジェクト名取得
-		if (name != stageName) { continue; }
+		if(name != stageName) { continue; }
 
 		// マップデータ設定
 		_map->SetJsonDataUE(data);
@@ -230,5 +230,4 @@ bool ObjectServer::LoadDate(std::string stageName)
 	}
 
 	return true;
-
 }
