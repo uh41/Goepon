@@ -262,7 +262,7 @@ protected:
 	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
 	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
 	// クリアに必要な宝箱の数
-	int _treasureRequiredCount = 3;
+	int _treasureRequiredCount = 1;
 
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;
