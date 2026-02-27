@@ -14,8 +14,6 @@ bool EnemySensor::Initialize()
 	// 検出情報の初期化
 	_detectionInfo.isDetected = false;	// 未検出
 	_detectionInfo.timer = 0.0f;		// タイマー初期化
-	_detectionInfo.detectorIndex = -1;	// 検出者インデックス初期化
-	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 検出者位置初期化
 
 	// 追跡情報の初期化
 	_detectionInfo.isChasing = false;	// 追跡中フラグ初期化
@@ -111,7 +109,6 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 			// 新しく検出された場合
 			_detectionInfo.isDetected = true;				// 検出フラグセット
 			_detectionInfo.timer = DETECTION_DISPLAY_TIME;	// タイマーリセット
-			_detectionInfo.detectorPos = _vPos;				// 検出者位置更新
 		}
 
 		// プレイヤーを検出中は常に位置を更新し、追跡タイマーをリセット
@@ -176,8 +173,6 @@ void EnemySensor::ResetDetection()
 {
 	_detectionInfo.isDetected = false;	// 未検出
 	_detectionInfo.timer = 0.0f;		// タイマーリセット
-	_detectionInfo.detectorIndex = -1;	// 検出者インデックスリセット
-	_detectionInfo.detectorPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 検出者位置リセット
 
 	// 追跡状態リセット
 	_detectionInfo.isChasing = false;	// 追跡中フラグリセット
@@ -211,7 +206,6 @@ void EnemySensor::UpdateDetectionTimer()
 		if (_detectionInfo.timer <= 0.0f)
 		{
 			_detectionInfo.isDetected = false;
-			_detectionInfo.detectorIndex = -1;
 		}
 	}
 }
@@ -231,64 +225,6 @@ vec::Vec3 EnemySensor::GetDetectionCenter() const
 	const float offsetDistance = _detectionSector.radius * 0.1f; // 半径の10%前方
 	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
 	return vec3::VAdd(_vPos, vec3::VScale(forwardNorm, offsetDistance));
-}
-
-// プレイヤーが索敵範囲内にいるかチェック
-bool EnemySensor::IsPlayerInDetectionRange(const vec::Vec3& playerPos) const
-{
-	if (!_bHasDetectionSector || !_bSensorEnabled)
-	{
-		return false;
-	}
-
-	// 索敵範囲の中心位置を取得
-	vec::Vec3 detectionCenter = GetDetectionCenter();
-
-	// 索敵範囲の中心からプレイヤーへのベクトル
-	vec::Vec3 toPlayer = vec3::VSub(playerPos, detectionCenter);
-
-	// 距離チェック
-	float distance = vec3::VSize(toPlayer);
-	if (distance > _detectionSector.radius)
-	{
-		return false; // 範囲外
-	}
-
-	// 距離が0に近い場合（同じ位置）は範囲内とみなす
-	if (distance < 0.001f)
-	{
-		return true;
-	}
-
-	// 角度チェック - 正規化したベクトルで内積計算
-	vec::Vec3 toPlayerNorm = vec3::VNorm(toPlayer);
-	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
-
-	// 正面方向との内積を計算
-	float dot = vec::Vec3::Dot(forwardNorm, toPlayerNorm);
-
-	// 内積から角度を計算（ラジアン）
-	float angleRad = acosf(fmaxf(-1.0f, fminf(1.0f, dot)));
-
-	// 度に変換
-	float angleDeg = angleRad * 180.0f / DX_PI_F;
-
-	// 扇形の半角と比較
-	float halfAngle = _detectionSector.angle * 0.5f;
-
-	// 角度が半角を超えている場合は範囲外
-	if (angleDeg > halfAngle)
-	{
-		return false; // 角度範囲外
-	}
-
-	// 視線チェック - 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
-	if (!CheckLineOfSight(detectionCenter, playerPos))
-	{
-		return false; // 視線が遮断されている
-	}
-
-	return true;
 }
 
 // 視線チェック - 指定した2点間で床なしの地点があるかチェック

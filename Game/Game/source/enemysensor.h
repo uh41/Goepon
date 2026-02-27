@@ -3,8 +3,6 @@
 #include "playerbase.h"
 #include "MapBase.h"
 
-class Map; // �O���錾
-
 // ���G�͈͂̏���i�[����\����
 struct DetectionSector
 {
@@ -19,8 +17,6 @@ struct DetectionInfo
 {
 	bool isDetected;        // ���o����Ă��邩
 	float timer;            // ���o�\���^�C�}�[
-	int detectorIndex;      // ���o�����G�̃C���f�b�N�X
-	vec::Vec3 detectorPos;  // ���o�����G�̈ʒu
 
 	// �ǐՋ@�\�p
 	bool isChasing;					// ���ݒǐՒ���
@@ -40,9 +36,6 @@ public:
 
 	// ���G�͈͂̐ݒ�
 	void SetDetectionSector(float radius, float angle);	// ���a�A�p�x
-
-	// �v���C���[�����G�͈͓�ɂ��邩�`�F�b�N
-	bool IsPlayerInDetectionRange(const vec::Vec3& playerPos) const;
 
 	// �v���C���[�̌��o�`�F�b�N�i�����̃v���C���[�ɑΉ��j
 	bool CheckPlayerDetection(PlayerBase* player);
