@@ -1,8 +1,10 @@
 #pragma once
 #include "appframe.h"
-#include "playertanuki.h"
+#include "TitleTanuki.h"
+#include "TitleCamera.h"
 class ModeTitle : public ModeBase
 {
+	typedef ModeBase base;
 public:
 	ModeTitle();
 	virtual ~ModeTitle();
@@ -12,7 +14,7 @@ public:
 	virtual bool Render() override;
 
 protected:
-	at::spc<PlayerTanuki> _playerTanuki;
-
+	at::spc<TitleTanuki> _player;
+	TitleCamera* _cam;
 };
 

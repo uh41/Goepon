@@ -63,7 +63,10 @@
     <ClCompile Include="source\CinematicCamera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
     </ClCompile>
-    <ClCompile Include="source\TitleCamera.cpp" />
+    <ClCompile Include="source\TitleCamera.cpp">
+      <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TitleTanuki.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -171,9 +174,6 @@
     </ClCompile>
     <ClCompile Include="source\enemysoundmanager.cpp">
       <Filter>ソースファイル\モードゲーム\敵ベース\音検知管理</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemysoundsensor.cpp">
-      <Filter>ソースファイル\モードゲーム\敵ベース\音検知センサー</Filter>
     </ClCompile>
     <ClCompile Include="source\findeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\見つけたエフェクト</Filter>
@@ -299,7 +299,10 @@
       <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
     </ClInclude>
     <ClInclude Include="source\modegameoverload.h" />
-    <ClInclude Include="source\TitleCamera.h" />
+    <ClInclude Include="source\TitleCamera.h">
+      <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TitleTanuki.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -352,9 +355,6 @@
     </ClInclude>
     <ClInclude Include="source\enemysoundmanager.h">
       <Filter>ヘッダーファイル\モードゲーム\敵ベース\音検知管理</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemysoundsensor.h">
-      <Filter>ヘッダーファイル\モードゲーム\敵ベース\音センサー</Filter>
     </ClInclude>
     <ClInclude Include="source\findeffect.h">
       <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\見つけたエフェクト</Filter>
@@ -813,6 +813,9 @@
     </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\カメラ\演出用">
       <UniqueIdentifier>{6bdced03-28fa-46f2-acd7-cd2290420910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\カメラ\タイトル用">
+      <UniqueIdentifier>{508cc7f3-b122-4019-a0b4-5f45199007c9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
