@@ -69,7 +69,7 @@ public:
 	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
 	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
 
-	void CaptureInitialTransform();
+	virtual	void CaptureInitialTransform();
 
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
 

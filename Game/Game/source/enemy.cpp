@@ -46,13 +46,6 @@ bool Enemy::Initialize()
 	return true;
 }
 
-// 初期位置と向きをキャプチャ
-void Enemy::CaptureInitialTransform()
-{
-	_initialPosition = _vPos;
-	_initialDirection = _vDir;
-}
-
 // 終了
 bool Enemy::Terminate()
 {

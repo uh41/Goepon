@@ -209,7 +209,15 @@ void EnemySoundManager::RenderDebugEnemyHearing(const at::vspc<EnemyBase>& enemi
 		const vec::Vec3 center = e->GetPos();
 
 		// 直近の音検知中かで色を変える（既存フラグを流用）
-		const unsigned int color = e->IsMovingToSound() ? GetColor(255, 0, 0) : GetColor(255, 255, 0);
+		const unsigned int color = e->IsMovingToSound();
+		if (color) 
+		{
+			GetColor(255, 0, 0);
+		}
+		else 
+		{
+			GetColor(255, 255, 0);
+		}
 
 		constexpr int segments = 32;
 		const float angleStep = (2.0f * DX_PI_F) / segments;

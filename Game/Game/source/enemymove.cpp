@@ -192,12 +192,6 @@ void EnemyMove::ProcessPatrol()
 	}
 }
 
-void EnemyMove::CaptureInitialTransform()
-{
-	_initialPosition = _vPos;
-	_initialDirection = _vDir;
-}
-
 // 終了
 bool EnemyMove::Terminate()
 {

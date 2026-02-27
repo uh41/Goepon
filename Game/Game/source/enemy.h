@@ -27,9 +27,6 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	// 初期位置と向きをキャプチャ
-	void CaptureInitialTransform();
-
 	// 音検知の半径をオーバーライド
 	virtual float GetHearingRadius() const override { return 300.0f; } 
 };

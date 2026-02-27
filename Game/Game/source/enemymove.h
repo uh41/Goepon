@@ -21,9 +21,6 @@ public:
 	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensorを設定
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
-	// 敵が初期位置に戻り中かどうかの判定（検知停止用）
-	void CaptureInitialTransform();
-
 	// 巡回ルートの設定
 	void SetPatrolPoint(const at::vet<vec::Vec3>& point);
 	void ProcessPatrol();
