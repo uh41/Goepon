@@ -6,6 +6,10 @@ namespace img
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* L_UI = "res/L_UI.png";
+  inline constexpr const char* Loading_1start = "res/Loading_1start.png";
+  inline constexpr const char* Loading_2start = "res/Loading_2start.png";
+  inline constexpr const char* Loading_3gameover = "res/Loading_3gameover.png";
+  inline constexpr const char* Loading_4gameover = "res/Loading_4gameover.png";
   inline constexpr const char* Logo = "res/Logo.png";
   inline constexpr const char* Op1 = "res/Op1.png";
   inline constexpr const char* Op10 = "res/Op10.png";
@@ -138,8 +142,8 @@ namespace mv1
   inline constexpr const char* SK_goepon_multimotion_4 = "res/Tanuki/SK_goepon_multimotion_4.mv1";
   inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
-  inline constexpr const char* Kagurayaki = "res/Tanumono/Kagurayaki.mv1";
-  inline constexpr const char* sigaraki = "res/Tanumono/sigaraki.mv1";
+  inline constexpr const char* Kagurayaki = "res/tanumono/Kagurayaki.mv1";
+  inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
 }

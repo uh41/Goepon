@@ -59,11 +59,15 @@
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
-    <ClCompile Include="source\modegameoverload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
     </ClCompile>
-    <ClCompile Include="source\henshinui.cpp" />
+    <ClCompile Include="source\henshinui.cpp">
+      <Filter>ソースファイル\モードゲーム\UIベース\変身UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegameoverload.cpp">
+      <Filter>ソースファイル\モードゲーム\ゲームオーバーロード画面</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -171,9 +175,6 @@
     </ClCompile>
     <ClCompile Include="source\enemysoundmanager.cpp">
       <Filter>ソースファイル\モードゲーム\敵ベース\音検知管理</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemysoundsensor.cpp">
-      <Filter>ソースファイル\モードゲーム\敵ベース\音検知センサー</Filter>
     </ClCompile>
     <ClCompile Include="source\findeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\見つけたエフェクト</Filter>
@@ -298,8 +299,12 @@
     <ClInclude Include="source\CinematicCamera.h">
       <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
     </ClInclude>
-    <ClInclude Include="source\modegameoverload.h" />
-    <ClInclude Include="source\henshinui.h" />
+    <ClInclude Include="source\henshinui.h">
+      <Filter>ヘッダーファイル\モードゲーム\UIベース\変身UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegameoverload.h">
+      <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -352,9 +357,6 @@
     </ClInclude>
     <ClInclude Include="source\enemysoundmanager.h">
       <Filter>ヘッダーファイル\モードゲーム\敵ベース\音検知管理</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemysoundsensor.h">
-      <Filter>ヘッダーファイル\モードゲーム\敵ベース\音センサー</Filter>
     </ClInclude>
     <ClInclude Include="source\findeffect.h">
       <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\見つけたエフェクト</Filter>
@@ -813,6 +815,18 @@
     </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\カメラ\演出用">
       <UniqueIdentifier>{6bdced03-28fa-46f2-acd7-cd2290420910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\変身UI">
+      <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\UIベース\変身UI">
+      <UniqueIdentifier>{9e3a64ac-2b11-4273-99cc-087347527541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ゲームオーバーロード画面">
+      <UniqueIdentifier>{106278e3-da51-4381-a398-f7a7a8e86ffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ゲームオーバーロード画面">
+      <UniqueIdentifier>{3ff3362d-93dc-497d-bc9e-b559dd466b1d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

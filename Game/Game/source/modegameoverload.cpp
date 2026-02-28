@@ -20,7 +20,7 @@ bool ModeGameOverLoad::Initialize()
 {
 	if(!base::Initialize()) return false;
 
-	_handle = LoadGraph(img::gameoverload);
+	_handle = LoadGraph(img::Loading_3gameover);
 
 	return true;
 }
