@@ -5,7 +5,7 @@
 ModeGameOverLoad::ModeGameOverLoad(ModeBase* ownerGame, const std::string& stageId)
 {
 	_owner = ownerGame;
-	_stageId = stageId.empty() ? "Stage1" : stageId; // ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Åİ’è
+	_stageId = stageId.empty() ? "Stage1" : stageId; // ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^ï¿½Åİ’ï¿½
 	_handle = -1;
 	_frameShow = 0;
 	_requestedReset = false;
@@ -41,31 +41,31 @@ bool ModeGameOverLoad::Process()
 {
 	base::Process();
 
-	// ModeGame‚ª•Û‘¶‚·‚é‚©Šm”F
+	// ModeGameï¿½ï¿½ï¿½Û‘ï¿½ï¿½ï¿½ï¿½é‚©ï¿½mï¿½F
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");
 	if(gameBase == nullptr)
 	{
-		// game‚ª‚È‚¯‚ê‚Îˆê“x‚¾‚¯V‚µ‚­’Ç‰Á‚µ‚Äƒ[ƒh‚ğŠJn
+		// gameï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½Îˆï¿½xï¿½ï¿½ï¿½ï¿½ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½Äƒï¿½ï¿½[ï¿½hï¿½ï¿½Jï¿½n
 		if(!_spawnedGame)
 		{
-			// •Û‘¶‚³‚ê‚½ƒXƒe[ƒWID‚ğg—p‚µ‚ÄV‚µ‚¢ModeGame‚ğì¬
+			// ï¿½Û‘ï¿½ï¿½ï¿½ï¿½ê‚½ï¿½Xï¿½eï¿½[ï¿½WIDï¿½ï¿½gï¿½pï¿½ï¿½ï¿½ÄVï¿½ï¿½ï¿½ï¿½ModeGameï¿½ï¿½ì¬
 			auto* newGame = new ModeGame();
 			newGame->SetInitialStageId(_stageId);
 
 			ModeServer::GetInstance()->Add(newGame, 0, "game");
-			ModeServer::GetInstance()->ProcessInit(); // ’Ç‰Á‚µ‚½ƒ‚[ƒh‚ÌInitialize‚ğŒÄ‚Ño‚·
+			ModeServer::GetInstance()->ProcessInit(); // ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½Initializeï¿½ï¿½Ä‚Ñoï¿½ï¿½
 			_spawnedGame = true;
 		}
-		// ’Ç‰Á’¼Œã‚Íƒ[ƒh‚ªi‚Ş‚Ü‚Å‘Ò‚Â
+		// ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½Íƒï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½iï¿½Ş‚Ü‚Å‘Ò‚ï¿½
 		return true;
 	}
 	auto* game = dynamic_cast<ModeGame*>(gameBase);
 	if(game == nullptr) return false;
 
-	// V‚µ‚­’Ç‰Á‚³‚ê‚½ ModeGame ‚ªƒ[ƒhŠ®—¹‚µ‚½‚çƒI[ƒo[ƒŒƒC‚ğíœ‚·‚é
+	// ï¿½Vï¿½ï¿½ï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ê‚½ ModeGame ï¿½ï¿½ï¿½ï¿½ï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Iï¿½[ï¿½oï¿½[ï¿½ï¿½ï¿½Cï¿½ï¿½íœï¿½ï¿½ï¿½ï¿½
 	if(game->IsLoadComplete())
 	{
-		ModeServer::GetInstance()->Del(this); // ©•ª©g‚ğíœ—\–ñ	
+		ModeServer::GetInstance()->Del(this); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½íœï¿½\ï¿½ï¿½	
 	}
 	return true;
 }
@@ -76,19 +76,19 @@ bool ModeGameOverLoad::Render()
 
 	_frameShow++;
 
-	// ƒfƒoƒbƒO: Render ŒÄ‚Ño‚µŠm”F•\¦i‰æ–Ê¶ãj
+	// ï¿½fï¿½oï¿½bï¿½O: Render ï¿½Ä‚Ñoï¿½ï¿½ï¿½mï¿½Fï¿½\ï¿½ï¿½ï¿½iï¿½ï¿½Êï¿½ï¿½ï¿½j
 	DrawFormatString(10, 10, GetColor(255, 255, 0), "ModeGameOverLoad Render frame=%d handle=%d", _frameShow, _handle);
 
 	if(_handle != -1)
 	{
-		// ‰æ‘œ‚ğ‰æ–Ê’†‰›‚É•`‰æ
+		// ï¿½æ‘œï¿½ï¿½ï¿½Ê’ï¿½ï¿½ï¿½ï¿½É•`ï¿½ï¿½
 		int screenW, screenH;
 		GetScreenState(&screenW, &screenH, nullptr);
 
 		int imgW, imgH;
 		GetGraphSize(_handle, &imgW, &imgH);
 
-		// ƒfƒoƒbƒO: ‰æ‘œƒTƒCƒY•\¦
+		// ï¿½fï¿½oï¿½bï¿½O: ï¿½æ‘œï¿½Tï¿½Cï¿½Yï¿½\ï¿½ï¿½
 		DrawFormatString(10, 30, GetColor(255, 255, 0), "imgW=%d imgH=%d", imgW, imgH);
 
 		int x = (screenW - imgW) / 2;
@@ -98,7 +98,7 @@ bool ModeGameOverLoad::Render()
 	}
 	else
 	{
-		// ƒtƒH[ƒ‹ƒoƒbƒN•\¦iƒfƒoƒbƒO—pj
+		// ï¿½tï¿½Hï¿½[ï¿½ï¿½ï¿½oï¿½bï¿½Nï¿½\ï¿½ï¿½ï¿½iï¿½fï¿½oï¿½bï¿½Oï¿½pï¿½j
 		DrawString(10, 10, "GameOver overlay missing", GetColor(255, 0, 0));
 	}
 	return true;

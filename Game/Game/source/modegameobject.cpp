@@ -13,6 +13,32 @@
 #include "cube.h"
 #include "map.h"
 
+void ModeGame::RequestTransformToMono()
+{
+	// 要求フラグを立てるだけ。実際の消費/変身は PlayerTransform() 内で行う
+	_requestedTransformToMono = true;
+}
+
+void ModeGame::RequestTransformToHuman()
+{
+	_requestedTransformToHuman = true;
+}
+
+void ModeGame::RequestReturnToTanukiFromHuman()
+{
+	_requestedReturnToTanuki = true;
+}
+
+bool ModeGame::IsTransforming() const
+{
+	return _isTransformToHuman || _isTransformToMono || (_transformAnimId != -1);
+}
+
+bool ModeGame::IsTransformRequested() const
+{
+	return _requestedTransformToMono || _requestedTransformToHuman || _requestedReturnToTanuki;
+}
+
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
 {
@@ -60,6 +86,7 @@ bool ModeGame::ObjectInitialize()
 	_uiBase.emplace_back(_uiMakimono);
 
 	_henshinUi = std::make_shared<HenshinUi>();
+	_henshinUi->SetOwner(this);
 	_uiBase.emplace_back(_henshinUi);
 
 	// エフェクト初期化
@@ -127,6 +154,9 @@ bool ModeGame::ObjectInitialize()
 	_changeBlinkTimer = 0.0f;
 	_changeBlinkVisible = true;
 
+	_requestedTransformToMono = false;
+	_requestedTransformToHuman = false;
+	_requestedReturnToTanuki = false;
 	return true;
 }
 
@@ -307,38 +337,80 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 	return false;
 }
 
+bool ModeGame::RequestTransform(HenshinUi::Select select)
+{
+	// UI からの要求はタヌキ表示中にのみ有効（表示がタヌキでない場合は無視）
+	if(!_bShowTanuki || !_playerTanuki)
+	{
+		return false;
+	}
+
+	PlayerTanuki* tanuki = _playerTanuki.get();
+	if(!tanuki)
+	{
+		return false;
+	}
+
+	switch(select)
+	{
+	case HenshinUi::Select::TANUMONO:
+	{
+		// モノへ変身する場合はタヌキの巻物を消費する
+		if(tanuki->GetMakimonoCount() > 0)
+		{
+			tanuki->SubMakimono(1); // 巻物を消費して変身開始
+			return PlayerTransformToTanuki(false); // false = モノへ
+		}
+		else
+		{
+			// 巻物がない場合は効果音のみ（既存挙動）
+			auto soundNoMakimono = gGlobal._soundServer->Get("61");
+			if(soundNoMakimono && !soundNoMakimono->IsPlay())
+			{
+				soundNoMakimono->Play();
+			}
+			return false;
+		}
+	}
+	case HenshinUi::Select::TANUBITO:
+	{
+		// タヌキ表示中のみ人間へ変身
+		return PlayerTransformToTanuki(true); // true = 人間へ
+	}
+	default:
+		return false;
+	}
+}
+
 bool ModeGame::PlayerTransform()
 {
 	// AnimationManager の更新は呼び出し側で行われている前提（modegame.cpp）
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
 	// 変身進行中は入力に関係なく毎フレーム進行させる
-	if(_isTransformToHuman || _isTransformToMono || _transformAnimId != -1)
+	if(_isTransformToHuman)
 	{
-		if(_isTransformToHuman)
+		// true = 人間へ変身
+		if(PlayerTransformToTanuki(true))
 		{
-			// true = 人間へ変身
-			if(PlayerTransformToTanuki(true))
-			{
-				// 変身処理中または変身直後の1フレーム更新を行ったのでここで終了
-				return true;
-			}
+			// 変身処理中または変身直後の1フレーム更新を行ったのでここで終了
+			return true;
 		}
-		else if(_isTransformToMono)
+	}
+	else if(_isTransformToMono)
+	{
+		// false = モノへ変身
+		if(PlayerTransformToTanuki(false))
 		{
-			// false = モノへ変身
-			if(PlayerTransformToTanuki(false))
-			{
-				return true;
-			}
+			return true;
 		}
 	}
 
 	// モノ表示時の自動切替（入力または時間切れ）
 	if(_showMonoPlayer)
 	{
-		// PAD_INPUT_3 が押された、または変身タイマーが有効で時間切れならタヌキへ切替
-		if((trg & PAD_INPUT_3) || (_changeTimeActive && _changeTimeLimit <= 0.0f))
+		// PAD入力による切替は廃止。UI からの要求で行うようにする。
+		if((_changeTimeActive && _changeTimeLimit <= 0.0f))
 		{
 			// モノ -> タヌキ は即時切替（アニメなし）
 			_showMonoPlayer = false;
@@ -366,12 +438,12 @@ bool ModeGame::PlayerTransform()
 		}
 	}
 
-	// タヌキ表示時の人間への変身（入力または時間切れ）
-	if(!_bShowTanuki && !_showMonoPlayer)
+	// human 表示時 -> tanuki 即時戻し（UI 経由）
+	if(_requestedReturnToTanuki)
 	{
-		if((trg & PAD_INPUT_4) || (_changeTimeActive && _changeTimeLimit <= 0.0f))
+		_requestedReturnToTanuki = false;
+		if(!_bShowTanuki && !_showMonoPlayer)
 		{
-			// 人間 -> タヌキ（再度ボタンで戻す）
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
 
@@ -391,7 +463,6 @@ bool ModeGame::PlayerTransform()
 				soundFinish->Play();
 			}
 
-			// タイマーが動いてたらリセット（人状態の点滅等を止める）
 			_changeTimeActive = false;
 			_changeTimeLimit = 0.0f;
 			_changeBlinkTimer = 0.0f;
@@ -400,140 +471,47 @@ bool ModeGame::PlayerTransform()
 			return true;
 		}
 	}
-	// 巻物取得チェック
-	PlayerBase* currentPlayer = nullptr;
-	if(_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
-	else if(_showMonoPlayer) { currentPlayer = _playerMono.get(); }
-	else { currentPlayer = _player.get(); }
 
-	const bool hasMakimono = (currentPlayer != nullptr && currentPlayer->GetMakimonoCount() > 0);
-	const bool pushBottan  = (trg & PAD_INPUT_3) || (trg & PAD_INPUT_4); // 変身ボタンが押されているか
-
-	if(!hasMakimono && pushBottan)
+	// UI 経由の変身要求処理（パッド入力分岐は廃止）
+	if(_requestedTransformToMono)
 	{
-		// まきものを持ってないのに変身ボタンを押した場合のフィードバック（音のみ）
-		auto soundNoMakimono = gGlobal._soundServer->Get("61");
-		if(soundNoMakimono && !soundNoMakimono->IsPlay())
+		_requestedTransformToMono = false;
+		// タヌキ表示中のみ許可
+		if(_bShowTanuki)
 		{
-			soundNoMakimono->Play();
-		}
-	}
-	else
-	{
-		// PAD_INPUT_3: タヌキ <-> モノ 切替
-		if(trg & PAD_INPUT_3)
-		{
-			// 無効化：現在「モノ」表示中なら PAD_INPUT_3 を無効化する
-			if(!_bShowTanuki && !_showMonoPlayer)
+			if(_playerTanuki && _playerTanuki->GetMakimonoCount() > 0)
 			{
-				// プレイヤー（人間）時は無効化、何もしない
+				// 巻物消費して変身開始
+				_playerTanuki->SubMakimono(1);
+				if(PlayerTransformToTanuki(false))
+				{
+					return true;
+				}
 			}
 			else
 			{
-				// タヌキ表示中ならモノに切り替え（変身開始）
-				if(_bShowTanuki)
+				auto soundNoMakimono = gGlobal._soundServer->Get("61");
+				if(soundNoMakimono && !soundNoMakimono->IsPlay())
 				{
-					// まきものを1つ消費する
-					if(_playerTanuki)
-					{
-						_playerTanuki->SubMakimono(1);
-					}
-					// タヌキ -> モノ へ変身開始
-					if(PlayerTransformToTanuki(false))
-					{
-						return true;
-					}
-				}
-				//else if(_showMonoPlayer)
-				//{
-				//	// (既存) モノ -> タヌキ は即時切替（アニメなし）
-				//	_showMonoPlayer = false;
-				//	_bShowTanuki = true;
-				//	_playerTanuki->SetPos(_playerMono->GetPos());
-				//	_playerTanuki->SetDir(_playerMono->GetDir());
-				//	_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				//	_playerTanuki->PlayAnimation("goepon_idle", true);
-				//	_playerTanuki->Process();
-				//	_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-				//	_walkEffect->SetPlayerPos(_playerTanuki.get());
-				//	_aseEffect->SetPlayer(_playerTanuki.get());
-				//	auto soundFinish = gGlobal._soundServer->Get("3");
-				//	if(soundFinish && !soundFinish->IsPlay())
-				//	{
-				//		soundFinish->Play();
-				//	}
-
-				//	// タイマーが動いてたらリセット
-				//	_changeTimeActive = false;// 時間制限を無効化
-				//	_changeTimeLimit = 0.0f;
-				//	_changeBlinkTimer = 0.0f;
-				//	_changeBlinkVisible = true;
-				//	return true;
-				//}
-			}
-		}
-
-		// PAD_INPUT_4: タヌキ -> 人間 の変身（無効化：モノ表示時は変身不可）
-		if(!_bTransCancel)
-		{
-			if(trg & PAD_INPUT_4)
-			{
-				// 無効化：現在「モノ」表示中なら PAD_INPUT_4 を無効化する
-				if(_showMonoPlayer)
-				{
-					// モノ時は変身不可、何もしない
-				}
-				else
-				{
-					if(_bShowTanuki)
-					{
-						// まきものを1つ消費する
-						/*if(_playerTanuki)
-						{
-							_playerTanuki->SubMakimono(1);
-						}*/
-
-						if(PlayerTransformToTanuki(true))
-						{
-							return true;
-						}
-					}
-					//else
-					//{
-					//	// 人間 -> タヌキ（再度ボタンで戻す）
-					//	_bShowTanuki = true;
-					//	_showMonoPlayer = false;
-
-					//	_playerTanuki->SetPos(_player->GetPos());
-					//	_playerTanuki->SetDir(_player->GetDir());
-					//	_playerTanuki->_status = CharaBase::STATUS::WAIT;
-					//	_playerTanuki->PlayAnimation("goepon_idle", true);
-					//	_playerTanuki->Process();
-
-					//	_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-					//	_walkEffect->SetPlayerPos(_playerTanuki.get());
-					//	_aseEffect->SetPlayer(_playerTanuki.get());
-
-					//	auto soundFinish = gGlobal._soundServer->Get("3");
-					//	if(soundFinish && !soundFinish->IsPlay())
-					//	{
-					//		soundFinish->Play();
-					//	}
-
-					//	// タイマーが動いてたらリセット（人状態の点滅等を止める）
-					//	_changeTimeActive = false;
-					//	_changeTimeLimit = 0.0f;
-					//	_changeBlinkTimer = 0.0f;
-					//	_changeBlinkVisible = true;
-
-					//	return true;
-					//	
-					//}
+					soundNoMakimono->Play();
 				}
 			}
 		}
 	}
-	
+
+	if(_requestedTransformToHuman)
+	{
+		_requestedTransformToHuman = false;
+		// タヌキ表示中のみ開始
+		if(_bShowTanuki)
+		{
+			// 人間へ変身（アニメあり）
+			if(PlayerTransformToTanuki(true))
+			{
+				return true;
+			}
+		}
+	}
 
 	// プレイヤーの処理（現在表示中のプレイヤーのみ）
 	if(_bShowTanuki)

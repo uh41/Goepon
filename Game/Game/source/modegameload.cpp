@@ -13,7 +13,7 @@ ModeGameLoad::~ModeGameLoad()
 bool ModeGameLoad::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_loadHandle = ResourceServer::LoadGraph(img::work);
+	_loadHandle = ResourceServer::LoadGraph(img::Loading_1start);
 	Fade::GetInstance()->ColorMask(0, 0, 0, 0);
 	return true;
 }
