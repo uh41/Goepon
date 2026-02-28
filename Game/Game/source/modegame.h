@@ -116,6 +116,16 @@ public:
 	// プレイヤー変身関数
 	bool PlayerTransform();
 	bool PlayerTransformToTanuki(bool player);
+	bool RequestTransform(HenshinUi::Select select);
+
+	void RequestTransformToMono();             // タヌキ -> モノ（巻物を消費して変身）
+	void RequestTransformToHuman();            // タヌキ -> 人間（アニメあり）
+	void RequestReturnToTanukiFromHuman();     // 人間表示時にタヌキへ即時戻す（UI選択）
+	bool IsTransforming() const;
+	bool IsLoadComplete() const { return _isLoadComplete; }
+	void SetLoadComplete(bool b) { _isLoadComplete = b; }
+	bool IsTransformRequested() const;
+	bool IsShowingTanuki() const { return _bShowTanuki; }
 
 	// 影関数
 	bool ShadowInitialize();
@@ -153,9 +163,6 @@ public:
 
 	void RequestNextStage()  { _requestNextStage  = true; }
 	bool HasRenderOnce() const { return _hasRenderOnce; }
-
-	bool IsLoadComplete() const { return _isLoadComplete; }
-	void SetLoadComplete(bool b) { _isLoadComplete = b; }
 
 protected:
 	Camera* _camera;
@@ -319,5 +326,9 @@ protected:
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
 	StageManager _stageManager; // ステージ管理
+
+	bool _requestedTransformToMono = false;      // タヌキ -> モノ 要求
+	bool _requestedTransformToHuman = false;     // タヌキ -> 人間 要求（アニメ）
+	bool _requestedReturnToTanuki = false;       // 人間 -> タヌキ（即時）要求
 };
 
