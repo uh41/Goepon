@@ -164,9 +164,6 @@ public:
 	void RequestNextStage()  { _requestNextStage  = true; }
 	bool HasRenderOnce() const { return _hasRenderOnce; }
 
-	bool IsLoadComplete() const { return _isLoadComplete; }
-	void SetLoadComplete(bool b) { _isLoadComplete = b; }
-
 	// 現在のステージIDを取得
 	std::string GetCurrentStageId() const { return _stageManager.GetCurrentStageId(); }
 
