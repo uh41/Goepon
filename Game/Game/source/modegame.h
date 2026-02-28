@@ -325,5 +325,6 @@ protected:
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
 	StageManager _stageManager; // ステージ管理
+	std::string _initialStageId; //
 };
 

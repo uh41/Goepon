@@ -33,7 +33,6 @@
     <ClCompile Include="source\modegamedebug.cpp" />
     <ClCompile Include="source\modegameobject.cpp" />
     <ClCompile Include="source\modemenu.cpp" />
-    <ClCompile Include="source\modeopscenario.cpp" />
     <ClCompile Include="source\modescenariobase.cpp" />
     <ClCompile Include="source\modeteamlogo.cpp" />
     <ClCompile Include="source\modetitle.cpp" />
@@ -59,7 +58,6 @@
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
-    <ClCompile Include="source\modegameoverload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
     </ClCompile>
@@ -68,6 +66,15 @@
     </ClCompile>
     <ClCompile Include="source\TitleTanuki.cpp" />
     <ClCompile Include="source\henshinui.cpp" />
+    <ClCompile Include="source\modeopscenario.cpp">
+      <Filter>ソースファイル\シナリオベース\オープニングシナリオ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeAffterScenario.cpp">
+      <Filter>ソースファイル\シナリオベース\アフターシナリオ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegameoverload.cpp">
+      <Filter>ヘッダーファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -299,12 +306,17 @@
     <ClInclude Include="source\CinematicCamera.h">
       <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
     </ClInclude>
-    <ClInclude Include="source\modegameoverload.h" />
     <ClInclude Include="source\TitleCamera.h">
       <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
     </ClInclude>
     <ClInclude Include="source\TitleTanuki.h" />
     <ClInclude Include="source\henshinui.h" />
+    <ClInclude Include="source\modeAffterScenario.h">
+      <Filter>ヘッダーファイル\シナリオベース\アフターシナリオ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegameoverload.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -597,9 +609,6 @@
     <Filter Include="ソースファイル\シナリオベース\オープニングシナリオ">
       <UniqueIdentifier>{2bcd6c4a-a392-47b7-a66b-fb2ba7fb1a9d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソースファイル\チームロゴ">
-      <UniqueIdentifier>{0414adbc-00e7-484a-bc64-b74c5165aab8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソースファイル\タイトル">
       <UniqueIdentifier>{204509e8-abf1-4982-9080-2f70563ef51d}</UniqueIdentifier>
     </Filter>
@@ -818,6 +827,15 @@
     </Filter>
     <Filter Include="ソースファイル\モードゲーム\カメラ\タイトル用">
       <UniqueIdentifier>{508cc7f3-b122-4019-a0b4-5f45199007c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\シナリオベース\アフターシナリオ">
+      <UniqueIdentifier>{664e5ac6-04e3-46e2-b9b6-fe3e492c1230}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\シナリオベース\アフターシナリオ">
+      <UniqueIdentifier>{062be66d-210b-4c53-98c3-589cc349c495}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\チームロゴ">
+      <UniqueIdentifier>{0414adbc-00e7-484a-bc64-b74c5165aab8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

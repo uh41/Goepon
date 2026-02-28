@@ -16,6 +16,7 @@
 #include "applicationglobal.h"
 #include "ModeGameOver.h"
 #include "ModeTitle.h"
+#include "ModeAffterScenario.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -42,12 +43,23 @@ bool ModeGame::Initialize()
 	_debugF1KeyPressed = false;
 
 	// ステージマネージャーにステージを登録
-	_stageManager.SetStagesKeepIndex
+	_stageManager.SetStages
 	({
 	   "Stage1",
 	   "Stage2",
 	});
 
+	// 初期ステージIDが設定されていれば、そのIDに対応するステージを現在のステージとして設定する
+	if(!_initialStageId.empty())
+	{
+		// 指定IDが存在すればインデックスを設定する（存在しなければ false を返すが無視可）
+		if(!_stageManager.SetCurrentStageId(_initialStageId))
+		{
+			// デバッグ出力：指定IDが見つからなかった
+
+			DrawFormatString(10, 20, GetColor(255, 0, 0), "Warning: initial stage id '%s' not found", _initialStageId.c_str());
+		}
+	}
 
 	ObjectInitialize();	// オブジェクト初期化
 
@@ -502,10 +514,13 @@ bool ModeGame::Process()
 			ResetStage();
 		}
 		// 次のステージがないならタイトルに戻る
-	/*	else
+		else
 		{
-			ModeServer::GetInstance()->Add(new ModeTitle(), 0, "ModeTitle");
-		}*/
+			ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeTitle");
+
+			// 自分自身のモードを削除して遷移する
+			ModeServer::GetInstance()->Del(this);
+		}
 
 		return true;
 	}
@@ -1412,7 +1427,5 @@ bool ModeGame::EndCinematicCamera()
 // 初期ステージIDを設定
 void ModeGame::SetInitialStageId(const std::string& stageId)
 {
-	// 指定されたステージIDのインデックスを設定
-	size_t index = _stageManager.GetStageIndex(stageId);
-	_stageManager.SetCurrentStageIndex(index);
+	_initialStageId = stageId;
 }
