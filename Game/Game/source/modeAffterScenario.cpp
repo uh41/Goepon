@@ -63,7 +63,7 @@ bool ModeAfScenario::Terminate()
 			page.handle = -1;
 		}
 	}
-	_page.empty();
+	_page.clear();
 
 	return true;
 }

@@ -1,4 +1,4 @@
-#include "modegameoverload.h"
+﻿#include "modegameoverload.h"
 #include "ModeGame.h"
 #include "applicationglobal.h"
 

@@ -846,6 +846,7 @@
     </Filter>
     <Filter Include="ソースファイル\チームロゴ">
       <UniqueIdentifier>{0414adbc-00e7-484a-bc64-b74c5165aab8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\UIベース\変身UI">
       <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
     </Filter>
