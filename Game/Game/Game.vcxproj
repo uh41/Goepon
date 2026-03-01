@@ -41,6 +41,7 @@
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\modeAffterScenario.h" />
     <ClInclude Include="source\ModeGameClear.h" />
+    <ClInclude Include="source\ModeGameClearLoad.h" />
     <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\ModeGameOver.h" />
     <ClInclude Include="source\modegameoverload.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\modeAffterScenario.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
+    <ClCompile Include="source\ModeGameClearLoad.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\ModeGameOver.cpp" />
     <ClCompile Include="source\modegameoverload.cpp" />

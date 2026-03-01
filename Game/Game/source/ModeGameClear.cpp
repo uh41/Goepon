@@ -2,6 +2,7 @@
 #include "ApplicationMain.h"
 #include "modegame.h"
 #include "modeteamlogo.h"
+#include "ModeGameClearLoad.h" 
 
 bool ModeGameClear::Initialize()
 {
@@ -18,24 +19,49 @@ bool ModeGameClear::Terminate()
 bool ModeGameClear::Process()
 {
 	base::Process();
-	// クリア画面が出ている間は「下のレイヤー(ゲーム本編)」を止める（描画は止めない）
+	// クリア画面が出ている間は「そのほかのレイヤー」を止める
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	// キー取得
-	int trg = ApplicationMain::GetInstance()->GetTrg();
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 
-	//// パッド1のボタンが押されたらモード削除
-	if (trg & PAD_INPUT_1)
+	if(trg & PAD_INPUT_1)
 	{
-		// 下層の ModeGame にリセット要求
+		// 現在のステージIDを保存
+		std::string currentStageId = "Stage1"; // デフォルトのステージID
+		if (_ownerGame)
+		{
+			auto* game = dynamic_cast<ModeGame*>(_ownerGame);
+			if(game)
+			{
+				currentStageId = game->GetCurrentStageId();
+			}
+		}
+
 		if(_ownerGame)
 		{
-			if(auto* game = dynamic_cast<ModeGame*>(_ownerGame))
-			{
-				game->RequestNextStage();
-			}
-			// クリア画面を閉じる
-			ModeServer::GetInstance()->Del(this);
+			ModeServer::GetInstance()->Del(_ownerGame); // ゲームモードを削除
 		}
+
+		// 名前"game" で登録されているモードがあれば削除予約
+		ModeBase* existing = ModeServer::GetInstance()->Get("game");
+		if (existing)
+		{
+			ModeServer::GetInstance()->Del(existing);
+		}
+
+		// ModeGameLoadを使用してゲームを再ロード（ゲームオーバー時と同様の処理）
+		if(ModeServer::GetInstance()->Get("gameclearload") == nullptr)
+		{
+			ModeServer::GetInstance()->Add(new ModeGameClearLoad(nullptr, currentStageId), 300, "gameclearload");
+			ModeServer::GetInstance()->ProcessInit();
+		}
+
+		// 自分自身を削除予約
+		ModeServer::GetInstance()->Del(this);
+
+		// 削除・追加は次フレームの ModeServer::ProcessInit() で実行されるため、
+		// ここでは早期リターンして安全に終了する。
+		return true;
 	}
 	return true;
 }
