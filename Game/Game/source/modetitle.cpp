@@ -21,7 +21,7 @@ ModeTitle::~ModeTitle()
 bool ModeTitle::Initialize()
 {
 	// �w�i�摜��ǂݍ��ށi�p�X�̓v���W�F�N�g�̃��\�[�X�z�u�ɍ��킹�ĕύX�j
-	_handle = LoadGraph("res/Title/BG_op.png");
+	_handle = LoadGraph(img::Title_kari);
 	if(_handle == -1)
 	{
 		return false;
@@ -141,10 +141,10 @@ bool ModeTitle::Render()
 	SetupCamera_Perspective(fov_rad);
 
 	// �K���f���`��
-	if(_player)
-	{
-		_player->Render();
-	}
+	//if(_player)
+	//{
+	//	_player->Render();
+	//}
 
 	return true;
 }
