@@ -77,8 +77,8 @@ bool ModeGame::ObjectInitialize()
 	_object.emplace_back(_goal);
 
 	// ui初期化
-	_uiHp = std::make_shared<UiHp>();
-	_uiHp->SetPlayer(_player.get());
+	//_uiHp = std::make_shared<UiHp>();
+	//_uiHp->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiHp);
 
 	_uiMakimono = std::make_shared<UiMakimono>();
