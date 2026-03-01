@@ -30,7 +30,7 @@ bool ModeAfScenario::Initialize()
 
 	_page =
 	{
-		{ LoadGraph(img::Op1), "" },// 画像読み込み, 音声ファイル
+		{ LoadGraph("res/Af_Scenario.png"), "" },// 画像読み込み, 音声ファイル
 	};
 	_pageNo = 0;
 
