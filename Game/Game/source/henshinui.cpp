@@ -60,94 +60,76 @@ bool HenshinUi::Process()
 		mg = StCas<ModeGame*>(_owner);
 	}
 
-	// 変身中または変身要求が保留中は選択を無効化する（開閉/左右/決定 すべて無効）
+	// 変身中または変身要求が保留中は選択を無効化する（開閉/切替/決定 すべて無効）
 	if(mg && (mg->IsTransforming() || mg->IsTransformRequested()))
 	{
 		_padInput5Active = false;
 		return true;
 	}
 
-	// ホールドのみで選択開始する（押し始めは無視）
-	bool hold5 = ((key & PAD_INPUT_5) != 0) && !(mg && (mg->IsTransforming() || mg->IsTransformRequested()));    // ホールド（変身中は無効）
-
-	// hold が有効な間だけ選択状態を維持する（ホールドを離したら自動的に閉じる）
-	if(hold5)
+	// タヌキ表示中のみ選択可能
+	ModeGame* mgCheck = nullptr;
+	if(_owner)
 	{
-		ModeGame* mgCheck = nullptr;
-		if(_owner)
+		mgCheck = StCas<ModeGame*>(_owner);
+	}
+	if(!(mgCheck && mgCheck->IsShowingTanuki()))
+	{
+		_padInput5Active = false;
+		// 表示がタヌキでないなら以降の入力は無視
+		return true;
+	}
+
+	// PAD_INPUT_5 の立ち上がり（トリガー）で選択を開始／切替する
+	if(trg & PAD_INPUT_5)
+	{
+		// まだ選択中でなければ開いて最初は TANUBITO にする
+		if(!_padInput5Active)
 		{
-			mgCheck = StCas<ModeGame*>(_owner);
-		}
-		// タヌキ表示中のみ選択開始可能
-		if(mgCheck && mgCheck->IsShowingTanuki())
-		{
-			// ホールド開始の立ち上がりで初期選択を設定
-			if(!_padInput5Active)
-			{
-				_padInput5Active = true;
-				_select = Select::TANUBITO;
-			}
+			_padInput5Active = true;
+			_select = Select::TANUBITO;
 		}
 		else
 		{
-			// 表示がタヌキでないなら選択しない
-			_padInput5Active = false;
-		}
-	}
-	else
-	{
-		// ホールドを離したら必ず選択を閉じる
-		_padInput5Active = false;
-	}
-
-	// 5Aが有効な状態で左右入力があった場合、選択肢を切り替える
-	if(_padInput5Active)
-	{
-		// 選択肢のうち UI に表示している項目のみ移動対象にする
-		// (Select::TANUKI は UI 表示がないため選択できないようにする)
-		int firstSelectable = StCas<int>(Select::TANUBITO); // 最小選択インデックス
-		int lastSelectable = StCas<int>(Select::TANUMONO); // 最大選択インデックス
-		int idx = StCas<int>(_select); // 現在の選択インデックスを取得
-
-		// 左で前へ、右で次へ。ただし範囲外へは出ないようにクランプする
-		if(trg & PAD_INPUT_LEFT)
-		{
-			if(idx > firstSelectable) idx--;
-		}
-		else if(trg & PAD_INPUT_RIGHT)
-		{
-			if(idx < lastSelectable) idx++;
-		}
-
-		_select = StCas<Select>(idx); // 新しい選択肢をセット
-
-		if(trg & PAD_INPUT_4)
-		{
-			if(_owner)
+			// 既に選択中なら TANUBITO <-> TANUMONO をトグルする
+			if(_select == Select::TANUBITO)
 			{
-				ModeGame* mg = StCas<ModeGame*>(_owner);
-				if(mg)
-				{
-					// 念のため再確認：変身中なら無視
-					if(mg->IsTransforming() || mg->IsTransformRequested())
-					{
-						_padInput5Active = false;
-						return true;
-					}
+				_select = Select::TANUMONO;
+			}
+			else
+			{
+				_select = Select::TANUBITO;
+			}
+		}
+	}
 
-					// 直接変身処理を呼ばず、要求 API を呼ぶ（ModeGame 側で処理・同期される）
-					if(_select == Select::TANUBITO)
-					{
-						mg->RequestTransformToHuman();	// タヌキ -> 人間（アニメあり）の要求
-					}
-					else if(_select == Select::TANUMONO)
-					{
-						mg->RequestTransformToMono();	// タヌキ -> モノ（巻物消費）の要求
-					}
+	// 選択中に PAD_INPUT_4 が押されたら変身要求を発行して選択を閉じる
+	if(_padInput5Active && (trg & PAD_INPUT_4))
+	{
+		if(_owner)
+		{
+			ModeGame* mg2 = StCas<ModeGame*>(_owner);
+			if(mg2)
+			{
+				// 念のため再確認：変身中なら無視
+				if(mg2->IsTransforming() || mg2->IsTransformRequested())
+				{
+					_padInput5Active = false;
+					return true;
+				}
+
+				// 選択に応じて変身要求を送る
+				if(_select == Select::TANUBITO)
+				{
+					mg2->RequestTransformToHuman();	// タヌキ -> 人間（アニメあり）の要求
+				}
+				else if(_select == Select::TANUMONO)
+				{
+					mg2->RequestTransformToMono();	// タヌキ -> モノ（巻物消費）の要求
 				}
 			}
-			_padInput5Active = false; // 変身が決定したら選択状態をリセット
 		}
+		_padInput5Active = false; // 変身が決定したら選択状態をリセット
 	}
 
 	return true;

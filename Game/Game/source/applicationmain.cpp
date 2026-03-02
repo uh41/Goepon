@@ -50,7 +50,7 @@ bool ApplicationMain::Initialize(HINSTANCE hInstance)
 	if(!base::Initialize(hInstance)) { return false; }
 
 	// アプリケーショングローバルの初期化
-	//gGlobal.Init();
+	gGlobal.Init();
 
 	// モードの登録
 	//ModeServer::GetInstance()->Add(new ModeInit(), 4, "logo");
