@@ -25,7 +25,6 @@ bool PlayerTanuki::Initialize()
 	_normalSpeed = _fMvSpeed;
 	_dash = false;
 	_dashTimer = 0.0f;
-	_dashSpeed = 2.0f;// ダッシュ中は通常速度の2倍
 	_dashCount = 0;
 
 	_dashCoolDownTime = 0.0f;
@@ -172,7 +171,7 @@ bool PlayerTanuki::Process()
 		{
 			_dash = true;
 			_dashTimer = dash::DASH_DURATION;
-			_fMvSpeed = _normalSpeed * _dashSpeed; // ダッシュ開始時に速度を上げる
+			_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
 			_dashCount++;
 			if(_dashRecoverActive)
 			{
@@ -298,7 +297,7 @@ bool PlayerTanuki::Process()
 		float anim_speed = 0.5f;
 		if(_dash && _status == STATUS::WALK)
 		{
-			anim_speed *= _dashSpeed; // ダッシュ中はアニメーション速度も速くする
+			anim_speed *= dash::DASH_SPEED; // ダッシュ中はアニメーション速度も速くする
 		}
 		_fPlayTime += anim_speed;
 		switch(_status)
