@@ -25,8 +25,6 @@ bool PlayerTanuki::Initialize()
 	_normalSpeed = _fMvSpeed;
 	_dash = false;
 	_dashTimer = 0.0f;
-	_dashDuration = 3.0f;
-	_dashSpeed = 2.0f;// ダッシュ中は通常速度の2倍
 	_dashCount = 0;
 
 	_dashCoolDownTime = 0.0f;
@@ -172,8 +170,8 @@ bool PlayerTanuki::Process()
 		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
 		{
 			_dash = true;
-			_dashTimer = _dashDuration;
-			_fMvSpeed = _normalSpeed * _dashSpeed; // ダッシュ開始時に速度を上げる
+			_dashTimer = dash::DASH_DURATION;
+			_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
 			_dashCount++;
 			if(_dashRecoverActive)
 			{
@@ -299,7 +297,7 @@ bool PlayerTanuki::Process()
 		float anim_speed = 0.5f;
 		if(_dash && _status == STATUS::WALK)
 		{
-			anim_speed *= _dashSpeed; // ダッシュ中はアニメーション速度も速くする
+			anim_speed *= dash::DASH_SPEED; // ダッシュ中はアニメーション速度も速くする
 		}
 		_fPlayTime += anim_speed;
 		switch(_status)
@@ -356,7 +354,7 @@ bool PlayerTanuki::Render()
 	{
 		unsigned int col = GetColor(255, 255, 0);
 		// 表示位置は必要に応じて調整してください
-		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, _dashDuration);
+		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, dash::DASH_DURATION);
 		DrawFormatString(10, 56, col, "Dash cooldown: %.2f", _dashCoolDownTime);
 		DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, (int)dash::DASH_MAX);
 		// 回復タイマー表示（アクティブな場合）

@@ -76,6 +76,15 @@ bool HenshinUi::Process()
 	if(!(mgCheck && mgCheck->IsShowingTanuki()))
 	{
 		_padInput5Active = false;
+
+		// 人間表示時は PAD_INPUT_4 を押すことで UI 経由で即時タヌキへ戻す要求を出せるようにする
+		// （ModeGame 側でモノ表示時は無視されるため安全）
+		if(mgCheck && (trg & PAD_INPUT_4))
+		{
+			mgCheck->RequestReturnToTanukiFromHuman();
+			return true;
+		}
+
 		// 表示がタヌキでないなら以降の入力は無視
 		return true;
 	}

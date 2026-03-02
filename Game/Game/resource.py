@@ -15,6 +15,7 @@ def generate_header():
         "ef": [],
         "mv1": [],
         "mp3": [],
+        "mp4": [],
         "wav": []
     }
 
@@ -42,6 +43,9 @@ def generate_header():
                 
             elif ext == ".mp3":
                 ns_dict["mp3"].append(line)
+
+            elif ext == ".mp4":
+                ns_dict["mp4"].append(line)
                 
             elif ext == ".wav":
                 ns_dict["wav"].append(line)
