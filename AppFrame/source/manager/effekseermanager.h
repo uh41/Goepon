@@ -56,6 +56,10 @@ public:
 	bool SetPosEffect(int handle, const vec::Vec3& pos);
 	vec::Vec3 GetPosEffect(int handle) const;
 
+	// ‰ñ“]İ’è(“x”–@)
+	bool SetRotationEffectDeg(int handle, const vec::Vec3& deg);
+	vec::Vec3 GetRotationEffectDeg(int handle) const;
+
 	// ‘¬“xİ’è
 	bool SetSpeedEffect(int handle, float speed);
 	float GetSpeedEffect(int handle) const;

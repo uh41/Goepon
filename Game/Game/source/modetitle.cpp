@@ -15,7 +15,7 @@ ModeTitle::ModeTitle()
 
 ModeTitle::~ModeTitle()
 {
-	Terminate();
+	//Terminate();
 }
 
 bool ModeTitle::Initialize()
