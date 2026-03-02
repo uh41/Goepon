@@ -23,6 +23,10 @@ bool EnemySensor::Initialize()
 	_detectionFrameCount = 0;
 	_CanDetectionResult = false;
 
+	// キャッシュ関連初期化
+	_detectionCachedPolygons.clear();
+	_detectionCacheCounter = 0;
+
 	return true;
 }
 
@@ -372,100 +376,100 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 	return false;
 }
 
-void EnemySensor::RenderDetectionSector() const
-{
-	// 索敵範囲が設定されていない場合は描画しない
-	if (!_bHasDetectionSector)
-	{
-		return;
-	}
-
-	// 色と描画設定
-	COLOR_U8 fillColorU8;
-	if (_detectionInfo.isDetected)
-	{
-		fillColorU8=GetColorU8(255, 0, 0, 255);   // 検出時：赤
-	}
-	else
-	{
-		fillColorU8=GetColorU8(255, 255, 0, 255); // 非検出時：黄色に変更
-	}
-
-	const int angleSegments = 16;	// 扇形の角度を分割する数
-	const int radiusSegments = 7;	// 半径方向の分割数
-	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;	// 扇形の半角をラジアンに変換
-	const vec::Vec3 center = GetDetectionCenter();	// 索敵範囲の中心位置
-	const vec::Vec3 forward = vec3::VNorm(_vDir);	// 敵の前方ベクトル（正規化）
-	const float baseAngle = atan2f(forward.x, forward.z);	
-	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);	
-
-	// 頂点の共通初期化をするラムダ
-	auto initVertex = [&](VERTEX3D& v, const vec::Vec3& p)
-	{
-		v.pos = VGet(p.x, p.y, p.z);
-		v.norm = VGet(0.0f, 1.0f, 0.0f);
-		v.dif = fillColorU8;
-		v.spc = GetColorU8(0, 0, 0, 0);
-		v.u = v.v = v.su = v.sv = 0.0f;
-	};
-
-	SetUseLighting(FALSE);	// ライティング無効
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明
-
-	VERTEX3D verts[6];
-	for (int r = 0; r < radiusSegments; ++r)
-	{
-		const float innerRadius = (_detectionSector.radius / radiusSegments) * r;
-		const float outerRadius = (_detectionSector.radius / radiusSegments) * (r + 1);
-
-		vec::Vec3 prevInnerPos{};
-		vec::Vec3 prevOuterPos{};
-		bool hasPrev = false;
-
-		for (int i = 0; i <= angleSegments; ++i)
-		{
-			const float angle = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(angleSegments)));
-			const float s = sinf(angle);
-			const float c = cosf(angle);
-
-			const vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
-			const vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
-
-			// 床の存在と視線（中心->外側点）をチェック
-			const bool canDetect = CheckFloorExistence(outerPos) && CheckLineOfSight(center, outerPos);
-
-			if (canDetect && hasPrev)
-			{
-				// 1つ目の三角形: prevInner, prevOuter, innerPos
-				initVertex(verts[0], prevInnerPos);
-				initVertex(verts[1], prevOuterPos);
-				initVertex(verts[2], innerPos);
-
-				// 2つ目の三角形: prevOuter, outerPos, innerPos
-				initVertex(verts[3], prevOuterPos);
-				initVertex(verts[4], outerPos);
-				initVertex(verts[5], innerPos);
-
-				// 描画（地面）
-				DrawPolygon3D(verts, 2, DX_NONE_GRAPH, FALSE);
-
-				// 少し上にも描画して見やすくする
-				for (int vi = 0; vi < 6; ++vi)
-				{
-					verts[vi].pos = VGet(verts[vi].pos.x, verts[vi].pos.y + heightOffset.y, verts[vi].pos.z);
-				}
-				DrawPolygon3D(verts, 2, DX_NONE_GRAPH, FALSE);
-			}
-
-			prevInnerPos = innerPos;
-			prevOuterPos = outerPos;
-			hasPrev = canDetect;
-		}
-	}
-
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	SetUseLighting(TRUE);
-}
+//void EnemySensor::RenderDetectionSector() const
+//{
+//	// 索敵範囲が設定されていない場合は描画しない
+//	if (!_bHasDetectionSector)
+//	{
+//		return;
+//	}
+//
+//	// 色と描画設定
+//	COLOR_U8 fillColorU8;
+//	if (_detectionInfo.isDetected)
+//	{
+//		fillColorU8=GetColorU8(255, 0, 0, 255);   // 検出時：赤
+//	}
+//	else
+//	{
+//		fillColorU8=GetColorU8(255, 255, 0, 255); // 非検出時：黄色に変更
+//	}
+//
+//	const int angleSegments = 16;	// 扇形の角度を分割する数
+//	const int radiusSegments = 7;	// 半径方向の分割数
+//	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;	// 扇形の半角をラジアンに変換
+//	const vec::Vec3 center = GetDetectionCenter();	// 索敵範囲の中心位置
+//	const vec::Vec3 forward = vec3::VNorm(_vDir);	// 敵の前方ベクトル（正規化）
+//	const float baseAngle = atan2f(forward.x, forward.z);	
+//	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);	
+//
+//	// 頂点の共通初期化をするラムダ
+//	auto initVertex = [&](VERTEX3D& v, const vec::Vec3& p)
+//	{
+//		v.pos = VGet(p.x, p.y, p.z);
+//		v.norm = VGet(0.0f, 1.0f, 0.0f);
+//		v.dif = fillColorU8;
+//		v.spc = GetColorU8(0, 0, 0, 0);
+//		v.u = v.v = v.su = v.sv = 0.0f;
+//	};
+//
+//	SetUseLighting(FALSE);	// ライティング無効
+//	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明
+//
+//	VERTEX3D verts[6];
+//	for (int r = 0; r < radiusSegments; ++r)
+//	{
+//		const float innerRadius = (_detectionSector.radius / radiusSegments) * r;
+//		const float outerRadius = (_detectionSector.radius / radiusSegments) * (r + 1);
+//
+//		vec::Vec3 prevInnerPos{};
+//		vec::Vec3 prevOuterPos{};
+//		bool hasPrev = false;
+//
+//		for (int i = 0; i <= angleSegments; ++i)
+//		{
+//			const float angle = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(angleSegments)));
+//			const float s = sinf(angle);
+//			const float c = cosf(angle);
+//
+//			const vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
+//			const vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
+//
+//			// 床の存在と視線（中心->外側点）をチェック
+//			const bool canDetect = CheckFloorExistence(outerPos) && CheckLineOfSight(center, outerPos);
+//
+//			if (canDetect && hasPrev)
+//			{
+//				// 1つ目の三角形: prevInner, prevOuter, innerPos
+//				initVertex(verts[0], prevInnerPos);
+//				initVertex(verts[1], prevOuterPos);
+//				initVertex(verts[2], innerPos);
+//
+//				// 2つ目の三角形: prevOuter, outerPos, innerPos
+//				initVertex(verts[3], prevOuterPos);
+//				initVertex(verts[4], outerPos);
+//				initVertex(verts[5], innerPos);
+//
+//				// 描画（地面）
+//				DrawPolygon3D(verts, 2, DX_NONE_GRAPH, FALSE);
+//
+//				// 少し上にも描画して見やすくする
+//				for (int vi = 0; vi < 6; ++vi)
+//				{
+//					verts[vi].pos = VGet(verts[vi].pos.x, verts[vi].pos.y + heightOffset.y, verts[vi].pos.z);
+//				}
+//				DrawPolygon3D(verts, 2, DX_NONE_GRAPH, FALSE);
+//			}
+//
+//			prevInnerPos = innerPos;
+//			prevOuterPos = outerPos;
+//			hasPrev = canDetect;
+//		}
+//	}
+//
+//	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+//	SetUseLighting(TRUE);
+//}
 
 // 検出UI表示
 void EnemySensor::RenderDetectionUI() const
@@ -501,4 +505,132 @@ void EnemySensor::RenderDetectionUI() const
 		DrawFormatString(x, y + 80, GetColor(255, 255, 0),
 			"Timer: %.1f", _detectionInfo.timer);
 	}
+}
+
+// キャッシュを再計算する実装
+void EnemySensor::RecalculateDetectionSector() const
+{
+	_detectionCachedPolygons.clear();
+
+	// 索敵範囲が設定されていない場合は何もしない
+	if (!_bHasDetectionSector)
+	{
+		return;
+	}
+
+	// 色（検出時 / 非検出時）
+	COLOR_U8 fillColorU8;
+	if (_detectionInfo.isDetected)
+	{
+		fillColorU8 = GetColorU8(255, 0, 0, 255);   // 検出時：赤
+	}
+	else
+	{
+		fillColorU8 = GetColorU8(255, 255, 0, 255); // 非検出時：黄
+	}
+
+	const int angleSegments = 16;	// 扇形の角度を分割する数
+	const int radiusSegments = 7;	// 半径方向の分割数
+	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
+	const vec::Vec3 center = GetDetectionCenter();
+	const vec::Vec3 forward = vec3::VNorm(_vDir);
+	const float baseAngle = atan2f(forward.x, forward.z);
+	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);
+
+	// 頂点初期化ラムダ
+	auto initVertex = [&](VERTEX3D& v, const vec3::Vec3& p)
+		{
+			v.pos = VGet(p.x, p.y, p.z);
+			v.norm = VGet(0.0f, 1.0f, 0.0f);
+			v.dif = fillColorU8;
+			v.spc = GetColorU8(0, 0, 0, 0);
+			v.u = v.v = v.su = v.sv = 0.0f;
+		};
+
+	VERTEX3D verts[6];
+	for (int r = 0; r < radiusSegments; ++r)
+	{
+		const float innerRadius = (_detectionSector.radius / radiusSegments) * r;
+		const float outerRadius = (_detectionSector.radius / radiusSegments) * (r + 1);
+
+		vec::Vec3 prevInnerPos{};
+		vec::Vec3 prevOuterPos{};
+		bool hasPrev = false;
+
+		for (int i = 0; i <= angleSegments; ++i)
+		{
+			const float angle = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(angleSegments)));
+			const float s = sinf(angle);
+			const float c = cosf(angle);
+
+			const vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
+			const vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
+
+			// 床の存在と視線をチェック（重い処理）
+			const bool canDetect = CheckFloorExistence(outerPos) && CheckLineOfSight(center, outerPos);
+
+			if (canDetect && hasPrev)
+			{
+				// 1つ目の三角形: prevInner, prevOuter, innerPos
+				initVertex(verts[0], prevInnerPos);
+				initVertex(verts[1], prevOuterPos);
+				initVertex(verts[2], innerPos);
+
+				// 2つ目の三角形: prevOuter, outerPos, innerPos
+				initVertex(verts[3], prevOuterPos);
+				initVertex(verts[4], outerPos);
+				initVertex(verts[5], innerPos);
+
+				// キャッシュに追加（地面）
+				std::array<VERTEX3D, 6> poly{};
+				for (int vi = 0; vi < 6; ++vi) poly[vi] = verts[vi];
+				_detectionCachedPolygons.push_back(poly);
+
+				// 少し上にも描画する分もキャッシュ（視認性向上）
+				for (int vi = 0; vi < 6; ++vi)
+				{
+					verts[vi].pos = VGet(verts[vi].pos.x, verts[vi].pos.y + heightOffset.y, verts[vi].pos.z);
+				}
+				std::array<VERTEX3D, 6> polyUp{};
+				for (int vi = 0; vi < 6; ++vi) polyUp[vi] = verts[vi];
+				_detectionCachedPolygons.push_back(polyUp);
+			}
+
+			prevInnerPos = innerPos;
+			prevOuterPos = outerPos;
+			hasPrev = canDetect;
+		}
+	}
+}
+
+// 描画時はキャッシュを使う
+void EnemySensor::RenderDetectionSector() const
+{
+	// 索敵範囲が設定されていない場合は描画しない
+	if (!_bHasDetectionSector)
+	{
+		return;
+	}
+
+	// キャッシュの更新タイミング制御
+	if (_detectionCacheCounter <= 0 || _detectionCachedPolygons.empty())
+	{
+		RecalculateDetectionSector();
+		_detectionCacheCounter = DetectionSectorCacheInterval;
+	}
+	// 次回までカウントダウン
+	_detectionCacheCounter--;
+
+	// 描画設定
+	SetUseLighting(FALSE);	// ライティング無効
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明
+
+	// キャッシュから描画（各要素は 2 ポリゴン分の頂点：配列サイズ 6）
+	for (const auto& poly : _detectionCachedPolygons)
+	{
+		DrawPolygon3D(poly.data(), 2, DX_NONE_GRAPH, FALSE);
+	}
+
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	SetUseLighting(TRUE);
 }

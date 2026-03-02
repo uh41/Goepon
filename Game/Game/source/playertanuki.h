@@ -17,6 +17,7 @@ namespace dash
 	static constexpr auto DASH_MAX = 5.0f; // 最大ダッシュ回数
 	static constexpr auto DASH_COOL_DOWN_DURATION = 5.0f;// ダッシュクールダウンの持続時間（秒）
 	static constexpr auto DASH_RECOVER_INTERVAL = 5.0f;// ダッシュ回復のインターバル（秒）
+	static constexpr auto DASH_SPEED = 5.0f; // ダッシュ中の移動速度
 	static constexpr auto DASH_DURATION = 0.3f; // ダッシュ状態の持続時間
 }
 
@@ -46,7 +47,7 @@ protected:
 	bool _dash; // ダッシュ状態かどうか
 	float _dashTimer; // ダッシュ状態の経過時間
 	
-	float _dashSpeed; // ダッシュ中の移動速度
+
 	float _normalSpeed; // 元の移動速度を保持
 	int _dashCount; // ダッシュ回数
 
