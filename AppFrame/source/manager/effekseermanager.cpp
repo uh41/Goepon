@@ -343,6 +343,22 @@ bool EffekseerManager::SetScaleEffect(int handle, float scale)
 	return true;
 }
 
+bool EffekseerManager::SetRotationEffectDeg(int handle, const vec::Vec3& deg)
+{
+	if(handle == -1)
+	{
+		return false;
+	}
+	vec::Vec3 rad = vec3::VGet(DEG2RAD(deg.x), DEG2RAD(deg.y), DEG2RAD(deg.z));
+	return SetRotationEffect(handle, rad);
+}
+
+vec::Vec3 EffekseerManager::GetRotationEffectDeg(int handle) const
+{
+	vec::Vec3 rad = GetRotationEffect(handle);
+	return vec3::VGet(RAD2DEG(rad.x), RAD2DEG(rad.y), RAD2DEG(rad.z));
+}
+
 
 
 // 	// 2Dエフェクト再生

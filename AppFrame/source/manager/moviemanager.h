@@ -23,6 +23,9 @@ public:
 	// “®‰æ‚Ì‰ğ•ú
 	void UnloadMovie(int handle);
 
+	// “®‰æ‚ªÄ¶’†‚©‚Ç‚¤‚©‚ğŠm”F
+	bool IsMoviePlaying(int handle);
+
 private:
 	MovieManager();
 	~MovieManager() = default;
