@@ -372,7 +372,6 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 	return false;
 }
 
-// デバッグ用：索敵範囲の描画
 void EnemySensor::RenderDetectionSector() const
 {
 	// 索敵範囲が設定されていない場合は描画しない
@@ -381,156 +380,91 @@ void EnemySensor::RenderDetectionSector() const
 		return;
 	}
 
-	// 索敵範囲の色
-	unsigned int color = _detectionInfo.isDetected ? GetColor(255, 255, 0) : GetColor(255, 0, 0);
-
-	// 扇形を描画するための分割数
-	const int segments = 16;
-	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
-
-	// 索敵範囲の中心位置を取得
-	vec::Vec3 center = GetDetectionCenter();
-	vec::Vec3 forward = vec3::VNorm(_vDir);
-
-	// Y軸回りの回転を使って扇形を描画
-	// 敵の向いている方向を基準角度として計算
-	float baseAngle = atan2f(forward.x, forward.z);
-
-	// 半径方向の分割数とステップ
-	const int radialSegments = 5;
-	const float radialStep = _detectionSector.radius / radialSegments;
-
-	// 高さオフセットを定数化（毎回計算しない）
-	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);
-
-	// 扇形の輪郭線を描画
-	for (int i = 0; i < segments; i++)
+	// 色と描画設定
+	COLOR_U8 fillColorU8;
+	if (_detectionInfo.isDetected)
 	{
-		float angle1 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(segments)));
-		float angle2 = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * (i + 1) / StCas<float>(segments)));
+		fillColorU8=GetColorU8(255, 0, 0, 255);   // 検出時：赤
+	}
+	else
+	{
+		fillColorU8=GetColorU8(255, 255, 0, 255); // 非検出時：黄色に変更
+	}
 
-		// 事前計算：三角関数の結果をキャッシュ
-		float sin1 = sinf(angle1);
-		float cos1 = cosf(angle1);
-		float sin2 = sinf(angle2);
-		float cos2 = cosf(angle2);
-		
-		// 半径方向に分割してチェック
-		vec::Vec3 prevPos1, prevPos2;
-		bool hasPrevPos = false;
+	const int angleSegments = 16;	// 扇形の角度を分割する数
+	const int radiusSegments = 7;	// 半径方向の分割数
+	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;	// 扇形の半角をラジアンに変換
+	const vec::Vec3 center = GetDetectionCenter();	// 索敵範囲の中心位置
+	const vec::Vec3 forward = vec3::VNorm(_vDir);	// 敵の前方ベクトル（正規化）
+	const float baseAngle = atan2f(forward.x, forward.z);	
+	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);	
 
-		for (int r = 1; r <= radialSegments; r++)
+	// 頂点の共通初期化をするラムダ
+	auto initVertex = [&](VERTEX3D& v, const vec::Vec3& p)
+	{
+		v.pos = VGet(p.x, p.y, p.z);
+		v.norm = VGet(0.0f, 1.0f, 0.0f);
+		v.dif = fillColorU8;
+		v.spc = GetColorU8(0, 0, 0, 0);
+		v.u = v.v = v.su = v.sv = 0.0f;
+	};
+
+	SetUseLighting(FALSE);	// ライティング無効
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明
+
+	VERTEX3D verts[6];
+	for (int r = 0; r < radiusSegments; ++r)
+	{
+		const float innerRadius = (_detectionSector.radius / radiusSegments) * r;
+		const float outerRadius = (_detectionSector.radius / radiusSegments) * (r + 1);
+
+		vec::Vec3 prevInnerPos{};
+		vec::Vec3 prevOuterPos{};
+		bool hasPrev = false;
+
+		for (int i = 0; i <= angleSegments; ++i)
 		{
-			float currentRadius = radialStep * r;
+			const float angle = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(angleSegments)));
+			const float s = sinf(angle);
+			const float c = cosf(angle);
 
-			// キャッシュした三角関数の値を使用
-			vec::Vec3 pos1 = vec3::VAdd(center, vec3::VGet(sin1 * currentRadius, 0.0f, cos1 * currentRadius));
-			vec::Vec3 pos2 = vec3::VAdd(center, vec3::VGet(sin2 * currentRadius, 0.0f, cos2 * currentRadius));
+			const vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
+			const vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
 
-			// 視線チェックを含めた検出可能判定
-			bool canDetect1 = CheckFloorExistence(pos1) && CheckLineOfSight(center, pos1);
-			bool canDetect2 = CheckFloorExistence(pos2) && CheckLineOfSight(center, pos2);
+			// 床の存在と視線（中心->外側点）をチェック
+			const bool canDetect = CheckFloorExistence(outerPos) && CheckLineOfSight(center, outerPos);
 
-			// 両方の点が検出可能な場合のみ線を描画
-			if (canDetect1 && canDetect2)
+			if (canDetect && hasPrev)
 			{
-				// 円弧方向の線
-				DxlibConverter::DrawLine3D(pos1, pos2, color);
+				// 1つ目の三角形: prevInner, prevOuter, innerPos
+				initVertex(verts[0], prevInnerPos);
+				initVertex(verts[1], prevOuterPos);
+				initVertex(verts[2], innerPos);
 
-				// 少し上の位置にも線を描画して見えやすくする
-				vec::Vec3 pos1_up = vec3::VAdd(pos1, heightOffset);
-				vec::Vec3 pos2_up = vec3::VAdd(pos2, heightOffset);
-				DxlibConverter::DrawLine3D(pos1_up, pos2_up, color);
+				// 2つ目の三角形: prevOuter, outerPos, innerPos
+				initVertex(verts[3], prevOuterPos);
+				initVertex(verts[4], outerPos);
+				initVertex(verts[5], innerPos);
 
-				// 前の半径位置から現在の半径位置への線（放射状の線）
-				if (hasPrevPos)
+				// 描画（地面）
+				DrawPolygon3D(verts, 2, DX_NONE_GRAPH, FALSE);
+
+				// 少し上にも描画して見やすくする
+				for (int vi = 0; vi < 6; ++vi)
 				{
-					DxlibConverter::DrawLine3D(prevPos1, pos1, color);
-					DxlibConverter::DrawLine3D(prevPos2, pos2, color);
-					vec::Vec3 prevPos1_up = vec3::VAdd(prevPos1, heightOffset);
-					vec::Vec3 prevPos2_up = vec3::VAdd(prevPos2, heightOffset);
-					DxlibConverter::DrawLine3D(prevPos1_up, pos1_up, color);
-					DxlibConverter::DrawLine3D(prevPos2_up, pos2_up, color);
+					verts[vi].pos = VGet(verts[vi].pos.x, verts[vi].pos.y + heightOffset.y, verts[vi].pos.z);
 				}
+				DrawPolygon3D(verts, 2, DX_NONE_GRAPH, FALSE);
+			}
 
-				prevPos1 = pos1;
-				prevPos2 = pos2;
-				hasPrevPos = true;
-			}
-			else
-			{
-				// 床がない場合は前の位置情報をリセット
-				hasPrevPos = false;
-			}
+			prevInnerPos = innerPos;
+			prevOuterPos = outerPos;
+			hasPrev = canDetect;
 		}
 	}
 
-	// 中心から両端への線を描画
-	float leftAngle = baseAngle - halfAngleRad;
-	float rightAngle = baseAngle + halfAngleRad;
-
-	// 三角関数の事前計算
-	float sinLeft = sinf(leftAngle);
-	float cosLeft = cosf(leftAngle);
-	float sinRight = sinf(rightAngle);
-	float cosRight = cosf(rightAngle);
-
-	// 各エッジラインを分割してチェック
-	for (int r = 1; r <= radialSegments; r++)
-	{
-		float currentRadius1 = radialStep * (r - 1);
-		float currentRadius2 = radialStep * r;
-
-		// キャッシュした三角関数の値を使用
-		vec::Vec3 leftEdge1 = vec3::VAdd(center, vec3::VGet(sinLeft * currentRadius1, 0.0f, cosLeft * currentRadius1));
-		vec::Vec3 leftEdge2 = vec3::VAdd(center, vec3::VGet(sinLeft * currentRadius2, 0.0f, cosLeft * currentRadius2));
-		vec::Vec3 rightEdge1 = vec3::VAdd(center, vec3::VGet(sinRight * currentRadius1, 0.0f, cosRight * currentRadius1));
-		vec::Vec3 rightEdge2 = vec3::VAdd(center, vec3::VGet(sinRight * currentRadius2, 0.0f, cosRight * currentRadius2));
-
-		// 視線チェックを含めた検出可能判定
-		bool canDetectLeft1 = CheckFloorExistence(leftEdge1) && CheckLineOfSight(center, leftEdge1);
-		bool canDetectLeft2 = CheckFloorExistence(leftEdge2) && CheckLineOfSight(center, leftEdge2);
-		bool canDetectRight1 = CheckFloorExistence(rightEdge1) && CheckLineOfSight(center, rightEdge1);
-		bool canDetectRight2 = CheckFloorExistence(rightEdge2) && CheckLineOfSight(center, rightEdge2);
-
-		// 左端の線（両方の点が検出可能な場合のみ）
-		if (canDetectLeft1 && canDetectLeft2)
-		{
-			DxlibConverter::DrawLine3D(leftEdge1, leftEdge2, color);
-			vec::Vec3 leftEdge1_up = vec3::VAdd(leftEdge1, heightOffset);
-			vec::Vec3 leftEdge2_up = vec3::VAdd(leftEdge2, heightOffset);
-			DxlibConverter::DrawLine3D(leftEdge1_up, leftEdge2_up, color);
-		}
-
-		// 右端の線（両方の点が検出可能な場合のみ）
-		if (canDetectRight1 && canDetectRight2)
-		{
-			DxlibConverter::DrawLine3D(rightEdge1, rightEdge2, color);
-			vec::Vec3 rightEdge1_up = vec3::VAdd(rightEdge1, heightOffset);
-			vec::Vec3 rightEdge2_up = vec3::VAdd(rightEdge2, heightOffset);
-			DxlibConverter::DrawLine3D(rightEdge1_up, rightEdge2_up, color);
-		}
-	}
-	
-	// 敵の正面方向を示す緑の線を描画（敵の位置から索敵中心まで）
-	const vec::Vec3 lineOffset = vec3::VGet(0.0f, 5.0f, 0.0f);
-	DxlibConverter::DrawLine3D(
-		vec3::VAdd(_vPos, lineOffset),
-		vec3::VAdd(center, lineOffset),
-		GetColor(0, 255, 0)
-	);
-
-	// 中心点を示すマーカーを描画
-	const float markerSize = 10.0f;
-	vec::Vec3 centerMarker = vec3::VAdd(center, lineOffset);
-	vec::Vec3 marker1 = vec3::VAdd(centerMarker, vec3::VGet(-markerSize, 0.0f, 0.0f));
-	vec::Vec3 marker2 = vec3::VAdd(centerMarker, vec3::VGet(markerSize, 0.0f, 0.0f));
-	vec::Vec3 marker3 = vec3::VAdd(centerMarker, vec3::VGet(0.0f, 0.0f, -markerSize));
-	vec::Vec3 marker4 = vec3::VAdd(centerMarker, vec3::VGet(0.0f, 0.0f, markerSize));
-
-	// 十字マーカーの描画
-	DxlibConverter::DrawLine3D(marker1, marker2, color);
-	DxlibConverter::DrawLine3D(marker3, marker4, color);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	SetUseLighting(TRUE);
 }
 
 // 検出UI表示

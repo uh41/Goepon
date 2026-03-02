@@ -1,225 +1,111 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="ソース ファイル\非同期読み込み">
-      <UniqueIdentifier>{8cd1b286-0476-458e-8cb7-4a8e2f471921}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\アプリケーションメイン">
-      <UniqueIdentifier>{0bc63b3c-d9f9-4303-b569-6ea6e94d707a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム">
-      <UniqueIdentifier>{4be29a45-d107-4c8c-a955-8177b2c2e090}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\カメラ">
-      <UniqueIdentifier>{d9359a21-08ba-4299-9816-060aa12f8a3f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\キャラベース">
-      <UniqueIdentifier>{a0e6e6b1-0e02-4d67-b71d-0c8715abb1b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\敵ベース">
-      <UniqueIdentifier>{010cebaf-5279-4ff9-b47b-0204af4f1bd9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵1">
-      <UniqueIdentifier>{abd365dd-80c1-4770-9871-e76e373735fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵センサー">
-      <UniqueIdentifier>{637c4c75-64fd-4347-9638-37aaa4cef80f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\コリジョン">
-      <UniqueIdentifier>{4ec6672d-6890-40f3-871b-d45c3edb83a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\デバック">
-      <UniqueIdentifier>{8fd6de2f-9b26-4044-9c36-09b375427ba9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\テストマップ">
-      <UniqueIdentifier>{002ee8c0-7ab6-4196-9d12-ec0cc544a896}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース">
-      <UniqueIdentifier>{f449250c-9324-406f-86c2-5b181227948c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\クラス読み込み">
-      <UniqueIdentifier>{1dfee2eb-8920-4ca1-8a54-af77a7a1020d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース">
-      <UniqueIdentifier>{9c95e54c-f677-4c22-863b-47c869d89e40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\人タヌキ">
-      <UniqueIdentifier>{883fd032-5229-4dad-86fc-2ee74291df3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\タヌキ">
-      <UniqueIdentifier>{4607dab2-f919-4242-97b8-aa98a9d224c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\UIベース">
-      <UniqueIdentifier>{7ffaff04-e163-44da-b255-0df85f4e849e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\UIベース\HPバー">
-      <UniqueIdentifier>{41a9c967-6078-4667-8937-1f28c338aa34}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\メニュー">
-      <UniqueIdentifier>{2fb577ae-9966-4c1f-8f1e-71238a630cef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\メニュー\デバックメニュー">
-      <UniqueIdentifier>{9e4010e5-17ee-4fc6-9d53-2920166f56aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\非同期読み込み">
-      <UniqueIdentifier>{4ffa823d-90f9-4294-906e-c1ce34a20f91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\アプリケーションメイン">
-      <UniqueIdentifier>{af88e651-57d3-498c-bf11-43f0dbfcb4ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム">
-      <UniqueIdentifier>{bda3ec8a-59bb-4428-a7b4-e9c0da09f855}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\ライト">
-      <UniqueIdentifier>{9d000a56-2075-423d-abda-97946369dfad}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\カメラ">
-      <UniqueIdentifier>{bbed0e45-a453-4e2f-96ba-63bfc941cc8e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\キャラベース">
-      <UniqueIdentifier>{82023244-3ce1-41c6-9021-a7ae2220c597}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース">
-      <UniqueIdentifier>{8f4136dc-7aa8-4021-80fb-4bfa4b9405c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵1">
-      <UniqueIdentifier>{bedad2dd-653a-4d80-b497-fc4dd6d2ac92}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵センサー">
-      <UniqueIdentifier>{f084c395-a295-472a-9f75-a7a42377c50f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\テストマップ">
-      <UniqueIdentifier>{9b08dc98-2cb3-4560-86f3-96b736e0653f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\オブジェクトベース">
-      <UniqueIdentifier>{5e4e8f3c-c7c5-485e-90ab-9f1a6804b46b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース">
-      <UniqueIdentifier>{865ed622-a685-4b10-86ba-735007679c3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\人タヌキ">
-      <UniqueIdentifier>{678a4484-278d-4df5-998e-fcf86e941952}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\タヌキ">
-      <UniqueIdentifier>{c963c52d-193e-461f-bcbe-182377d49912}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\UIベース">
-      <UniqueIdentifier>{ca2a028c-0cd9-4747-b4ad-25e7c5db769f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\UIベース\HPバー">
-      <UniqueIdentifier>{a9fdd85b-72ac-4a7d-80ff-45244f9a16cd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\ライト">
-      <UniqueIdentifier>{8714bb21-b6fd-4bf9-9ae3-f6dabca6c51b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\メニュー">
-      <UniqueIdentifier>{ec2330e9-5af4-4a94-ba7d-dbad54396543}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\メニュー\デバックメニュー">
-      <UniqueIdentifier>{ad51dbff-deb8-46a4-b823-56ec3b2e4497}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\お宝">
-      <UniqueIdentifier>{83a6fa4c-3197-4159-89bc-59c114a82a30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\お宝">
-      <UniqueIdentifier>{63385110-a271-4e5a-9227-d38f7b221b9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\ロゴ">
-      <UniqueIdentifier>{5a51b49b-2f3f-4234-8d9a-74dedb675696}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\ロゴ">
-      <UniqueIdentifier>{461ba56d-9637-4f69-b7c4-39d4d808e2bd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\タイトル">
-      <UniqueIdentifier>{733e3e93-8702-4c5b-a889-9e3fe089104a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Python">
-      <UniqueIdentifier>{c292204e-bbf2-4b9d-ab91-4cf0aad432a2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\影">
-      <UniqueIdentifier>{6dada12c-fd9f-4dd9-b6e8-48bc658dcc9c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\敵ベース\動く敵">
-      <UniqueIdentifier>{51bc7b43-d81a-4e33-82be-de3980a822be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\シナリオベース">
-      <UniqueIdentifier>{26aaeb6b-037e-4d32-a641-9f84bf82c741}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\シナリオベース\オープニングシナリオ">
-      <UniqueIdentifier>{799bcad6-36ed-43b3-9565-431bd0166666}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\チームロゴ">
-      <UniqueIdentifier>{95f0478f-c1bf-437c-ab13-a78d583eeee4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\タイトル">
-      <UniqueIdentifier>{a24f149f-d4e2-40e8-a31a-d6d4da977838}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\巡回ルート">
-      <UniqueIdentifier>{af8215cd-1940-48c6-801a-a276e79a3f8e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\プレイヤーベース\モノタヌキ">
-      <UniqueIdentifier>{7132a5b3-ceef-4ecf-85ff-6e1e86d3289f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\影">
-      <UniqueIdentifier>{098ee33d-2e1a-4a4c-948d-5c6fbcba6bed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\動く敵">
-      <UniqueIdentifier>{e5fcf2c9-fd14-40e3-9646-e80ecc26f40f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\シナリオベース">
-      <UniqueIdentifier>{3136849e-434c-4a4e-945e-0aa276ce8939}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\シナリオベース\オープニングシナリオ">
-      <UniqueIdentifier>{c7090160-4cb0-4405-9e90-5590539e9693}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\チームロゴ">
-      <UniqueIdentifier>{086246c5-9286-46ca-aa90-d7df75bcc9a3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\巡回ルート">
-      <UniqueIdentifier>{1579ad2f-c368-42b3-b531-2828d1e9320b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ">
-      <UniqueIdentifier>{8160a9b0-941f-45bd-952c-ada34648ad14}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\モードゲーム\敵ベース\敵2_犬">
-      <UniqueIdentifier>{12c9cefa-6d92-4544-992b-e1a241746e6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\敵ベース\敵2_犬">
-      <UniqueIdentifier>{a7e3b9fb-2268-4dfa-9994-3f31292ad769}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース\UIベース">
-      <UniqueIdentifier>{7ffaff04-e163-44da-b255-0df85f4e849e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\モードゲーム\オブジェクトベース\UIベース\HPバー">
-      <UniqueIdentifier>{41a9c967-6078-4667-8937-1f28c338aa34}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="source\applicationmain.cpp" />
+    <ClCompile Include="source\aseeffect.cpp" />
+    <ClCompile Include="source\camera.cpp" />
+    <ClCompile Include="source\charabase.cpp" />
+    <ClCompile Include="source\charashadow.cpp" />
+    <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\doyaeffect.cpp" />
+    <ClCompile Include="source\effectbase.cpp" />
+    <ClCompile Include="source\enemy.cpp" />
+    <ClCompile Include="source\enemybase.cpp" />
+    <ClCompile Include="source\enemydog.cpp" />
+    <ClCompile Include="source\enemysensor.cpp" />
+    <ClCompile Include="source\Goal.cpp" />
+    <ClCompile Include="source\Map1.cpp" />
+    <ClCompile Include="source\MapBase.cpp" />
+    <ClCompile Include="source\ModeGameClear.cpp" />
+    <ClCompile Include="source\ModeGameOver.cpp" />
+    <ClCompile Include="source\ModeGoalConfirm.cpp" />
+    <ClCompile Include="source\findeffect.cpp" />
+    <ClCompile Include="source\hatenaeffect.cpp" />
+    <ClCompile Include="source\hensineffect.cpp" />
+    <ClCompile Include="source\modeinit.cpp" />
+    <ClCompile Include="source\Light.cpp" />
+    <ClCompile Include="source\map.cpp" />
+    <ClCompile Include="source\menuitembase.cpp" />
+    <ClCompile Include="source\modeeffekseer.cpp" />
+    <ClCompile Include="source\modegame.cpp" />
+    <ClCompile Include="source\modegamecollision.cpp" />
+    <ClCompile Include="source\modegamedebug.cpp" />
+    <ClCompile Include="source\modegameobject.cpp" />
+    <ClCompile Include="source\modemenu.cpp" />
+    <ClCompile Include="source\modescenariobase.cpp" />
+    <ClCompile Include="source\modeteamlogo.cpp" />
+    <ClCompile Include="source\modetitle.cpp" />
+    <ClCompile Include="source\enemymove.cpp" />
+    <ClCompile Include="source\movepointcontroll.cpp" />
+    <ClCompile Include="source\nakieffect.cpp" />
+    <ClCompile Include="source\objectbase.cpp" />
+    <ClCompile Include="source\ObjectServer.cpp" />
+    <ClCompile Include="source\player.cpp" />
+    <ClCompile Include="source\playerbase.cpp" />
+    <ClCompile Include="source\playermono.cpp" />
+    <ClCompile Include="source\playertanuki.cpp" />
+    <ClCompile Include="source\soundserver3D.cpp" />
+    <ClCompile Include="source\Treasure.cpp" />
+    <ClCompile Include="source\treasureeffect.cpp" />
+    <ClCompile Include="source\UIActionButton.cpp" />
+    <ClCompile Include="source\uibase.cpp" />
+    <ClCompile Include="source\uihp.cpp" />
+    <ClCompile Include="source\walkeffect.cpp" />
+    <ClCompile Include="source\Makimono.cpp" />
+    <ClCompile Include="source\UiMakimono.cpp" />
+    <ClCompile Include="source\enemysoundmanager.cpp" />
+    <ClCompile Include="source\modeloading.cpp" />
+    <ClCompile Include="source\modegameload.cpp" />
+    <ClCompile Include="source\CinematicCamera.cpp">
+      <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TitleCamera.cpp">
+      <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TitleTanuki.cpp" />
+    <ClCompile Include="source\henshinui.cpp" />
+    <ClCompile Include="source\modeopscenario.cpp">
+      <Filter>ソースファイル\シナリオベース\オープニングシナリオ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modeAffterScenario.cpp">
+      <Filter>ソースファイル\シナリオベース\アフターシナリオ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegameoverload.cpp">
+      <Filter>ヘッダーファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="source\henshinui.cpp">
+      <Filter>ソースファイル\モードゲーム\UIベース\変身UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\modegameoverload.cpp">
+      <Filter>ソースファイル\モードゲーム\ゲームオーバーロード画面</Filter>
+    </ClCompile>
+    <ClCompile Include="source\applicationglobal.cpp">
+      <Filter>ソースファイル\非同期読み込み</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
     <ClInclude Include="source\applicationmain.h" />
+    <ClInclude Include="source\aseeffect.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
+    <ClInclude Include="source\enemydog.h" />
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\ModeGameClear.h" />
-    <ClInclude Include="source\enemysoundsensor.h" />
+    <ClInclude Include="source\ModeGameOver.h" />
+    <ClInclude Include="source\ModeGoalConfirm.h" />
+    <ClInclude Include="source\findeffect.h" />
+    <ClInclude Include="source\hatenaeffect.h" />
+    <ClInclude Include="source\hensineffect.h" />
     <ClInclude Include="source\modeinit.h" />
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
@@ -233,289 +119,578 @@
     <ClInclude Include="source\modetitle.h" />
     <ClInclude Include="source\enemymove.h" />
     <ClInclude Include="source\movepointcontroll.h" />
+    <ClInclude Include="source\nakieffect.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\soundserver3D.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
+    <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
-    <ClInclude Include="source\MapBase.h" />
-    <ClInclude Include="source\Map1.h" />
-    <ClInclude Include="source\ModeGoalConfirm.h" />
-    <ClInclude Include="source\soundserver3D.h">
-    <ClInclude Include="source\UIActionButton.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\walkeffect.h" />
+    <ClInclude Include="source\Makimono.h" />
+    <ClInclude Include="source\UiMakimono.h" />
+    <ClInclude Include="source\enemysoundmanager.h" />
+    <ClInclude Include="source\modeloading.h" />
+    <ClInclude Include="source\modegameload.h" />
+    <ClInclude Include="source\StageManager.h" />
+    <ClInclude Include="source\CinematicCamera.h">
+      <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TitleCamera.h">
+      <Filter>ソースファイル\モードゲーム\カメラ\タイトル用</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TitleTanuki.h" />
+    <ClInclude Include="source\henshinui.h" />
+    <ClInclude Include="source\modeAffterScenario.h">
+      <Filter>ヘッダーファイル\シナリオベース\アフターシナリオ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegameoverload.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\henshinui.h">
+      <Filter>ヘッダーファイル\モードゲーム\UIベース\変身UI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegameoverload.h">
+      <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resource.py" />
-    <ClInclude Include="source\modeeffekseer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\cube.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\ObjectServer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\applicationglobal.h">
-      <Filter>ヘッダー ファイル\非同期読み込み</Filter>
-    </ClInclude>
-    <ClInclude Include="source\applicationmain.h">
-      <Filter>ヘッダー ファイル\アプリケーションメイン</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modegame.h">
-      <Filter>ヘッダー ファイル\モードゲーム</Filter>
-    </ClInclude>
-    <ClInclude Include="source\camera.h">
-      <Filter>ヘッダー ファイル\モードゲーム\カメラ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charabase.h">
-      <Filter>ヘッダー ファイル\モードゲーム\キャラベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemybase.h">
-      <Filter>ヘッダー ファイル\モードゲーム\敵ベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemy.h">
-      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵1</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemysensor.h">
-      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
-    </ClInclude>
-    <ClInclude Include="source\map.h">
-      <Filter>ヘッダー ファイル\モードゲーム\テストマップ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\objectbase.h">
-      <Filter>ヘッダー ファイル\モードゲーム\オブジェクトベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\playerbase.h">
-      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\player.h">
-      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\playertanuki.h">
-      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\uibase.h">
-      <Filter>ヘッダー ファイル\モードゲーム\UIベース</Filter>
+    <ClInclude Include="source\modeeffekseer.h">
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\uihp.h">
-      <Filter>ヘッダー ファイル\モードゲーム\UIベース\HPバー</Filter>
+      <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\Light.h">
-      <Filter>ヘッダー ファイル\モードゲーム\ライト</Filter>
+    <ClInclude Include="source\applicationglobal.h">
+      <Filter>ヘッダーファイル\非同期読み込み</Filter>
     </ClInclude>
-    <ClInclude Include="source\modemenu.h">
-      <Filter>ヘッダー ファイル\メニュー</Filter>
-    </ClInclude>
-    <ClInclude Include="source\menuitembase.h">
-      <Filter>ヘッダー ファイル\メニュー\デバックメニュー</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modeinit.h">
-      <Filter>ヘッダー ファイル\ロゴ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\Treasure.h">
-      <Filter>ヘッダー ファイル\モードゲーム\お宝</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charashadow.h">
-      <Filter>ヘッダー ファイル\モードゲーム\影</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemymove.h">
-      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\動く敵</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modetitle.h">
-      <Filter>ヘッダー ファイル\タイトル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modescenariobase.h">
-      <Filter>ヘッダー ファイル\シナリオベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modeopscenario.h">
-      <Filter>ヘッダー ファイル\シナリオベース\オープニングシナリオ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modeteamlogo.h">
-      <Filter>ヘッダー ファイル\チームロゴ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\movepointcontroll.h">
-      <Filter>ヘッダー ファイル\巡回ルート</Filter>
-    </ClInclude>
-    <ClInclude Include="source\playermono.h">
-      <Filter>ヘッダー ファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\effectbase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\treasureeffect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\enemysoundsensor.h">
-      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵センサー</Filter>
-    </ClInclude>
-    <ClInclude Include="source\hensineffect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\walkeffect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\findeffect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\hatenaeffect.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\applicationmain.h">
+      <Filter>ヘッダーファイル\アプリケーションメイン</Filter>
     </ClInclude>
     <ClInclude Include="source\aseeffect.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\汗エフェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\camera.h">
+      <Filter>ヘッダーファイル\モードゲーム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charabase.h">
+      <Filter>ヘッダーファイル\モードゲーム\キャラベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\charashadow.h">
+      <Filter>ヘッダーファイル\モードゲーム\影</Filter>
     </ClInclude>
     <ClInclude Include="source\doyaeffect.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\ドヤエフェクト</Filter>
     </ClInclude>
-    <ClInclude Include="source\nakieffect.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="source\effectbase.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemy.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\動かない敵</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemybase.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース</Filter>
     </ClInclude>
     <ClInclude Include="source\enemydog.h">
-      <Filter>ヘッダー ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\犬</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemymove.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\動く敵</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemysensor.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\敵センサー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\enemysoundmanager.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\音検知管理</Filter>
+    </ClInclude>
+    <ClInclude Include="source\findeffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\見つけたエフェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Goal.h">
+      <Filter>ヘッダーファイル\モードゲーム\ゴール</Filter>
+    </ClInclude>
+    <ClInclude Include="source\hatenaeffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\はてなエフェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\hensineffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\変身エフェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Light.h">
+      <Filter>ヘッダーファイル\モードゲーム\ライト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Makimono.h">
+      <Filter>ヘッダーファイル\モードゲーム\巻物</Filter>
+    </ClInclude>
+    <ClInclude Include="source\map.h">
+      <Filter>ヘッダーファイル\モードゲーム\マップベース\テストマップ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Map1.h">
+      <Filter>ヘッダーファイル\モードゲーム\マップベース\マップ1</Filter>
+    </ClInclude>
+    <ClInclude Include="source\MapBase.h">
+      <Filter>ヘッダーファイル\モードゲーム\マップベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\menuitembase.h">
+      <Filter>ヘッダーファイル\モードゲーム\メニューベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegame.h">
+      <Filter>ヘッダーファイル\モードゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeGameClear.h">
+      <Filter>ヘッダーファイル\モードゲーム\ゲームクリア</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modegameload.h">
+      <Filter>ヘッダーファイル\モードゲーム\モードゲームロード</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeGameOver.h">
+      <Filter>ヘッダーファイル\モードゲーム\ゲームオーバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ModeGoalConfirm.h">
+      <Filter>ヘッダーファイル\モードゲーム\ゲームクリア確認</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeinit.h">
+      <Filter>ヘッダーファイル\ロゴ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeloading.h">
+      <Filter>ヘッダーファイル\ローディング</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modemenu.h">
+      <Filter>ヘッダーファイル\モードゲーム\メニュー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeopscenario.h">
+      <Filter>ヘッダーファイル\シナリオベース\オープニングシナリオ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modescenariobase.h">
+      <Filter>ヘッダーファイル\シナリオベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modeteamlogo.h">
+      <Filter>ヘッダーファイル\チームロゴ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\modetitle.h">
+      <Filter>ヘッダーファイル\タイトル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\movepointcontroll.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\巡回ルート</Filter>
+    </ClInclude>
+    <ClInclude Include="source\nakieffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\泣きエフェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\objectbase.h">
+      <Filter>ヘッダーファイル\モードゲーム\オブジェクトベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\ObjectServer.h">
+      <Filter>ヘッダーファイル\モードゲーム\オブジェクトベース\オブジェクトサーバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\player.h">
+      <Filter>ヘッダーファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playerbase.h">
+      <Filter>ヘッダーファイル\モードゲーム\プレイヤーベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playermono.h">
+      <Filter>ヘッダーファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\playertanuki.h">
+      <Filter>ヘッダーファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\soundserver3D.h">
+      <Filter>ヘッダーファイル\モードゲーム\敵ベース\3Dサウンドサーバー</Filter>
+    </ClInclude>
+    <ClInclude Include="source\StageManager.h">
+      <Filter>ヘッダーファイル\モードゲーム\ステージ管理</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Treasure.h">
+      <Filter>ヘッダーファイル\モードゲーム\お宝</Filter>
+    </ClInclude>
+    <ClInclude Include="source\treasureeffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\お宝エフェクト</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UIActionButton.h">
+      <Filter>ヘッダーファイル\モードゲーム\UIベース\解除アクション</Filter>
+    </ClInclude>
+    <ClInclude Include="source\uibase.h">
+      <Filter>ヘッダーファイル\モードゲーム\UIベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\UiMakimono.h">
+      <Filter>ヘッダーファイル\モードゲーム\UIベース\UI巻物</Filter>
+    </ClInclude>
+    <ClInclude Include="source\walkeffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\modeeffekseer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\cube.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\ObjectServer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\applicationglobal.cpp">
-      <Filter>ソース ファイル\非同期読み込み</Filter>
-    </ClCompile>
-    <ClCompile Include="source\applicationmain.cpp">
-      <Filter>ソース ファイル\アプリケーションメイン</Filter>
-    </ClCompile>
-    <ClCompile Include="source\camera.cpp">
-      <Filter>ソース ファイル\モードゲーム\カメラ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegame.cpp">
-      <Filter>ソース ファイル\モードゲーム</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charabase.cpp">
-      <Filter>ソース ファイル\モードゲーム\キャラベース</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemybase.cpp">
-      <Filter>ソース ファイル\モードゲーム\敵ベース</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemy.cpp">
-      <Filter>ソース ファイル\モードゲーム\敵ベース\敵1</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemysensor.cpp">
-      <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegamecollision.cpp">
-      <Filter>ソース ファイル\モードゲーム\コリジョン</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegamedebug.cpp">
-      <Filter>ソース ファイル\モードゲーム\デバック</Filter>
-    </ClCompile>
-    <ClCompile Include="source\map.cpp">
-      <Filter>ソース ファイル\モードゲーム\テストマップ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modegameobject.cpp">
-      <Filter>ソース ファイル\モードゲーム\クラス読み込み</Filter>
-    </ClCompile>
-    <ClCompile Include="source\objectbase.cpp">
-      <Filter>ソース ファイル\モードゲーム\オブジェクトベース</Filter>
-    </ClCompile>
-    <ClCompile Include="source\playerbase.cpp">
-      <Filter>ソース ファイル\モードゲーム\プレイヤーベース</Filter>
-    </ClCompile>
-    <ClCompile Include="source\player.cpp">
-      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\人タヌキ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\playertanuki.cpp">
-      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\タヌキ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\uibase.cpp">
-      <Filter>ソース ファイル\モードゲーム\UIベース</Filter>
-    </ClCompile>
-    <ClCompile Include="source\uihp.cpp">
-      <Filter>ソース ファイル\モードゲーム\UIベース\HPバー</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modemenu.cpp">
-      <Filter>ソース ファイル\メニュー</Filter>
-    </ClCompile>
-    <ClCompile Include="source\menuitembase.cpp">
-      <Filter>ソース ファイル\メニュー\デバックメニュー</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Light.cpp">
-      <Filter>ソース ファイル\モードゲーム\ライト</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modeinit.cpp">
-      <Filter>ソース ファイル\ロゴ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Treasure.cpp">
-      <Filter>ソース ファイル\モードゲーム\お宝</Filter>
-    </ClCompile>
-    <ClCompile Include="source\charashadow.cpp">
-      <Filter>ソース ファイル\モードゲーム\影</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemymove.cpp">
-      <Filter>ソース ファイル\モードゲーム\敵ベース\動く敵</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modeopscenario.cpp">
-      <Filter>ソース ファイル\シナリオベース\オープニングシナリオ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modescenariobase.cpp">
-      <Filter>ソース ファイル\シナリオベース</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modeteamlogo.cpp">
-      <Filter>ソース ファイル\チームロゴ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\modetitle.cpp">
-      <Filter>ソース ファイル\タイトル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\movepointcontroll.cpp">
-      <Filter>ソース ファイル\モードゲーム\巡回ルート</Filter>
-    </ClCompile>
-    <ClCompile Include="source\playermono.cpp">
-      <Filter>ソース ファイル\モードゲーム\プレイヤーベース\モノタヌキ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\effectbase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\treasureeffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemysoundsensor.cpp">
-      <Filter>ソース ファイル\モードゲーム\敵ベース\敵センサー</Filter>
-    </ClCompile>
-    <ClCompile Include="source\hensineffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\walkeffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\findeffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\hatenaeffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\aseeffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\doyaeffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\nakieffect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="source\enemydog.cpp">
-      <Filter>ソース ファイル\モードゲーム\敵ベース\敵2_犬</Filter>
-    </ClCompile>
+    <Filter Include="リソースファイル">
+      <UniqueIdentifier>{30eeb237-9077-46a3-af46-e7545d636555}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル">
+      <UniqueIdentifier>{14d3c7d6-25af-4b91-8b22-dfa86ac1bb98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル">
+      <UniqueIdentifier>{813aa24e-8583-4e54-9d94-207c7852bd75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\非同期読み込み">
+      <UniqueIdentifier>{8d816149-042a-4550-8ec1-5735f664b240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\アプリケーションメイン">
+      <UniqueIdentifier>{492d5804-0abb-4725-84db-6d77c6e1e4fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム">
+      <UniqueIdentifier>{7193d119-2a97-4451-8040-424bda32277e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\カメラ">
+      <UniqueIdentifier>{fab0b6b3-3581-491d-9c8c-24629990c835}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\キャラベース">
+      <UniqueIdentifier>{c8eb3654-0123-4fcb-9083-832fbf5cf9d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\影">
+      <UniqueIdentifier>{102997b9-9228-4c78-a51b-38fd3d040911}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース">
+      <UniqueIdentifier>{00a31369-a44b-4919-bf34-0397372eaae4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\動かない敵">
+      <UniqueIdentifier>{e92aafc2-e3d5-430e-805e-9d20d85ae8d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\犬">
+      <UniqueIdentifier>{affd36ca-3176-4407-824d-8800d5c92de7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\敵センサー">
+      <UniqueIdentifier>{5c3bc280-478d-4c34-a7ee-d6c614188307}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\動く敵">
+      <UniqueIdentifier>{9b25fb05-4cd0-46ab-a475-a470d3ab8cb0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\音検知管理">
+      <UniqueIdentifier>{12765782-8986-47b7-b9df-7dd89a202289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\音検知センサー">
+      <UniqueIdentifier>{8e65d835-8994-4cc6-a517-3d0a984a49b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ゴール">
+      <UniqueIdentifier>{eebc1f32-3334-43fb-b52a-d44ce2dbfb8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ライト">
+      <UniqueIdentifier>{183b62aa-f001-4a76-80f7-499b2fcb2a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\巻物">
+      <UniqueIdentifier>{19442523-d369-476a-b0e6-efc2ba65436c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\マップベース">
+      <UniqueIdentifier>{3725a670-3c03-4acf-8fe8-e29407dbaf44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\マップベース\マップ1">
+      <UniqueIdentifier>{80ba3653-3ae8-46da-8ff4-9f72a0022ba9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\マップベース\テストマップ">
+      <UniqueIdentifier>{f34cf2dc-e9b2-4327-8b65-ea935eb8b557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\メニューベース">
+      <UniqueIdentifier>{3627a1e9-67fc-4078-8509-6473c6e848cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\当たり判定">
+      <UniqueIdentifier>{6cbea739-87f2-4198-b9c1-8215bafd9794}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\デバック">
+      <UniqueIdentifier>{a6d41634-c1ce-4d73-aaa0-97c560dbf490}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\モードゲームロード">
+      <UniqueIdentifier>{ac87e0d1-21e7-4fd9-95bf-e5306ca05e9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\クラス読み込み">
+      <UniqueIdentifier>{3bc3da51-d4bb-400d-9815-9fbc91de7660}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ゲームクリア">
+      <UniqueIdentifier>{e531bca4-308b-4a49-8531-73b75a8b39c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ゲームオーバー">
+      <UniqueIdentifier>{cd3051be-9d9a-4aeb-b15b-d4db21017997}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ゲームクリア確認">
+      <UniqueIdentifier>{1ee88cc6-f2dd-4dc4-93cc-5d914f4fbae8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\ロゴ">
+      <UniqueIdentifier>{8da74d6e-2017-4ae1-be15-fb6e3ed8297c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース">
+      <UniqueIdentifier>{ad7bae16-15a7-4198-8006-79f55466e6f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\汗エフェクト">
+      <UniqueIdentifier>{10c6067a-5964-47e6-b299-787a697b76a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\ドヤエフェクト">
+      <UniqueIdentifier>{6bb772f1-eab0-4666-92c9-d49d857dd346}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\見つけたエフェクト">
+      <UniqueIdentifier>{fb9e717e-dba6-448a-84cf-7a8fd14c48f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\はてなエフェクト">
+      <UniqueIdentifier>{85034799-ff94-408e-af6b-6c2bf0f940ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\変身エフェクト">
+      <UniqueIdentifier>{35233593-8efa-4d7a-8aac-d8bc252f27c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\ローディング">
+      <UniqueIdentifier>{8a73d731-58bf-40db-952f-cd1ac54326b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\モードメニュー">
+      <UniqueIdentifier>{2191d2df-05b3-4525-9435-d5560436b421}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\シナリオベース">
+      <UniqueIdentifier>{049c4264-8aea-4416-9d79-b148c04e5e63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\シナリオベース\オープニングシナリオ">
+      <UniqueIdentifier>{2bcd6c4a-a392-47b7-a66b-fb2ba7fb1a9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\タイトル">
+      <UniqueIdentifier>{204509e8-abf1-4982-9080-2f70563ef51d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\敵ベース\巡回ルート">
+      <UniqueIdentifier>{0ad0d272-5324-456b-8c8b-45dc64335a2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\泣きエフェクト">
+      <UniqueIdentifier>{68bd5c2c-61fa-4e41-9ff8-d414e27d3d06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\オブジェクトベース">
+      <UniqueIdentifier>{ae9f11bf-3f56-4b50-bafd-b70e2bc4c184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\オブジェクトベース\オブジェクトサーバー">
+      <UniqueIdentifier>{05e4540b-83ff-4f39-803f-949956460f88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\プレイヤーベース">
+      <UniqueIdentifier>{ee15c7e6-7efe-415c-a848-929d1fecc24f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\プレイヤーベース\人タヌキ">
+      <UniqueIdentifier>{4a5cbbdd-753c-410f-b743-6120a24f2251}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\プレイヤーベース\モノタヌキ">
+      <UniqueIdentifier>{23e2b9f4-3d0a-4506-86a5-e4a104048d7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\プレイヤーベース\タヌキ">
+      <UniqueIdentifier>{97564c52-beff-47a6-95c1-6776dc5c8754}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\3Dサウンドサーバー">
+      <UniqueIdentifier>{0a59893e-13a3-4908-82d3-43cbc7d0478d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\お宝">
+      <UniqueIdentifier>{ebdeb934-d197-4677-a978-a29cdd229a9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\お宝エフェクト">
+      <UniqueIdentifier>{844b0959-6936-41d0-b3a3-1bb68bfe8384}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\UIベース">
+      <UniqueIdentifier>{16dbc8fe-289c-47e0-a215-cc96c1661854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\UIベース\お宝解除">
+      <UniqueIdentifier>{e30bc10d-98eb-4716-a3fe-de69bf843063}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\UIベース\巻物UI">
+      <UniqueIdentifier>{d669e55b-83c2-4776-ab61-edfd415088b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト">
+      <UniqueIdentifier>{934de3cf-a780-474d-a9c6-2e0a17a9a0f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\非同期読み込み">
+      <UniqueIdentifier>{7cd1e61a-2d59-44b0-b564-98bd68639e2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\アプリケーションメイン">
+      <UniqueIdentifier>{bbff72eb-4705-40bb-96d2-72156019e26e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム">
+      <UniqueIdentifier>{e362f0c1-c6d2-44d1-bcd8-825a32985168}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース">
+      <UniqueIdentifier>{1f4e4a52-554b-4a8d-b006-0d49dca80211}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\汗エフェクト">
+      <UniqueIdentifier>{36a59092-7674-4fd7-8f61-3d0c7dbf5e56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\カメラ">
+      <UniqueIdentifier>{27443f31-9cf3-41ca-9ce1-a7c3fda248de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\キャラベース">
+      <UniqueIdentifier>{e6749612-5d4a-43ec-adea-645c06231d4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\影">
+      <UniqueIdentifier>{dbdc785d-b3fb-40bf-b193-8727ab292077}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\ドヤエフェクト">
+      <UniqueIdentifier>{400e080a-4fc0-43b3-b64f-b0d7431452a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース">
+      <UniqueIdentifier>{152fb94e-66bd-4e25-b642-0cff833bed80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\動かない敵">
+      <UniqueIdentifier>{605b07c1-7320-4fc0-a449-5afa732f0182}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\犬">
+      <UniqueIdentifier>{74bc8710-c17c-4991-97ae-7056da061f47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\動く敵">
+      <UniqueIdentifier>{6665db97-4d0a-4a92-918d-2378172f5f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\敵センサー">
+      <UniqueIdentifier>{ba9d69ec-1c64-40d2-beb5-381eab21ec0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\音検知管理">
+      <UniqueIdentifier>{da8e27c1-6ec4-4f1e-a515-0e970dcaf470}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\音センサー">
+      <UniqueIdentifier>{898f856b-5dd5-4d7b-a1a8-6dfcdcee41b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\見つけたエフェクト">
+      <UniqueIdentifier>{7221eb32-2496-4fab-8dd9-262bff239d4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ゴール">
+      <UniqueIdentifier>{f5120564-1e2b-4a54-a390-cbbba7393bd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\はてなエフェクト">
+      <UniqueIdentifier>{243cce05-69a5-44f2-8396-ca6f4c7d55cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\変身エフェクト">
+      <UniqueIdentifier>{19862260-625d-4dee-b44a-23d2db20b345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ライト">
+      <UniqueIdentifier>{4456bda9-cb5e-43b1-a899-89b2b5c11e80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\巻物">
+      <UniqueIdentifier>{6d039f1a-5490-4164-a93e-ffc9682ef5a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\マップベース">
+      <UniqueIdentifier>{ade930e3-cda3-463e-b44e-fe10a0e99ffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\マップベース\マップ1">
+      <UniqueIdentifier>{9768b272-0f8a-43ed-a989-c32e1647b510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\マップベース\テストマップ">
+      <UniqueIdentifier>{b7462227-5c4c-4beb-a79c-98bb8cd97b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\メニューベース">
+      <UniqueIdentifier>{a97d33ee-1dde-453f-9884-5ccfc0fa1483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ゲームクリア">
+      <UniqueIdentifier>{77c6888b-659f-46db-9495-f1baca8303f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\モードゲームロード">
+      <UniqueIdentifier>{1f8ca50e-204c-4730-9e2b-bd3ca1b10407}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ゲームオーバー">
+      <UniqueIdentifier>{c198e386-f563-49f3-9277-c77580abb28a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ゲームクリア確認">
+      <UniqueIdentifier>{6aa545f6-7787-4410-a0e6-7e1faf8b1547}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\ロゴ">
+      <UniqueIdentifier>{cf859520-36fc-41e0-a9e8-2694c74de6b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\ローディング">
+      <UniqueIdentifier>{87d6a8ab-6680-44d7-95bd-7ce9cba2329c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\メニュー">
+      <UniqueIdentifier>{77c60e09-2c59-485e-8080-96afed3355f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\シナリオベース">
+      <UniqueIdentifier>{10e7439d-f572-4058-942f-87270920bd2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\シナリオベース\オープニングシナリオ">
+      <UniqueIdentifier>{f7a70c1c-294f-4d95-b485-964395f315e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\チームロゴ">
+      <UniqueIdentifier>{cebc2e24-fd2d-4e82-9039-f27b2e988978}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\タイトル">
+      <UniqueIdentifier>{17700dc9-1e32-4859-95a0-d88a9f135d73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\巡回ルート">
+      <UniqueIdentifier>{c2d14d86-50fb-4f98-b105-30f68213fe50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\泣きエフェクト">
+      <UniqueIdentifier>{eeafd3d3-0e68-4111-b8a2-92da78d147f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\オブジェクトベース">
+      <UniqueIdentifier>{1058fe0e-64c9-442e-9233-e8c18074b3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\オブジェクトベース\オブジェクトサーバー">
+      <UniqueIdentifier>{046399df-7d27-41db-8396-470dc8e28194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\プレイヤーベース">
+      <UniqueIdentifier>{c58c19d0-7c4c-4e2c-b9e5-f9ff58e45034}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\プレイヤーベース\人タヌキ">
+      <UniqueIdentifier>{1452e34d-4cb5-4b46-916c-01355731bcc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\プレイヤーベース\モノタヌキ">
+      <UniqueIdentifier>{dfaac34b-c404-4719-af91-e2093d58b4a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\プレイヤーベース\タヌキ">
+      <UniqueIdentifier>{ab4c6c66-ffd6-4d64-954a-fd259023e5f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\敵ベース\3Dサウンドサーバー">
+      <UniqueIdentifier>{b2b6a59d-b3b4-40cf-97ae-490b97241fbd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ステージ管理">
+      <UniqueIdentifier>{fd77b867-bfce-4976-93db-c0755e4340ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\お宝">
+      <UniqueIdentifier>{74e0d0c8-d9bd-42a3-8e05-008a2b58454a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\お宝エフェクト">
+      <UniqueIdentifier>{7771cf82-dd67-4a75-ad54-95a4dfd5e0af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\UIベース">
+      <UniqueIdentifier>{bda12baf-0c1b-461a-a023-cdd52e529e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\解除アクション">
+      <UniqueIdentifier>{7b8a5d8f-3633-4b27-a83d-93be03de4215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\UI巻物">
+      <UniqueIdentifier>{926712af-5599-4caa-bfb9-ced2a2493427}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\歩きエフェクト">
+      <UniqueIdentifier>{684496c2-d409-4df1-8be2-12f651d4c870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Python">
+      <UniqueIdentifier>{d7344469-51bb-4072-bcf2-91ac6fcdd0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\カメラ\演出用">
+      <UniqueIdentifier>{0fd5bede-c39e-4052-bab7-caf01b3bb70a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\カメラ\演出用">
+      <UniqueIdentifier>{6bdced03-28fa-46f2-acd7-cd2290420910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\カメラ\タイトル用">
+      <UniqueIdentifier>{508cc7f3-b122-4019-a0b4-5f45199007c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\シナリオベース\アフターシナリオ">
+      <UniqueIdentifier>{664e5ac6-04e3-46e2-b9b6-fe3e492c1230}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\シナリオベース\アフターシナリオ">
+      <UniqueIdentifier>{062be66d-210b-4c53-98c3-589cc349c495}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\チームロゴ">
+      <UniqueIdentifier>{0414adbc-00e7-484a-bc64-b74c5165aab8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\変身UI">
+      <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\UIベース\変身UI">
+      <UniqueIdentifier>{9e3a64ac-2b11-4273-99cc-087347527541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\ゲームオーバーロード画面">
+      <UniqueIdentifier>{106278e3-da51-4381-a398-f7a7a8e86ffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\ゲームオーバーロード画面">
+      <UniqueIdentifier>{3ff3362d-93dc-497d-bc9e-b559dd466b1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py">

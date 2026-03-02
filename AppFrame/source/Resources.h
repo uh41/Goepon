@@ -105,6 +105,7 @@ namespace mv1
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_map = "res/map/SM_map.mv1";
   inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
+  inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stageDGR = "res/map/SM_stageDGR.mv1";
   inline constexpr const char* SM_stageTRY = "res/map/SM_stageTRY.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
@@ -174,6 +175,11 @@ namespace mp3
   inline constexpr const char* voice1 = "res/Voice/voice1.mp3";
   inline constexpr const char* voice2 = "res/Voice/voice2.mp3";
   inline constexpr const char* voice3 = "res/Voice/voice3.mp3";
+}
+
+namespace mp4
+{
+  inline constexpr const char* EndCredits = "res/movie/EndCredits.mp4";
 }
 
 namespace wav
