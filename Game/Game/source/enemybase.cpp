@@ -73,6 +73,7 @@ bool EnemyBase::Initialize()
 	_attachAnimDamage = "";
 	_attachAnimStan = "";
 	_attachAnimGetUp = "";
+	_attachAnimFound = "";
 
 	_effect = nullptr;
 
@@ -730,7 +731,8 @@ void EnemyBase::MoveTowardsTarget(const vec::Vec3& target)
 	vec::Vec3 moveDirection = vec3::VNorm(toTarget);
 
 	// 壁回避を試行する角度テーブル（度数）
-	static const float wallAvoidanceAngles[] = {
+	static const float wallAvoidanceAngles[] =
+	{
 		0.0f,     // 直進
 		-45.0f,   // 左45度
 		45.0f,    // 右45度

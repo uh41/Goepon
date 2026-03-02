@@ -41,7 +41,7 @@ bool Enemy::Initialize()
 	_attachAnimDamage = "bushi_okkake";
 	_attachAnimStan = "bushi_tentou";
 	_attachAnimGetUp = "bushi_idle";
-
+	//_attachAnimFound = "kari_walk";
 	// タイマー初期化等は base にて行われている
 	return true;
 }
@@ -136,7 +136,7 @@ bool Enemy::Process()
 			// プレイヤーを検出している、または追跡中の場合のみ WALK
 			if(_detectedPlayer || _enemySensor->IsChasing())
 			{
-				_status = STATUS::WALK;
+				_status = STATUS::FOUND;
 				_isReturningToInitialPos = false;
 
 				// 音源への移動と待機を中断
@@ -188,6 +188,8 @@ bool Enemy::Process()
 		case CharaBase::STATUS::WAIT:
 			return "bushi_idle";
 		case CharaBase::STATUS::WALK:
+			return "kari_walk";
+		case CharaBase::STATUS::FOUND:
 			return "bushi_okkake";
 		default:
 			return std::string();

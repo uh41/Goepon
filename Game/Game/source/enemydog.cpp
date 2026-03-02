@@ -293,6 +293,7 @@ bool EnemyDog::Process()
 	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
 	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
 	{
+		_status = STATUS::FOUND;
 		// 追跡時の移動速度を確保（他の処理で変更されている可能性に対応）
 		_moveSpeed = 4.0f; // 追跡時の速度を明示的に設定
 
@@ -339,17 +340,20 @@ bool EnemyDog::Process()
 	}
 	else if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
 	{
+		_status = STATUS::WALK;
 		// 音源に向かって移動する処理を開始
 		UpdateMovingToSound();
 	}
 	else if (_isReturningToInitialPos)
 	{
+		_status = STATUS::WALK;
 		// 初期位置に戻る処理を更新
 		UpdateReturningToInitialPosition();
 		_isRandomWalking = false; // ランダム移動を停止
 	}
 	else if (!IsStun())
 	{
+		_status = STATUS::WALK;
 		// 通常時はランダムウォーク
 		ProcessRandomWalk();
 	}
@@ -403,6 +407,20 @@ bool EnemyDog::Process()
 		case STATUS::WALK:
 		{
 			int animIndex = MV1GetAnimIndex(_handle, "walk");
+			if (animIndex != -1)
+			{
+				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
+				if (_iAttachIndex != -1)
+				{
+					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
+					_fPlayTime = (float)(rand() % 30); // 少しずらす
+				}
+			}
+			break;
+		}
+		case STATUS::FOUND:
+		{
+			int animIndex = MV1GetAnimIndex(_handle, "");
 			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
