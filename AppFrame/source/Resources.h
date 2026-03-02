@@ -176,6 +176,11 @@ namespace mp3
   inline constexpr const char* voice3 = "res/Voice/voice3.mp3";
 }
 
+namespace mp4
+{
+  inline constexpr const char* EndCredits = "res/movie/EndCredits.mp4";
+}
+
 namespace wav
 {
   inline constexpr const char* ks010 = "res/BGM/ks010.wav";
