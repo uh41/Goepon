@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="source\applicationglobal.cpp" />
     <ClCompile Include="source\applicationmain.cpp" />
     <ClCompile Include="source\aseeffect.cpp" />
     <ClCompile Include="source\camera.cpp" />
@@ -57,7 +56,6 @@
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
-    <ClCompile Include="source\CinematicCamera.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
     </ClCompile>
@@ -74,70 +72,17 @@
     </ClCompile>
     <ClCompile Include="source\modegameoverload.cpp">
       <Filter>ヘッダーファイル</Filter>
+    </ClCompile>
     <ClCompile Include="source\henshinui.cpp">
       <Filter>ソースファイル\モードゲーム\UIベース\変身UI</Filter>
     </ClCompile>
     <ClCompile Include="source\modegameoverload.cpp">
       <Filter>ソースファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="source\applicationglobal.h" />
-    <ClInclude Include="source\applicationmain.h" />
-    <ClInclude Include="source\aseeffect.h" />
-    <ClInclude Include="source\camera.h" />
-    <ClInclude Include="source\charabase.h" />
-    <ClInclude Include="source\charashadow.h" />
-    <ClInclude Include="source\cube.h" />
-    <ClInclude Include="source\doyaeffect.h" />
-    <ClInclude Include="source\effectbase.h" />
-    <ClInclude Include="source\enemy.h" />
-    <ClInclude Include="source\enemybase.h" />
-    <ClInclude Include="source\enemydog.h" />
-    <ClInclude Include="source\enemysensor.h" />
-    <ClInclude Include="source\Goal.h" />
-    <ClInclude Include="source\Map1.h" />
-    <ClInclude Include="source\MapBase.h" />
-    <ClInclude Include="source\ModeGameClear.h" />
-    <ClInclude Include="source\ModeGameOver.h" />
-    <ClInclude Include="source\ModeGoalConfirm.h" />
-    <ClInclude Include="source\findeffect.h" />
-    <ClInclude Include="source\hatenaeffect.h" />
-    <ClInclude Include="source\hensineffect.h" />
-    <ClInclude Include="source\modeinit.h" />
-    <ClInclude Include="source\Light.h" />
-    <ClInclude Include="source\map.h" />
-    <ClInclude Include="source\menuitembase.h" />
-    <ClInclude Include="source\modeeffekseer.h" />
-    <ClInclude Include="source\modegame.h" />
-    <ClInclude Include="source\modemenu.h" />
-    <ClInclude Include="source\modeopscenario.h" />
-    <ClInclude Include="source\modescenariobase.h" />
-    <ClInclude Include="source\modeteamlogo.h" />
-    <ClInclude Include="source\modetitle.h" />
-    <ClInclude Include="source\enemymove.h" />
-    <ClInclude Include="source\movepointcontroll.h" />
-    <ClInclude Include="source\nakieffect.h" />
-    <ClInclude Include="source\objectbase.h" />
-    <ClInclude Include="source\ObjectServer.h" />
-    <ClInclude Include="source\player.h" />
-    <ClInclude Include="source\playerbase.h" />
-    <ClInclude Include="source\playermono.h" />
-    <ClInclude Include="source\playertanuki.h" />
-    <ClInclude Include="source\soundserver3D.h" />
-    <ClInclude Include="source\Treasure.h" />
-    <ClInclude Include="source\treasureeffect.h" />
-    <ClInclude Include="source\UIActionButton.h" />
-    <ClInclude Include="source\uibase.h" />
-    <ClInclude Include="source\uihp.h" />
-    <ClInclude Include="source\walkeffect.h" />
-    <ClInclude Include="source\Makimono.h" />
-    <ClInclude Include="source\UiMakimono.h" />
-    <ClInclude Include="source\enemysoundmanager.h" />
-    <ClInclude Include="source\modeloading.h" />
-    <ClInclude Include="source\modegameload.h" />
-    <ClInclude Include="source\StageManager.h" />
-    <ClCompile Include="source\cube.cpp">
+    <ClCompile Include="source\applicationglobal.cpp">
+      <Filter>ソースファイル\非同期読み込み</Filter>
+    </ClCompile>
+        <ClCompile Include="source\cube.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -308,6 +253,63 @@
     <ClCompile Include="source\walkeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\applicationglobal.h" />
+    <ClInclude Include="source\applicationmain.h" />
+    <ClInclude Include="source\aseeffect.h" />
+    <ClInclude Include="source\camera.h" />
+    <ClInclude Include="source\charabase.h" />
+    <ClInclude Include="source\charashadow.h" />
+    <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\doyaeffect.h" />
+    <ClInclude Include="source\effectbase.h" />
+    <ClInclude Include="source\enemy.h" />
+    <ClInclude Include="source\enemybase.h" />
+    <ClInclude Include="source\enemydog.h" />
+    <ClInclude Include="source\enemysensor.h" />
+    <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\MapBase.h" />
+    <ClInclude Include="source\ModeGameClear.h" />
+    <ClInclude Include="source\ModeGameOver.h" />
+    <ClInclude Include="source\ModeGoalConfirm.h" />
+    <ClInclude Include="source\findeffect.h" />
+    <ClInclude Include="source\hatenaeffect.h" />
+    <ClInclude Include="source\hensineffect.h" />
+    <ClInclude Include="source\modeinit.h" />
+    <ClInclude Include="source\Light.h" />
+    <ClInclude Include="source\map.h" />
+    <ClInclude Include="source\menuitembase.h" />
+    <ClInclude Include="source\modeeffekseer.h" />
+    <ClInclude Include="source\modegame.h" />
+    <ClInclude Include="source\modemenu.h" />
+    <ClInclude Include="source\modeopscenario.h" />
+    <ClInclude Include="source\modescenariobase.h" />
+    <ClInclude Include="source\modeteamlogo.h" />
+    <ClInclude Include="source\modetitle.h" />
+    <ClInclude Include="source\enemymove.h" />
+    <ClInclude Include="source\movepointcontroll.h" />
+    <ClInclude Include="source\nakieffect.h" />
+    <ClInclude Include="source\objectbase.h" />
+    <ClInclude Include="source\ObjectServer.h" />
+    <ClInclude Include="source\player.h" />
+    <ClInclude Include="source\playerbase.h" />
+    <ClInclude Include="source\playermono.h" />
+    <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\soundserver3D.h" />
+    <ClInclude Include="source\Treasure.h" />
+    <ClInclude Include="source\treasureeffect.h" />
+    <ClInclude Include="source\UIActionButton.h" />
+    <ClInclude Include="source\uibase.h" />
+    <ClInclude Include="source\uihp.h" />
+    <ClInclude Include="source\walkeffect.h" />
+    <ClInclude Include="source\Makimono.h" />
+    <ClInclude Include="source\UiMakimono.h" />
+    <ClInclude Include="source\enemysoundmanager.h" />
+    <ClInclude Include="source\modeloading.h" />
+    <ClInclude Include="source\modegameload.h" />
+    <ClInclude Include="source\StageManager.h" />
     <ClInclude Include="source\CinematicCamera.h">
       <Filter>ヘッダーファイル\モードゲーム\カメラ\演出用</Filter>
     </ClInclude>
@@ -321,6 +323,7 @@
     </ClInclude>
     <ClInclude Include="source\modegameoverload.h">
       <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
     <ClInclude Include="source\henshinui.h">
       <Filter>ヘッダーファイル\モードゲーム\UIベース\変身UI</Filter>
     </ClInclude>
@@ -764,7 +767,7 @@
       <UniqueIdentifier>{87d6a8ab-6680-44d7-95bd-7ce9cba2329c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\メニュー">
-      <UniqueIdentifier>{77c60e09-2c59-485e-808c-96afed3355f4}</UniqueIdentifier>
+      <UniqueIdentifier>{77c60e09-2c59-485e-8080-96afed3355f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダーファイル\シナリオベース">
       <UniqueIdentifier>{10e7439d-f572-4058-942f-87270920bd2f}</UniqueIdentifier>
