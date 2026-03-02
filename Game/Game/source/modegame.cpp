@@ -30,7 +30,7 @@
 bool ModeGame::Initialize()
 {
 	_hasRenderOnce = false;
-	_requestResetStage = false;
+	/*_requestResetStage = false;*/
 	_requestNextStage  = false;
 
 	if(!base::Initialize()) { return false; }
@@ -503,36 +503,36 @@ bool ModeGame::Process()
 	//}
 
 
-	// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
-	if (_requestNextStage)
-	{
-		_requestNextStage = false;
+	//// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
+	//if (_requestNextStage)
+	//{
+	//	_requestNextStage = false;
 
-		// 次のステージがあるなら進めて再構築
-		if(_stageManager.GoNext())
-		{
-			ResetStage();
-		}
-		// 次のステージがないならタイトルに戻る
-		else
-		{
-			ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeTitle");
+	//	// 次のステージがあるなら進めて再構築
+	//	if(_stageManager.GoNext())
+	//	{
+	//		ResetStage();
+	//	}
+	//	// 次のステージがないならタイトルに戻る
+	//	else
+	//	{
+	//		ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeTitle");
 
-			// 自分自身のモードを削除して遷移する
-			ModeServer::GetInstance()->Del(this);
-		}
+	//		// 自分自身のモードを削除して遷移する
+	//		ModeServer::GetInstance()->Del(this);
+	//	}
 
-		return true;
-	}
+	//	return true;
+	//}
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	if(_requestResetStage)
+	/*if(_requestResetStage)
 	{
 		_requestResetStage = false;
 		ResetStage();
 		return true;
-	}
+	}*/
 
 	// カメラ処理
 	_camera->Process();

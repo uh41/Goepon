@@ -85,6 +85,31 @@ public:
 		}
 		return 0; // 見つからない場合は0を返す（デフォルトのステージ）
 	}
+
+	std::string GetNextStageId(const std::string stageId) const
+	{
+		if(_stages.empty())
+		{
+			return {};
+		}
+
+		for(size_t i = 0; i < _stages.size(); ++i)
+		{
+			if(_stages[i] == stageId)
+			{
+				const size_t next = i + 1;
+				if(next < _stages.size())
+				{
+					return _stages[next];
+				}
+				else
+				{
+					return {}; // 最後のステージの場合は空文字を返す
+				}
+			}
+		}
+		return {}; // 見つからない場合は空文字を返す
+	}
 private:
 	std::vector<std::string> _stages;
 	size_t _index = 0; // 現在のステージインデックス
