@@ -265,6 +265,7 @@
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
     <ClCompile Include="source\treasureui.cpp" />
+    <ClCompile Include="source\MapFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -334,6 +335,7 @@
     <ClInclude Include="source\UiMakimono.h" />
     <ClInclude Include="source\walkeffect.h" />
     <ClInclude Include="source\ModeGameClearLoad.h" />
+    <ClInclude Include="source\MapFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

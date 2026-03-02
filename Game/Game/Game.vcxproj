@@ -39,6 +39,7 @@
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\Map1.h" />
     <ClInclude Include="source\MapBase.h" />
+    <ClInclude Include="source\MapFactory.h" />
     <ClInclude Include="source\modeAffterScenario.h" />
     <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\ModeGameClearLoad.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\Map1.cpp" />
     <ClCompile Include="source\MapBase.cpp" />
+    <ClCompile Include="source\MapFactory.cpp" />
     <ClCompile Include="source\modeAffterScenario.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\ModeGameClearLoad.cpp" />

@@ -7,7 +7,7 @@
 
 #include "MapFactory.h"
 #include "Map1.h"
-#include "Map2.h" // 新しいマップクラス
+#include "Map2.h" 
 
 MapBase* MapFactory::CreateMap(MapType mapType)
 {
