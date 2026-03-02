@@ -21,6 +21,12 @@ ApplicationGlobal::ApplicationGlobal()
 	_iCgCursor = -1;
 	_isLoading = false;
 	_loadProgress = 0;
+
+	_stageList = 
+	{
+		"Stage1",
+		"Stage2" 
+	};
 }
 
 // デストラクタ
@@ -331,4 +337,33 @@ void ApplicationGlobal::UpdateLoadProgress()
 			}
 		}
 	}
+}
+
+std::string ApplicationGlobal::GetNextStageId(const std::string& currentStageId) const
+{
+	if(_stageList.empty())
+	{
+		return {};
+	}
+
+	for(size_t i = 0; i < _stageList.size(); ++i)
+	{
+		if(_stageList[i] == currentStageId)
+		{
+			const size_t next = i + 1;
+			if(next < _stageList.size())
+			{
+				return _stageList[next];
+			}
+			return {}; // 次がなければ空文字
+		}
+	}
+
+	return {}; // 見つからなければ空文字
+}
+
+// 次のステージが存在するかどうか
+bool ApplicationGlobal::HasNextStage(const std::string& currentStageId) const
+{
+	return !GetNextStageId(currentStageId).empty();
 }

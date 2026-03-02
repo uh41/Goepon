@@ -43,11 +43,7 @@ bool ModeGame::Initialize()
 	_debugF1KeyPressed = false;
 
 	// ステージマネージャーにステージを登録
-	_stageManager.SetStages
-	({
-	   "Stage1",
-	   "Stage2",
-	});
+	_stageManager.SetStages(gGlobal.GetStageList());
 
 	// 初期ステージIDが設定されていれば、そのIDに対応するステージを現在のステージとして設定する
 	if(!_initialStageId.empty())

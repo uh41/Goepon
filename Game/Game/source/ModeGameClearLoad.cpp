@@ -11,7 +11,7 @@ ModeGameClearLoad::ModeGameClearLoad(ModeBase* owneeGame, const std::string& sta
 	_spawnedGame = false;
 
 	_stageManager = std::make_unique<StageManager>();
-	_stageManager->SetStages({ "Stage1", "Stage2" });
+	_stageManager->SetStages(gGlobal.GetStageList());
 }
 
 ModeGameClearLoad::~ModeGameClearLoad()
