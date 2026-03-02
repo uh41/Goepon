@@ -42,4 +42,5 @@ private:
 	static std::unordered_map<std::string, DIVGRAPH>	_mapDivGraph;
 
 	static std::unordered_map<std::string, int>	_mapModel;
+	static std::unordered_map<int, int>	_modelRefCount;
 };

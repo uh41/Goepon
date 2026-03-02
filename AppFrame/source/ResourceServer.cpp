@@ -1,10 +1,10 @@
-/*********************************************************************/
+ï»¿/*********************************************************************/
 // * \file  ResourceServer.cpp
-// * \brief  ƒŠƒ\[ƒXƒT[ƒo[ƒNƒ‰ƒX
+// * \brief  ãƒªã‚½ãƒ¼ã‚¹ã‚µãƒ¼ãƒãƒ¼ã‚¯ãƒ©ã‚¹
 // *
-// * \author ÎX“ø‘å
+// * \author çŸ³æ£®è™¹å¤§
 // * \date   2025/12/28
-// * \ì‹Æ“à—e: V‹Kì¬ ÎX“ø‘å@2025/12/28
+// * \ä½œæ¥­å†…å®¹: æ–°è¦ä½œæˆ çŸ³æ£®è™¹å¤§ã€€2025/12/28
 /*********************************************************************/
 
 #include "DxLib.h"
@@ -18,10 +18,11 @@
 #define NEW new
 #endif
 
-// Ã“Iƒƒ“ƒoÀ‘Ì
+// é™çš„ãƒ¡ãƒ³ãƒå®Ÿä½“
 std::unordered_map<std::string, int>	ResourceServer::_mapGraph;
 std::unordered_map<std::string, ResourceServer::DIVGRAPH>	ResourceServer::_mapDivGraph;
 std::unordered_map<std::string, int>	ResourceServer::_mapModel;
+std::unordered_map<int, int>			ResourceServer::_modelRefCount;
 
 void ResourceServer::Init()
 {
@@ -37,7 +38,7 @@ void ResourceServer::Release()
 
 void ResourceServer::ClearGraph()
 {
-    // ‚·‚×‚Ä‚Ìƒf[ƒ^‚Ìíœ‚ğ‚·‚é
+    // ã™ã¹ã¦ã®ãƒ‡ãƒ¼ã‚¿ã®å‰Šé™¤ã‚’ã™ã‚‹
     for (auto itr = _mapGraph.begin(); itr != _mapGraph.end(); itr++)
     {
         DeleteGraph(itr->second);
@@ -64,16 +65,16 @@ void ResourceServer::ClearGraph()
 
 int	ResourceServer::LoadGraph(const TCHAR* FileName)
 {
-    // ƒL[‚ÌŒŸõ
+    // ã‚­ãƒ¼ã®æ¤œç´¢
     auto itr = _mapGraph.find(FileName);
     if (itr != _mapGraph.end())
     {
-        // ƒL[‚ª‚ ‚Á‚½
+        // ã‚­ãƒ¼ãŒã‚ã£ãŸ
         return itr->second;
     }
-    // ƒL[‚ª–³‚©‚Á‚½
-    int cg = ::LoadGraph(FileName);     // DXLIB‚ÌAPI‚ğŒÄ‚Ô‚Ì‚ÅA::‚ğæ“ª‚É•t‚¯A‚±‚ÌƒNƒ‰ƒX‚Ì“¯‚¶–¼‘O‚ÌŠÖ”‚Æ‹æ•Ê‚·‚é
-    // ƒL[‚Æƒf[ƒ^‚ğmap‚É“o˜^
+    // ã‚­ãƒ¼ãŒç„¡ã‹ã£ãŸ
+    int cg = ::LoadGraph(FileName);     // DXLIBã®APIã‚’å‘¼ã¶ã®ã§ã€::ã‚’å…ˆé ­ã«ä»˜ã‘ã€ã“ã®ã‚¯ãƒ©ã‚¹ã®åŒã˜åå‰ã®é–¢æ•°ã¨åŒºåˆ¥ã™ã‚‹
+    // ã‚­ãƒ¼ã¨ãƒ‡ãƒ¼ã‚¿ã‚’mapã«ç™»éŒ²
     _mapGraph[FileName] = cg;
 
     return cg;
@@ -83,27 +84,27 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
                                  int XNum, int YNum,
                                  int XSize, int YSize, int* HandleBuf)
 {
-    // ƒL[‚ÌŒŸõ
+    // ã‚­ãƒ¼ã®æ¤œç´¢
     auto itr = _mapDivGraph.find(FileName);
     if (itr != _mapDivGraph.end())
     {
-        // ƒL[‚ª‚ ‚Á‚½
-        // ƒf[ƒ^‚ğƒRƒs[
+        // ã‚­ãƒ¼ãŒã‚ã£ãŸ
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         for (int i = 0; i < itr->second.AllNum; i++) {
             HandleBuf[i] = itr->second.handle[i];
         }
         return 0;
     }
-    // ƒL[‚ª–³‚©‚Á‚½
-    // ‚Ü‚¸‚Íƒƒ‚ƒŠ‚ğì¬‚·‚é
+    // ã‚­ãƒ¼ãŒç„¡ã‹ã£ãŸ
+    // ã¾ãšã¯ãƒ¡ãƒ¢ãƒªã‚’ä½œæˆã™ã‚‹
     int* hbuf = NEW int[AllNum];
-    int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIB‚ÌAPI‚ğŒÄ‚Ô‚Ì‚ÅA::‚ğæ“ª‚É•t‚¯A‚±‚ÌƒNƒ‰ƒX‚Ì“¯‚¶–¼‘O‚ÌŠÖ”‚Æ‹æ•Ê‚·‚é
+    int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIBã®APIã‚’å‘¼ã¶ã®ã§ã€::ã‚’å…ˆé ­ã«ä»˜ã‘ã€ã“ã®ã‚¯ãƒ©ã‚¹ã®åŒã˜åå‰ã®é–¢æ•°ã¨åŒºåˆ¥ã™ã‚‹
     if (err == 0) {
-        // ¬Œ÷
-        // ƒL[‚Æƒf[ƒ^‚ğmap‚É“o˜^
+        // æˆåŠŸ
+        // ã‚­ãƒ¼ã¨ãƒ‡ãƒ¼ã‚¿ã‚’mapã«ç™»éŒ²
         _mapDivGraph[FileName].AllNum = AllNum;
         _mapDivGraph[FileName].handle = hbuf;
-        // ƒf[ƒ^‚ğƒRƒs[
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         for (int i = 0; i < AllNum; i++) {
             HandleBuf[i] = hbuf[i];
         }
@@ -117,32 +118,32 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
     int XNum, int YNum,
     int XSize, int YSize, std::vector<int>&HandleBuf)
 {
-    //ƒRƒ“ƒeƒiƒTƒCƒY‚ğ•ÏX
+    //ã‚³ãƒ³ãƒ†ãƒŠã‚µã‚¤ã‚ºã‚’å¤‰æ›´
     HandleBuf.resize(AllNum);
 
-    // ƒL[‚ÌŒŸõ
+    // ã‚­ãƒ¼ã®æ¤œç´¢
     auto itr = _mapDivGraph.find(FileName);
     if(itr != _mapDivGraph.end())
     {
-        // ƒL[‚ª‚ ‚Á‚½
-        // ƒf[ƒ^‚ğƒRƒs[
+        // ã‚­ãƒ¼ãŒã‚ã£ãŸ
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         for(int i = 0; i < itr->second.AllNum; i++)
         {
             HandleBuf[i] = itr->second.handle[i];
         }
         return 0;
     }
-    // ƒL[‚ª–³‚©‚Á‚½
-    // ‚Ü‚¸‚Íƒƒ‚ƒŠ‚ğì¬‚·‚é
+    // ã‚­ãƒ¼ãŒç„¡ã‹ã£ãŸ
+    // ã¾ãšã¯ãƒ¡ãƒ¢ãƒªã‚’ä½œæˆã™ã‚‹
     int* hbuf = NEW int[AllNum];
-    int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIB‚ÌAPI‚ğŒÄ‚Ô‚Ì‚ÅA::‚ğæ“ª‚É•t‚¯A‚±‚ÌƒNƒ‰ƒX‚Ì“¯‚¶–¼‘O‚ÌŠÖ”‚Æ‹æ•Ê‚·‚é
+    int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIBã®APIã‚’å‘¼ã¶ã®ã§ã€::ã‚’å…ˆé ­ã«ä»˜ã‘ã€ã“ã®ã‚¯ãƒ©ã‚¹ã®åŒã˜åå‰ã®é–¢æ•°ã¨åŒºåˆ¥ã™ã‚‹
     if(err == 0) 
     {
-        // ¬Œ÷
-        // ƒL[‚Æƒf[ƒ^‚ğmap‚É“o˜^
+        // æˆåŠŸ
+        // ã‚­ãƒ¼ã¨ãƒ‡ãƒ¼ã‚¿ã‚’mapã«ç™»éŒ²
         _mapDivGraph[FileName].AllNum = AllNum;
         _mapDivGraph[FileName].handle = hbuf;
-        // ƒf[ƒ^‚ğƒRƒs[
+        // ãƒ‡ãƒ¼ã‚¿ã‚’ã‚³ãƒ”ãƒ¼
         for(int i = 0; i < AllNum; i++) 
         {
             HandleBuf[i] = hbuf[i];
@@ -155,16 +156,17 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
 
 int ResourceServer::MV1LoadModel(const TCHAR* FileName)
 {
-    // ƒL[‚ÌŒŸõ
+    // ã‚­ãƒ¼ã®æ¤œç´¢
     auto itr = _mapModel.find(FileName);
     if (itr != _mapModel.end())
     {
-        // ƒL[‚ª‚ ‚Á‚½
-        return MV1DuplicateModel(itr->second);
+        // ã‚­ãƒ¼ãŒã‚ã£ãŸ
+        _modelRefCount[itr->second] += 1;
+        return itr->second;
     }
-    // ƒL[‚ª–³‚©‚Á‚½
-    int model = ::MV1LoadModel(FileName);     // DXLIB‚ÌAPI‚ğŒÄ‚Ô‚Ì‚ÅA::‚ğæ“ª‚É•t‚¯A‚±‚ÌƒNƒ‰ƒX‚Ì“¯‚¶–¼‘O‚ÌŠÖ”‚Æ‹æ•Ê‚·‚é
-    // ƒL[‚Æƒf[ƒ^‚ğmap‚É“o˜^
+    // ã‚­ãƒ¼ãŒç„¡ã‹ã£ãŸ
+    int model = ::MV1LoadModel(FileName);     // DXLIBã®APIã‚’å‘¼ã¶ã®ã§ã€::ã‚’å…ˆé ­ã«ä»˜ã‘ã€ã“ã®ã‚¯ãƒ©ã‚¹ã®åŒã˜åå‰ã®é–¢æ•°ã¨åŒºåˆ¥ã™ã‚‹
+    // ã‚­ãƒ¼ã¨ãƒ‡ãƒ¼ã‚¿ã‚’mapã«ç™»éŒ²
     _mapModel[FileName] = model;
 
     return model;
@@ -172,20 +174,23 @@ int ResourceServer::MV1LoadModel(const TCHAR* FileName)
 
 int ResourceServer::MV1DeleteModel(int handle)
 {
-    // —v‘f‚ÌŒŸõ
-    auto iter = _mapModel.begin();
-
-    for (; iter != _mapModel.end(); ++iter)
+    // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚ŒãŸå…ƒãƒ¢ãƒ‡ãƒ«ã‹ãƒã‚§ãƒƒã‚¯
+    bool isCachedModel = false;
+    for(const auto& pair : _mapModel)
     {
-        if ((*iter).second == handle) {
+        if(pair.second == handle)
+        {
+            isCachedModel = true;
             break;
         }
     }
 
-    if(iter!=_mapModel.end()){ _mapModel.erase(iter); }
-
-    ::MV1DeleteModel(handle);
+    // ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚ŒãŸå…ƒãƒ¢ãƒ‡ãƒ«ã®å ´åˆã¯å‰Šé™¤ã—ãªã„
+    // (è¤‡è£½ã•ã‚ŒãŸãƒ¢ãƒ‡ãƒ«ã®ã¿ã‚’å‰Šé™¤)
+    if(!isCachedModel)
+    {
+        ::MV1DeleteModel(handle);
+    }
 
     return 0;
-
 }

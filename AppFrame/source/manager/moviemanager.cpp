@@ -91,3 +91,15 @@ void MovieManager::UnloadMovie(int handle)
 		_handle.erase(it);
 	}
 }
+
+bool MovieManager::IsMoviePlaying(int handle)
+{
+	if(handle < 0) return false;
+
+	// DxLib のムービー状態を問い合わせるAPIを利用して再生中か確認する
+	// 環境によって定数が異なる場合はここを調整してください。
+	int state = GetMovieStateToGraph(handle); // DxLib API
+	// 一般的に MOVIE_STATE_PLAY 相当の値は 1 のことが多いです。
+	const int MOVIE_STATE_PLAY = 1;
+	return (state == MOVIE_STATE_PLAY);
+}

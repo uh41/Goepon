@@ -75,6 +75,7 @@
     <ClInclude Include="source\TitleTanuki.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
+    <ClInclude Include="source\treasureui.h" />
     <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
@@ -140,6 +141,7 @@
     <ClCompile Include="source\TitleTanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
     <ClCompile Include="source\treasureeffect.cpp" />
+    <ClCompile Include="source\treasureui.cpp" />
     <ClCompile Include="source\UIActionButton.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />

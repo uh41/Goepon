@@ -82,7 +82,7 @@
     <ClCompile Include="source\applicationglobal.cpp">
       <Filter>ソースファイル\非同期読み込み</Filter>
     </ClCompile>
-        <ClCompile Include="source\cube.cpp">
+    <ClCompile Include="source\cube.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\modeeffekseer.cpp">
@@ -253,6 +253,7 @@
     <ClCompile Include="source\walkeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
+    <ClCompile Include="source\treasureui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -330,6 +331,7 @@
     <ClInclude Include="source\modegameoverload.h">
       <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
+    <ClInclude Include="source\treasureui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">

@@ -65,6 +65,26 @@ namespace texture
   inline constexpr const char* tree = "res/Texture/tree.png";
 }
 
+namespace ui
+{
+  inline constexpr const char* Light = "res/Object/building/Light.png";
+  inline constexpr const char* Deguti = "res/UI/Deguti.png";
+  inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
+  inline constexpr const char* UI_0 = "res/UI/UI_0.png";
+  inline constexpr const char* UI_1 = "res/UI/UI_1.png";
+  inline constexpr const char* UI_2 = "res/UI/UI_2.png";
+  inline constexpr const char* UI_3 = "res/UI/UI_3.png";
+  inline constexpr const char* UI_4 = "res/UI/UI_4.png";
+  inline constexpr const char* UI_5 = "res/UI/UI_5.png";
+  inline constexpr const char* UI_6 = "res/UI/UI_6.png";
+  inline constexpr const char* UI_7 = "res/UI/UI_7.png";
+  inline constexpr const char* UI_8 = "res/UI/UI_8.png";
+  inline constexpr const char* UI_9 = "res/UI/UI_9.png";
+  inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
+  inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
+  inline constexpr const char* UI_x = "res/UI/UI_x.png";
+}
+
 namespace ef
 {
   inline constexpr const char* EF_Kizetsu = "res/Effect/EF_Kizetsu.efkefc";

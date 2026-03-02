@@ -12,6 +12,7 @@ def generate_header():
     ns_dict = {
         "img": [],
         "texture": [],
+        "ui": [],
         "ef": [],
         "mv1": [],
         "mp3": [],
@@ -34,6 +35,8 @@ def generate_header():
                     ns_dict["img"].append(line)
                 elif "texture" in rel_dir:
                     ns_dict["texture"].append(line)
+                elif "ui" in rel_dir:
+                    ns_dict["ui"].append(line)
             
             elif ext == ".efkefc":
                 ns_dict["ef"].append(line)

@@ -216,6 +216,9 @@
     <ClCompile Include="source\FrameRateController.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\manager\moviemanager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\aliastemplate.h">
@@ -318,6 +321,9 @@
       <Filter>ヘッダー ファイル\エフェクト管理</Filter>
     </ClInclude>
     <ClInclude Include="source\FrameRateController.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\manager\moviemanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
