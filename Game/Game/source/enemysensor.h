@@ -3,25 +3,25 @@
 #include "playerbase.h"
 #include "MapBase.h"
 
-// ���G�͈͂̏���i�[����\����
+
 struct DetectionSector
 {
-	vec::Vec3 center;      // ��`�̒��S�_�i�G�̈ʒu�j
-	vec::Vec3 forward;     // �G�̐��ʕ���
-	float radius;       // ���G�͈͂̔��a
-	float angle;        // ���G�p�x�i�x�j
+	vec::Vec3 center;    
+	vec::Vec3 forward;     
+	float radius;       
+	float angle;        
 };
 
-// ���o��Ԃ̏��
+
 struct DetectionInfo
 {
-	bool isDetected;        // ���o����Ă��邩
-	float timer;            // ���o�\���^�C�}�[
+	bool isDetected;        
+	float timer;            
 
-	// �ǐՋ@�\�p
-	bool isChasing;					// ���ݒǐՒ���
-	vec::Vec3 lastKnownPlayerPos;	// �Ō�Ɋm�F���ꂽ�v���C���[�̈ʒu
-	float chaseTimer;				// �ǐՌp������
+	
+	bool isChasing;					
+	vec::Vec3 lastKnownPlayerPos;	
+	float chaseTimer;				
 };
 
 class EnemySensor : public EnemyBase
@@ -34,45 +34,46 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	// ���G�͈͂̐ݒ�
-	void SetDetectionSector(float radius, float angle);	// ���a�A�p�x
 
-	// �v���C���[�̌��o�`�F�b�N�i�����̃v���C���[�ɑΉ��j
+	void SetDetectionSector(float radius, float angle);	
+
+	
 	bool CheckPlayerDetection(PlayerBase* player);
 
-	// ���o���̎擾
+	
 	const DetectionInfo& GetDetectionInfo() const { return _detectionInfo; }
 
-	// ���o��Ԃ̃��Z�b�g
+	
 	void ResetDetection();
 
-	// 
+	
 	bool IsChasing() const { return _detectionInfo.isChasing; } 
 	vec::Vec3 GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
 
-	// �f�o�b�O�p�F���G�͈͂̕`��
+	
 	void RenderDetectionSector() const;
 
-	// ���oUI�\��
+	
 	void RenderDetectionUI() const;
 
-	// �Z���T�[�̗L��/�������
+	
 	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
 	bool IsSensorEnabled() const { return _bSensorEnabled; }
-// Map�N���X�ւ̎Q�Ƃ�ݒ�
+
+
 	void SetMap(MapBase* map) { _map = map; }
 
-	// ���̑��݂�m�F����֐�
+	
 	bool CheckFloorExistence(const vec::Vec3& position) const;
 
-	// �����`�F�b�N - �w�肵��2�_�Ԃŏ��Ȃ��̒n�_�����邩�`�F�b�N
+	
 	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
 
-	// �R���W�����}�l�[�W���[��g���ď���Y���W��擾����֐�
+	
 	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
 
-	// �J�v�Z����g�������G�͈͓����
+	
 	bool IsPlayerInDetectionRangeWithCapsule(
 		const vec::Vec3& playerPos,
 		const vec::Vec3& playerCapsuleTop,
@@ -80,25 +81,35 @@ public:
 		float playerCapsuleRadius) const;
 
 protected:
-	DetectionSector _detectionSector;  // ���G�͈�
-	bool _bHasDetectionSector;         // ���G�͈͂��ݒ肳��Ă��邩
-	bool _bSensorEnabled;              // �Z���T�[���L�����ǂ���
+	DetectionSector _detectionSector; 
+	bool _bHasDetectionSector; 
+	bool _bSensorEnabled;          
 
-	DetectionInfo _detectionInfo;      // ���o��Ԃ̏��
+	DetectionInfo _detectionInfo;      
 
-	// ���o�֘A�萔
-	static constexpr float DETECTION_DISPLAY_TIME = 0.1f; // ���o�\�����ԁi�b�j
+	
+	static constexpr float DETECTION_DISPLAY_TIME = 0.1f;
 
-	// �ǐՊ֘A�萔
-	static constexpr float CHASE_TIME = 5.0f; // �ǐՌp�����ԁi�b�j
+	
+	static constexpr float CHASE_TIME = 5.0f;
 
 	int _detectionFrameCount;
 	static constexpr int DetectionFrame = 5;
 	bool _CanDetectionResult;
 
-	// ��������p���\�b�h
-	void UpdateDetectionTimer();		  // ���o�^�C�}�[�̍X�V
-	vec::Vec3 GetDetectionCenter() const; // ���G�͈͂̒��S�ʒu��擾
+	
+	void UpdateDetectionTimer();		  
+	vec::Vec3 GetDetectionCenter() const; 
 
-	MapBase* _map;	// �}�b�v�ւ̎Q��
+	MapBase* _map;
+
+	// 描画キャッシュ（const メソッドから更新するため mutable）
+	mutable std::vector<std::array<VERTEX3D, 6>> _detectionCachedPolygons;
+	mutable int _detectionCacheCounter;
+
+	// キャッシュ再計算インターバル（フレーム）
+	static constexpr int DetectionSectorCacheInterval = 5;
+
+	// キャッシュを再計算する（描画用。内部で重い判定を実行）
+	void RecalculateDetectionSector() const;
 };
