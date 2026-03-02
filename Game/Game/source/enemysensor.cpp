@@ -391,25 +391,25 @@ void EnemySensor::RenderDetectionSector() const
 		fillColorU8=GetColorU8(255, 255, 0, 255); // 非検出時：黄色に変更
 	}
 
-	const int angleSegments = 16;
-	const int radiusSegments = 7;
-	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
-	const vec::Vec3 center = GetDetectionCenter();
-	const vec::Vec3 forward = vec3::VNorm(_vDir);
-	const float baseAngle = atan2f(forward.x, forward.z);
-	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);
+	const int angleSegments = 16;	// 扇形の角度を分割する数
+	const int radiusSegments = 7;	// 半径方向の分割数
+	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;	// 扇形の半角をラジアンに変換
+	const vec::Vec3 center = GetDetectionCenter();	// 索敵範囲の中心位置
+	const vec::Vec3 forward = vec3::VNorm(_vDir);	// 敵の前方ベクトル（正規化）
+	const float baseAngle = atan2f(forward.x, forward.z);	
+	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);	
 
 	// 頂点の共通初期化をするラムダ
 	auto initVertex = [&](VERTEX3D& v, const vec::Vec3& p)
-		{
-			v.pos = VGet(p.x, p.y, p.z);
-			v.norm = VGet(0.0f, 1.0f, 0.0f);
-			v.dif = fillColorU8;
-			v.spc = GetColorU8(0, 0, 0, 0);
-			v.u = v.v = v.su = v.sv = 0.0f;
-		};
+	{
+		v.pos = VGet(p.x, p.y, p.z);
+		v.norm = VGet(0.0f, 1.0f, 0.0f);
+		v.dif = fillColorU8;
+		v.spc = GetColorU8(0, 0, 0, 0);
+		v.u = v.v = v.su = v.sv = 0.0f;
+	};
 
-	SetUseLighting(FALSE);
+	SetUseLighting(FALSE);	// ライティング無効
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明
 
 	VERTEX3D verts[6];
@@ -465,8 +465,6 @@ void EnemySensor::RenderDetectionSector() const
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	SetUseLighting(TRUE);
-
-	// （必要なら輪郭線等を追加する際はここに追記）
 }
 
 // 検出UI表示
