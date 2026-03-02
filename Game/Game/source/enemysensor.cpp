@@ -382,13 +382,13 @@ void EnemySensor::RenderDetectionSector() const
 	}
 
 	// 索敵範囲の色
-	unsigned int color = _detectionInfo.isDetected ? GetColor(255, 255, 0) : GetColor(255, 0, 0);
+	unsigned int color = _detectionInfo.isDetected ? GetColor(255, 0, 0) : GetColor(255, 255, 0);
 	// 半透明の塗りつぶし色
-	unsigned int fillColor = _detectionInfo.isDetected ? GetColor(255, 255, 0) : GetColor(255, 0, 0);
+	unsigned int fillColor = _detectionInfo.isDetected ? GetColor(255, 0, 0) : GetColor(255, 255, 0);
 
 	// 扇形を描画するための分割数
-	const int angleSegments = 32; // 角度方向の分割数
-	const int radiusSegments = 10; // 半径方向の分割数
+	const int angleSegments = 16; // 角度方向の分割数
+	const int radiusSegments = 7; // 半径方向の分割数
 	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
 
 	// 索敵範囲の中心位置を取得
@@ -402,8 +402,11 @@ void EnemySensor::RenderDetectionSector() const
 	// 高さオフセットを定数化（毎回計算しない）
 	const vec::Vec3 heightOffset = vec3::VGet(0.0f, 10.0f, 0.0f);
 
+	// ライティングを無効化（線が見えにくくなる）
+	SetUseLighting(FALSE);
+
 	// 扇形を三角形ポリゴンで塗りつぶす（半径方向と円周方向の両方で分割）
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128); // 半透明に設定
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明に設定
 
 	// 半径方向にループ
 	for (int r = 0; r < radiusSegments; r++)
@@ -430,6 +433,13 @@ void EnemySensor::RenderDetectionSector() const
 			// 床の存在チェックと視線チェック（中心から外側の点まで）
 			bool canDetect = CheckFloorExistence(outerPos) && CheckLineOfSight(center, outerPos);
 
+			auto drawColor= GetColorU8(
+				_detectionInfo.isDetected ? 255 : 0,
+				_detectionInfo.isDetected ? 0 : 255,
+				_detectionInfo.isDetected ? 0 : 255,
+				255
+			);
+
 			if (canDetect)
 			{
 				if (hasPrevPos)
@@ -440,7 +450,7 @@ void EnemySensor::RenderDetectionSector() const
 					// 1つ目の三角形: prevInner, prevOuter, innerPos
 					vertices[0].pos = VGet(prevInnerPos.x, prevInnerPos.y, prevInnerPos.z);
 					vertices[0].norm = VGet(0.0f, 1.0f, 0.0f);
-					
+					vertices[0].dif = drawColor;
 					vertices[0].spc = GetColorU8(0, 0, 0, 0);
 					vertices[0].u = 0.0f;
 					vertices[0].v = 0.0f;
@@ -449,7 +459,7 @@ void EnemySensor::RenderDetectionSector() const
 
 					vertices[1].pos = VGet(prevOuterPos.x, prevOuterPos.y, prevOuterPos.z);
 					vertices[1].norm = VGet(0.0f, 1.0f, 0.0f);
-					
+					vertices[1].dif = drawColor;
 					vertices[1].spc = GetColorU8(0, 0, 0, 0);
 					vertices[1].u = 0.0f;
 					vertices[1].v = 0.0f;
@@ -458,7 +468,7 @@ void EnemySensor::RenderDetectionSector() const
 
 					vertices[2].pos = VGet(innerPos.x, innerPos.y, innerPos.z);
 					vertices[2].norm = VGet(0.0f, 1.0f, 0.0f);
-					
+					vertices[2].dif = drawColor;
 					vertices[2].spc = GetColorU8(0, 0, 0, 0);
 					vertices[2].u = 0.0f;
 					vertices[2].v = 0.0f;
@@ -468,7 +478,7 @@ void EnemySensor::RenderDetectionSector() const
 					// 2つ目の三角形: prevOuter, outerPos, innerPos
 					vertices[3].pos = VGet(prevOuterPos.x, prevOuterPos.y, prevOuterPos.z);
 					vertices[3].norm = VGet(0.0f, 1.0f, 0.0f);
-					
+					vertices[3].dif = drawColor;
 					vertices[3].spc = GetColorU8(0, 0, 0, 0);
 					vertices[3].u = 0.0f;
 					vertices[3].v = 0.0f;
@@ -477,7 +487,7 @@ void EnemySensor::RenderDetectionSector() const
 
 					vertices[4].pos = VGet(outerPos.x, outerPos.y, outerPos.z);
 					vertices[4].norm = VGet(0.0f, 1.0f, 0.0f);
-					
+					vertices[4].dif = drawColor;
 					vertices[4].spc = GetColorU8(0, 0, 0, 0);
 					vertices[4].u = 0.0f;
 					vertices[4].v = 0.0f;
@@ -486,7 +496,7 @@ void EnemySensor::RenderDetectionSector() const
 
 					vertices[5].pos = VGet(innerPos.x, innerPos.y, innerPos.z);
 					vertices[5].norm = VGet(0.0f, 1.0f, 0.0f);
-					
+					vertices[5].dif = drawColor;
 					vertices[5].spc = GetColorU8(0, 0, 0, 0);
 					vertices[5].u = 0.0f;
 					vertices[5].v = 0.0f;
@@ -494,7 +504,7 @@ void EnemySensor::RenderDetectionSector() const
 					vertices[5].sv = 0.0f;
 
 					// 2つの三角形を描画
-					DrawPolygon3D(vertices, 2, DX_NONE_GRAPH, TRUE);
+					DrawPolygon3D(vertices, 2, DX_NONE_GRAPH, FALSE);
 
 					// 少し上の位置にも描画して見えやすくする
 					vec::Vec3 prevInnerPos_up = vec3::VAdd(prevInnerPos, heightOffset);
@@ -509,7 +519,7 @@ void EnemySensor::RenderDetectionSector() const
 					vertices[4].pos = VGet(outerPos_up.x, outerPos_up.y, outerPos_up.z);
 					vertices[5].pos = VGet(innerPos_up.x, innerPos_up.y, innerPos_up.z);
 
-					DrawPolygon3D(vertices, 2, DX_NONE_GRAPH, TRUE);
+					DrawPolygon3D(vertices, 2, DX_NONE_GRAPH, FALSE);
 				}
 
 				prevInnerPos = innerPos;
@@ -524,81 +534,82 @@ void EnemySensor::RenderDetectionSector() const
 	}
 
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモードを元に戻す
+	SetUseLighting(TRUE);
 
-	// 外周の線を描画（輪郭を強調）
-	vec::Vec3 prevPos;
-	bool hasPrevPos = false;
-	for (int i = 0; i <= angleSegments; i++)
-	{
-		float angle = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(angleSegments)));
+	//// 外周の線を描画（輪郭を強調）
+	//vec::Vec3 prevPos;
+	//bool hasPrevPos = false;
+	//for (int i = 0; i <= angleSegments; i++)
+	//{
+	//	float angle = baseAngle + (-halfAngleRad + (2.0f * halfAngleRad * i / StCas<float>(angleSegments)));
 
-		float sinAngle = sinf(angle);
-		float cosAngle = cosf(angle);
+	//	float sinAngle = sinf(angle);
+	//	float cosAngle = cosf(angle);
 
-		vec::Vec3 pos = vec3::VAdd(center, vec3::VGet(sinAngle * _detectionSector.radius, 0.0f, cosAngle * _detectionSector.radius));
+	//	vec::Vec3 pos = vec3::VAdd(center, vec3::VGet(sinAngle * _detectionSector.radius, 0.0f, cosAngle * _detectionSector.radius));
 
-		// 床の存在チェックと視線チェック
-		bool canDetect = CheckFloorExistence(pos) && CheckLineOfSight(center, pos);
+	//	// 床の存在チェックと視線チェック
+	//	bool canDetect = CheckFloorExistence(pos) && CheckLineOfSight(center, pos);
 
-		if (canDetect)
-		{
-			if (hasPrevPos)
-			{
-				DxlibConverter::DrawLine3D(prevPos, pos, color);
+	//	if (canDetect)
+	//	{
+	//		if (hasPrevPos)
+	//		{
+	//			DxlibConverter::DrawLine3D(prevPos, pos, color);
 
-				vec::Vec3 prevPos_up = vec3::VAdd(prevPos, heightOffset);
-				vec::Vec3 pos_up = vec3::VAdd(pos, heightOffset);
-				DxlibConverter::DrawLine3D(prevPos_up, pos_up, color);
-			}
+	//			vec::Vec3 prevPos_up = vec3::VAdd(prevPos, heightOffset);
+	//			vec::Vec3 pos_up = vec3::VAdd(pos, heightOffset);
+	//			DxlibConverter::DrawLine3D(prevPos_up, pos_up, color);
+	//		}
 
-			prevPos = pos;
-			hasPrevPos = true;
-		}
-		else
-		{
-			hasPrevPos = false;
-		}
-	}
+	//		prevPos = pos;
+	//		hasPrevPos = true;
+	//	}
+	//	else
+	//	{
+	//		hasPrevPos = false;
+	//	}
+	//}
 
-	// 中心から両端への線を描画（扇形のエッジ）
-	float leftAngle = baseAngle - halfAngleRad;
-	float rightAngle = baseAngle + halfAngleRad;
+	//// 中心から両端への線を描画（扇形のエッジ）
+	//float leftAngle = baseAngle - halfAngleRad;
+	//float rightAngle = baseAngle + halfAngleRad;
 
-	float sinLeft = sinf(leftAngle);
-	float cosLeft = cosf(leftAngle);
-	float sinRight = sinf(rightAngle);
-	float cosRight = cosf(rightAngle);
+	//float sinLeft = sinf(leftAngle);
+	//float cosLeft = cosf(leftAngle);
+	//float sinRight = sinf(rightAngle);
+	//float cosRight = cosf(rightAngle);
 
-	vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinLeft * _detectionSector.radius, 0.0f, cosLeft * _detectionSector.radius));
-	vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinRight * _detectionSector.radius, 0.0f, cosRight * _detectionSector.radius));
+	//vec::Vec3 leftEdge = vec3::VAdd(center, vec3::VGet(sinLeft * _detectionSector.radius, 0.0f, cosLeft * _detectionSector.radius));
+	//vec::Vec3 rightEdge = vec3::VAdd(center, vec3::VGet(sinRight * _detectionSector.radius, 0.0f, cosRight * _detectionSector.radius));
 
-	// 床の存在チェックと視線チェック
-	bool canDetectLeft = CheckFloorExistence(leftEdge) && CheckLineOfSight(center, leftEdge);
-	bool canDetectRight = CheckFloorExistence(rightEdge) && CheckLineOfSight(center, rightEdge);
+	//// 床の存在チェックと視線チェック
+	//bool canDetectLeft = CheckFloorExistence(leftEdge) && CheckLineOfSight(center, leftEdge);
+	//bool canDetectRight = CheckFloorExistence(rightEdge) && CheckLineOfSight(center, rightEdge);
 
-	if (canDetectLeft)
-	{
-		DxlibConverter::DrawLine3D(center, leftEdge, color);
-		vec::Vec3 center_up = vec3::VAdd(center, heightOffset);
-		vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, heightOffset);
-		DxlibConverter::DrawLine3D(center_up, leftEdge_up, color);
-	}
+	//if (canDetectLeft)
+	//{
+	//	DxlibConverter::DrawLine3D(center, leftEdge, color);
+	//	vec::Vec3 center_up = vec3::VAdd(center, heightOffset);
+	//	vec::Vec3 leftEdge_up = vec3::VAdd(leftEdge, heightOffset);
+	//	DxlibConverter::DrawLine3D(center_up, leftEdge_up, color);
+	//}
 
-	if (canDetectRight)
-	{
-		DxlibConverter::DrawLine3D(center, rightEdge, color);
-		vec::Vec3 center_up = vec3::VAdd(center, heightOffset);
-		vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, heightOffset);
-		DxlibConverter::DrawLine3D(center_up, rightEdge_up, color);
-	}
+	//if (canDetectRight)
+	//{
+	//	DxlibConverter::DrawLine3D(center, rightEdge, color);
+	//	vec::Vec3 center_up = vec3::VAdd(center, heightOffset);
+	//	vec::Vec3 rightEdge_up = vec3::VAdd(rightEdge, heightOffset);
+	//	DxlibConverter::DrawLine3D(center_up, rightEdge_up, color);
+	//}
 
-	// 敵の正面方向を示す緑の線を描画（敵の位置から索敵中心まで）
-	const vec::Vec3 lineOffset = vec3::VGet(0.0f, 5.0f, 0.0f);
-	DxlibConverter::DrawLine3D(
-		vec3::VAdd(_vPos, lineOffset),
-		vec3::VAdd(center, lineOffset),
-		GetColor(0, 255, 0)
-	);
+	//// 敵の正面方向を示す緑の線を描画（敵の位置から索敵中心まで）
+	//const vec::Vec3 lineOffset = vec3::VGet(0.0f, 5.0f, 0.0f);
+	//DxlibConverter::DrawLine3D(
+	//	vec3::VAdd(_vPos, lineOffset),
+	//	vec3::VAdd(center, lineOffset),
+	//	GetColor(0, 255, 0)
+	//);
 }
 
 // 検出UI表示
