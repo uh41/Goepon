@@ -241,7 +241,7 @@ bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& e
 	}
 
 	// チェック間隔（単位：ワールド座標）
-	const float checkInterval = 30.0f;
+	const float checkInterval = 10.0f;
 
 	// 開始点から終了点へのベクトル
 	vec::Vec3 direction = vec3::VSub(endPos, startPos);
@@ -563,11 +563,30 @@ void EnemySensor::RecalculateDetectionSector() const
 			const float s = sinf(angle);
 			const float c = cosf(angle);
 
-			const vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
-			const vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
+			// 元の平面XYでの位置（yは一旦 center.y を基準にしておく）
+			vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
+			vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
 
-			// 床の存在と視線をチェック（重い処理）
-			const bool canDetect = CheckFloorExistence(outerPos) && CheckLineOfSight(center, outerPos);
+			// --- 変更点: 各頂点の高さを床のYに合わせる ---
+			// 安定した床判定のため、各サンプルの y を床の Y に合わせる。
+			constexpr float kFloorSearchColSubY = 200.0f;
+			float floorYInner = 0.0f;
+			float floorYOuter = 0.0f;
+			bool hasFloorInner = GetFloorYCollision(innerPos, kFloorSearchColSubY, floorYInner);
+			bool hasFloorOuter = GetFloorYCollision(outerPos, kFloorSearchColSubY, floorYOuter);
+
+			// 床が見つかった場合はその高さに合わせる（若干オフセットしたい場合は +eps を加算）
+			if (hasFloorInner)
+			{
+				innerPos.y = floorYInner;
+			}
+			if (hasFloorOuter)
+			{
+				outerPos.y = floorYOuter;
+			}
+
+			// 床があり、かつ中心からの視線が通っている場合のみ有効とする
+			const bool canDetect = hasFloorOuter && CheckLineOfSight(center, outerPos);
 
 			if (canDetect && hasPrev)
 			{

@@ -134,6 +134,7 @@ void EnemyMove::ProcessPatrol()
 		else
 		{
 			// 待機中は他の処理を行わない
+			_status = STATUS::WAIT;
 			return;
 		}
 	}
@@ -158,6 +159,7 @@ void EnemyMove::ProcessPatrol()
 		_patrolWaitDir = _vDir; // 保持しておくが、待機中は _vDir を変更しない
 
 		// 待機開始
+		_status = STATUS::WAIT;
 		_patrolWaitTimer = _patrolWaitDuration;
 		_isPatrolWaiting = true;
 
@@ -225,6 +227,7 @@ void EnemyMove::OnPlayerLost()
 	StartReturningToInitialPosition();
 }
 
+// 初期位置に戻る処理の更新
 void EnemyMove::ProcessReturnToPatrolPoint()
 {
 	if(!_isReturningToInitialPos)
@@ -349,6 +352,7 @@ void EnemyMove::OnDamageEnd()
 	}
 }
 
+// 敵サウンドマネージャーから音源に向かって移動する処理を開始
 void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 {
 	// 追跡/プレイヤー検出中は音より優先（既存方針に合わせる）
@@ -484,12 +488,12 @@ bool EnemyMove::Process()
 	}
 	else if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{
-		_status = STATUS::WALK;
+		_status = STATUS::FOUND;
 		UpdateChasing();
 		_isReturningToInitialPos = false;
 		_isPatroll = false;		// 巡回停止
 	}
-	else if(_isReturningToInitialPos)
+	else if (_isReturningToInitialPos)	// 初期位置に戻り中
 	{
 		if(_waitingForTeleport)
 		{
@@ -499,14 +503,14 @@ bool EnemyMove::Process()
 		{
 			_status = STATUS::WALK;
 		}
-		ProcessReturnToPatrolPoint();
+		ProcessReturnToPatrolPoint();	// 初期位置への帰還処理
 	}
-	else if(_isPatroll)
+	else if (_isPatroll)	// 巡回中
 	{
 		_status = STATUS::WALK;
 		ProcessPatrol();
 	}
-	else
+	else // どの状態にも当てはまらない場合は待機
 	{
 		_status = STATUS::WAIT;
 
@@ -565,11 +569,25 @@ bool EnemyMove::Process()
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "bushi_okkake");
+			int animIndex = MV1GetAnimIndex(_handle, "kari_walk");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
 				if(_iAttachIndex != -1)
+				{
+					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
+					_fPlayTime = (float)(rand() % 30); // 少しずらす
+				}
+			}
+			break;
+		}
+		case STATUS::FOUND:
+		{
+			int animIndex = MV1GetAnimIndex(_handle, "bushi_okkake");
+			if (animIndex != -1)
+			{
+				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
+				if (_iAttachIndex != -1)
 				{
 					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす

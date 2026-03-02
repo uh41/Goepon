@@ -27,6 +27,7 @@ public:
 		LANDING,
 		DASHING,
 		ROLLING,
+		FOUND,
 		_EOT_
 	};
 	STATUS _status;
