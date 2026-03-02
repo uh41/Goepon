@@ -1,11 +1,18 @@
 #pragma once
 #include "appframe.h"
+#include "modegame.h"
 
 class ModeGameOver :public ModeBase
 {
 	typedef ModeBase base;
 public:
-	explicit ModeGameOver(ModeBase* ownerGame = nullptr) : _ownerGame(ownerGame) {} // コンストラクタ
+	// オーナーを受け取るコンストラクタを用意（nullptr可）
+	explicit ModeGameOver(ModeGame* ownerGame = nullptr)
+		: _ownerGame(ownerGame)
+		, _overlayHandle(-1)
+		, _showOverlayImmediate(false)
+	{
+	}
 
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
@@ -13,6 +20,8 @@ public:
 	virtual bool Render() override;
 
 private:
-	ModeBase* _ownerGame; // 所有しているゲームモードへのポインタ
+	ModeGame* _ownerGame; // 所有している ModeGame への参照（必要に応じて使用）
+	int _overlayHandle;
+	bool _showOverlayImmediate;
+	std::string _debugCurrentStageId; // デバッグ用：検出したステージID
 };
-

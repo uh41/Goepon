@@ -17,6 +17,7 @@
 #define	RAD2DEG(x)			( ((x) * 180.0f ) / PI )
 #define TWO_PI = PI * 2.0f;
 
+constexpr float GRAVITY_COEFFICIENT = 7.5625f; // 自由落下の係数
 namespace mymath
 {
 
@@ -145,7 +146,14 @@ namespace mymath
 	float EasingInCirc(float cnt, float start, float end, float frames);
 	float EasingOutCirc(float cnt, float start, float end, float frames);
 	float EasingInOutCirc(float cnt, float start, float end, float frames);
+	float EasingInElastic(float cnt, float start, float end, float frames);
+	float EasingOutElastic(float cnt, float start, float end, float frames);
+	float EasingInOutElastic(float cnt, float start, float end, float frames);
+	float EasingInBounce(float cnt, float start, float end, float frames);
+	float EasingOutBounce(float cnt, float start, float end, float frames);
+	float EasingInOutBounce(float cnt, float start, float end, float frames);
 
+	void TestEasing();
 	template<typename T>
 	static T Clamp(T min, T max, T n)
 	{

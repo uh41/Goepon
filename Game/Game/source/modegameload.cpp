@@ -13,7 +13,7 @@ ModeGameLoad::~ModeGameLoad()
 bool ModeGameLoad::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_loadHandle = ResourceServer::LoadGraph(img::work);
+	_loadHandle = ResourceServer::LoadGraph(img::Loading_1start);
 	Fade::GetInstance()->ColorMask(0, 0, 0, 0);
 	return true;
 }
@@ -21,15 +21,17 @@ bool ModeGameLoad::Initialize()
 bool ModeGameLoad::Terminate()
 {
 	base::Terminate();
+	if(_loadHandle != -1)
+	{
+		DeleteGraph(_loadHandle);
+		_loadHandle = -1;
+	}
 	return true;
 }
 
 bool ModeGameLoad::Process()
 {
 	base::Process();
-
-	//ModeServer::GetInstance()->SkipProcessUnderLayer();
-	//ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	// ‚Ü‚¾ƒQ[ƒ€‚ª‹‚È‚¯‚ê‚Î’Ç‰Ái1‰ñ‚¾‚¯j
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");

@@ -175,8 +175,11 @@ bool PlayerTanuki::Process()
 			_dashTimer = _dashDuration;
 			_fMvSpeed = _normalSpeed * _dashSpeed; // ダッシュ開始時に速度を上げる
 			_dashCount++;
-			_dashRecoverTime = 0.0f;
-			_dashRecoverActive = false;
+			if(_dashRecoverActive)
+			{
+				_dashRecoverActive = false;
+				_dashRecoverTime = 0.0f;
+			}
 		}
 	}
 	else

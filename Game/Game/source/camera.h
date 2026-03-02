@@ -26,8 +26,8 @@ public:
 	void RotateAroundTarget(float deltaRad);         // ターゲットを中心にY軸回転（ラジアン）
 
 	// 視野角の設定・取得
-	void SetForvScele(float forv) { _fForvScale = forv; } //視野角設定
-	float GetForvScale() const { return _fForvScale; }
+	void SetForvScele(float forv) { _forvScale = forv; } //視野角設定
+	float GetForvScale() const { return _forvScale; }
 
 	// カメラ位置の設定・取得
 	void SetPos(const vec::Vec3& pos) { _vPos = pos; }
@@ -38,16 +38,16 @@ public:
 	const vec::Vec3& GetTarget() const { return _vTarget; }
 
 	// クリップ距離の設定・取得
-	void SetClipNear(float nearClip) { _fClipNear = nearClip; }
-	float GetClipNear() const { return _fClipNear; }
+	void SetClipNear(float nearClip) { _clipNear = nearClip; }
+	float GetClipNear() const { return _clipNear; }
 
-	void SetClipFar(float farClip) { _fClipFar = farClip; }
-	float GetClipFar() const { return _fClipFar; }
+	void SetClipFar(float farClip) { _clipFar = farClip; }
+	float GetClipFar() const { return _clipFar; }
 
 protected:
 	vec::Vec3 _vPos;
 	vec::Vec3 _vTarget;
-	float _fClipNear;
-	float _fClipFar;
-	float _fForvScale;	// 視野角のスケール（値が大きいほど広く見える）
+	float _clipNear;
+	float _clipFar;
+	float _forvScale;	// 視野角のスケール（値が大きいほど広く見える）
 };

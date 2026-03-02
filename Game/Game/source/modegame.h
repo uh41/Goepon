@@ -48,8 +48,8 @@
 #include "Makimono.h"
 #include "enemysoundmanager.h"
 #include "modegameload.h"
-
 #include "StageManager.h"
+#include "henshinui.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -116,6 +116,16 @@ public:
 	// プレイヤー変身関数
 	bool PlayerTransform();
 	bool PlayerTransformToTanuki(bool player);
+	bool RequestTransform(HenshinUi::Select select);
+
+	void RequestTransformToMono();             // タヌキ -> モノ（巻物を消費して変身）
+	void RequestTransformToHuman();            // タヌキ -> 人間（アニメあり）
+	void RequestReturnToTanukiFromHuman();     // 人間表示時にタヌキへ即時戻す（UI選択）
+	bool IsTransforming() const;
+	bool IsLoadComplete() const { return _isLoadComplete; }
+	void SetLoadComplete(bool b) { _isLoadComplete = b; }
+	bool IsTransformRequested() const;
+	bool IsShowingTanuki() const { return _bShowTanuki; }
 
 	// 影関数
 	bool ShadowInitialize();
@@ -124,6 +134,9 @@ public:
 	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
 	bool DebugCameraControl();
+	//　演出カメラ
+	bool TreasureOpeningCameraControl();
+	bool EndCinematicCamera();
 	bool DebugCinematicCameraControl();
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();
@@ -149,7 +162,13 @@ public:
 	void RequestResetStage() { _requestResetStage = true; }
 
 	void RequestNextStage()  { _requestNextStage  = true; }
-	bool HasRenderOnce() const { return _hasRenderOnce; }	
+	bool HasRenderOnce() const { return _hasRenderOnce; }
+
+	// 現在のステージIDを取得
+	std::string GetCurrentStageId() const { return _stageManager.GetCurrentStageId(); }
+
+	// 初期ステージIDを設定
+	void SetInitialStageId(const std::string& stageId);
 
 protected:
 	Camera* _camera;
@@ -195,6 +214,7 @@ protected:
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
 	at::spc<UiMakimono> _uiMakimono;
+	at::spc<HenshinUi> _henshinUi;
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
 
@@ -237,7 +257,6 @@ protected:
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;
-	bool _isEffectAll; // エフェクト再生するか
 
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
@@ -256,7 +275,7 @@ protected:
 	bool _treasureTakenThisTreasure = false; // 宝箱ごとに1回だけカウントするフラグ
 	bool _isOpeningTreasure = false;         // 宝箱を開けている最中かどうか（UI表示用）
 	// クリアに必要な宝箱の数
-	int _treasureRequiredCount = 3;
+	int _treasureRequiredCount = 1;
 
 	// --- 画面メッセージ（敵を転ばせた） ---
 	bool _showKnockdownMessage = false;
@@ -313,5 +332,10 @@ protected:
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
 	StageManager _stageManager; // ステージ管理
+	std::string _initialStageId; //
+
+	bool _requestedTransformToMono = false;      // タヌキ -> モノ 要求
+	bool _requestedTransformToHuman = false;     // タヌキ -> 人間 要求（アニメ）
+	bool _requestedReturnToTanuki = false;       // 人間 -> タヌキ（即時）要求
 };
 

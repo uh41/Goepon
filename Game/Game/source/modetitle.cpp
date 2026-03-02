@@ -1,4 +1,4 @@
-#include "modetitle.h"
+ï»¿#include "modetitle.h"
 #include "modeloading.h"
 
 #ifdef _DEBUG
@@ -8,7 +8,6 @@
 #define NEW new
 #endif
 
-// ModeBase / Fade ‚Í appframe.h Œo—R‚ÅQÆ‰Â”\‚È‘O’ñ
 ModeTitle::ModeTitle()
 {
 	Initialize();
@@ -21,20 +20,36 @@ ModeTitle::~ModeTitle()
 
 bool ModeTitle::Initialize()
 {
-	// ”wŒi‰æ‘œ‚ğ“Ç‚İ‚ŞiƒpƒX‚ÍƒvƒƒWƒFƒNƒg‚ÌƒŠƒ\[ƒX”z’u‚É‡‚í‚¹‚Ä•ÏXj
-	_handle = LoadGraph(img::title);
+	// ï¿½wï¿½iï¿½æ‘œï¿½ï¿½Ç‚İï¿½ï¿½Şiï¿½pï¿½Xï¿½Íƒvï¿½ï¿½ï¿½Wï¿½Fï¿½Nï¿½gï¿½Ìƒï¿½ï¿½\ï¿½[ï¿½Xï¿½zï¿½uï¿½Éï¿½ï¿½í‚¹ï¿½Ä•ÏXï¿½j
+	_handle = LoadGraph(img::Title_kari);
 	if(_handle == -1)
 	{
-		// “Ç‚İ‚İ¸”s‚Í false ‚ğ•Ô‚µ‚ÄŒÄ‚Ño‚µŒ³‚Å”»’è‚Å‚«‚é‚æ‚¤‚É‚·‚é
 		return false;
 	}
 
-	// ƒtƒF[ƒh‚Ì‰Šú‰»i•¨“§‰ß‚ÅƒtƒF[ƒhƒCƒ“j
-	Fade::GetInstance()->ColorMask(0, 0, 0, 255);
-	Fade::GetInstance()->FadeIn(FADE_FRAME);
+	// ï¿½Kï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½ì¬
+	_player = std::make_shared<TitleTanuki>();
+	if(_player)
+	{
+		if(!_player->Initialize())
+		{
+			_player.reset();
+			return false;
+		}
+		// ï¿½Å’ï¿½Ê’uï¿½É”zï¿½uï¿½iYï¿½ï¿½ï¿½Wï¿½ï¿½Kï¿½Ø‚Éİ’ï¿½j
+		_player->SetPos(vec::Vec3(70.0f, 0.0f, 0.0f));
+		_player->SetDir(vec::Vec3(0.0f, 0.0f, 0.0f));
+	}
 
-	_state = ModeBase::State::FADE_IN;
-	_fadeTimer = 0;
+	// ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½pï¿½ÌƒJï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ì¬
+	_cam = new TitleCamera();
+	if(_cam)
+	{
+		_cam->Initialize();
+	}
+
+	// ï¿½tï¿½Fï¿½[ï¿½hï¿½È‚ï¿½ - ï¿½ï¿½ï¿½ï¿½ï¿½É•\ï¿½ï¿½
+	_state = ModeBase::State::WAIT;
 
 	return true;
 }
@@ -46,47 +61,56 @@ bool ModeTitle::Terminate()
 		DeleteGraph(_handle);
 		_handle = -1;
 	}
+
+	// ï¿½Kï¿½Lï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
+	if(_player)
+	{
+		_player->Terminate();
+		_player.reset();
+	}
+
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½
+	if(_cam)
+	{
+		delete _cam;
+		_cam = nullptr;
+	}
+
 	return true;
 }
 
 bool ModeTitle::Process()
 {
-	// ƒtƒF[ƒhis
-	Fade::GetInstance()->Process();
+	if(!_cam || !_player)
+	{
+		return false;
+	}
 
-	// ƒ^ƒCƒgƒ‹‚ÍÅãˆÊƒŒƒCƒ„[‚Æ‚µ‚Ä‰ºˆÊ‚Ìˆ—‚Æ•`‰æ‚ğƒXƒLƒbƒv
+	// ï¿½^ï¿½Cï¿½gï¿½ï¿½ï¿½ÍÅ‘Oï¿½Êƒï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Æ‚ï¿½ï¿½Ä‰ï¿½Ê‚Ìï¿½ï¿½ï¿½ï¿½Æ•`ï¿½ï¿½Xï¿½Lï¿½bï¿½v
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Æƒvï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½
+	if(_cam) { _cam->Process(); }
+	if(_player) { _player->Process(); }
+
+	// ï¿½Xï¿½eï¿½[ï¿½gï¿½ï¿½ï¿½ï¿½
 	switch(_state)
 	{
-	case ModeBase::State::FADE_IN:
-		if(Fade::GetInstance()->IsFade() == false)
-		{
-			_state = ModeBase::State::WAIT;
-		}
-		break;
-	case ModeBase::State::WAIT:
-		if(trg & PAD_INPUT_2)
-		{
-			_state = ModeBase::State::FADE_OUT;
-			Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
-		}
-		break;
-	case ModeBase::State::FADE_OUT:
-		if(Fade::GetInstance()->IsFade() == false)
-		{
-			_state = ModeBase::State::DONE;
-		}
-		break;
-	case ModeBase::State::DONE:
-		
-		// Ÿ‚Ìƒ‚[ƒh‚ÖˆÚs
-		ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
-		ModeServer::GetInstance()->Del(this);
-		break;
+		case ModeBase::State::WAIT:
+			// ï¿½{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü‚Å‘Ò‹@
+			if(trg & PAD_INPUT_2)
+			{
+				_state = ModeBase::State::DONE;
+			}
+			break;
+		case ModeBase::State::DONE:
+			// ï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½ÖˆÚs
+			ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
+			ModeServer::GetInstance()->Del(this);
+			break;
 	}
 
 	return true;
@@ -94,13 +118,33 @@ bool ModeTitle::Process()
 
 bool ModeTitle::Render()
 {
+	if(!_cam)
+	{
+		return false;
+	}
+
+	base::Render();
+
+	// ï¿½wï¿½iï¿½æ‘œï¿½`ï¿½ï¿½
 	if(_handle != -1)
 	{
 		DrawGraph(0, 0, _handle, TRUE);
 	}
 
-	// ƒtƒF[ƒh•`‰æiã‘‚«j
-	Fade::GetInstance()->Render();
+	// ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½İ’ï¿½Xï¿½V
+	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_cam->GetPos()), DxlibConverter::VecToDxLib(_cam->GetTarget()));
+	SetCameraNearFar(_cam->GetClipNear(), _cam->GetClipFar());
+
+	// ï¿½ï¿½ï¿½ï¿½pï¿½İ’ï¿½
+	float fov_deg = 30.0f;
+	float fov_rad = DEG2RAD(fov_deg);
+	SetupCamera_Perspective(fov_rad);
+
+	// ï¿½Kï¿½ï¿½ï¿½fï¿½ï¿½ï¿½`ï¿½ï¿½
+	//if(_player)
+	//{
+	//	_player->Render();
+	//}
 
 	return true;
 }

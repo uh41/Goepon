@@ -26,6 +26,22 @@ ApplicationGlobal::ApplicationGlobal()
 // デストラクタ
 ApplicationGlobal::~ApplicationGlobal()
 {
+	for(auto& mapPair : _mapData)
+	{
+		for(auto& modelPair : mapPair.second.modelHandle)
+		{
+			if(modelPair.second >= 0)
+			{
+				MV1DeleteModel(modelPair.second);
+			}
+		}
+		mapPair.second.modelHandle.clear();
+		mapPair.second.blockPos.clear();
+	}
+	_mapData.clear();
+
+	// ステージデータのクリア
+	_stageData.clear();
 	//ResourceServer::Release();
 	// 何もしない
 }
@@ -221,12 +237,14 @@ bool ApplicationGlobal::Init()
 	_isLoading = true;
 	_loadProgress = 0;
 
-	SetUseASyncLoadFlag(TRUE);
+
 	_iCgCursor = LoadGraph("res/cursor.png");
 
-	LoadMapData("Map1", "stage1_1.json", "stage");// 1ステージ目
-	LoadStageData("Stage1", "markerDGR.json", "stage");// 1ステージ目
-	LoadStageData("Stage2", "marker1_2.json", "stage");// 2ステージ目
+	LoadMapData("Map1", "stage0301.json", "stage");// 1ステージ目
+	LoadStageData("Stage1", "marker0301.json", "stage");// 1ステージ目
+	LoadStageData("Stage2", "stage2.json", "stage");// 2ステージ目
+
+	SetUseASyncLoadFlag(TRUE);
 
 	// キャラクター関連モデル読み込み
 	ResourceServer::MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
@@ -240,7 +258,7 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel(mv1::skysphere);
 	ResourceServer::MV1LoadModel(mv1::Ground);
 	ResourceServer::MV1LoadModel(mv1::fusama);
-	ResourceServer::MV1LoadModel(mv1::SM_stage1);
+	ResourceServer::MV1LoadModel(mv1::SM_stage1_0301);
 
 	// その他
 	ResourceServer::MV1LoadModel(mv1::tuzura_02);
@@ -255,6 +273,9 @@ bool ApplicationGlobal::Init()
 	ResourceServer::LoadGraph(texture::TX_hatena);
 	ResourceServer::LoadGraph(texture::TX_nakix);
 	ResourceServer::LoadGraph(texture::TX_walk);
+	ResourceServer::LoadGraph(img::UI_Makimono);
+	ResourceServer::LoadGraph(img::UI_Tanubito);
+	ResourceServer::LoadGraph(img::UI_Tanumono);
 
 	if(!_soundServer)
 	{

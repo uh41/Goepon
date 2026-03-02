@@ -15,9 +15,9 @@ bool Camera::Initialize()
 	// カメラの設定(わかりやすい位置に)
 	_vPos = vec3::VGet(0.0f, 1600.0f, -662.0f);
 	_vTarget = vec3::VGet(0.0f, 60.0f, 0.0f);
-	_fClipNear = 2.0f;
-	_fClipFar = 10000.0f;
-	_fForvScale = -10.0f;
+	_clipNear = 2.0f;
+	_clipFar = 10000.0f;
+	_forvScale = -10.0f;
 
 	return true;
 }

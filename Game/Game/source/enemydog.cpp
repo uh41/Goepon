@@ -458,7 +458,7 @@ bool EnemyDog::Render()
 
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 
-	MATRIX mScale = MGetScale(VGet(1.7f, 1.7f, 1.7f));
+	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
 
 	MATRIX m = MGetIdent();
 

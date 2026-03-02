@@ -16,6 +16,7 @@
 #include "applicationglobal.h"
 #include "ModeGameOver.h"
 #include "ModeTitle.h"
+#include "ModeAffterScenario.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -45,10 +46,20 @@ bool ModeGame::Initialize()
 	_stageManager.SetStages
 	({
 	   "Stage1",
-	   "stage02",
-	   "stage03",
+	   "Stage2",
 	});
 
+	// 初期ステージIDが設定されていれば、そのIDに対応するステージを現在のステージとして設定する
+	if(!_initialStageId.empty())
+	{
+		// 指定IDが存在すればインデックスを設定する（存在しなければ false を返すが無視可）
+		if(!_stageManager.SetCurrentStageId(_initialStageId))
+		{
+			// デバッグ出力：指定IDが見つからなかった
+
+			DrawFormatString(10, 20, GetColor(255, 0, 0), "Warning: initial stage id '%s' not found", _initialStageId.c_str());
+		}
+	}
 
 	ObjectInitialize();	// オブジェクト初期化
 
@@ -138,6 +149,8 @@ bool ModeGame::Initialize()
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
+
+	_isLoadComplete = true; // ロード完了フラグを立てる
 
 	//// **ロード時間計測終了**
 	//const LONGLONG endTime = GetNowHiPerformanceCount();
@@ -501,10 +514,13 @@ bool ModeGame::Process()
 			ResetStage();
 		}
 		// 次のステージがないならタイトルに戻る
-	/*	else
+		else
 		{
-			ModeServer::GetInstance()->Add(new ModeTitle(), 0, "ModeTitle");
-		}*/
+			ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeTitle");
+
+			// 自分自身のモードを削除して遷移する
+			ModeServer::GetInstance()->Del(this);
+		}
 
 		return true;
 	}
@@ -704,6 +720,8 @@ bool ModeGame::Process()
 							effectBase->StopPlaying();
 						}
 					}
+
+					_hasRenderOnce = false;
 
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
@@ -951,7 +969,16 @@ bool ModeGame::Render()
 		//CollisionManager::GetInstance()->SetDebugDraw(true);
 	}
 
-	_hasRenderOnce = true;
+	bool noOverlayAbove =
+		(ModeServer::GetInstance()->Get("gameover") == nullptr) &&
+		(ModeServer::GetInstance()->Get("gameoverload") == nullptr);
+
+	if(noOverlayAbove)
+	{
+		// opscenario など最初のロードで即時描画済み扱いにしたい場合はここで true にする
+		_hasRenderOnce = true;
+		_isLoadComplete = true;
+	}
 
 	return true;
 }
@@ -1015,6 +1042,7 @@ bool ModeGame::ResetStage()
 	_isGameClear = false;
 	_goalConfirmOpened = false;
 	_goalConfirmResult = ModeGoalConfirm::Result::None;
+	_hasRenderOnce = false;
 
 	// オブジェクトサーバーは以下を全消去
 	if(_objectServer)
@@ -1272,15 +1300,16 @@ bool ModeGame::DebugCinematicCameraControl()
 					// 現在位置のカメラの位置からプレイヤーの位置への距離を計算
 					vec::Vec3 currentPos = _cinematicCamera->GetPos();
 					float currentDist = vec3::VSize(vec3::VSub(currentPos, target)); 
-					float endDist = currentDist * 0.5f; // 最終的な距離（半分にする例）
+					float endDist = currentDist * 0.25f; // 最終的な距離（半分にする例）
 					if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
 
 					// ズーム演出：現在距離から近距離へ
-					_cinematicCamera->StartZoom(target, 3.0f, currentDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
+					_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
 				}
 			}
 			else
 			{
+
 				// ズーム解除
 				_debugZoomActive = false;
 				_useCinematicCamera = false;
@@ -1303,4 +1332,100 @@ bool ModeGame::DebugCinematicCameraControl()
 		_debugF1KeyPressed = false;
 	}
 	return true;
+}
+
+bool ModeGame::TreasureOpeningCameraControl()
+{
+	if(_isOpeningTreasure)
+	{
+		return false; // またはすでに開いている場合は処理しない
+	}
+
+	// シネマティックカメラが初期化されていない場合は作成
+	if(!_cinematicCamera)
+	{
+		_cinematicCamera = std::make_unique<CinematicCamera>();
+		if(!_cinematicCamera->Initialize())
+		{
+			_cinematicCamera.reset(); 
+			return false;
+		}
+	}
+
+	// 元のカメラを保存
+	if(!_useCinematicCamera)
+	{
+		if(_cinematicCamera && _camera)
+		{
+			// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
+			_cinematicCamera->SetPos(_camera->GetPos());
+			_cinematicCamera->SetTarget(_camera->GetTarget());
+			_cinematicCamera->SetClipNear(_camera->GetClipNear());
+			_cinematicCamera->SetClipFar(_camera->GetClipFar());
+
+			_originalCamera = _camera;
+			_useCinematicCamera = true;
+			_camera = _cinematicCamera.get();
+		}
+		else
+		{
+			// カメラがない場合は処理をスキップ
+			return false;
+		}
+
+		// 現在のプレイヤー位置を取得
+		PlayerBase* targetPlayer = nullptr;
+		if(_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
+		{
+			targetPlayer = _playerTanuki.get();
+		}
+		else if(_showMonoPlayer && _playerMono && _playerMono->IsAlive())
+		{
+			targetPlayer = _playerMono.get();
+		}
+		else if(_player && _player->IsAlive())
+		{
+			targetPlayer = _player.get();
+		}
+
+		if(targetPlayer && _cinematicCamera)
+		{
+			vec::Vec3 target = targetPlayer->GetPos();
+			vec::Vec3 currentPos = _cinematicCamera->GetPos();
+			float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
+			float endDist = currentDist * 0.5f; // 最終的な距離（半分にする例）
+			if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
+
+			// ズーム演出：現在距離から近距離へ
+			_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist);
+		}
+	}
+	return true;
+}
+
+bool ModeGame::EndCinematicCamera()
+{
+	if(!_useCinematicCamera || !_cinematicCamera)
+	{
+		return false;
+	}
+
+	// 元のカメラに戻す
+	if(_originalCamera)
+	{
+		_camera = _originalCamera;
+		_originalCamera = nullptr;
+	}
+
+	_useCinematicCamera = false;
+
+	//　シネマティックカメラをリセット
+	_cinematicCamera->StopAll();
+	return true;
+}
+
+// 初期ステージIDを設定
+void ModeGame::SetInitialStageId(const std::string& stageId)
+{
+	_initialStageId = stageId;
 }
