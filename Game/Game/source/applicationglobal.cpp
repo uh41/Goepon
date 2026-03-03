@@ -246,8 +246,8 @@ bool ApplicationGlobal::Init()
 
 	_iCgCursor = LoadGraph("res/cursor.png");
 
-	LoadMapData("Map1", "stage0301.json", "stage");// 1ステージ目
-	LoadStageData("Stage1", "marker0301.json", "stage");// 1ステージ目
+	LoadMapData("Map1", "stage20303.json", "stage");// 1ステージ目
+	LoadStageData("Stage1", "stage20303.json", "stage");// 1ステージ目
 	LoadStageData("Stage2", "stage2.json", "stage");// 2ステージ目
 
 	SetUseASyncLoadFlag(TRUE);
@@ -265,6 +265,7 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel(mv1::Ground);
 	ResourceServer::MV1LoadModel(mv1::fusama);
 	ResourceServer::MV1LoadModel(mv1::SM_stage1_0301);
+	ResourceServer::MV1LoadModel(mv1::SM_stage20303);
 
 	// その他
 	ResourceServer::MV1LoadModel(mv1::tuzura_02);
