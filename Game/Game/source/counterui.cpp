@@ -43,6 +43,13 @@ bool CounterUi::Terminate()
 	return true;
 }
 
+void CounterUi::DecreaseTreasureCount()
+{
+	if(_treasureCount > 0)
+	{
+		_treasureCount--;
+	}
+}
 
 bool CounterUi::Process()
 {
@@ -73,5 +80,8 @@ void CounterUi::RenderNumber(int number)
 bool CounterUi::Render()
 {
 	base::Render();
+
+	RenderNumber(_treasureCount);
+
 	return true;
 }

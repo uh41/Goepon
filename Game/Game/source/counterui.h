@@ -3,8 +3,8 @@
 
 namespace counter
 {
-	static constexpr auto COUNTER_TREASURE_X = 1809.0f ;
-	static constexpr auto COUNTER_TREASURE_Y = 100.0f;
+	static constexpr auto COUNTER_TREASURE_X = 0;//1809.0f
+	static constexpr auto COUNTER_TREASURE_Y = 0;//100.0f
 	static constexpr auto COUNTER_MAKIMONO_X = 1809.0f;
 	static constexpr auto COUNTER_MAKIMONO_Y = 145.0f;
 	static constexpr auto COUNTER_TREASURE_NEXT_X = 25.0f;
@@ -24,7 +24,13 @@ public:
 
 	void RenderNumber(int number);
 
+	int GetTreasureCount() const { return _treasureCount; }
+	void SetTreasureCount(int count) { _treasureCount = count; }
+
+	void DecreaseTreasureCount();
+
 protected:
 	at::art<int, 10> _handleNum; // ”š‰æ‘œ
+	int _treasureCount; // •ó•¨‚ÌƒJƒEƒ“ƒg
 };
 

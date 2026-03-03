@@ -172,6 +172,17 @@ public:
 	// 初期ステージIDを設定
 	void SetInitialStageId(const std::string& stageId);
 
+	using enemygroup = at::umtt<std::string, at::vet<vec::Vec3>>;
+
+	// 敵の生成関数
+	void CreateEnemy(const nlohmann::json& object,
+		const enemygroup& patrolGroup,
+		const enemygroup& dogMovementArea,
+		uint32_t& nextEnemyId,
+		MapBase* map);
+
+	at::spc<EnemySensor> CreateEnemySensor(float soundArea, MapBase* map);
+
 protected:
 	Camera* _camera;
 	Camera* _originalCamera;
@@ -238,6 +249,7 @@ protected:
 	at::spc<NakiEffect> _nakiEffect;
 
 	at::spc<SoundServer3D> _sound3D;
+	soundserver::SoundItemBase* _soundFinish;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

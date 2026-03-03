@@ -447,6 +447,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			treasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
 			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
 
+			// お宝のカウントを減らす
+			if(_counterUi)
+			{
+				_counterUi->DecreaseTreasureCount();
+			}
+
 			// エフェクト再生
 			if (_doyaEffect)
 			{
