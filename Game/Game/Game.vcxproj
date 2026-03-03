@@ -26,6 +26,7 @@
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\CinematicCamera.h" />
+    <ClInclude Include="source\counterui.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
@@ -90,6 +91,7 @@
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
+    <ClCompile Include="source\counterui.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />

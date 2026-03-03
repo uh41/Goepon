@@ -254,6 +254,7 @@
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
     <ClCompile Include="source\treasureui.cpp" />
+    <ClCompile Include="source\counterui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -332,6 +333,7 @@
       <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
     <ClInclude Include="source\treasureui.h" />
+    <ClInclude Include="source\counterui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
