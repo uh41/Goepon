@@ -2,6 +2,13 @@
 #include "uibase.h"
 #include "PlayerBase.h"
 
+namespace makimono
+{
+	static constexpr auto MAKIMONO_X = 1554.0f; // Šª•¨‚ÌXÀ•W
+	static constexpr auto MAKIMONO_Y = 20.0f; // Šª•¨‚ÌYÀ•W
+
+}
+
 class UiMakimono :public UiBase
 {
 	typedef UiBase base;

@@ -726,7 +726,7 @@ bool ModeGame::Process()
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
 
-					return true;
+					break;
 				}
 				// 実際の押し出し（カプセル）
 				// 敵に接触したときに実際に行う処理はここで記入

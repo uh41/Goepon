@@ -43,39 +43,31 @@ bool CounterUi::Terminate()
 	return true;
 }
 
-void CounterUi::RenderCount(int open, int total)
-{
-	int screenW = ApplicationBase::GetInstance()->DispSizeW();
-	int screenH = ApplicationBase::GetInstance()->DispSizeH();
-	// ”š‚Ì•`‰æ
-	int numX = 10;
-	int numY = 10;
-	// ŠJ‚¢‚½”‚ğ•`‰æ
-	if (open < 10)
-	{
-		DrawGraph(numX, numY, _handleNum[open], TRUE);
-	}
-	else
-	{
-		DrawGraph(numX, numY, _handleNum[1], TRUE);
-		DrawGraph(numX + 30, numY, _handleNum[open % 10], TRUE);
-	}
-	// ‘”‚ğ•`‰æ
-	if (total < 10)
-	{
-		DrawGraph(numX + 60, numY, _handleNum[total], TRUE);
-	}
-	else
-	{
-		DrawGraph(numX + 60, numY, _handleNum[1], TRUE);
-		DrawGraph(numX + 90, numY, _handleNum[total % 10], TRUE);
-	}
-}
 
 bool CounterUi::Process()
 {
 	base::Process();
 	return true;
+}
+
+void CounterUi::RenderNumber(int number)
+{
+	if(number < 0 || number >99)
+	{
+		return;
+	}
+
+	if(number < 10)
+	{
+		DrawGraph(counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y, _handleNum[number], TRUE);
+	}
+	else
+	{
+		int tens = number / 10; // 10‚ÌˆÊ
+		int ones = number % 10; // 1‚ÌˆÊ
+		DrawGraph(counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y, _handleNum[tens], TRUE);
+		DrawGraph(counter::COUNTER_TREASURE_X + counter::COUNTER_TREASURE_NEXT_X, counter::COUNTER_TREASURE_Y, _handleNum[ones], TRUE);
+	}
 }
 
 bool CounterUi::Render()

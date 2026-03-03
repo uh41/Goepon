@@ -89,6 +89,13 @@ bool ModeGame::ObjectInitialize()
 	_henshinUi->SetOwner(this);
 	_uiBase.emplace_back(_henshinUi);
 
+	_counterUi = std::make_shared<CounterUi>();
+	_uiBase.emplace_back(_counterUi);
+
+	_treasureUi = std::make_shared<TreasureUi>();
+	_treasureUi->SetTreasureList(_treasure);
+	_uiBase.emplace_back(_treasureUi);
+
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
