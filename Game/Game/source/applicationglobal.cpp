@@ -269,6 +269,7 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel(mv1::Ground);
 	ResourceServer::MV1LoadModel(mv1::fusama);
 	ResourceServer::MV1LoadModel(mv1::SM_stage1_0301);
+	ResourceServer::MV1LoadModel(mv1::SM_stage20303);
 
 	// その他
 	ResourceServer::MV1LoadModel(mv1::tuzura_02);
