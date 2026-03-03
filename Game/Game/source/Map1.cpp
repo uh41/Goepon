@@ -47,7 +47,7 @@ bool Map1::Initialize()
 	// �V���h�E�}�b�v�̐���
 	_iHandleShadowMap = MakeShadowMap(2048, 2048);
 
-	// ���C�g�����ݒ�
+	
 	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
 
 	// �����i��߁j

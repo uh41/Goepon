@@ -38,6 +38,7 @@
     <ClInclude Include="source\henshinui.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\Map1.h" />
+    <ClInclude Include="source\Map2.h" />
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\MapFactory.h" />
     <ClInclude Include="source\modeAffterScenario.h" />
@@ -104,6 +105,7 @@
     <ClCompile Include="source\henshinui.cpp" />
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\Map1.cpp" />
+    <ClCompile Include="source\Map2.cpp" />
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\MapFactory.cpp" />
     <ClCompile Include="source\modeAffterScenario.cpp" />

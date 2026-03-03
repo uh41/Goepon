@@ -265,7 +265,12 @@
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
     <ClCompile Include="source\treasureui.cpp" />
-    <ClCompile Include="source\MapFactory.cpp" />
+    <ClCompile Include="source\Map2.cpp">
+      <Filter>ソースファイル\モードゲーム\マップベース\マップ2</Filter>
+    </ClCompile>
+    <ClCompile Include="source\MapFactory.cpp">
+      <Filter>ソースファイル\モードゲーム\マップベース\マップファクトリー</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -335,7 +340,12 @@
     <ClInclude Include="source\UiMakimono.h" />
     <ClInclude Include="source\walkeffect.h" />
     <ClInclude Include="source\ModeGameClearLoad.h" />
-    <ClInclude Include="source\MapFactory.h" />
+    <ClInclude Include="source\Map2.h">
+      <Filter>ヘッダーファイル\モードゲーム\マップベース\マップ2</Filter>
+    </ClInclude>
+    <ClInclude Include="source\MapFactory.h">
+      <Filter>ヘッダーファイル\モードゲーム\マップベース\マップファクトリー</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -898,6 +908,18 @@
     </Filter>
     <Filter Include="ソースファイル\モードゲーム\ゲームオーバーロード画面">
       <UniqueIdentifier>{3ff3362d-93dc-497d-bc9e-b559dd466b1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\マップベース\マップ2">
+      <UniqueIdentifier>{6ec41fa8-6777-40d5-9e03-6fe229e04bff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\マップベース\マップ2">
+      <UniqueIdentifier>{3837f2a8-f03b-4e38-be6b-065baf464dcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\マップベース\マップファクトリー">
+      <UniqueIdentifier>{6d51690c-e148-4d12-beac-82560d29c98f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\マップベース\マップファクトリー">
+      <UniqueIdentifier>{f036e790-f92c-4f5f-a453-09b578168688}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

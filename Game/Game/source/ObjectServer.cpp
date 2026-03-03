@@ -20,7 +20,7 @@
 #include"ModeGame.h"
 #include<algorithm>
 #include<fstream>
-#include "Map1.h"
+#include "MapFactory.h"
 #include "applicationglobal.h"
 
 // コンストラクタ・デストラクタ
@@ -190,44 +190,42 @@ bool ObjectServer::ProcessInit()
 	return true;
 }
 
-bool ObjectServer::LoadDate(std::string stageName)
+bool ObjectServer::LoadDate(const std::string stageName)
 {
-	// マップデータ読み込み
-	_sPath = "res/map/";
-	_sJsonFile = "marker1_1.json";
-	_sJsonObjectName = "stage";
-	/*_sJsonFile = "stagebeta.json";
-	_sJsonObjectName = "SM_stagebeta";*/
+	// ApplicationGlobalからステージデータを取得
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(stageName);
+	if(stageData == nullptr)
+	{
+		return false; // ステージデータが見つからない
+	}
 
-	// JSONファイル読み込み
-	const std::string jsonPath = _sPath + _sJsonFile;
-	std::ifstream file(jsonPath);
-	if(!file) { return false; }
+	// ステージデータからマップタイプを決定
+	std::string mapTypeName = "Map1"; // デフォルト
 
-	// JSONデータ解析
-	nlohmann::json jsonData;
-	file >> jsonData;
+	// ステージデータからマップタイプを判定するロジック
+	// 例: ステージ名やオブジェクトデータから判定
+	if(stageName == "Stage1")
+	{
+		mapTypeName = "Map1";
+	}
+	else if(stageName == "Stage2")
+	{
+		mapTypeName = "Map2";
+	}
 
 	// マップオブジェクト生成
-	if (_map == nullptr)
+	if(_map == nullptr)
 	{
-		_map = NEW Map1();
-		AddObject(_map);
+		MapType mapType = MapFactory::GetMapTypeFromString(mapTypeName);
+		_map = MapFactory::CreateMap(mapType);
+		if(_map != nullptr)
+		{
+			AddObject(_map);
+		}
+		else
+		{
+			return false; // マップ生成失敗
+		}
 	}
-
-	// ステージデータ検索・設定
-	if(!jsonData.contains(_sJsonObjectName)) { return false; } // キー存在確認
-	const auto& stage = jsonData.at(_sJsonObjectName);          // ステージデータ取得
-
-	for(const auto& data : stage)
-	{
-		const std::string name = data.at("objectName").get<std::string>(); // オブジェクト名取得
-		if(name != stageName) { continue; }
-
-		// マップデータ設定
-		_map->SetJsonDataUE(data);
-		break;
-	}
-
 	return true;
 }

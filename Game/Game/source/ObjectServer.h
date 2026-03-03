@@ -44,7 +44,7 @@ public:
 	std::vector<class CharaBase*>& GetCharas() { return _charas; }
 	
 	// オブジェクトのレイアウトを読み込み、オブジェクトを生成
-	bool LoadDate(std::string stageName);
+	bool LoadDate(const std::string stageName);
 
 	//_objects _add _delete のコンテナが保持するアドレスをdelete、各コンテナのサイズを０にする
 	bool ClearObject();

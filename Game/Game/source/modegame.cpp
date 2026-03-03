@@ -61,6 +61,9 @@ bool ModeGame::Initialize()
 
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
+	// オブジェクトサーバーでマップデータを読み込み
+	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
+
 	// 3Dサウンドサーバーの初期化（applicationglobal から取得）
 	// gGlobal._soundServer は ApplicationGlobal::Init() 内で生成されている想定
 	if(gGlobal._soundServer)
@@ -241,6 +244,7 @@ bool ModeGame::Terminate()
 
 	return true;
 }
+
 
 bool ModeGame::LoadStageData()
 {
