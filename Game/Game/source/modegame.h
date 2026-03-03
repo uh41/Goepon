@@ -155,9 +155,6 @@ public:
 	// ゴール可能か？
 	bool CanGoal() const{ return _treasureTakenCount >= _treasureRequiredCount; }
 
-	// ステージを完全リセットして初期状態に戻す
-	bool ResetStage();
-
 	// ステージリセット要求フラグのセッター（Process内でこのフラグをチェックしてリセット処理を行う）
 	void RequestResetStage() { _requestResetStage = true; }
 

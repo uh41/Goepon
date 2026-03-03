@@ -10,7 +10,7 @@ bool Map2::Initialize()
 	// �X�J�C�X�t�B�A�ǂݍ���
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
 
-	const ApplicationGlobal::MapData* map = gGlobal.GetMapData("Map1");
+	const ApplicationGlobal::MapData* map = gGlobal.GetMapData("Map2");
 	if(map)
 	{
 		_mModelHandle = map->modelHandle;

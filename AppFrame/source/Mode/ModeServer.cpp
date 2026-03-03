@@ -251,7 +251,8 @@ int ModeServer::ProcessInit()
 	return 0;
 }
 
-int ModeServer::Process() {
+int ModeServer::Process() 
+{
 
 	// 現在の時間を取得
 	unsigned int t = GetNowCount();
@@ -259,8 +260,10 @@ int ModeServer::Process() {
 
 	// レイヤーの上の方から処理
 	lstModeBase::reverse_iterator ite = _vMode.rbegin();
-	for (; ite != _vMode.rend(); ++ite) {
-		if (!IsDelRegist(*ite)) {
+	for (; ite != _vMode.rend(); ++ite)
+	{
+		if (!IsDelRegist(*ite))
+		{
 			_nowMode = (*ite);
 
 			if (!pause) {
@@ -272,11 +275,13 @@ int ModeServer::Process() {
 			(*ite)->Process();
 
 			// Modeが無い場合 (Reboot時)
-			if (_vMode.empty()) {
+			if (_vMode.empty()) 
+			{
 				break;
 			}
 
-			if (!pause) {
+			if (!pause)
+			{
 				// カウンタ処理
 				(*ite)->StepCount();
 			}
