@@ -589,7 +589,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 		// ヒットした時だけ攻撃アニメ開始＆ロックON
 		if(anyhit)
 		{
-			_tanukiAttackAnimId = player->PlayAnimation("kougeki_2", false);
+			_tanukiAttackAnimId = player->PlayAnimation("kougeki", false);
 			auto soundAttack = gGlobal._soundServer->Get("10");
 			if(soundAttack)
 			{
