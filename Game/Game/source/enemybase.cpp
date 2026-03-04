@@ -702,6 +702,11 @@ bool EnemyBase::Process()
 	// プレイヤーの方向に徐々に回転
 	UpdateDirectionSequence();
 
+	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		UpdateRotationToPlayer();
+	}
+
 	return true;
 }
 
@@ -874,7 +879,7 @@ void EnemyBase::RenderDamageTime()
 }
 
 // 方向IDをベクトルに変換するヘルパー関数
-static vec::Vec3 DirIdToVec3(int id)
+vec::Vec3 EnemyBase::DirIdToVec3(int id)
 {
 	switch(id)
 	{
@@ -884,10 +889,11 @@ static vec::Vec3 DirIdToVec3(int id)
 	case 4: return vec::Vec3(-1.0f, 0.0f, 0.0f);   // 左
 	default: return vec::Vec3(0.0f, 0.0f, -1.0f);  // 無効なID
 	}
+
 }
 
 // 方向IDのシーケンスを設定するメソッド
-void EnemyBase::SetDirSequence(const std::vector<int>& sequence, float waitTime)
+void EnemyBase::SetDirSequence(const at::vet<int>& sequence, float waitTime)
 {
 	// シーケンスが空の場合はシーケンスを無効化
 	if(sequence.empty())
@@ -1000,10 +1006,23 @@ void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
 // 方向IDのシーケンスを更新するメソッド
 void EnemyBase::UpdateDirectionSequence()
 {
-	if(!_dirSeqActive || _dirSequence.empty()) { return; }
+	if(!_dirSeqActive || _dirSequence.empty()) {
+		return;
+	}
+
+	// スタン中は向きを変えない
+	if(IsStun()) {
+		return;
+	}
 
 	// シーケンスはプレイヤー検知中や追跡中には進めない
 	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		return;
+	}
+
+	// 音源への移動中や待機中は進めない
+	if(_isMovingToSound || _waitingAtSound || _isReturningToInitialPos)
 	{
 		return;
 	}
@@ -1015,7 +1034,14 @@ void EnemyBase::UpdateDirectionSequence()
 	{
 		_dirSeqIndex = (_dirSeqIndex + 1) % _dirSequence.size(); // シーケンスをループ
 		int id = _dirSequence[_dirSeqIndex];
-		_vDir = DirIdToVec3(id);
+		vec::Vec3 newDir = DirIdToVec3(id);
+
+		// 向きを正規化して設定
+		if(vec3::VSize(newDir) > 0.01f)
+		{
+			_vDir = vec3::VNorm(newDir);
+		}
+
 		_dirSeqTimer = _dirSeqWaitTime; // タイマーをリセット
 	}
 }

@@ -308,16 +308,31 @@ void ModeGame::CreateEnemy
 		enemyMove->SetDirSequenceFromJson(object);
 
 		// 巡回グループの割り当て
+		const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
+		if(stageData)
+		{
+			auto itInfo = stageData->patrolPointInfo.find(gid);
+			if(itInfo != stageData->patrolPointInfo.end() && !itInfo->second.empty())
+			{
+				enemyMove->SetPatrolPointInfo(itInfo->second);
+				enemyMove->CaptureInitialTransform();
+				_enemyBase.emplace_back(std::move(enemyMove));
+				return;
+			}
+		}
+
+		// フォールバック（従来の座標のみ）
 		auto it = patrolGroup.find(gid);
 		if(it != patrolGroup.end() && !it->second.empty())
 		{
 			enemyMove->SetPatrolPoint(it->second);
-			enemyMove->CaptureInitialTransform(); // 初期位置を保存
+			enemyMove->CaptureInitialTransform();
 		}
 
 		_enemyBase.emplace_back(std::move(enemyMove));
 		return;
 	}
+
 
 	// 犬
 	if(name == "Dog")

@@ -95,6 +95,8 @@ public:
 	void UpdateDirectionSequence();												// 向き変更のシーケンスの更新
 	void StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel);// 敵サウンドマネージャーから音源に向かって移動する処理を開始
 
+	static vec::Vec3 DirIdToVec3(int id);	// 方向IDをベクトルに変換するヘルパー関数
+
 protected:
 	uint32_t _enemyId; // 敵のID
 

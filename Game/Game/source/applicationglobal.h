@@ -31,10 +31,18 @@ public:
 		nlohmann::json json;
 	};
 
+	struct PatrolPointInfo
+	{
+		vec::Vec3 pos{}; // パトロールポイントの位置
+		int id = 0; // パトロールポイントのID
+		float waitTime = 0.0f; // 待機時間
+	};
+
 	struct StageData
 	{
 		at::vet<StageObjectData> object; // ステージオブジェクトのデータ
 		at::umtt < std::string, at::vet<vec::Vec3>> patrolGroup; // パトロールグループのデータ
+		at::umtc<std::string, at::vec<PatrolPointInfo>> patrolPointInfo; // パトロールポイントの情報
 	};
 
 	ApplicationGlobal();
