@@ -192,18 +192,13 @@ bool ObjectServer::ProcessInit()
 
 bool ObjectServer::LoadDate(const std::string stageName)
 {
-	// ApplicationGlobalからステージデータを取得
 	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(stageName);
 	if(stageData == nullptr)
 	{
-		return false; // ステージデータが見つからない
+		return false;
 	}
 
-	// ステージデータからマップタイプを決定
-	std::string mapTypeName = "Map1"; // デフォルト
-
-	// ステージデータからマップタイプを判定するロジック
-	// 例: ステージ名やオブジェクトデータから判定
+	std::string mapTypeName = "Map1";
 	if(stageName == "Stage1")
 	{
 		mapTypeName = "Map1";
@@ -213,19 +208,32 @@ bool ObjectServer::LoadDate(const std::string stageName)
 		mapTypeName = "Map2";
 	}
 
-	// マップオブジェクト生成
+	// 既存マップがあり、IDが違うなら作り直す
+	if(_map != nullptr && _map->GetMapId() != mapTypeName)
+	{
+		DeleteObject(_map);
+		ProcessInit();
+		_map = nullptr;
+	}
+
+	// マップがないなら作る
 	if(_map == nullptr)
 	{
 		MapType mapType = MapFactory::GetMapTypeFromString(mapTypeName);
-		_map = MapFactory::CreateMap(mapType);
-		if(_map != nullptr)
+		_map = MapFactory::CreateMap(mapType); 
+		if(_map == nullptr)
 		{
-			AddObject(_map);
+			return false;
 		}
-		else
-		{
-			return false; // マップ生成失敗
-		}
+
+		_map->SetMapId(mapTypeName);
+		AddObject(_map);
 	}
+	else
+	{
+		// 同じマップを継続利用する場合もIDは保証
+		_map->SetMapId(mapTypeName);
+	}
+
 	return true;
 }

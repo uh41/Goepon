@@ -11,6 +11,32 @@ bool MapBase::Initialize()
 // 終了
 bool MapBase::Terminate()
 {
+	// スカイスフィアモデルの削除
+	if(_iHandleSkySphere >= 0)
+	{
+		MV1DeleteModel(_iHandleSkySphere);
+		_iHandleSkySphere = -1;
+	}
+
+	// シャドウマップの削除
+	if(_iHandleShadowMap >= 0)
+	{
+		DeleteShadowMap(_iHandleShadowMap);
+		_iHandleShadowMap = -1;
+	}
+
+	// 地面テクスチャハンドルの削除
+	if(_ground_handle >= 0)
+	{
+		DeleteGraph(_ground_handle);
+		_ground_handle = -1;
+	}
+
+	// ベクターのクリア（メモリ解放）
+	_ground_vertex.clear();
+	_ground_index.clear();
+	_vBlockPos.clear();
+
 	return base::Terminate();
 }
 
