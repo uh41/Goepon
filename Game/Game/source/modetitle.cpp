@@ -36,9 +36,10 @@ bool ModeTitle::Initialize()
 			_player.reset();
 			return false;
 		}
+
 		// �Œ�ʒu�ɔz�u�iY���W��K�؂ɐݒ�j
-		_player->SetPos(vec::Vec3(70.0f, 0.0f, 0.0f));
-		_player->SetDir(vec::Vec3(0.0f, 0.0f, 0.0f));
+		_player->SetPos(vec::Vec3(70.0f, -50.0f, 0.0f));
+		_player->SetDir(vec::Vec3(1.0f, 0.0f, 0.0f));
 	}
 
 	// �^�C�g���p�̃J������쐬
@@ -141,10 +142,10 @@ bool ModeTitle::Render()
 	SetupCamera_Perspective(fov_rad);
 
 	// �K���f���`��
-	//if(_player)
-	//{
-	//	_player->Render();
-	//}
+	if(_player)
+	{
+		_player->Render();
+	}
 
 	return true;
 }
