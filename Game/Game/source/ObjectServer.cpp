@@ -207,6 +207,10 @@ bool ObjectServer::LoadDate(const std::string stageName)
 	{
 		mapTypeName = "Map2";
 	}
+	else if(stageName == "Stage3")
+	{
+		mapTypeName = "Map3";
+	}
 
 	// 既存マップがあり、IDが違うなら作り直す
 	if(_map != nullptr && _map->GetMapId() != mapTypeName)
