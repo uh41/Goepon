@@ -73,7 +73,6 @@ bool EnemyBase::Initialize()
 	_attachAnimDamage = "";
 	_attachAnimStan = "";
 	_attachAnimGetUp = "";
-	_attachAnimFound = "";
 
 	_effect = nullptr;
 
@@ -499,6 +498,30 @@ void EnemyBase::UpdateReturningToInitialPosition()
 	// 正規化して移動方向を取得
 	vec::Vec3 moveDirection = vec3::VNorm(toInitialPos);
 
+	// スタン中でなければ移動方向に向きを更新（移動前に向きを変える）
+	if (!IsStun())
+	{
+		// 移動方向に向きを徐々に変更
+		float currentAngle = atan2f(_vDir.x, _vDir.z);
+		float targetAngle = atan2f(moveDirection.x, moveDirection.z);
+
+		// 角度差を計算
+		float angleDiff = targetAngle - currentAngle;
+		while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+		while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+		// 回転速度を制限
+		if (abs(angleDiff) > _rotationSpeed)
+		{
+			angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
+		}
+
+		// 新しい角度を計算
+		float newAngle = currentAngle + angleDiff;
+		_vDir.x = sin(newAngle);
+		_vDir.z = cos(newAngle);
+	}
+
 	// 移動量を計算
 	vec::Vec3 movement = vec3::VScale(moveDirection, _returnSpeed);
 
@@ -518,30 +541,6 @@ void EnemyBase::UpdateReturningToInitialPosition()
 			_waitingForTeleport = true;
 			_teleportTimer = TELEPORT_WAIT_TIME;
 		}
-	}
-
-	if(!IsStun())
-	{
-		// 移動方向に向きを徐々に変更
-		float currentAngle = atan2f(_vDir.x, _vDir.z);
-		float targetAngle = atan2f(moveDirection.x, moveDirection.z);
-
-		// 角度差を計算
-		float angleDiff = targetAngle - currentAngle;
-		while(angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
-		while(angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
-
-		// 回転速度を制限
-		if(abs(angleDiff) > _rotationSpeed)
-		{
-			angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
-		}
-
-		// 新しい角度を計算
-		float newAngle = currentAngle + angleDiff;
-		_vDir.x = sin(newAngle);
-		_vDir.z = cos(newAngle);
-
 	}
 	// 初期位置に戻り中は検出状態を再度falseに設定（念のため）
 	_detectedPlayer = false;

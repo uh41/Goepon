@@ -152,7 +152,6 @@ protected:
 	std::string _attachAnimDamage;// ダメージアニメーション名
 	std::string _attachAnimStan;  // スタンアニメーション名
 	std::string _attachAnimGetUp; // 起き上がりアニメーション名
-	std::string _attachAnimFound; 
 
 	// 向き変更のシーケンス関連
 	at::vet<int> _dirSequence;		// 向き変更のシーケンス
