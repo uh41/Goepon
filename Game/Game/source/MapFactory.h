@@ -6,6 +6,7 @@ enum class MapType
 {
     Map1,
     Map2,
+    Map3,
     // 今後追加されるマップタイプ
 };
 

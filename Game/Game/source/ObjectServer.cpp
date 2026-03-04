@@ -216,10 +216,11 @@ bool ObjectServer::LoadDate(const std::string stageName)
 		_map = nullptr;
 	}
 
+	// マップがないなら作る
 	if(_map == nullptr)
 	{
 		MapType mapType = MapFactory::GetMapTypeFromString(mapTypeName);
-		_map = MapFactory::CreateMap(mapType);
+		_map = MapFactory::CreateMap(mapType); 
 		if(_map == nullptr)
 		{
 			return false;

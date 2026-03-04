@@ -271,6 +271,7 @@
     <ClCompile Include="source\MapFactory.cpp">
       <Filter>ソースファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClCompile>
+    <ClCompile Include="source\Map3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -346,6 +347,8 @@
     <ClInclude Include="source\MapFactory.h">
       <Filter>ヘッダーファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="source\Map3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -926,5 +929,8 @@
     <None Include="resource.py">
       <Filter>Python</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
 </Project>

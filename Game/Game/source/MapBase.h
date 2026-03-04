@@ -45,7 +45,7 @@ protected:
 	VECTOR _ground_pos_1;
 	VECTOR _ground_pos_2;
 	VECTOR _ground_pos_3;
-	std::array<VECTOR, 4> _ground_pos_list;
+	std::array<VECTOR, 4> _ground_pos_list; // 地面のテクスチャ座標用のテーブル
 
 	std::vector<mymath::BLOCKPOS> _vBlockPos;
 
