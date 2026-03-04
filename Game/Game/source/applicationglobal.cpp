@@ -208,6 +208,44 @@ bool ApplicationGlobal::LoadStageData(const std::string& stageName, const std::s
 				object.at("customId").get_to(gid);
 			}
 			stageData.patrolGroup[gid].push_back(pos);
+
+			PatrolPointInfo info{};
+			info.pos = pos;
+
+			if(object.contains("direction"))
+			{
+				auto& dir = object.at("direction");
+				if(dir.is_number_integer())
+				{
+					info.id = dir.get<int>();
+				}
+				else if(dir.is_string())
+				{
+					std::string dirStr = dir.get<std::string>();
+					if(!dirStr.empty())
+					{
+						info.id = std::stoi(dirStr);
+					}
+				}
+
+				if(object.contains("waittime"))
+				{
+					auto& waitTime = object.at("waittime");
+					if(waitTime.is_number())
+					{
+						info.waitTime = waitTime.get<float>();
+					}
+					else if(waitTime.is_string())
+					{
+						std::string waitTimeStr = waitTime.get<std::string>();
+						if(!waitTimeStr.empty())
+						{
+							info.waitTime = std::stof(waitTimeStr);
+						}
+					}
+				}
+			}
+			stageData.patrolPointInfo[gid].push_back(info);
 		}
 
 		stageData.object.push_back(objData);

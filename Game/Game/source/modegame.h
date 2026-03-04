@@ -50,6 +50,8 @@
 #include "modegameload.h"
 #include "StageManager.h"
 #include "henshinui.h"
+#include "counterui.h"
+#include "treasureui.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -167,6 +169,17 @@ public:
 	// 初期ステージIDを設定
 	void SetInitialStageId(const std::string& stageId);
 
+	using enemygroup = at::umtt<std::string, at::vet<vec::Vec3>>;
+
+	// 敵の生成関数
+	void CreateEnemy(const nlohmann::json& object,
+		const enemygroup& patrolGroup,
+		const enemygroup& dogMovementArea,
+		uint32_t& nextEnemyId,
+		MapBase* map);
+
+	at::spc<EnemySensor> CreateEnemySensor(float soundArea, MapBase* map);
+
 protected:
 	Camera* _camera;
 	Camera* _originalCamera;
@@ -212,6 +225,9 @@ protected:
 	at::spc<UiHp> _uiHp;
 	at::spc<UiMakimono> _uiMakimono;
 	at::spc<HenshinUi> _henshinUi;
+	at::spc<CounterUi> _counterUi;
+	at::spc<TreasureUi> _treasureUi;
+
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
 
@@ -230,6 +246,7 @@ protected:
 	at::spc<NakiEffect> _nakiEffect;
 
 	at::spc<SoundServer3D> _sound3D;
+	soundserver::SoundItemBase* _soundFinish;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

@@ -272,6 +272,7 @@
       <Filter>ソースファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClCompile>
     <ClCompile Include="source\Map3.cpp" />
+    <ClCompile Include="source\counterui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -380,6 +381,7 @@
       <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
     <ClInclude Include="source\treasureui.h" />
+    <ClInclude Include="source\counterui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">

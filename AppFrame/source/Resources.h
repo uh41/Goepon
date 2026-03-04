@@ -71,6 +71,7 @@ namespace ui
   inline constexpr const char* Light = "res/Object/building/Light.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
+  inline constexpr const char* Makimono = "res/UI/Makimono.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";
@@ -136,6 +137,7 @@ namespace mv1
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
+  inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";
   inline constexpr const char* fusama = "res/map/fusama.mv1";
   inline constexpr const char* bil1 = "res/Object/bil1/bil1.mv1";
   inline constexpr const char* Board = "res/Object/Board/Board.mv1";

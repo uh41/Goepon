@@ -2,6 +2,7 @@
 #include "enemybase.h"
 #include "appframe.h"
 #include "movepointcontroll.h"
+#include "applicationglobal.h"
 
 // 前方宣言
 class EnemySensor;
@@ -26,10 +27,15 @@ public:
 	void ProcessPatrol();
 	void ProcessReturnToPatrolPoint();
 
+	void SetPatrolWaitDirection(int id);// 待機中の向きを設定
+
 	bool IsPatrolling() const
 	{
 		return _isPatroll;
 	}
+
+	void SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointInfo>& points);
+
 
 	void OnDamageStart()override;
 	void OnDamageEnd()override;
@@ -60,5 +66,6 @@ protected:
 	float _patrolWaitTimer;		// 待機カウントダウン
 	float _patrolWaitDuration;	// 待機時間（秒）
 	vec::Vec3 _patrolWaitDir;	// 待機中に向く方向
+	at::vet<ApplicationGlobal::PatrolPointInfo> _patrolPointInfo;
 };
 
