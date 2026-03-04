@@ -1,17 +1,20 @@
 #pragma once
-#include "uibase.h"
 #include "PlayerBase.h"
+#include "counterui.h"
 
 namespace makimono
 {
-	static constexpr auto MAKIMONO_X = 1554.0f; // 巻物のX座標
-	static constexpr auto MAKIMONO_Y = 20.0f; // 巻物のY座標
-
+	static constexpr auto MAKIMONO_X = 1646; // 巻物のX座標 1646
+	static constexpr auto MAKIMONO_Y = 146; // 巻物のY座標 146
+	static constexpr auto KAKERU_X = 1746; // 掛ける画像X座標 1746
+	static constexpr auto KAKERU_Y = 146; // 掛ける画像Y座標 146
+	static constexpr auto MAKIMONO_COUNT_X = 0; // 巻物のカウントX座標 1809
+	static constexpr auto MAKIMONO_COUNT_Y = 0; // 巻物のカウントY座標 145
 }
 
-class UiMakimono :public UiBase
+class UiMakimono :public CounterUi
 {
-	typedef UiBase base;
+	typedef CounterUi base;
 public:
 	UiMakimono();
 	virtual ~UiMakimono();
@@ -27,8 +30,7 @@ private:
 	// プレイヤーの情報を取得
 	PlayerBase* _player;
 
-	// 右下配置用
-	int _padding = 15;     // 画面端からの余白
-	float _scale = 1.0f;   // 必要なら 0.5f とかにして縮小
+	int _handleMakimono;
+	int _handleUiX;
 };
 

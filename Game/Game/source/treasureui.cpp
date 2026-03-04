@@ -69,7 +69,7 @@ bool TreasureUi::Render()
 	if(_remainCount > 0)
 	{
 		DrawGraph(treasure::NOKORI_X, treasure::KAKERU_Y, _handleNokori, TRUE);
-		RenderNumber(_remainCount);
+		RenderNumber(_remainCount, counter::COUNTER_TREASURE_X,counter::COUNTER_TREASURE_Y, false);
 	}
 	else
 	{

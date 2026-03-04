@@ -57,23 +57,28 @@ bool CounterUi::Process()
 	return true;
 }
 
-void CounterUi::RenderNumber(int number)
+void CounterUi::RenderNumber(int number,int x, int y, bool drawZero)
 {
 	if(number < 0 || number >99)
 	{
 		return;
 	}
 
+	if(!drawZero && number == 0)
+	{
+		return;
+	}
+
 	if(number < 10)
 	{
-		DrawGraph(counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y, _handleNum[number], TRUE);
+		DrawGraph(x, y, _handleNum[number], TRUE);
 	}
 	else
 	{
 		int tens = number / 10; // 10‚ÌˆÊ
 		int ones = number % 10; // 1‚ÌˆÊ
-		DrawGraph(counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y, _handleNum[tens], TRUE);
-		DrawGraph(counter::COUNTER_TREASURE_X + counter::COUNTER_TREASURE_NEXT_X, counter::COUNTER_TREASURE_Y, _handleNum[ones], TRUE);
+		DrawGraph(x, y, _handleNum[tens], TRUE);
+		DrawGraph(x + counter::COUNTER_TREASURE_NEXT_X, y, _handleNum[ones], TRUE);
 	}
 }
 
@@ -81,7 +86,7 @@ bool CounterUi::Render()
 {
 	base::Render();
 
-	RenderNumber(_treasureCount);
+	RenderNumber(_treasureCount, counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y);
 
 	return true;
 }
