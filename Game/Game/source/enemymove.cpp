@@ -355,6 +355,12 @@ void EnemyMove::OnDamageEnd()
 // 敵サウンドマネージャーから音源に向かって移動する処理を開始
 void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 {
+	// スタン中は音に反応しない
+	if (IsStun())
+	{
+		return;
+	}
+
 	// 追跡/プレイヤー検出中は音より優先（既存方針に合わせる）
 	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{

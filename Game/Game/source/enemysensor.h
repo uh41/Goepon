@@ -93,7 +93,7 @@ protected:
 
 	int _detectionFrameCount;
 	static constexpr int DetectionFrame = 5;	// 索敵結果を表示するフレーム数
-	bool _CanDetectionResult;
+	bool _CanDetectionResult;					// 索敵結果を表示するかどうかのフラグ
 
 	// 索敵範囲の描画用キャッシュとタイマー
 	void UpdateDetectionTimer();		  
@@ -110,4 +110,8 @@ protected:
 
 	// キャッシュを再計算する（描画用。内部で重い判定を実行）
 	void RecalculateDetectionSector() const;
+
+	static constexpr int DetectionDelayFrames = 35; 
+	bool _isDetectionDelay; 
+	int _detectionDelayCounter;  // 遅延カウンター
 };
