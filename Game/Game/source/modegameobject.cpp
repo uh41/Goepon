@@ -705,12 +705,6 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
-	}
-
 	// UIが参照するプレイヤーを「現在表示中」に合わせる
 	PlayerBase* currentPlayer = nullptr;
 	if (_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
@@ -727,12 +721,50 @@ bool ModeGame::ObjectRender()
 	}
 
 	// 各敵のセンサーを個別に描画
-	for(auto& enemy : _enemyBase)
+	// 変更: プレイヤーから半径内にいる敵だけ索敵範囲を描画するように変更
+	if (currentPlayer)
 	{
-		if(enemy->IsAlive() && enemy->GetEnemySensor())
+		const float detectionRadius = 1000.0f; 
+		for (auto& enemy : _enemyBase)
 		{
-			enemy->GetEnemySensor()->Render();
+			if (!enemy || !enemy->IsAlive())
+			{
+				continue;
+			}
+
+			auto sensor = enemy->GetEnemySensor();
+			if (!sensor)
+			{
+				continue;
+			}
+
+			// XZ平面で距離を測ってプレイヤーの半径内か判定
+			vec::Vec3 vecToPlayer = vec3::VSub(enemy->GetPos(), currentPlayer->GetPos());
+			vecToPlayer.y = 0.0f;
+			const float dist = vec3::VSize(vecToPlayer);
+
+			if (dist <= detectionRadius)
+			{
+				sensor->Render();
+			}
 		}
+	}
+	else
+	{
+		// プレイヤー不在なら従来どおり全部描画（安全策）
+		for (auto& enemy : _enemyBase)
+		{
+			if (enemy->IsAlive() && enemy->GetEnemySensor())
+			{
+				enemy->GetEnemySensor()->Render();
+			}
+		}
+	}
+
+	// エフェクト
+	for (auto& effectBase : _effectBase)
+	{
+		effectBase->Render();
 	}
 
 	return true;

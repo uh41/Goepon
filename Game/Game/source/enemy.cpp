@@ -41,7 +41,6 @@ bool Enemy::Initialize()
 	_attachAnimDamage = "bushi_okkake";
 	_attachAnimStan = "bushi_tentou";
 	_attachAnimGetUp = "bushi_idle";
-	//_attachAnimFound = "kari_walk";
 	// タイマー初期化等は base にて行われている
 	return true;
 }
