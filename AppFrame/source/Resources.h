@@ -135,6 +135,7 @@ namespace mv1
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
+  inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";
   inline constexpr const char* fusama = "res/map/fusama.mv1";
   inline constexpr const char* bil1 = "res/Object/bil1/bil1.mv1";
   inline constexpr const char* Board = "res/Object/Board/Board.mv1";
