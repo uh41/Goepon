@@ -16,7 +16,7 @@
 bool Player::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	_handle = MV1LoadModel(mv1::tanuhuman0304_2);
+	_handle = MV1LoadModel(mv1::SK_multimotionTanuHuman_06);
 	_iAttachIndex = -1;
 	_animId = -1;
 	// ステータスを「無し」に設定
