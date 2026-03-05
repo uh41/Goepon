@@ -3,15 +3,15 @@
 
 TreasureUi::TreasureUi()
 {
-	Initialize();
+
 }
 
 bool TreasureUi::Initialize()
 {
 	base::Initialize();
-	_handleDeguti = ResourceServer::LoadGraph(ui::Deguti);
-	_handleNokori = ResourceServer::LoadGraph(ui::UI_nokori);
-	_handleMakimono = ResourceServer::LoadGraph(ui::Makimono);
+	_handleDeguti = LoadGraph(ui::Deguti);
+	_handleNokori = LoadGraph(ui::UI_nokori);
+	_handleMakimono = LoadGraph(ui::Makimono);
 
 	_remainCount = 0;
 
@@ -45,9 +45,11 @@ bool TreasureUi::Process()
 {
 	base::Process();
 
-	for (const auto& treasure : _treasure)
+	_remainCount = 0;
+
+	for(const auto& treasure : _treasure)
 	{
-		if (!treasure->IsOpen())
+		if(treasure && !treasure->IsOpen())
 		{
 			_remainCount++;
 		}
@@ -59,7 +61,8 @@ bool TreasureUi::Process()
 bool TreasureUi::Render()
 {
 	base::Render();
-	if (_handleDeguti == -1 || _handleNokori == -1)
+
+	if(_handleDeguti == -1 || _handleNokori == -1 || _handleMakimono == -1)
 	{
 		return false;
 	}
@@ -69,14 +72,12 @@ bool TreasureUi::Render()
 	if(_remainCount > 0)
 	{
 		DrawGraph(treasure::NOKORI_X, treasure::KAKERU_Y, _handleNokori, TRUE);
-		RenderNumber(_remainCount, counter::COUNTER_TREASURE_X,counter::COUNTER_TREASURE_Y, false);
+		RenderNumber(_remainCount, counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y, false);
 	}
 	else
 	{
 		DrawGraph(treasure::DEGUTI_X, treasure::DEGUTI_Y, _handleDeguti, TRUE);
 	}
-	
-
 
 	return true;
 }

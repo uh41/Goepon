@@ -70,9 +70,13 @@ namespace texture
 namespace ui
 {
   inline constexpr const char* Light = "res/Object/building/Light.png";
+  inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
+  inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";
+  inline constexpr const char* Mokuhyou = "res/UI/Mokuhyou.png";
+  inline constexpr const char* TailAtacck = "res/UI/TailAtacck.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";

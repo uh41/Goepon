@@ -347,36 +347,37 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	{
 		return false;
 	}
-	
+
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
 		_isOpeningTreasure = false;
 		_treasureHoldSec = 0.0f;
+		_treasureOpenUi->SetVisible(false);
 		return false;
 	}
-	
+
 	const int key = ApplicationMain::GetInstance()->GetKey();
 	const int holdA = (key & PAD_INPUT_1) != 0;
 
 	bool inAnyTreasure = false; // どれか一つでも当たればtrue
 
 	// 宝箱の指定フレームで判定
-	for (const auto& sp : treasures)
+	for(const auto& sp : treasures)
 	{
 		Treasure* treasure = sp.get();
-		if (!treasure)
+		if(!treasure)
 		{
 			continue;
 		}
 
 		// すでに開いているなら(おそらくアニメーションが届いたらこちらの条件を変更)
-		if (!treasure->IsVisible())
+		if(!treasure->IsVisible())
 		{
 			continue;
 		}
 		const auto handleTreasure = treasure->GetModelHandle();
-		const auto OpenCollision   = treasure->GetOpenCollisionFrame();
+		const auto OpenCollision = treasure->GetOpenCollisionFrame();
 		if(handleTreasure < 0 || OpenCollision < 0)
 		{
 			continue;
@@ -391,7 +392,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			player->GetColSubY(),
 			hitPos
 		);
-		if (!inTreasure)
+		if(!inTreasure)
 		{
 			continue;
 		}
@@ -405,12 +406,39 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
 
+			// TreasureOpenUiを表示（プレイヤーの位置で）
+			if(_treasureOpenUi)
+			{
+				// 現在表示中のプレイヤーの座標を取得
+vec::Vec3 displayPlayerPos;
+if(_bShowTanuki && _playerTanuki)
+{
+	displayPlayerPos = _playerTanuki->GetPos();
+}
+else if(_showMonoPlayer && _playerMono)
+{
+	displayPlayerPos = _playerMono->GetPos();
+}
+else if(_player)
+{
+	displayPlayerPos = _player->GetPos();
+}
+
+_treasureOpenUi->SetPos(displayPlayerPos);
+_treasureOpenUi->SetVisible(true);
+_treasureOpenUi->SetSize(100);
+			}
+
 			continue;
 		}
-		else 
+		else
 		{
+			if(_treasureOpenUi)
+			{
+				_treasureOpenUi->SetVisible(false);
+			}
 			// 開け始めの1回だけ音波を発生
-			if (!_isOpeningTreasure)
+			if(!_isOpeningTreasure)
 			{
 				// 宝箱を開けた時の音波を発生
 				EnemySoundManager::GetInstance()->EmitSound(
@@ -453,8 +481,13 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				_counterUi->DecreaseTreasureCount();
 			}
 
+			if(_treasureOpenUi)
+			{
+				_treasureOpenUi->SetVisible(false); // 開けUIを消す
+			}
+
 			// エフェクト再生
-			if (_doyaEffect)
+			if(_doyaEffect)
 			{
 				_doyaEffect->SetTargetPlayer(player);
 				_doyaEffect->PlayEffect(treasure->GetPos());
@@ -473,16 +506,24 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
 	}
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
-	if (!inAnyTreasure || !holdA)
+	if(!inAnyTreasure)
 	{
-		EndCinematicCamera();
-		_isOpeningTreasure = false;
-		_treasureHoldSec = 0.0f;
-		auto sound = gGlobal._soundServer->Get("60");
-		if(sound && sound->IsPlay())
+		if(_treasureOpenUi)
 		{
-			sound->Stop();
+			_treasureOpenUi->SetVisible(false); // 開けUIを消す
 		}
+		if(!holdA)
+		{
+			EndCinematicCamera();
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+			auto sound = gGlobal._soundServer->Get("60");
+			if(sound && sound->IsPlay())
+			{
+				sound->Stop();
+			}
+		}
+
 	}
 	return false;
 }
@@ -536,6 +577,8 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 
 bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 {
+	_enemiesInAttackRange.clear();
+
 	// 攻撃アニメ再生中なら入力を受け付けない（終了したら解除）
 	if(_isTanukiAttackPlaying)
 	{
@@ -551,39 +594,43 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
 
-	// 攻撃中は上で return 済みなので、ここに来たら新規受付OK
-	if(trg & PAD_INPUT_2)
+	player = _player.get();
+
+	float halfAngle = DEG2RAD(60.0f); // 60度
+	float rad = 240.0f; // 半径240
+
+	CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
+
+	bool anyhit = false;
+
+	// 全ての敵に対して範囲チェック（攻撃ボタンが押されていなくても実行）
+	for(auto& enemy : enemy)
 	{
-		player = _player.get();
-
-		float halfAngle = DEG2RAD(60.0f); // 60度
-		float rad = 240.0f; // 半径100
-
-		CollisionManager::GetInstance()->SetDebugDraw(_d_view_collision);
-
-		bool anyhit = false;
-
-		for(auto& enemy : enemy)
+		if(!enemy->IsAlive())
 		{
-			if(!enemy->IsAlive())
-			{
-				continue;
-			}
+			continue;
+		}
 
-			if(enemy->GetIsInvincible())
-			{
-				continue;
-			}
+		if(enemy->GetIsInvincible())
+		{
+			continue;
+		}
 
-			bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
-				enemy->GetPos(),
-				vec3::VScale(enemy->GetDir(), -1.0f),
-				rad,
-				halfAngle,
-				player->GetPos()
-			);
+		bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
+			enemy->GetPos(),
+			vec3::VScale(enemy->GetDir(), -1.0f),
+			rad,
+			halfAngle,
+			player->GetPos()
+		);
 
-			if(hit)
+		if(hit)
+		{
+			// 範囲内の敵をリストに追加（UI表示用）
+			_enemiesInAttackRange.push_back(enemy.get());
+
+			// 攻撃ボタンが押された場合のみダメージ処理
+			if(trg & PAD_INPUT_2)
 			{
 				anyhit = true;
 				enemy->StartDamage();
@@ -591,20 +638,18 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 				_knockdownMessageSec = 1.0f; // 表示時間 1秒
 			}
 		}
+	}
 
-		// ヒットした時だけ攻撃アニメ開始＆ロックON
-		if(anyhit)
+	// ヒットした時だけ攻撃アニメ開始＆ロックON
+	if(anyhit)
+	{
+		_tanukiAttackAnimId = player->PlayAnimation("kougeki", false);
+		auto soundAttack = gGlobal._soundServer->Get("10");
+		if(soundAttack)
 		{
-			_tanukiAttackAnimId = player->PlayAnimation("kougeki", false);
-			auto soundAttack = gGlobal._soundServer->Get("10");
-			if(soundAttack)
-			{
-				soundAttack->Play();
-			}
-			_isTanukiAttackPlaying = (_tanukiAttackAnimId != -1);
+			soundAttack->Play();
 		}
-
-		return anyhit;
+		_isTanukiAttackPlaying = (_tanukiAttackAnimId != -1);
 	}
 
 	return false;
