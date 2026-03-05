@@ -483,6 +483,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			_treasureTakenCount++;      // 取得数を増やす
 			_treasureHoldSec = 0.0f;    // 開けるのに必要な時間のカウンタをリセット
 			treasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
+			EndCinematicCamera();		// 演出カメラを終了
 			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
 
 			// お宝のカウントを減らす
