@@ -29,7 +29,7 @@ bool EnemyMove::Initialize()
 	_fColSubY = 100.0f;
 	// コリジョン半径の設定
 	_fCollisionR = 30.0f;
-	_fCollisionWeight = 10.0f;
+	_fCollisionWeight = 100.0f;
 
 	_fHp = 30.0f;
 
