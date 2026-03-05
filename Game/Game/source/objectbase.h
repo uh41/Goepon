@@ -40,6 +40,7 @@ public:
 	void SetHandle(int handle) { _handle = handle; }
 
 	// ゲッター
+	auto GetPos() const { return _vPos; }
 	auto& GetHandleMap()
 	{
 		return _iHandleMap;

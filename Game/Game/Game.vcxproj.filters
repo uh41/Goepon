@@ -272,6 +272,7 @@
       <Filter>ソースファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClCompile>
     <ClCompile Include="source\Map3.cpp" />
+    <ClCompile Include="source\TreasureBase.cpp" />
     <ClCompile Include="source\counterui.cpp" />
     <ClCompile Include="source\attackui.cpp" />
     <ClCompile Include="source\treasureopenui.cpp" />
@@ -353,6 +354,7 @@
       <Filter>ヘッダーファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClInclude>
     <ClInclude Include="source\Map3.h" />
+    <ClInclude Include="source\TreasureBase.h" />
     <ClInclude Include="source\attackui.h" />
     <ClInclude Include="source\treasureopenui.h" />
     <ClInclude Include="source\dashui.h" />

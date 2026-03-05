@@ -22,6 +22,7 @@
 #include "enemymove.h"
 #include "enemydog.h"
 #include "treasure.h"
+#include "TreasureBase.h"
 #include "map.h"
 #include "cube.h"
 #include "enemysensor.h"
@@ -98,8 +99,8 @@ public:
 	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
 	bool PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>& makimono);// プレイヤーと巻物の当たり判定処理
     // キャラと宝箱の当たり判定処理
-	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasures);
-	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<Treasure>& treasures);
+	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<TreasureBase>& treasures);
+	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<TreasureBase>& treasures);
 	// プレイヤーとゴールの当たり判定
 	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
 
@@ -216,7 +217,8 @@ protected:
 	at::spc<PlayerTanuki> _playerTanuki;
 	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
-	at::vspc<Treasure> _treasure;
+	at::vspc<TreasureBase> _treasureBase;
+	at::vspc<Treasure>     _treasure;
 	// 巻物
 	at::vspc<Makimono> _makimono;
 	//ステージベース

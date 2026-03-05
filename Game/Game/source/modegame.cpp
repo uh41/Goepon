@@ -440,7 +440,7 @@ bool ModeGame::LoadStageData()
 			auto treasure = std::make_shared<Treasure>();
 			treasure->Initialize();
 			treasure->SetJsonDataUE(object);
-			_treasure.emplace_back(treasure);
+			_treasureBase.emplace_back(treasure);
 			continue;
 		}
 
@@ -652,22 +652,22 @@ bool ModeGame::Process()
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure);
-		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure);
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
+		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasureBase);
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else if(_showMonoPlayer)
 	{
 		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
-		//const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure);
-		//CharaToTreasureOpenCollision(_playerMono.get(), _treasure);
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasureBase);
+		CharaToTreasureOpenCollision(_playerMono.get(), _treasureBase);
 		PlayerCameraInfo(_playerMono.get());
 	}
 	else
 	{
 		EscapeCollision(_player.get(), _objectServer->GetMap());
-		//const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure);
-		//CharaToTreasureOpenCollision(_player.get(), _treasure);
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasureBase);
+		CharaToTreasureOpenCollision(_player.get(), _treasureBase);
 		PlayerCameraInfo(_player.get());
 	}
 
@@ -689,6 +689,8 @@ bool ModeGame::Process()
 
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
+
+	bool hasCollision = false;
 
 	// プレイヤーと敵の接触処理
 	if(playerBase && playerBase->IsAlive())
@@ -757,8 +759,20 @@ bool ModeGame::Process()
 				}
 				// 実際の押し出し（カプセル）
 				// 敵に接触したときに実際に行う処理はここで記入
+				hasCollision = true;
 			}
 		}
+	}
+
+	// プレイヤーと敵の接触があった場合、敵の音を発生させる
+	if (hasCollision && playerBase&& _bShowTanuki)
+	{
+		EnemySoundManager::GetInstance()->EmitSound(
+			playerBase->GetPos(),  // 位置
+			1,					// 音の大きさレベル（1-3で調整）
+			400.0f,				// 音波の最大半径
+			10.0f				// 音波の速度
+		);
 	}
 
 	// デバック用タイマー（転ばせる）
