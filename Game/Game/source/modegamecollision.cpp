@@ -351,9 +351,22 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
-		_isOpeningTreasure = false;
-		_treasureHoldSec = 0.0f;
-		_treasureOpenUi->SetVisible(false);
+		// 空中に行った場合は演出カメラを終了
+		if(_isOpeningTreasure)
+		{
+			EndCinematicCamera();
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+			auto sound = gGlobal._soundServer->Get("60");
+			if(sound && sound->IsPlay())
+			{
+				sound->Stop();
+			}
+		}
+		if(_treasureOpenUi)
+		{
+			_treasureOpenUi->SetVisible(false);
+		}
 		return false;
 	}
 
@@ -403,30 +416,26 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		// Aボタンを押していなかったら開けない
 		if(!holdA)
 		{
+			// Aボタンが離されたタイミングで演出カメラを終了
+			if(_isOpeningTreasure)
+			{
+				EndCinematicCamera();
+				_isOpeningTreasure = false;
+				_treasureHoldSec = 0.0f;
+				auto sound = gGlobal._soundServer->Get("60");
+				if(sound && sound->IsPlay())
+				{
+					sound->Stop();
+				}
+			}
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
 
 			// TreasureOpenUiを表示（プレイヤーの位置で）
 			if(_treasureOpenUi)
 			{
-				// 現在表示中のプレイヤーの座標を取得
-vec::Vec3 displayPlayerPos;
-if(_bShowTanuki && _playerTanuki)
-{
-	displayPlayerPos = _playerTanuki->GetPos();
-}
-else if(_showMonoPlayer && _playerMono)
-{
-	displayPlayerPos = _playerMono->GetPos();
-}
-else if(_player)
-{
-	displayPlayerPos = _player->GetPos();
-}
-
-_treasureOpenUi->SetPos(displayPlayerPos);
-_treasureOpenUi->SetVisible(true);
-_treasureOpenUi->SetSize(100);
+				_treasureOpenUi->SetVisible(true);
+				_treasureOpenUi->SetSize(100);
 			}
 
 			continue;
@@ -450,6 +459,7 @@ _treasureOpenUi->SetSize(100);
 			}
 		}
 
+		// 開ける処理開始
 		if(!_isOpeningTreasure)
 		{
 			TreasureOpeningCameraControl();
@@ -508,11 +518,8 @@ _treasureOpenUi->SetSize(100);
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
 	if(!inAnyTreasure)
 	{
-		if(_treasureOpenUi)
-		{
-			_treasureOpenUi->SetVisible(false); // 開けUIを消す
-		}
-		if(!holdA)
+		// 宝箱範囲外に出た場合、演出カメラを終了
+		if(_isOpeningTreasure)
 		{
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
@@ -522,6 +529,11 @@ _treasureOpenUi->SetSize(100);
 			{
 				sound->Stop();
 			}
+		}
+
+		if(_treasureOpenUi)
+		{
+			_treasureOpenUi->SetVisible(false); // 開けUIを消す
 		}
 
 	}
