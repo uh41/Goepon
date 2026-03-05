@@ -20,6 +20,10 @@ bool EnemySensor::Initialize()
 	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置初期化
 	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマー初期化
 
+	// 検知遅延の初期化
+	_detectionInfo.detectionDelayTimer = 0.0f;
+	_detectionInfo.isInDetectionDelay = false;
+
 	_detectionFrameCount = 0;
 	_CanDetectionResult = false;
 
@@ -115,10 +119,48 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 			_detectionInfo.timer = DETECTION_DISPLAY_TIME;	// タイマーリセット
 		}
 
-		// プレイヤーを検出中は常に位置を更新し、追跡タイマーをリセット
+		// プレイヤーを検出中は常に位置を更新
 		_detectionInfo.lastKnownPlayerPos = playerPos;	// 最後に確認された位置更新
-		_detectionInfo.isChasing = true;				// 追跡中フラグセット
-		_detectionInfo.chaseTimer = CHASE_TIME;			// 追跡タイマーリセット
+
+		// 追跡開始に遅延
+		if (!_detectionInfo.isChasing)
+		{
+			// まだ追跡していない場合
+			if (!_detectionInfo.isInDetectionDelay)
+			{
+				// 遅延開始
+				_detectionInfo.isInDetectionDelay = true;
+				_detectionInfo.detectionDelayTimer = DETECTION_DELAY_TIME;
+			}
+			else
+			{
+				// 遅延タイマーを減算
+				_detectionInfo.detectionDelayTimer -= 1.0f / 60.0f;
+
+				// 遅延時間が経過したら追跡開始
+				if (_detectionInfo.detectionDelayTimer <= 0.0f)
+				{
+					_detectionInfo.isChasing = true;
+					_detectionInfo.chaseTimer = CHASE_TIME;
+					_detectionInfo.isInDetectionDelay = false;
+					_detectionInfo.detectionDelayTimer = 0.0f;
+				}
+			}
+		}
+		else
+		{
+			// すでに追跡中の場合は追跡タイマーをリセット
+			_detectionInfo.chaseTimer = CHASE_TIME;
+		}
+	}
+	else
+	{
+		// プレイヤーが範囲外に出た場合、遅延状態をリセット
+		if (_detectionInfo.isInDetectionDelay)
+		{
+			_detectionInfo.isInDetectionDelay = false;
+			_detectionInfo.detectionDelayTimer = 0.0f;
+		}
 	}
 
 	_CanDetectionResult = detected;
@@ -182,6 +224,10 @@ void EnemySensor::ResetDetection()
 	_detectionInfo.isChasing = false;	// 追跡中フラグリセット
 	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置リセット
 	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマーリセット
+
+	// 検知遅延のリセット
+	_detectionInfo.isInDetectionDelay = false;
+	_detectionInfo.detectionDelayTimer = 0.0f;
 
 	_detectionFrameCount = 0;
 	_CanDetectionResult = false;

@@ -133,7 +133,21 @@ bool Enemy::Process()
 			UpdateChasing();
 
 			// プレイヤーを検出している、または追跡中の場合のみ WALK
-			if(_detectedPlayer || _enemySensor->IsChasing())
+			if(_detectedPlayer)
+			{
+				_status = STATUS::WAIT;
+				_isReturningToInitialPos = false;
+
+				// 音源への移動と待機を中断
+				_isMovingToSound = false;
+				_waitingAtSound = false;
+				_soundWaitTimer = 0.0f;
+
+				// 音検知タイマーをリセット
+				_soundDetectionActive = false;
+				_soundDetectionTimer = 0.0f;
+			}
+			if (_enemySensor->IsChasing())
 			{
 				_status = STATUS::FOUND;
 				_isReturningToInitialPos = false;

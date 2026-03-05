@@ -20,6 +20,9 @@ struct DetectionInfo
 	bool isChasing;					// 追跡状態かどうか
 	vec::Vec3 lastKnownPlayerPos;	// 最後に検出されたプレイヤーの位置
 	float chaseTimer;				// 追跡状態の経過時間
+	// 追加: 検知遅延用
+	float detectionDelayTimer;    // 検知してから追跡開始までの遅延タイマー
+	bool isInDetectionDelay;      // 遅延中フラグ
 };
 
 class EnemySensor : public EnemyBase
@@ -92,8 +95,8 @@ protected:
 	static constexpr float CHASE_TIME = 5.0f;
 
 	int _detectionFrameCount;
-	static constexpr int DetectionFrame = 5;	// 索敵結果を表示するフレーム数
-	bool _CanDetectionResult;					// 索敵結果を表示するかどうかのフラグ
+	static constexpr int DetectionFrame = 1;	
+	bool _CanDetectionResult;					
 
 	// 索敵範囲の描画用キャッシュとタイマー
 	void UpdateDetectionTimer();		  
@@ -111,7 +114,5 @@ protected:
 	// キャッシュを再計算する（描画用。内部で重い判定を実行）
 	void RecalculateDetectionSector() const;
 
-	static constexpr int DetectionDelayFrames = 35; 
-	bool _isDetectionDelay; 
-	int _detectionDelayCounter;  // 遅延カウンター
+	static constexpr float DETECTION_DELAY_TIME = 1.0f;
 };

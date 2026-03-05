@@ -492,7 +492,14 @@ bool EnemyMove::Process()
 		_isReturningToInitialPos = false;
 		_isPatroll = false;
 	}
-	else if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	else if(_detectedPlayer)
+	{
+		_status = STATUS::WAIT;
+		UpdateChasing();
+		_isReturningToInitialPos = false;
+		_isPatroll = false;		// 巡回停止
+	}
+	else if (_enemySensor && _enemySensor->IsChasing())
 	{
 		_status = STATUS::FOUND;
 		UpdateChasing();
