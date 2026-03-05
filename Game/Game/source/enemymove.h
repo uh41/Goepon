@@ -11,8 +11,6 @@ class EnemyMove : public EnemyBase
 {
 	typedef EnemyBase base;
 public:
-	EnemyMove();
-	~EnemyMove();
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
@@ -48,7 +46,7 @@ protected:
 	vec::Vec3 _savePoint;				// 戻る前の位置を保存
 
 	// 初期位置に戻る処理を開始
-	void StartReturningToInitialPosition();		
+	void ReturnInitialPos();		
 
 	// テレポート状態のリセット
 	void ResetTeleport();

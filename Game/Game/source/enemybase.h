@@ -35,11 +35,11 @@ public:
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
 	// 敵が初期位置に戻り中かどうかの判定（検知停止用）
-	bool IsReturningToInitialPosition() const { return _isReturningToInitialPos; }
+	bool IsReturningToInitialPosition() const { return _isReturning; }
 
 	// 初期位置に戻る処理
-	void UpdateReturningToInitialPosition();	// 初期位置に戻る更新処理
-	void StartReturningToInitialPosition();		// 初期位置に戻る処理を開始
+	void UpdateReturnInitialPos();	// 初期位置に戻る更新処理
+	void ReturnInitialPos();		// 初期位置に戻る処理を開始
 	bool IsAtInitialPosition() const;			// 初期位置にいるかどうかをチェック
 
 	// プレイヤーの方向を向く処理
@@ -113,7 +113,7 @@ protected:
 	// 初期位置に戻る機能
 	vec::Vec3 _initialPosition;		// 初期位置
 	vec::Vec3 _initialDirection;	// 初期向き
-	bool _isReturningToInitialPos;	// 初期位置に戻り中かどうか
+	bool _isReturning;				// 初期位置に戻り中かどうか
 	float _returnSpeed;				// 初期位置に戻る速度
 
 	// 検知終了後の待機処理用

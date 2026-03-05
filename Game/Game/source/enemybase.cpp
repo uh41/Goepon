@@ -44,7 +44,7 @@ bool EnemyBase::Initialize()
 	_isMoving = false;								// 移動中フラグの初期化
 
 	// 初期位置に戻る機能の初期化
-	_isReturningToInitialPos = false;	// 初期位置に戻り中フラグの初期化
+	_isReturning = false;	// 初期位置に戻り中フラグの初期化
 	_returnSpeed = 1.5f;				// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
@@ -113,7 +113,7 @@ void EnemyBase::ResetTeleport()
 void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 {
 	// 初期位置に戻り中は検出を無視
-	if(_isReturningToInitialPos)
+	if(_isReturning)
 	{
 		return;
 	}
@@ -125,7 +125,7 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 	_playerPos = playerPos;	// 検出したプレイヤーの位置を保存
 
 	// プレイヤーを検出したら初期位置に戻るのを中断
-	_isReturningToInitialPos = false;
+	_isReturning = false;
 
 	// テレポート関連をリセット
 	ResetTeleport();
@@ -181,12 +181,12 @@ void EnemyBase::OnPlayerLost()
 }
 
 // 初期位置に戻る処理を開始
-void EnemyBase::StartReturningToInitialPosition()
+void EnemyBase::ReturnInitialPos()
 {
 	// 既に初期位置にいる場合は何もしない
 	if(!IsAtInitialPosition())
 	{
-		_isReturningToInitialPos = true; // 初期位置に戻り始める
+		_isReturning = true; // 初期位置に戻り始める
 		_isMoving = false;				 // 他の移動を停止
 
 		// テレポート関連をリセット
@@ -327,7 +327,7 @@ void EnemyBase::StartDamage()
 	_isInvincible = true;
 	_attachStage = 1;// ダメージステージに移行
 	_stanTimer = 0.0f;
-	_isReturningToInitialPos = false;
+	_isReturning = false;
 	_waitingForTeleport = false;
 	_teleportTimer = 0.0f;
 
@@ -433,9 +433,9 @@ void EnemyBase::UpdateDamageAnimation()
 }
 
 // 初期位置に戻る更新処理
-void EnemyBase::UpdateReturningToInitialPosition()
+void EnemyBase::UpdateReturnInitialPos()
 {
-	if(!_isReturningToInitialPos) return;
+	if(!_isReturning) return;
 
 	// 初期位置に戻り中は常に検出状態をfalseに保つ
 	_detectedPlayer = false;
@@ -455,7 +455,7 @@ void EnemyBase::UpdateReturningToInitialPosition()
 			{
 				_vDir = _initialDirection;
 			}
-			_isReturningToInitialPos = false;	// 初期位置に戻り完了
+			_isReturning = false;				// 初期位置に戻り完了
 			_waitingForTeleport = false;		// テレポート待機終了
 			_teleportTimer = 0.0f;				// テレポート完了後のタイマーリセット
 			_effect->PlayEffect(_vPos);			// テレポート後のエフェクト
@@ -474,7 +474,7 @@ void EnemyBase::UpdateReturningToInitialPosition()
 	{
 		_vPos = _initialPosition;
 		_vDir = _initialDirection;
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 
 		_detectedPlayer = false;
 		if(_enemySensor)
@@ -827,7 +827,7 @@ void EnemyBase::UpdateChasing()
 		UpdateRotationToPlayer();
 
 		// 初期位置に戻るのを停止
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 
 		// 音源への移動を中断
 		_isMovingToSound = false;
@@ -1035,7 +1035,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 	{
 	case 1:
 		// レベル1: 小さな音（例：足音）- 向きだけ変える
-		if (!_detectedPlayer && !_isReturningToInitialPos && !_isMovingToSound)
+		if (!_detectedPlayer && !_isReturning && !_isMovingToSound)
 		{
 			vec::Vec3 toSound = vec3::VSub(soundPos, _vPos);
 			toSound.y = 0.0f;
@@ -1048,7 +1048,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 
 	case 2:
 		// レベル2: 中程度の音 - 短時間待機して様子見
-		if (!_detectedPlayer && !_isReturningToInitialPos)
+		if (!_detectedPlayer && !_isReturning)
 		{
 			_waitingAtSound = true;
 			_soundWaitTimer = 1.0f; // 1秒だけ待機
@@ -1058,7 +1058,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 
 	case 3:
 		// レベル3: やや大きな音 - 音源の方向を向いて待機
-		if (!_detectedPlayer && !_isReturningToInitialPos)
+		if (!_detectedPlayer && !_isReturning)
 		{
 			vec::Vec3 toSound = vec3::VSub(soundPos, _vPos);
 			toSound.y = 0.0f;
@@ -1080,7 +1080,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 			if (distance < 500.0f) // 500.0f以内なら反応
 			{
 				_detectedPlayer = false;
-				_isReturningToInitialPos = false;
+				_isReturning = false;
 
 				if (_enemySensor)
 				{
@@ -1104,7 +1104,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 	case 5:
 		// レベル5: 非常に大きな音 - 優先的に音源に向かう（既存の動作）
 		_detectedPlayer = false;
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 
 		if (_enemySensor)
 		{

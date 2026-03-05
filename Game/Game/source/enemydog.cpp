@@ -53,7 +53,7 @@ void EnemyDog::SetMovementArea(const std::vector<vec::Vec3>& areaPoints)
 }
 
 // 指定した位置が移動範囲内かチェック（2D平面でのポリゴン内外判定）
-bool EnemyDog::IsPositionInArea(const vec::Vec3& pos) const
+bool EnemyDog::IsPosInArea(const vec::Vec3& pos) const
 {
 	if (!_hasMovementArea || _movementAreaPoints.size() < 3)
 	{
@@ -174,7 +174,7 @@ void EnemyDog::ProcessRandomWalk()
 		vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
 
 		// 床の存在を確認
-		if (CheckFloorExistence(newPos) && IsPositionInArea(newPos))
+		if (CheckFloorExistence(newPos) && IsPosInArea(newPos))
 		{
 			_vPos = newPos;
 			_randomWalkTraveledDistance += _moveSpeed;
@@ -241,7 +241,7 @@ bool EnemyDog::Process()
 			_soundWaitTimer = 0.0f;
 			_soundDetectionActive = false;
 			_soundDetectionTimer = 0.0f;
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 
@@ -262,7 +262,7 @@ bool EnemyDog::Process()
 			_isMovingToSound = false;
 			_soundDetectionActive = false;
 			_soundDetectionTimer = 0.0f;
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 
@@ -278,7 +278,7 @@ bool EnemyDog::Process()
 		{
 			_waitingBeforeReturn = false;
 			_returnWaitTimer = 0.0f;
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 			_playSightOffOnReturn = true;
 		}
 		// 待機中にプレイヤーを再検出したら待機をキャンセル
@@ -344,11 +344,11 @@ bool EnemyDog::Process()
 		// 音源に向かって移動する処理を開始
 		UpdateMovingToSound();
 	}
-	else if (_isReturningToInitialPos)
+	else if (_isReturning)
 	{
 		_status = STATUS::WALK;
 		// 初期位置に戻る処理を更新
-		UpdateReturningToInitialPosition();
+		UpdateReturnInitialPos();
 		_isRandomWalking = false; // ランダム移動を停止
 	}
 	else if (!IsStun())
