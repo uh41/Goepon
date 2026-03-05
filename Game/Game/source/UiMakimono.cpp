@@ -8,7 +8,6 @@ UiMakimono::UiMakimono()
 	_player = nullptr;
 	_handleMakimono = -1;
 	_handleUiX = -1;
-	Initialize();
 }
 
 UiMakimono::~UiMakimono()
@@ -52,7 +51,7 @@ bool UiMakimono::Render()
 {
 	base::Render();
 
-	// 画像未ロードなら何もしない
+	// 画像が未ロードなら描画しない
 	if(_handleMakimono == -1 || _handleUiX == -1)
 	{
 		return false;
@@ -61,8 +60,15 @@ bool UiMakimono::Render()
 	DrawGraph(makimono::MAKIMONO_X, makimono::MAKIMONO_Y, _handleMakimono, TRUE);
 	DrawGraph(makimono::KAKERU_X, makimono::KAKERU_Y, _handleUiX, TRUE);
 
+	// 復帰直後などで _player が未設定の可能性がある
+	if(_player == nullptr)
+	{
+		return true;
+	}
+
 	RenderNumber(_player->GetMakimonoCount(), makimono::MAKIMONO_COUNT_X, makimono::MAKIMONO_COUNT_Y, true);
 
 	return true;
 }
+
 

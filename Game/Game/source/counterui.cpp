@@ -3,7 +3,6 @@
 CounterUi::CounterUi()
 {
 	_handleNum.fill(-1);
-	Initialize();
 }
 
 bool CounterUi::Initialize()

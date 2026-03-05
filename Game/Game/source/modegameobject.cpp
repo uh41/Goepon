@@ -618,16 +618,18 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-	// 宝箱の描画
-	for (auto& t : _treasure)
-	{
-		if (t) t->Render();
-	}
 
 	// 巻物の描画
 	for(auto& makimono : _makimono)
 	{
 		if(makimono) makimono->Render();
+	}
+
+
+	// 宝箱の描画
+	for (auto& t : _treasure)
+	{
+		if (t) t->Render();
 	}
 
 	// オブジェクトを描画
@@ -721,11 +723,7 @@ bool ModeGame::ObjectRender()
 	if (_uiHp) { _uiHp->SetPlayer(currentPlayer); }
 	if (_uiMakimono) { _uiMakimono->SetPlayer(currentPlayer); }
 
-	// UIを描画
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Render();
-	}
+
 
 	// 各敵のセンサーを個別に描画
 	// 変更: プレイヤーから半径内にいる敵だけ索敵範囲を描画するように変更
@@ -768,10 +766,24 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+
+
 	// エフェクト
 	for (auto& effectBase : _effectBase)
 	{
 		effectBase->Render();
+	}
+
+	SetUseZBuffer3D(FALSE);
+	SetWriteZBuffer3D(FALSE);
+
+	// UIを描画
+	for(auto& ui_base : _uiBase)
+	{
+		int y = 20;
+		bool ok = ui_base->Render();
+		DrawFormatString(20, y, GetColor(255, 255, 0), "UI render ret=%d", ok ? 1 : 0);
+		y += 16;
 	}
 
 	return true;
