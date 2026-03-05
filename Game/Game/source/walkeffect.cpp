@@ -1,5 +1,6 @@
 #include "walkeffect.h"
 #include "playertanuki.h"
+#include "enemysoundmanager.h"
 
 WalkEffect::WalkEffect()
 {
@@ -90,6 +91,12 @@ bool WalkEffect::Process()
 			}
 		}
 
+		EnemySoundManager::GetInstance()->EmitSound(
+			_playerBase->GetPos(),  // 宝箱の位置
+			1,						// 音の大きさレベル（1-3で調整）
+			400.0f,					// 音波の最大半径
+			10.0f					// 音波の速度
+		);
 		_stepCounter = _stepIntervalFrames; // ダッシュ開始時にカウンタリセットして即発生させる
 	}
 
