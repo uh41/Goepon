@@ -9,9 +9,9 @@ TreasureUi::TreasureUi()
 bool TreasureUi::Initialize()
 {
 	base::Initialize();
-	_handleDeguti = ResourceServer::LoadGraph(ui::Deguti);
-	_handleNokori = ResourceServer::LoadGraph(ui::UI_nokori);
-	_handleMakimono = ResourceServer::LoadGraph(ui::Makimono);
+	_handleDeguti = LoadGraph(ui::Deguti);
+	_handleNokori = LoadGraph(ui::UI_nokori);
+	_handleMakimono = LoadGraph(ui::Makimono);
 
 	_remainCount = 0;
 

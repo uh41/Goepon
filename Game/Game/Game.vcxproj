@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="source\applicationglobal.h" />
     <ClInclude Include="source\applicationmain.h" />
     <ClInclude Include="source\aseeffect.h" />
+    <ClInclude Include="source\attackui.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
@@ -81,6 +81,7 @@
     <ClInclude Include="source\TitleTanuki.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
+    <ClInclude Include="source\treasureopenui.h" />
     <ClInclude Include="source\treasureui.h" />
     <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uibase.h" />
@@ -92,6 +93,7 @@
     <ClCompile Include="source\applicationglobal.cpp" />
     <ClCompile Include="source\applicationmain.cpp" />
     <ClCompile Include="source\aseeffect.cpp" />
+    <ClCompile Include="source\attackui.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
@@ -152,6 +154,7 @@
     <ClCompile Include="source\TitleTanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
     <ClCompile Include="source\treasureeffect.cpp" />
+    <ClCompile Include="source\treasureopenui.cpp" />
     <ClCompile Include="source\treasureui.cpp" />
     <ClCompile Include="source\UIActionButton.cpp" />
     <ClCompile Include="source\uibase.cpp" />
@@ -161,9 +164,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

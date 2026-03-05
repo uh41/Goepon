@@ -31,7 +31,7 @@ void ModeGame::RequestReturnToTanukiFromHuman()
 
 bool ModeGame::IsTransforming() const
 {
-	return _isTransformToHuman || _isTransformToMono || (_transformAnimId != -1);
+	return _isTransformToHuman || _isTransformToMono ||  (_transformAnimId != -1);
 }
 
 bool ModeGame::IsTransformRequested() const
@@ -95,6 +95,13 @@ bool ModeGame::ObjectInitialize()
 	_treasureUi = std::make_shared<TreasureUi>();
 	_treasureUi->SetTreasureList(_treasure);
 	_uiBase.emplace_back(_treasureUi);
+
+	_attackUi = std::make_shared<AttackUi>();
+	_attackUi->Show(_player.get()->GetPos());
+	_uiBase.emplace_back(_attackUi);
+
+	_treasureOpenUi = std::make_shared<TreasureOpenUi>();
+	_uiBase.emplace_back(_treasureOpenUi);
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
@@ -449,16 +456,32 @@ bool ModeGame::PlayerTransform()
 	if(_requestedReturnToTanuki)
 	{
 		_requestedReturnToTanuki = false;
-		if(!_bShowTanuki && !_showMonoPlayer)
+		// タヌキでない表示（人間 or モノ）の場合、どちらからでも即時タヌキへ戻す
+		if(!_bShowTanuki)
 		{
+			// 元の表示状態を保持しておく（モノか人か）
+			bool wasMono = _showMonoPlayer;
+			bool wasHuman = (!_bShowTanuki && !_showMonoPlayer);
+
+			// タヌキ表示へ切替（モノ表示は解除）
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
 
-			_playerTanuki->SetPos(_player->GetPos());
-			_playerTanuki->SetDir(_player->GetDir());
-			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("idle", true);
-			_playerTanuki->Process();
+			// 位置・向きを元の表示からタヌキに引き継ぐ
+			PlayerBase* srcPlayer = nullptr;
+			if(wasMono && _playerMono) srcPlayer = _playerMono.get();
+			else if(wasHuman && _player) srcPlayer = _player.get();
+
+			if(srcPlayer && _playerTanuki)
+			{
+				_playerTanuki->SetPos(srcPlayer->GetPos());
+				_playerTanuki->SetDir(srcPlayer->GetDir());
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+
+				// モノから戻る場合もタヌキの待機アニメーションを再生する
+				_playerTanuki->PlayAnimation("idle", true);
+				_playerTanuki->Process();
+			}
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());

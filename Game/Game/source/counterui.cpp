@@ -23,7 +23,7 @@ bool CounterUi::Initialize()
 	};
 	for (int i = 0; i < 10; i++)
 	{
-		_handleNum[i] = ResourceServer::LoadGraph(numPath[i]);
+		_handleNum[i] = LoadGraph(numPath[i]);
 	}
 	return true;
 }
