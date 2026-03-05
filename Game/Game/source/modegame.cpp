@@ -688,6 +688,8 @@ bool ModeGame::Process()
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
 
+	bool hasCollision = false;
+
 	// プレイヤーと敵の接触処理
 	if(playerBase && playerBase->IsAlive())
 	{
@@ -755,8 +757,20 @@ bool ModeGame::Process()
 				}
 				// 実際の押し出し（カプセル）
 				// 敵に接触したときに実際に行う処理はここで記入
+				hasCollision = true;
 			}
 		}
+	}
+
+	// プレイヤーと敵の接触があった場合、敵の音を発生させる
+	if (hasCollision && playerBase&& _bShowTanuki)
+	{
+		EnemySoundManager::GetInstance()->EmitSound(
+			playerBase->GetPos(),  // 位置
+			1,					// 音の大きさレベル（1-3で調整）
+			400.0f,				// 音波の最大半径
+			10.0f				// 音波の速度
+		);
 	}
 
 	// デバック用タイマー（転ばせる）
