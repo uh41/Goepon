@@ -6,23 +6,22 @@
 // 敵の索敵範囲を表す構造体
 struct DetectionSector
 {
-	vec::Vec3 center;   // 索敵範囲の中心位置
-	vec::Vec3 forward;  // 索敵範囲の前方ベクトル（正規化されていることが前提）
-	float radius;       // 索敵範囲の半径
-	float angle;		// 索敵範囲の視野角（度数法）
+	vec::Vec3 center;   // 中心位置
+	vec::Vec3 forward;  // 前方ベクトル（正規化されていることが前提）
+	float radius;       // 半径
+	float angle;		// 視野角（度数法）
 };
 
 // プレイヤーの検出情報を表す構造体
 struct DetectionInfo
 {
 	bool isDetected;				// プレイヤーが検出されたかどうか
-	float timer;					// プレイヤーが検出されてからの経過時間
 	bool isChasing;					// 追跡状態かどうか
-	vec::Vec3 lastKnownPlayerPos;	// 最後に検出されたプレイヤーの位置
+	bool isInDetectionDelay;		// 遅延中フラグ
+	vec::Vec3 lastPlayerPos;		// 最後に検出されたプレイヤーの位置
+	float timer;					// プレイヤーが検出されてからの経過時間
 	float chaseTimer;				// 追跡状態の経過時間
-	// 追加: 検知遅延用
-	float detectionDelayTimer;    // 検知してから追跡開始までの遅延タイマー
-	bool isInDetectionDelay;      // 遅延中フラグ
+	float detectionDelayTimer;		// 検知してから追跡開始までの遅延タイマー
 };
 
 class EnemySensor : public EnemyBase
@@ -35,10 +34,10 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	// 索敵範囲を設定する関数。radiusは半径、angleは視野角（度数法）で指定する。
+	// 索敵範囲を設定する関数
 	void SetDetectionSector(float radius, float angle);	
 
-	// プレイヤーを検出するための関数。プレイヤーが検出された場合はtrueを返し、検出情報を更新する。
+	// プレイヤーを検出する関数
 	bool CheckPlayerDetection(PlayerBase* player);
 
 	// 索敵情報のゲッター
@@ -49,10 +48,10 @@ public:
 
 	// 追跡状態のセッターとゲッター
 	bool IsChasing() const { return _detectionInfo.isChasing; } 
-	vec::Vec3 GetLastKnownPlayerPosition() const { return _detectionInfo.lastKnownPlayerPos; }
+	vec::Vec3 GetLastPlayerPos() const { return _detectionInfo.lastPlayerPos; }
 	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
 
-	// デバッグ用の索敵範囲表示
+	// 索敵範囲表示
 	void RenderDetectionSector() const;
 
 	// デバッグ用の索敵結果表示
@@ -65,13 +64,13 @@ public:
 	// マップ情報を設定するためのセッター
 	void SetMap(MapBase* map) { _map = map; }
 
-	// 指定した位置に床が存在するかをチェックする。床があればtrueを返す。
+	// 指定した位置に床が存在するか
 	bool CheckFloorExistence(const vec::Vec3& position) const;
 
-	// 指定した位置からプレイヤーまでの間に障害物がないかをチェックする。障害物がなければtrueを返す。
+	// 指定した位置からプレイヤーまでの間の障害物をチェック
 	bool CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& endPos) const;
 
-	// 指定した位置から床のY座標を取得する。衝突があればtrueを返し、outYに床のY座標を設定する。
+	// 指定した位置から床のY座標を取得
 	bool GetFloorYCollision(const vec::Vec3& position, float colSubY, float& outY) const;
 
 	// プレイヤーの位置とカプセル形状を考慮して、索敵範囲内にいるかどうかを判定する
@@ -79,7 +78,8 @@ public:
 		const vec::Vec3& playerPos,
 		const vec::Vec3& playerCapsuleTop,
 		const vec::Vec3& playerCapsuleBottom,
-		float playerCapsuleRadius) const;
+		float playerCapsuleRadius
+	) const;
 
 protected:
 	DetectionSector _detectionSector; 
@@ -114,5 +114,6 @@ protected:
 	// キャッシュを再計算する（描画用。内部で重い判定を実行）
 	void RecalculateDetectionSector() const;
 
+	// プレイヤーを検出してから追跡開始までの遅延時間（秒）
 	static constexpr float DETECTION_DELAY_TIME = 1.0f;
 };

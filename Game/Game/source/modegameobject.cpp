@@ -728,7 +728,7 @@ bool ModeGame::ObjectRender()
 	}
 
 	// 各敵のセンサーを個別に描画
-	// 変更: プレイヤーから半径内にいる敵だけ索敵範囲を描画するように変更
+	// プレイヤーから半径内にいる敵だけ索敵範囲を描画
 	if (currentPlayer)
 	{
 		const float detectionRadius = 1000.0f; 
@@ -967,7 +967,7 @@ bool ModeGame::CheckAllDetections()
 				if(detected)
 				{
 					anyDetected = true;
-					if(player != nullptr) // NULLチェックを追加
+					if(player != nullptr)
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
@@ -975,7 +975,7 @@ bool ModeGame::CheckAllDetections()
 						_nakiEffect->PlayEffect(player->GetPos());
 					}
 
-					// --- 追加: PlayerMono が検知されたら即時モノ->タヌキに切替 ---
+					// PlayerMono が検知されたら即時モノ->タヌキに切替 
 					if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
 					{
 						if(_playerTanuki && player != _playerTanuki.get())

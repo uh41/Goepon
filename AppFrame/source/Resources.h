@@ -51,6 +51,7 @@ namespace texture
   inline constexpr const char* Particle02 = "res/Texture/Particle02.png";
   inline constexpr const char* TX_Tresure3 = "res/Texture/TX_Tresure3.png";
   inline constexpr const char* TX_Tresure4 = "res/Texture/TX_Tresure4.png";
+  inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
   inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
   inline constexpr const char* TX_change = "res/Texture/TX_change.png";
   inline constexpr const char* TX_doya = "res/Texture/TX_doya.png";

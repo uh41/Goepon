@@ -34,18 +34,18 @@ bool EnemyBase::Initialize()
 	_fHp = 30.0f;
 
 	// センサー関連の初期化
-	_detectedPlayer = false;					// プレイヤー検出フラグの初期化
-	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// プレイヤー位置の初期化
-	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
+	_detectedPlayer = false;					
+	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_rotationSpeed = 0.5f;	
 
 	// 移動関連の初期化
-	_moveSpeed = 2.0f;								// 移動速度（調整可能）
-	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	// 目標位置の初期化
-	_isMoving = false;								// 移動中フラグの初期化
+	_moveSpeed = 2.0f;		
+	_targetPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_isMoving = false;		
 
 	// 初期位置に戻る機能の初期化
-	_isReturning = false;	// 初期位置に戻り中フラグの初期化
-	_returnSpeed = 1.5f;				// 初期位置に戻る速度（追跡より少し遅め）
+	_isReturning = false;	
+	_returnSpeed = 1.5f;	// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
 	_waitingForTeleport = false;
@@ -98,8 +98,8 @@ bool EnemyBase::Terminate()
 // 初期位置と初期向きをキャプチャする関数
 void EnemyBase::CaptureInitialTransform()
 {
-	_initialPosition = _vPos;
-	_initialDirection = _vDir;
+	_initialPos = _vPos;
+	_initialDir = _vDir;
 }
 
 // テレポート状態のリセット
@@ -184,7 +184,7 @@ void EnemyBase::OnPlayerLost()
 void EnemyBase::ReturnInitialPos()
 {
 	// 既に初期位置にいる場合は何もしない
-	if(!IsAtInitialPosition())
+	if(!IsAtInitialPos())
 	{
 		_isReturning = true; // 初期位置に戻り始める
 		_isMoving = false;				 // 他の移動を停止
@@ -242,7 +242,7 @@ void EnemyBase::UpdateRotationToPlayer()
 	if(_enemySensor && _enemySensor->IsChasing())
 	{
 		// 追跡中は最後に確認されたプレイヤーの位置を使用
-		targetPos = _enemySensor->GetLastKnownPlayerPosition();
+		targetPos = _enemySensor->GetLastPlayerPos();
 	}
 	else if(_detectedPlayer)
 	{
@@ -312,10 +312,10 @@ void EnemyBase::LookAtPlayer()
 }
 
 // 初期位置にいるかどうかをチェック
-bool EnemyBase::IsAtInitialPosition() const
+bool EnemyBase::IsAtInitialPos() const
 {
 	// 現在位置と初期位置の距離を計算
-	float distance = vec3::VSize(vec3::VSub(_vPos, _initialPosition));
+	float distance = vec3::VSize(vec3::VSub(_vPos, _initialPos));
 	return distance < 30.0f; // 30.0f以内なら初期位置とみなす
 }
 
@@ -450,10 +450,10 @@ void EnemyBase::UpdateReturnInitialPos()
 		{
 			// 3秒経過したので初期位置にテレポート
 			_effect->PlayEffect(_vPos); // テレポート前のエフェクト
-			_vPos = _initialPosition;
+			_vPos = _initialPos;
 			if(!IsStun())
 			{
-				_vDir = _initialDirection;
+				_vDir = _initialDir;
 			}
 			_isReturning = false;				// 初期位置に戻り完了
 			_waitingForTeleport = false;		// テレポート待機終了
@@ -464,7 +464,7 @@ void EnemyBase::UpdateReturnInitialPos()
 	}
 
 	// 初期位置への方向ベクトルを計算
-	vec::Vec3 toInitialPos = vec3::VSub(_initialPosition, _vPos);
+	vec::Vec3 toInitialPos = vec3::VSub(_initialPos, _vPos);
 	toInitialPos.y = 0.0f; // Y軸は無視
 
 	float distance = vec3::VSize(toInitialPos);	// 初期位置までの距離
@@ -472,8 +472,8 @@ void EnemyBase::UpdateReturnInitialPos()
 	// 初期位置に十分近い場合
 	if(distance < 30.0f)
 	{
-		_vPos = _initialPosition;
-		_vDir = _initialDirection;
+		_vPos = _initialPos;
+		_vDir = _initialDir;
 		_isReturning = false;
 
 		_detectedPlayer = false;
@@ -815,7 +815,7 @@ void EnemyBase::MoveTowardsTarget(const vec::Vec3& target)
 	_vPos = vec3::VAdd(_vPos, finalMovement);
 
 	// 目標位置を更新
-	_targetPosition = target;
+	_targetPos = target;
 }
 
 // 追跡処理のメソッド
@@ -825,7 +825,7 @@ void EnemyBase::UpdateChasing()
 	if(_enemySensor && _enemySensor->IsChasing())
 	{
 		// 追跡中の場合、最後に確認されたプレイヤーの位置に向かって移動
-		vec::Vec3 targetPos = _enemySensor->GetLastKnownPlayerPosition();
+		vec::Vec3 targetPos = _enemySensor->GetLastPlayerPos();
 		MoveTowardsTarget(targetPos);
 
 		// プレイヤーの方向に徐々に向く
@@ -1007,12 +1007,14 @@ void EnemyBase::SetDirSequenceFromJson(const nlohmann::json& j)
 // 方向IDのシーケンスを更新するメソッド
 void EnemyBase::UpdateDirectionSequence()
 {
-	if(!_dirSeqActive || _dirSequence.empty()) {
+	if(!_dirSeqActive || _dirSequence.empty()) 
+	{
 		return;
 	}
 
 	// スタン中は向きを変えない
-	if(IsStun()) {
+	if(IsStun()) 
+	{
 		return;
 	}
 
@@ -1023,7 +1025,7 @@ void EnemyBase::UpdateDirectionSequence()
 	}
 
 	// 音源への移動中や待機中は進めない
-	if(_isMovingToSound || _waitingAtSound || _isReturningToInitialPos)
+	if(_isMovingToSound || _waitingAtSound || _isReturning)
 	{
 		return;
 	}

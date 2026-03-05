@@ -101,6 +101,12 @@ protected:
 
 	at::umss<std::string, std::string> _config;
 
+	//vec::Vec3 _vDir; // キャラの向き
+
+	//DamageData _damageData;		//ダメージデータ
+
+	//STATE _state;				//状態
+
 	Camera* _cam;
 	int _handle;              // モデルハンドル
 	float _half_polygon_size; // 地面ポリゴンの半分のサイズ

@@ -132,22 +132,8 @@ bool Enemy::Process()
 			// UpdateChasing は EnemyBase 側で定義され、MoveTowardsTarget を呼びます。
 			UpdateChasing();
 
-			// プレイヤーを検出している、または追跡中の場合のみ WALK
-			if(_detectedPlayer)
-			{
-				_status = STATUS::WAIT;
-				_isReturning = false;
-
-				// 音源への移動と待機を中断
-				_isMovingToSound = false;
-				_waitingAtSound = false;
-				_soundWaitTimer = 0.0f;
-
-				// 音検知タイマーをリセット
-				_soundDetectionActive = false;
-				_soundDetectionTimer = 0.0f;
-			}
-			if (_enemySensor->IsChasing())
+			// センサーの状態に応じてステータスを設定
+			if (_enemySensor->IsChasing())	// プレイヤーを追跡中
 			{
 				_status = STATUS::FOUND;
 				_isReturning = false;
@@ -169,7 +155,6 @@ bool Enemy::Process()
 			}
 			else if (_isMovingToSound)	// 音源に向かって移動中
 			{
-				// 音源に向かって移動中
 				_status = STATUS::WALK;
 			}
 			else // 通常待機状態
@@ -177,7 +162,7 @@ bool Enemy::Process()
 				_status = STATUS::WAIT;
 
 				// 音源移動中や音源待機中は初期位置への帰還を開始しない
-				if (!_enemySensor->IsChasing() && !IsAtInitialPosition() && !_isMovingToSound && !_waitingAtSound)
+				if (!_enemySensor->IsChasing() && !IsAtInitialPos() && !_isMovingToSound && !_waitingAtSound)
 				{
 					ReturnInitialPos();
 				}

@@ -25,9 +25,6 @@ bool EnemyMove::Initialize()
 	// 再生時間の初期化
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
-	// 位置、向きの初期化
-	//_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
-	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 100.0f;
 	// コリジョン半径の設定
@@ -36,10 +33,6 @@ bool EnemyMove::Initialize()
 
 	_fHp = 30.0f;
 
-	// 初期位置と向きを保存
-	//_initialPosition = _vPos;
-	//_initialDirection = _vDir;
-
 	// センサー関連の初期化
 	_detectedPlayer = false;					
 	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
@@ -47,7 +40,7 @@ bool EnemyMove::Initialize()
 
 	// 移動関連の初期化
 	_moveSpeed = 8.25f;								
-	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_targetPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
 	_isMoving = false;								
 
 	// 初期位置に戻る機能の初期化
@@ -331,7 +324,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			// タイマー経過でセーブポイントへ瞬間移動
 			_effect->PlayEffect(_vPos);
 			_vPos = _savePoint;
-			_vDir = _initialDirection; // 向きは初期向きに戻す（必要なら変更可）
+			_vDir = _initialDir; // 向きは初期向きに戻す（必要なら変更可）
 			_isReturning = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
@@ -404,7 +397,7 @@ void EnemyMove::ReturnInitialPos()
 		}
 		else
 		{
-			_savePoint = _initialPosition;
+			_savePoint = _initialPos;
 		}
 	}
 
@@ -469,7 +462,7 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 	}
 	else
 	{
-		_savePoint = _initialPosition;
+		_savePoint = _initialPos;
 	}
 	_hasSavePoint = true;
 
@@ -573,14 +566,7 @@ bool EnemyMove::Process()
 		_isReturning = false;
 		_isPatroll = false;
 	}
-	else if(_detectedPlayer)
-	{
-		_status = STATUS::WAIT;
-		UpdateChasing();
-		_isReturning = false;
-		_isPatroll = false;		// 巡回停止
-	}
-	else if (_enemySensor && _enemySensor->IsChasing())
+	else if (_enemySensor && _enemySensor->IsChasing())	// プレイヤーを検出している場合
 	{
 		_status = STATUS::FOUND;
 		UpdateChasing();
@@ -608,7 +594,7 @@ bool EnemyMove::Process()
 	{
 		_status = STATUS::WAIT;
 
-		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPosition() && !IsStun())
+		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
 			ReturnInitialPos();
 		}

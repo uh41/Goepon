@@ -295,7 +295,7 @@ bool EnemyDog::Process()
 	{
 		_status = STATUS::FOUND;
 		// 追跡時の移動速度を確保（他の処理で変更されている可能性に対応）
-		_moveSpeed = 4.0f; // 追跡時の速度を明示的に設定
+		_moveSpeed = 4.0f; // 追跡時の速度
 
 		// 追跡中の音波発生処理（一定間隔で発生）
 		const float dt = 1.0f / 60.0f; // 60FPS想定
@@ -328,15 +328,14 @@ bool EnemyDog::Process()
 			}
 		}
 
-		// プレイヤーを追跡する（EnemyBaseの追跡処理を使用）
+		// プレイヤーを追跡する
 		UpdateChasing();
 
 		// 犬専用：プレイヤーの方向に即座に向く
 		LookAtPlayer();
 
-		_isRandomWalking = false; // ランダム移動を停止
-		_isMovingToSound = false; // 音源への移動を停止
-		// ステータスはUpdateChasing()内で設定される
+		_isRandomWalking = false; 
+		_isMovingToSound = false; 
 	}
 	else if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
 	{

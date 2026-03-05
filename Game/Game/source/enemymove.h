@@ -25,15 +25,14 @@ public:
 	void ProcessPatrol();
 	void ProcessReturnToPatrolPoint();
 
-	void SetPatrolWaitDirection(int id);// 待機中の向きを設定
+	// 巡回ポイントに到着したときの処理
+	void SetPatrolWaitDirection(int id);
 
-	bool IsPatrolling() const
-	{
-		return _isPatroll;
-	}
+	// 巡回中かどうかの判定
+	bool IsPatrolling() const {return _isPatroll;}
 
+	// パトロールポイントの情報を設定
 	void SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointInfo>& points);
-
 
 	void OnDamageStart()override;
 	void OnDamageEnd()override;
@@ -64,6 +63,7 @@ protected:
 	float _patrolWaitTimer;		// 待機カウントダウン
 	float _patrolWaitDuration;	// 待機時間（秒）
 	vec::Vec3 _patrolWaitDir;	// 待機中に向く方向
+
 	at::vet<ApplicationGlobal::PatrolPointInfo> _patrolPointInfo;
 };
 

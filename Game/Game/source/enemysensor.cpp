@@ -8,22 +8,23 @@ bool EnemySensor::Initialize()
 	base::Initialize();
 
 	// 索敵システムの初期化
-	_bHasDetectionSector = false;	// 索敵範囲未設定
-	_bSensorEnabled = true;			// センサー有効
+	_bHasDetectionSector = false;	
+	_bSensorEnabled = true;			
 
 	// 検出情報の初期化
-	_detectionInfo.isDetected = false;	// 未検出
-	_detectionInfo.timer = 0.0f;		// タイマー初期化
+	_detectionInfo.isDetected = false;	
+	_detectionInfo.timer = 0.0f;		
 
 	// 追跡情報の初期化
-	_detectionInfo.isChasing = false;	// 追跡中フラグ初期化
-	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置初期化
-	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマー初期化
+	_detectionInfo.isChasing = false;	
+	_detectionInfo.lastPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_detectionInfo.chaseTimer = 0.0f;	
 
 	// 検知遅延の初期化
 	_detectionInfo.detectionDelayTimer = 0.0f;
 	_detectionInfo.isInDetectionDelay = false;
 
+	// フレームカウンタと検出結果の初期化
 	_detectionFrameCount = 0;
 	_CanDetectionResult = false;
 
@@ -63,7 +64,7 @@ bool EnemySensor::Render()
 {
 	base::Render();
 
-	// デバッグ表示：索敵範囲の描画
+	// 索敵範囲の描画
 	if (_bSensorEnabled)
 	{
 		RenderDetectionSector();
@@ -115,12 +116,12 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 		if (!_detectionInfo.isDetected)
 		{
 			// 新しく検出された場合
-			_detectionInfo.isDetected = true;				// 検出フラグセット
-			_detectionInfo.timer = DETECTION_DISPLAY_TIME;	// タイマーリセット
+			_detectionInfo.isDetected = true;				
+			_detectionInfo.timer = DETECTION_DISPLAY_TIME;	
 		}
 
 		// プレイヤーを検出中は常に位置を更新
-		_detectionInfo.lastKnownPlayerPos = playerPos;	// 最後に確認された位置更新
+		_detectionInfo.lastPlayerPos = playerPos;	// 最後に確認された位置更新
 
 		// 追跡開始に遅延
 		if (!_detectionInfo.isChasing)
@@ -173,7 +174,8 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 	const vec::Vec3& playerPos,
 	const vec::Vec3& playerCapsuleTop,
 	const vec::Vec3& playerCapsuleBottom,
-	float playerCapsuleRadius) const
+	float playerCapsuleRadius
+) const
 {
 	if (!_bHasDetectionSector || !_bSensorEnabled)
 	{
@@ -205,7 +207,7 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 		return false;
 	}
 
-	// 視線チェック - 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
+	// 敵の位置からプレイヤーの位置まで床の存在を一定間隔でチェック
 	if (!CheckLineOfSight(detectionCenter, playerPos))
 	{
 		return false; // 視線が遮断されている
@@ -217,18 +219,20 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 // 検出状態のリセット
 void EnemySensor::ResetDetection()
 {
-	_detectionInfo.isDetected = false;	// 未検出
-	_detectionInfo.timer = 0.0f;		// タイマーリセット
+	// 検出状態リセット
+	_detectionInfo.isDetected = false;	
+	_detectionInfo.timer = 0.0f;		
 
 	// 追跡状態リセット
-	_detectionInfo.isChasing = false;	// 追跡中フラグリセット
-	_detectionInfo.lastKnownPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// 最後に確認された位置リセット
-	_detectionInfo.chaseTimer = 0.0f;	// 追跡タイマーリセット
+	_detectionInfo.isChasing = false;	
+	_detectionInfo.lastPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_detectionInfo.chaseTimer = 0.0f;	
 
 	// 検知遅延のリセット
 	_detectionInfo.isInDetectionDelay = false;
 	_detectionInfo.detectionDelayTimer = 0.0f;
 
+	// フレームカウンタと検出結果のリセット
 	_detectionFrameCount = 0;
 	_CanDetectionResult = false;
 }
@@ -251,7 +255,7 @@ void EnemySensor::UpdateDetectionTimer()
 	// 検出表示タイマーの更新
 	if (_detectionInfo.timer > 0.0f)
 	{
-		_detectionInfo.timer -= 1.0f / 60.0f; // 60FPSとして計算
+		_detectionInfo.timer -= 1.0f / 60.0f; 
 
 		if (_detectionInfo.timer <= 0.0f)
 		{
