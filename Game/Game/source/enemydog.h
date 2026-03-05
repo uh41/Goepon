@@ -49,6 +49,6 @@ private:
 	void SetNewRandomDirection();
 
 	// 指定した位置が移動範囲内かチェック
-	bool IsPositionInArea(const vec::Vec3& pos) const;
+	bool IsPosInArea(const vec::Vec3& pos) const;
 };
 

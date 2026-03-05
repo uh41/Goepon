@@ -13,17 +13,6 @@
 #include "enemysoundmanager.h"
 #include <cmath>
 
-EnemyMove::EnemyMove()
-{
-	Initialize();
-}
-
-
-EnemyMove::~EnemyMove()
-{
-
-}
-
 // 初期化
 bool EnemyMove::Initialize()
 {
@@ -52,17 +41,17 @@ bool EnemyMove::Initialize()
 	//_initialDirection = _vDir;
 
 	// センサー関連の初期化
-	_detectedPlayer = false;					// プレイヤー検出フラグの初期化
-	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// プレイヤー位置の初期化
-	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
+	_detectedPlayer = false;					
+	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_rotationSpeed = 0.5f;						
 
 	// 移動関連の初期化
-	_moveSpeed = 8.25f;								// 移動速度（調整可能）
-	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	// 目標位置の初期化
-	_isMoving = false;								// 移動中フラグの初期化
+	_moveSpeed = 8.25f;								
+	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_isMoving = false;								
 
 	// 初期位置に戻る機能の初期化
-	_isReturningToInitialPos = false;	// 初期位置に戻り中フラグの初期化
+	_isReturning = false;				
 	_returnSpeed = 5.0f;				// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
@@ -316,13 +305,13 @@ void EnemyMove::OnPlayerLost()
 
 	_detectedPlayer = false;
 
-	StartReturningToInitialPosition();
+	ReturnInitialPos();
 }
 
 // 初期位置に戻る処理の更新
 void EnemyMove::ProcessReturnToPatrolPoint()
 {
-	if(!_isReturningToInitialPos)
+	if(!_isReturning)
 	{
 		return;
 	}
@@ -343,7 +332,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			_effect->PlayEffect(_vPos);
 			_vPos = _savePoint;
 			_vDir = _initialDirection; // 向きは初期向きに戻す（必要なら変更可）
-			_isReturningToInitialPos = false;
+			_isReturning = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
 			_effect->PlayEffect(_vPos);
@@ -367,7 +356,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 
 	if(distSq < (threshold * threshold))
 	{
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 		_patroll->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
 		_isPatroll = true;
@@ -400,7 +389,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 }
 
 // 初期位置に戻る処理を開始
-void EnemyMove::StartReturningToInitialPosition()
+void EnemyMove::ReturnInitialPos()
 {
 	// 現在の巡回インデックスを保存（復帰時に使う）
 	_savePatrolIndex = _patrolIndex;
@@ -420,7 +409,7 @@ void EnemyMove::StartReturningToInitialPosition()
 	}
 
 	_isPatroll = false;
-	_isReturningToInitialPos = true;
+	_isReturning = true;
 
 	// 念のためテレポート状態をリセットしておく
 	ResetTeleport();
@@ -447,6 +436,12 @@ void EnemyMove::OnDamageEnd()
 // 敵サウンドマネージャーから音源に向かって移動する処理を開始
 void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 {
+	// スタン中は音に反応しない
+	if (IsStun())
+	{
+		return;
+	}
+
 	// 追跡/プレイヤー検出中は音より優先（既存方針に合わせる）
 	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{
@@ -527,7 +522,7 @@ bool EnemyMove::Process()
 			_isMovingToSound = false;
 			_waitingAtSound = false;
 
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 
@@ -550,14 +545,14 @@ bool EnemyMove::Process()
 			// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
 			if(_hasSavePoint)
 			{
-				_isReturningToInitialPos = true;
+				_isReturning = true;
 				_isPatroll = false;
 				ResetTeleport();
 			}
 			else
 			{
 				// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
-				StartReturningToInitialPosition();
+				ReturnInitialPos();
 			}
 		}
 	}
@@ -575,17 +570,24 @@ bool EnemyMove::Process()
 			UpdateMovingToSound();
 		}
 
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 		_isPatroll = false;
 	}
-	else if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	else if(_detectedPlayer)
+	{
+		_status = STATUS::WAIT;
+		UpdateChasing();
+		_isReturning = false;
+		_isPatroll = false;		// 巡回停止
+	}
+	else if (_enemySensor && _enemySensor->IsChasing())
 	{
 		_status = STATUS::FOUND;
 		UpdateChasing();
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 		_isPatroll = false;		// 巡回停止
 	}
-	else if (_isReturningToInitialPos)	// 初期位置に戻り中
+	else if (_isReturning)	// 初期位置に戻り中
 	{
 		if(_waitingForTeleport)
 		{
@@ -608,7 +610,7 @@ bool EnemyMove::Process()
 
 		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPosition() && !IsStun())
 		{
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 

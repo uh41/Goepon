@@ -85,7 +85,7 @@ bool Enemy::Process()
 			_isMovingToSound = false;
 			_waitingAtSound = false;
 
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 
@@ -116,7 +116,7 @@ bool Enemy::Process()
 			_waitingBeforeReturn = false;
 
 			// 初期位置へ戻る処理は base 実装を使う
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 
 		_status = STATUS::WAIT;
@@ -133,10 +133,10 @@ bool Enemy::Process()
 			UpdateChasing();
 
 			// プレイヤーを検出している、または追跡中の場合のみ WALK
-			if(_detectedPlayer || _enemySensor->IsChasing())
+			if(_detectedPlayer)
 			{
-				_status = STATUS::FOUND;
-				_isReturningToInitialPos = false;
+				_status = STATUS::WAIT;
+				_isReturning = false;
 
 				// 音源への移動と待機を中断
 				_isMovingToSound = false;
@@ -147,11 +147,25 @@ bool Enemy::Process()
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
 			}
-			else if (_isReturningToInitialPos)	// 初期位置に戻り中
+			if (_enemySensor->IsChasing())
+			{
+				_status = STATUS::FOUND;
+				_isReturning = false;
+
+				// 音源への移動と待機を中断
+				_isMovingToSound = false;
+				_waitingAtSound = false;
+				_soundWaitTimer = 0.0f;
+
+				// 音検知タイマーをリセット
+				_soundDetectionActive = false;
+				_soundDetectionTimer = 0.0f;
+			}
+			else if (_isReturning)	// 初期位置に戻り中
 			{
 				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
 
-				UpdateReturningToInitialPosition();
+				UpdateReturnInitialPos();
 			}
 			else if (_isMovingToSound)	// 音源に向かって移動中
 			{
@@ -165,7 +179,7 @@ bool Enemy::Process()
 				// 音源移動中や音源待機中は初期位置への帰還を開始しない
 				if (!_enemySensor->IsChasing() && !IsAtInitialPosition() && !_isMovingToSound && !_waitingAtSound)
 				{
-					StartReturningToInitialPosition();
+					ReturnInitialPos();
 				}
 			}
 		}
