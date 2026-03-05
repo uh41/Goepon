@@ -103,6 +103,10 @@ bool ModeGame::ObjectInitialize()
 	_treasureOpenUi = std::make_shared<TreasureOpenUi>();
 	_uiBase.emplace_back(_treasureOpenUi);
 
+	_dashUi = std::make_shared<DashUi>();
+	_dashUi->SetPlayer(_playerTanuki.get());
+	_uiBase.emplace_back(_dashUi);
+
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
@@ -120,6 +124,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_doyaEffect);
 	_nakiEffect = std::make_shared<NakiEffect>();
 	_effectBase.emplace_back(_nakiEffect);
+	_shirimochiEffect = std::make_shared<ShirimochiEffect>();
+	_effectBase.emplace_back(_shirimochiEffect);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);

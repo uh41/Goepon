@@ -285,6 +285,7 @@ void ModeGame::CreateEnemy
 		enemy->SetJsonDataUE(object);
 		enemy->SetEnemySensor(sensor);
 		enemy->SetEffect(_hensinEffect);
+		enemy->SetEffect(_shirimochiEffect);
 		enemy->SetEnemyId(nextEnemyId++);
 		enemy->SetDirSequenceFromJson(object);
 
@@ -303,6 +304,7 @@ void ModeGame::CreateEnemy
 		enemyMove->SetJsonDataUE(object);
 		enemyMove->SetEnemySensor(sensor);
 		enemyMove->SetEffect(_hensinEffect);
+		enemyMove->SetEffect(_shirimochiEffect);
 		enemyMove->SetEnemyId(nextEnemyId++);
 		enemyMove->SetDirSequenceFromJson(object);
 

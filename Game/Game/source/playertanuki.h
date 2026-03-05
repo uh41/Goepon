@@ -37,6 +37,8 @@ public:
 	virtual bool IsDash() const override { return _dash; } // ダッシュ中かどうかを返す（狸は常にダッシュ状態）
 	float GetDashCoolDownTime() const { return _dashCoolDownTime; }
 
+	auto GetDashCount() const { return _dashCount; } // ダッシュ回数を取得するゲッター
+
 protected:
 	Camera* _cam;
 

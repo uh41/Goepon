@@ -29,6 +29,7 @@
     <ClInclude Include="source\CinematicCamera.h" />
     <ClInclude Include="source\counterui.h" />
     <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\dashui.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
@@ -75,6 +76,7 @@
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\shirimochieffect.h" />
     <ClInclude Include="source\soundserver3D.h" />
     <ClInclude Include="source\StageManager.h" />
     <ClInclude Include="source\TitleCamera.h" />
@@ -100,6 +102,7 @@
     <ClCompile Include="source\CinematicCamera.cpp" />
     <ClCompile Include="source\counterui.cpp" />
     <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\dashui.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
@@ -149,6 +152,7 @@
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\playermono.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
+    <ClCompile Include="source\shirimochieffect.cpp" />
     <ClCompile Include="source\soundserver3D.cpp" />
     <ClCompile Include="source\TitleCamera.cpp" />
     <ClCompile Include="source\TitleTanuki.cpp" />

@@ -275,6 +275,8 @@
     <ClCompile Include="source\counterui.cpp" />
     <ClCompile Include="source\attackui.cpp" />
     <ClCompile Include="source\treasureopenui.cpp" />
+    <ClCompile Include="source\dashui.cpp" />
+    <ClCompile Include="source\shirimochieffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -353,6 +355,8 @@
     <ClInclude Include="source\Map3.h" />
     <ClInclude Include="source\attackui.h" />
     <ClInclude Include="source\treasureopenui.h" />
+    <ClInclude Include="source\dashui.h" />
+    <ClInclude Include="source\shirimochieffect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

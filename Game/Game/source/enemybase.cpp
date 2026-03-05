@@ -11,6 +11,7 @@
 #include "enemysensor.h"
 #include "applicationglobal.h"
 #include "enemysoundmanager.h"
+#include "shirimochieffect.h"
 
 // 初期化
 bool EnemyBase::Initialize()
@@ -380,6 +381,12 @@ void EnemyBase::UpdateDamageAnimation()
 
 			EnemySoundManager::GetInstance()->EmitSound(_vPos, 5, 300.0f, 50.0f); // ダメージ音を発生させる
 
+			// エフェクトの再生
+			if(_effect)
+			{
+				_effect->PlayEffect(_vPos);
+			}
+
 			if(!_attachAnimStan.empty())
 			{
 				_animId = PlayAnimation(_attachAnimStan, true);
@@ -396,7 +403,7 @@ void EnemyBase::UpdateDamageAnimation()
 			_attachStage = 3;
 			if(_animId != -1)
 			{
-				AnimationManager::GetInstance()->Stop(_animId);	
+				AnimationManager::GetInstance()->Stop(_animId);
 				_animId = -1;
 			}
 

@@ -45,6 +45,7 @@
 #include "aseeffect.h"
 #include "doyaeffect.h"
 #include "nakieffect.h"
+#include "shirimochieffect.h"
 #include "Makimono.h"
 #include "enemysoundmanager.h"
 #include "modegameload.h"
@@ -54,6 +55,7 @@
 #include "treasureui.h"
 #include "attackui.h"
 #include "treasureopenui.h"
+#include "dashui.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -238,6 +240,7 @@ protected:
 	at::spc<TreasureUi> _treasureUi;
 	at::spc<AttackUi> _attackUi;
 	at::spc<TreasureOpenUi> _treasureOpenUi;
+	at::spc<DashUi> _dashUi;
 
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
@@ -255,6 +258,7 @@ protected:
 	at::spc<AseEffect> _aseEffect;
 	at::spc<DoyaEffect> _doyaEffect;
 	at::spc<NakiEffect> _nakiEffect;
+	at::spc<ShirimochiEffect> _shirimochiEffect;
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
