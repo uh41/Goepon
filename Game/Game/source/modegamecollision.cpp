@@ -249,7 +249,7 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 }
 
 // キャラと宝箱の当たり判定処理
-bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Treasure>& treasure)
+bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<TreasureBase>& treasure)
 {
 	// 引数チェック
 	if(!chara)
@@ -281,7 +281,7 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Trea
 	// 宝箱ごとに判定
 	for(const auto& treasure : treasure)
 	{
-		Treasure* t = treasure.get();
+		TreasureBase* t = treasure.get();
 		if(!t) { continue; }
 
 		// 角度を変えて回避を試みるループ
@@ -306,7 +306,7 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Trea
 			chara->SetPos(vec3::VAdd(chara->GetPos(), v));
 
 			// 宝箱の指定フレームで判定
-			const auto handleTreasure = t->GetModelHandle();
+			const auto handleTreasure = t->GetHandle();
 			const auto frameTreasure = t->GetHitCollisionFrame();
 
 			vec::Vec3 hitPos;
@@ -340,7 +340,7 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Trea
 	return hitAny;
 }
 	
-bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<Treasure>& treasures)
+bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<TreasureBase>& treasures)
 {
 	// 引数チェック
 	if(!player)
@@ -351,9 +351,22 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
-		_isOpeningTreasure = false;
-		_treasureHoldSec = 0.0f;
-		_treasureOpenUi->SetVisible(false);
+		// 空中に行った場合は演出カメラを終了
+		if(_isOpeningTreasure)
+		{
+			EndCinematicCamera();
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+			auto sound = gGlobal._soundServer->Get("60");
+			if(sound && sound->IsPlay())
+			{
+				sound->Stop();
+			}
+		}
+		if(_treasureOpenUi)
+		{
+			_treasureOpenUi->SetVisible(false);
+		}
 		return false;
 	}
 
@@ -365,8 +378,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	// 宝箱の指定フレームで判定
 	for(const auto& sp : treasures)
 	{
-		Treasure* treasure = sp.get();
-		if(!treasure)
+		TreasureBase* treasure = sp.get();
+		if (!treasure)
 		{
 			continue;
 		}
@@ -376,8 +389,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		{
 			continue;
 		}
-		const auto handleTreasure = treasure->GetModelHandle();
-		const auto OpenCollision = treasure->GetOpenCollisionFrame();
+		const auto handleTreasure = treasure->GetHandle();
+		const auto OpenCollision   = treasure->GetOpenCollisionFrame();
 		if(handleTreasure < 0 || OpenCollision < 0)
 		{
 			continue;
@@ -403,30 +416,26 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		// Aボタンを押していなかったら開けない
 		if(!holdA)
 		{
+			// Aボタンが離されたタイミングで演出カメラを終了
+			if(_isOpeningTreasure)
+			{
+				EndCinematicCamera();
+				_isOpeningTreasure = false;
+				_treasureHoldSec = 0.0f;
+				auto sound = gGlobal._soundServer->Get("60");
+				if(sound && sound->IsPlay())
+				{
+					sound->Stop();
+				}
+			}
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
 
 			// TreasureOpenUiを表示（プレイヤーの位置で）
 			if(_treasureOpenUi)
 			{
-				// 現在表示中のプレイヤーの座標を取得
-vec::Vec3 displayPlayerPos;
-if(_bShowTanuki && _playerTanuki)
-{
-	displayPlayerPos = _playerTanuki->GetPos();
-}
-else if(_showMonoPlayer && _playerMono)
-{
-	displayPlayerPos = _playerMono->GetPos();
-}
-else if(_player)
-{
-	displayPlayerPos = _player->GetPos();
-}
-
-_treasureOpenUi->SetPos(displayPlayerPos);
-_treasureOpenUi->SetVisible(true);
-_treasureOpenUi->SetSize(100);
+				_treasureOpenUi->SetVisible(true);
+				_treasureOpenUi->SetSize(100);
 			}
 
 			continue;
@@ -450,6 +459,7 @@ _treasureOpenUi->SetSize(100);
 			}
 		}
 
+		// 開ける処理開始
 		if(!_isOpeningTreasure)
 		{
 			TreasureOpeningCameraControl();
@@ -508,11 +518,8 @@ _treasureOpenUi->SetSize(100);
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
 	if(!inAnyTreasure)
 	{
-		if(_treasureOpenUi)
-		{
-			_treasureOpenUi->SetVisible(false); // 開けUIを消す
-		}
-		if(!holdA)
+		// 宝箱範囲外に出た場合、演出カメラを終了
+		if(_isOpeningTreasure)
 		{
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
@@ -522,6 +529,11 @@ _treasureOpenUi->SetSize(100);
 			{
 				sound->Stop();
 			}
+		}
+
+		if(_treasureOpenUi)
+		{
+			_treasureOpenUi->SetVisible(false); // 開けUIを消す
 		}
 
 	}
