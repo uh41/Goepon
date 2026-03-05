@@ -28,7 +28,7 @@ bool Enemy::Initialize()
 	_fColSubY = 100.0f;
 	// コリジョン半径の設定
 	_fCollisionR = 30.0f;
-	_fCollisionWeight = 10.0f;
+	_fCollisionWeight = 100.0f;
 
 	_fHp = 30.0f;
 
@@ -85,7 +85,7 @@ bool Enemy::Process()
 			_isMovingToSound = false;
 			_waitingAtSound = false;
 
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 
@@ -116,7 +116,7 @@ bool Enemy::Process()
 			_waitingBeforeReturn = false;
 
 			// 初期位置へ戻る処理は base 実装を使う
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 
 		_status = STATUS::WAIT;
@@ -132,11 +132,11 @@ bool Enemy::Process()
 			// UpdateChasing は EnemyBase 側で定義され、MoveTowardsTarget を呼びます。
 			UpdateChasing();
 
-			// プレイヤーを検出している、または追跡中の場合のみ WALK
-			if(_detectedPlayer || _enemySensor->IsChasing())
+			// センサーの状態に応じてステータスを設定
+			if (_enemySensor->IsChasing())	// プレイヤーを追跡中
 			{
 				_status = STATUS::FOUND;
-				_isReturningToInitialPos = false;
+				_isReturning = false;
 
 				// 音源への移動と待機を中断
 				_isMovingToSound = false;
@@ -147,15 +147,14 @@ bool Enemy::Process()
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
 			}
-			else if (_isReturningToInitialPos)	// 初期位置に戻り中
+			else if (_isReturning)	// 初期位置に戻り中
 			{
 				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
 
-				UpdateReturningToInitialPosition();
+				UpdateReturnInitialPos();
 			}
 			else if (_isMovingToSound)	// 音源に向かって移動中
 			{
-				// 音源に向かって移動中
 				_status = STATUS::WALK;
 			}
 			else // 通常待機状態
@@ -163,9 +162,9 @@ bool Enemy::Process()
 				_status = STATUS::WAIT;
 
 				// 音源移動中や音源待機中は初期位置への帰還を開始しない
-				if (!_enemySensor->IsChasing() && !IsAtInitialPosition() && !_isMovingToSound && !_waitingAtSound)
+				if (!_enemySensor->IsChasing() && !IsAtInitialPos() && !_isMovingToSound && !_waitingAtSound)
 				{
-					StartReturningToInitialPosition();
+					ReturnInitialPos();
 				}
 			}
 		}

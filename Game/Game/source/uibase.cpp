@@ -24,6 +24,11 @@ UiBase::~UiBase()
 // ‰Šú‰»
 bool UiBase::Initialize()
 {
+	_pos = vec::Vec3(0.0f, 0.0f, 0.0f);
+	_visible = false;
+	_size = 0.0f;
+	_angle = 0.0f;
+
 	return base::Initialize();
 }
 
@@ -31,6 +36,17 @@ bool UiBase::Initialize()
 bool UiBase::Terminate()
 {
 	return base::Terminate();
+}
+
+void UiBase::Show(const vec::Vec3& pos)
+{
+	_pos = pos;
+	_visible = true;
+}
+
+void UiBase::Hide()
+{
+	_visible = false;
 }
 
 // ŒvZˆ—

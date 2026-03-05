@@ -22,7 +22,6 @@
 std::unordered_map<std::string, int>	ResourceServer::_mapGraph;
 std::unordered_map<std::string, ResourceServer::DIVGRAPH>	ResourceServer::_mapDivGraph;
 std::unordered_map<std::string, int>	ResourceServer::_mapModel;
-std::unordered_map<int, int>			ResourceServer::_modelRefCount;
 
 void ResourceServer::Init()
 {
@@ -39,22 +38,22 @@ void ResourceServer::Release()
 void ResourceServer::ClearGraph()
 {
     // すべてのデータの削除をする
-    for (auto itr = _mapGraph.begin(); itr != _mapGraph.end(); itr++)
+    for(auto itr = _mapGraph.begin(); itr != _mapGraph.end(); itr++)
     {
         DeleteGraph(itr->second);
     }
     _mapGraph.clear();
 
-    for (auto itr = _mapDivGraph.begin(); itr != _mapDivGraph.end(); itr++)
+    for(auto itr = _mapDivGraph.begin(); itr != _mapDivGraph.end(); itr++)
     {
-        for (int i = 0; i < itr->second.AllNum; i++) {
+        for(int i = 0; i < itr->second.AllNum; i++) {
             DeleteGraph(itr->second.handle[i]);
         }
         delete[] itr->second.handle;
     }
     _mapDivGraph.clear();
 
-    for (auto itr = _mapModel.begin(); itr != _mapModel.end(); itr++)
+    for(auto itr = _mapModel.begin(); itr != _mapModel.end(); itr++)
     {
         ::MV1DeleteModel(itr->second);
     }
@@ -67,7 +66,7 @@ int	ResourceServer::LoadGraph(const TCHAR* FileName)
 {
     // キーの検索
     auto itr = _mapGraph.find(FileName);
-    if (itr != _mapGraph.end())
+    if(itr != _mapGraph.end())
     {
         // キーがあった
         return itr->second;
@@ -81,16 +80,16 @@ int	ResourceServer::LoadGraph(const TCHAR* FileName)
 }
 
 int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
-                                 int XNum, int YNum,
-                                 int XSize, int YSize, int* HandleBuf)
+    int XNum, int YNum,
+    int XSize, int YSize, int* HandleBuf)
 {
     // キーの検索
     auto itr = _mapDivGraph.find(FileName);
-    if (itr != _mapDivGraph.end())
+    if(itr != _mapDivGraph.end())
     {
         // キーがあった
         // データをコピー
-        for (int i = 0; i < itr->second.AllNum; i++) {
+        for(int i = 0; i < itr->second.AllNum; i++) {
             HandleBuf[i] = itr->second.handle[i];
         }
         return 0;
@@ -99,13 +98,13 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
     // まずはメモリを作成する
     int* hbuf = NEW int[AllNum];
     int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIBのAPIを呼ぶので、::を先頭に付け、このクラスの同じ名前の関数と区別する
-    if (err == 0) {
+    if(err == 0) {
         // 成功
         // キーとデータをmapに登録
         _mapDivGraph[FileName].AllNum = AllNum;
         _mapDivGraph[FileName].handle = hbuf;
         // データをコピー
-        for (int i = 0; i < AllNum; i++) {
+        for(int i = 0; i < AllNum; i++) {
             HandleBuf[i] = hbuf[i];
         }
     }
@@ -116,7 +115,7 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
 
 int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
     int XNum, int YNum,
-    int XSize, int YSize, std::vector<int>&HandleBuf)
+    int XSize, int YSize, std::vector<int>& HandleBuf)
 {
     //コンテナサイズを変更
     HandleBuf.resize(AllNum);
@@ -137,14 +136,14 @@ int	ResourceServer::LoadDivGraph(const TCHAR* FileName, int AllNum,
     // まずはメモリを作成する
     int* hbuf = NEW int[AllNum];
     int err = ::LoadDivGraph(FileName, AllNum, XNum, YNum, XSize, YSize, hbuf);     // DXLIBのAPIを呼ぶので、::を先頭に付け、このクラスの同じ名前の関数と区別する
-    if(err == 0) 
+    if(err == 0)
     {
         // 成功
         // キーとデータをmapに登録
         _mapDivGraph[FileName].AllNum = AllNum;
         _mapDivGraph[FileName].handle = hbuf;
         // データをコピー
-        for(int i = 0; i < AllNum; i++) 
+        for(int i = 0; i < AllNum; i++)
         {
             HandleBuf[i] = hbuf[i];
         }
@@ -158,11 +157,10 @@ int ResourceServer::MV1LoadModel(const TCHAR* FileName)
 {
     // キーの検索
     auto itr = _mapModel.find(FileName);
-    if (itr != _mapModel.end())
+    if(itr != _mapModel.end())
     {
         // キーがあった
-        _modelRefCount[itr->second] += 1;
-        return itr->second;
+        return MV1DuplicateModel(itr->second);
     }
     // キーが無かった
     int model = ::MV1LoadModel(FileName);     // DXLIBのAPIを呼ぶので、::を先頭に付け、このクラスの同じ名前の関数と区別する
@@ -174,23 +172,20 @@ int ResourceServer::MV1LoadModel(const TCHAR* FileName)
 
 int ResourceServer::MV1DeleteModel(int handle)
 {
-    // キャッシュされた元モデルかチェック
-    bool isCachedModel = false;
-    for(const auto& pair : _mapModel)
+    // 要素の検索
+    auto iter = _mapModel.begin();
+
+    for(; iter != _mapModel.end(); ++iter)
     {
-        if(pair.second == handle)
-        {
-            isCachedModel = true;
+        if((*iter).second == handle) {
             break;
         }
     }
 
-    // キャッシュされた元モデルの場合は削除しない
-    // (複製されたモデルのみを削除)
-    if(!isCachedModel)
-    {
-        ::MV1DeleteModel(handle);
-    }
+    if(iter != _mapModel.end()) { _mapModel.erase(iter); }
+
+    ::MV1DeleteModel(handle);
 
     return 0;
+
 }

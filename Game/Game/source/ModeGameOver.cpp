@@ -38,6 +38,8 @@ bool ModeGameOver::Process()
 {
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
+
+	//ModeServer::GetInstance()->SkipProcessUnderLayer();
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
 	if(trg & PAD_INPUT_1)

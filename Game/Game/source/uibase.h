@@ -22,7 +22,17 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-protected: 
+	void Show(const vec::Vec3& pos);
+	void Hide();
 
+	void SetVisible(bool visible) { _visible = visible; }	
+	void SetSize(float size) { _size = size; }
+
+
+protected: 
+	vec::Vec3 _pos; // UŒ‚UI‚ÌˆÊ’u
+	bool _visible; // UŒ‚UI‚Ì•\¦ó‘Ô
+	float _size; // UŒ‚UI‚ÌƒTƒCƒY
+	float _angle; // UŒ‚UI‚Ì‰ñ“]Šp“x
 };
 

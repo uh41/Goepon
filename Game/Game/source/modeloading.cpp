@@ -51,7 +51,7 @@ bool ModeLoading::Initialize()
 	_fadeTimer = 0;
 
 	// ApplicationGlobalの初期化を開始（非同期読み込み開始）
-	gGlobal.Init();
+	//gGlobal.Init();
 
 	return true;
 }

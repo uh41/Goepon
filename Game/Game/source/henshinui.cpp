@@ -17,9 +17,9 @@ HenshinUi::HenshinUi()
 bool HenshinUi::Initialize()
 {
 	base::Initialize();
-	_handle = ResourceServer::LoadGraph(img::UI_Makimono);
-	_handleTanubito = ResourceServer::LoadGraph(img::UI_Tanubito);
-	_handleMono = ResourceServer::LoadGraph(img::UI_Tanumono);
+	_handle = LoadGraph(img::UI_Makimono);
+	_handleTanubito = LoadGraph(img::UI_Tanubito);
+	_handleMono = LoadGraph(img::UI_Tanumono);
 	return true;
 }
 

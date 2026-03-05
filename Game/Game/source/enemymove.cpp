@@ -13,17 +13,6 @@
 #include "enemysoundmanager.h"
 #include <cmath>
 
-EnemyMove::EnemyMove()
-{
-	Initialize();
-}
-
-
-EnemyMove::~EnemyMove()
-{
-
-}
-
 // 初期化
 bool EnemyMove::Initialize()
 {
@@ -36,33 +25,26 @@ bool EnemyMove::Initialize()
 	// 再生時間の初期化
 	_fTotalTime = 0.0f;
 	_fPlayTime = 0.0f;
-	// 位置、向きの初期化
-	//_vPos = vec3::VGet(100.0f, 0.0f, 0.0f);
-	//_vDir = vec3::VGet(0.0f, 0.0f, -1.0f);// キャラモデルはデフォルトで-Z方向を向いている
 	// 腰位置の設定
 	_fColSubY = 100.0f;
 	// コリジョン半径の設定
 	_fCollisionR = 30.0f;
-	_fCollisionWeight = 10.0f;
+	_fCollisionWeight = 100.0f;
 
 	_fHp = 30.0f;
 
-	// 初期位置と向きを保存
-	//_initialPosition = _vPos;
-	//_initialDirection = _vDir;
-
 	// センサー関連の初期化
-	_detectedPlayer = false;					// プレイヤー検出フラグの初期化
-	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	// プレイヤー位置の初期化
-	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
+	_detectedPlayer = false;					
+	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_rotationSpeed = 0.5f;						
 
 	// 移動関連の初期化
-	_moveSpeed = 8.25f;								// 移動速度（調整可能）
-	_targetPosition = vec3::VGet(0.0f, 0.0f, 0.0f);	// 目標位置の初期化
-	_isMoving = false;								// 移動中フラグの初期化
+	_moveSpeed = 8.25f;								
+	_targetPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_isMoving = false;								
 
 	// 初期位置に戻る機能の初期化
-	_isReturningToInitialPos = false;	// 初期位置に戻り中フラグの初期化
+	_isReturning = false;				
 	_returnSpeed = 5.0f;				// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
@@ -98,38 +80,105 @@ void EnemyMove::SetPatrolPoint(const at::vet<vec::Vec3>& point)
 	_patrolIndex = 0;
 }
 
+void EnemyMove::SetPatrolWaitDirection(int id)
+{
+	_patrolWaitDir = DirIdToVec3(id);
+
+	if(_patrolWaitDir.LengthSquare() > 0.01f)
+	{
+		_patrolWaitDir = vec3::VNorm(_patrolWaitDir);
+		if(!IsStun())
+		{
+			_vDir = _patrolWaitDir; // 待機中の向きを即座に反映
+		}
+	}
+}
+
+void EnemyMove::SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointInfo>& points)
+{
+	_patrolPointInfo.assign(points.begin(), points.end());
+
+	at::vet<vec::Vec3> posList;
+	posList.reserve(_patrolPointInfo.size());
+	for(auto&& p : _patrolPointInfo)
+	{
+		posList.push_back(p.pos);
+	}
+
+	SetPatrolPoint(posList);
+}
+
 // 巡回処理
 void EnemyMove::ProcessPatrol()
 {
-	if (!_isPatroll || !_patroll->IsValid())
+	if(!_isPatroll || !_patroll->IsValid())
 	{
 		return;
 	}
 
-	// 音源へ移動中は巡回処理で向きを上書きしない
-	if (_isMovingToSound)
+	if(_isMovingToSound)
 	{
 		return;
 	}
 
-	//if(IsStun())
-	//{
-	//	return;
-	//}
-
-	// 待機中の更新（到着後その場で停止する処理）
-	if (_isPatrolWaiting)
+	// 待機中
+	if(_isPatrolWaiting)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS 前提
+		const float dt = 1.0f / 60.0f;
 		_patrolWaitTimer -= dt;
-		// 待機中は視線を変えない（_vDir を上書きしない）
-		if (_patrolWaitTimer <= 0.0f)
+
+		// 待機中は指定された向きを維持
+		if(_patrolWaitDir.LengthSquare() > 0.01f && !IsStun())
 		{
-			// 待機終了 → 次の巡回ポイントへ進める
+			_vDir = vec3::VNorm(_patrolWaitDir);
+		}
+
+		if(_patrolWaitTimer <= 0.0f)
+		{
 			_isPatrolWaiting = false;
 			_patroll->MoveToNextPoint();
 			_patrolIndex = _patroll->GetMovePointIndex();
-			// 続行のため目標を更新（このフレームで移動させる）
+
+			// 次のポイントの direction を取得して向きを設定
+			const int nextIdx = _patroll->GetMovePointIndex();
+			if(nextIdx >= 0 && nextIdx < StCas<int>(_patrolPointInfo.size()))
+			{
+				int nextDirId = _patrolPointInfo[nextIdx].id;
+				if(nextDirId > 0)
+				{
+					// 次のポイントに direction が指定されていれば、その向きへ変更
+					_patrolWaitDir = DirIdToVec3(nextDirId);
+					if(_patrolWaitDir.LengthSquare() > 0.0001f && !IsStun())
+					{
+						_patrolWaitDir = vec3::VNorm(_patrolWaitDir);
+						_vDir = _patrolWaitDir;
+					}
+				}
+				else
+				{
+					// direction が指定されていない場合は次のターゲット方向へ
+					vec::Vec3 nextTarget = _patroll->GetTargetPoint();
+					vec::Vec3 toNextTarget = vec3::VSub(nextTarget, _vPos);
+					toNextTarget.y = 0.0f;
+					if(toNextTarget.LengthSquare() > 0.0001f)
+					{
+						_patrolWaitDir = vec3::VNorm(toNextTarget);
+						if(!IsStun())
+						{
+							_vDir = _patrolWaitDir;
+						}
+					}
+					else
+					{
+						_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+					}
+				}
+			}
+			else
+			{
+				// インデックスが範囲外の場合は向きをリセット
+				_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+			}
 		}
 		else
 		{
@@ -139,57 +188,82 @@ void EnemyMove::ProcessPatrol()
 		}
 	}
 
-	// 現在の目標を取得
 	vec::Vec3 target = _patroll->GetTargetPoint();
 
-	// 移動先ベクトル（水平のみ）
 	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
-	toTarget.y = 0.0f; // 水平方向のみ
+	toTarget.y = 0.0f;
 	float dist = vec3::VSize(toTarget);
 
-	// 到着判定（移動前）
 	const float reachThreshold = 15.0f;
-	// NOTE:
-	// 到着判定は「距離が閾値以下」で到着とみなすべきなので <= に変更。
-	// また、MoveToNextPoint() は MovePointControll 側でインデックスを
-	// 進めるため、ここで別途 +1 するべきではない。
-	if (dist <= reachThreshold)
+	if(dist <= reachThreshold)
 	{
-		// 到着したらすぐ次へ進まず、その場で停止（視線を変えない）して待機する
-		_patrolWaitDir = _vDir; // 保持しておくが、待機中は _vDir を変更しない
+		// 到着したポイント index に対応する direction / waittime を採用
+		int dirId = 0;
+		float waitSec = 0.0f;
+		const int idx = _patroll->GetMovePointIndex();
+		if(idx >= 0 && idx < StCas<int>(_patrolPointInfo.size()))
+		{
+			dirId = _patrolPointInfo[idx].id;
+			waitSec = _patrolPointInfo[idx].waitTime;
+		}
+
+		// direction があれば向きを変える
+		if(dirId > 0)
+		{
+			_patrolWaitDir = DirIdToVec3(dirId);
+			if(_patrolWaitDir.LengthSquare() > 0.0001f && !IsStun())
+			{
+				_patrolWaitDir = vec3::VNorm(_patrolWaitDir);
+				_vDir = _patrolWaitDir; // 到着時に即座に向きを変更
+			}
+		}
+		else
+		{
+			// direction が指定されていない場合は移動方向を維持
+			if(toTarget.LengthSquare() > 0.0001f)
+			{
+				_patrolWaitDir = vec3::VNorm(toTarget);
+			}
+			else
+			{
+				_patrolWaitDir = _vDir;
+			}
+		}
+
+		// waittime があればその秒数止まる
+		if(waitSec > 0.0f)
+		{
+			_patrolWaitDuration = waitSec;
+		}
 
 		// 待機開始
 		_status = STATUS::WAIT;
 		_patrolWaitTimer = _patrolWaitDuration;
 		_isPatrolWaiting = true;
-
-		// その場で停止して待つため、移動処理はここで終了
 		return;
 	}
 
-	// 目標に向かって移動（オーバーシュート防止）
-	if (dist > 0.01f)
+	// 通常移動
+	if(dist > 0.01f)
 	{
-		// 1フレームでの移動量（step）
 		float step = _patrolSpeed;
-		// 残距離より大きければクランプ
-		if (step > dist) step = dist;
+		if(step > dist) step = dist;
 
 		vec::Vec3 dir = vec3::VScale(vec3::VNorm(toTarget), step);
 		_vPos = vec3::VAdd(_vPos, dir);
-		_vDir = vec3::VNorm(toTarget); // 目標方向を向く
 
-		// 移動後の到着判定（念のため）
+		// 移動中は移動方向を向く
+		if(!IsStun())
+		{
+			_vDir = vec3::VNorm(toTarget);
+		}
+
 		vec::Vec3 afterToTarget = vec3::VSub(target, _vPos);
 		afterToTarget.y = 0.0f;
-		if (afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
+		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
 		{
-			// 移動で到達した場合も、その場で停止（視線は変えない）して待機する
-			_patrolWaitDir = _vDir;
-
 			_patrolWaitTimer = _patrolWaitDuration;
 			_isPatrolWaiting = true;
-			// 待機に入るため移動後の追加処理は行わない
 		}
 	}
 }
@@ -224,13 +298,13 @@ void EnemyMove::OnPlayerLost()
 
 	_detectedPlayer = false;
 
-	StartReturningToInitialPosition();
+	ReturnInitialPos();
 }
 
 // 初期位置に戻る処理の更新
 void EnemyMove::ProcessReturnToPatrolPoint()
 {
-	if(!_isReturningToInitialPos)
+	if(!_isReturning)
 	{
 		return;
 	}
@@ -250,8 +324,8 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			// タイマー経過でセーブポイントへ瞬間移動
 			_effect->PlayEffect(_vPos);
 			_vPos = _savePoint;
-			_vDir = _initialDirection; // 向きは初期向きに戻す（必要なら変更可）
-			_isReturningToInitialPos = false;
+			_vDir = _initialDir; // 向きは初期向きに戻す（必要なら変更可）
+			_isReturning = false;
 			_waitingForTeleport = false;
 			_teleportTimer = 0.0f;
 			_effect->PlayEffect(_vPos);
@@ -275,7 +349,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 
 	if(distSq < (threshold * threshold))
 	{
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 		_patroll->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
 		_isPatroll = true;
@@ -308,7 +382,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 }
 
 // 初期位置に戻る処理を開始
-void EnemyMove::StartReturningToInitialPosition()
+void EnemyMove::ReturnInitialPos()
 {
 	// 現在の巡回インデックスを保存（復帰時に使う）
 	_savePatrolIndex = _patrolIndex;
@@ -323,12 +397,12 @@ void EnemyMove::StartReturningToInitialPosition()
 		}
 		else
 		{
-			_savePoint = _initialPosition;
+			_savePoint = _initialPos;
 		}
 	}
 
 	_isPatroll = false;
-	_isReturningToInitialPos = true;
+	_isReturning = true;
 
 	// 念のためテレポート状態をリセットしておく
 	ResetTeleport();
@@ -355,6 +429,12 @@ void EnemyMove::OnDamageEnd()
 // 敵サウンドマネージャーから音源に向かって移動する処理を開始
 void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 {
+	// スタン中は音に反応しない
+	if (IsStun())
+	{
+		return;
+	}
+
 	// 追跡/プレイヤー検出中は音より優先（既存方針に合わせる）
 	if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
 	{
@@ -382,7 +462,7 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 	}
 	else
 	{
-		_savePoint = _initialPosition;
+		_savePoint = _initialPos;
 	}
 	_hasSavePoint = true;
 
@@ -435,7 +515,7 @@ bool EnemyMove::Process()
 			_isMovingToSound = false;
 			_waitingAtSound = false;
 
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 
@@ -458,14 +538,14 @@ bool EnemyMove::Process()
 			// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
 			if(_hasSavePoint)
 			{
-				_isReturningToInitialPos = true;
+				_isReturning = true;
 				_isPatroll = false;
 				ResetTeleport();
 			}
 			else
 			{
 				// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
-				StartReturningToInitialPosition();
+				ReturnInitialPos();
 			}
 		}
 	}
@@ -483,17 +563,17 @@ bool EnemyMove::Process()
 			UpdateMovingToSound();
 		}
 
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 		_isPatroll = false;
 	}
-	else if(_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	else if (_enemySensor && _enemySensor->IsChasing())	// プレイヤーを検出している場合
 	{
 		_status = STATUS::FOUND;
 		UpdateChasing();
-		_isReturningToInitialPos = false;
+		_isReturning = false;
 		_isPatroll = false;		// 巡回停止
 	}
-	else if (_isReturningToInitialPos)	// 初期位置に戻り中
+	else if (_isReturning)	// 初期位置に戻り中
 	{
 		if(_waitingForTeleport)
 		{
@@ -514,9 +594,9 @@ bool EnemyMove::Process()
 	{
 		_status = STATUS::WAIT;
 
-		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPosition() && !IsStun())
+		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
-			StartReturningToInitialPosition();
+			ReturnInitialPos();
 		}
 	}
 

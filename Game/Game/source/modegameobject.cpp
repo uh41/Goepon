@@ -31,7 +31,7 @@ void ModeGame::RequestReturnToTanukiFromHuman()
 
 bool ModeGame::IsTransforming() const
 {
-	return _isTransformToHuman || _isTransformToMono || (_transformAnimId != -1);
+	return _isTransformToHuman || _isTransformToMono ||  (_transformAnimId != -1);
 }
 
 bool ModeGame::IsTransformRequested() const
@@ -88,6 +88,20 @@ bool ModeGame::ObjectInitialize()
 	_henshinUi = std::make_shared<HenshinUi>();
 	_henshinUi->SetOwner(this);
 	_uiBase.emplace_back(_henshinUi);
+
+	_counterUi = std::make_shared<CounterUi>();
+	_uiBase.emplace_back(_counterUi);
+
+	_treasureUi = std::make_shared<TreasureUi>();
+	_treasureUi->SetTreasureList(_treasure);
+	_uiBase.emplace_back(_treasureUi);
+
+	_attackUi = std::make_shared<AttackUi>();
+	_attackUi->Show(_player.get()->GetPos());
+	_uiBase.emplace_back(_attackUi);
+
+	_treasureOpenUi = std::make_shared<TreasureOpenUi>();
+	_uiBase.emplace_back(_treasureOpenUi);
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
@@ -442,16 +456,32 @@ bool ModeGame::PlayerTransform()
 	if(_requestedReturnToTanuki)
 	{
 		_requestedReturnToTanuki = false;
-		if(!_bShowTanuki && !_showMonoPlayer)
+		// タヌキでない表示（人間 or モノ）の場合、どちらからでも即時タヌキへ戻す
+		if(!_bShowTanuki)
 		{
+			// 元の表示状態を保持しておく（モノか人か）
+			bool wasMono = _showMonoPlayer;
+			bool wasHuman = (!_bShowTanuki && !_showMonoPlayer);
+
+			// タヌキ表示へ切替（モノ表示は解除）
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
 
-			_playerTanuki->SetPos(_player->GetPos());
-			_playerTanuki->SetDir(_player->GetDir());
-			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->PlayAnimation("idle", true);
-			_playerTanuki->Process();
+			// 位置・向きを元の表示からタヌキに引き継ぐ
+			PlayerBase* srcPlayer = nullptr;
+			if(wasMono && _playerMono) srcPlayer = _playerMono.get();
+			else if(wasHuman && _player) srcPlayer = _player.get();
+
+			if(srcPlayer && _playerTanuki)
+			{
+				_playerTanuki->SetPos(srcPlayer->GetPos());
+				_playerTanuki->SetDir(srcPlayer->GetDir());
+				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+
+				// モノから戻る場合もタヌキの待機アニメーションを再生する
+				_playerTanuki->PlayAnimation("idle", true);
+				_playerTanuki->Process();
+			}
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
@@ -623,6 +653,13 @@ bool ModeGame::ObjectRender()
 		if(makimono) makimono->Render();
 	}
 
+
+	// 宝箱の描画
+	for (auto& t : _treasure)
+	{
+		if (t) t->Render();
+	}
+
 	// オブジェクトを描画
 	for(auto& object : _object)
 	{
@@ -714,14 +751,10 @@ bool ModeGame::ObjectRender()
 	if (_uiHp) { _uiHp->SetPlayer(currentPlayer); }
 	if (_uiMakimono) { _uiMakimono->SetPlayer(currentPlayer); }
 
-	// UIを描画
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Render();
-	}
+
 
 	// 各敵のセンサーを個別に描画
-	// 変更: プレイヤーから半径内にいる敵だけ索敵範囲を描画するように変更
+	// プレイヤーから半径内にいる敵だけ索敵範囲を描画
 	if (currentPlayer)
 	{
 		const float detectionRadius = 1000.0f; 
@@ -761,10 +794,24 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+
+
 	// エフェクト
 	for (auto& effectBase : _effectBase)
 	{
 		effectBase->Render();
+	}
+
+	SetUseZBuffer3D(FALSE);
+	SetWriteZBuffer3D(FALSE);
+
+	// UIを描画
+	for(auto& ui_base : _uiBase)
+	{
+		int y = 20;
+		bool ok = ui_base->Render();
+		DrawFormatString(20, y, GetColor(255, 255, 0), "UI render ret=%d", ok ? 1 : 0);
+		y += 16;
 	}
 
 	return true;
@@ -960,7 +1007,7 @@ bool ModeGame::CheckAllDetections()
 				if(detected)
 				{
 					anyDetected = true;
-					if(player != nullptr) // NULLチェックを追加
+					if(player != nullptr)
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
@@ -968,7 +1015,7 @@ bool ModeGame::CheckAllDetections()
 						_nakiEffect->PlayEffect(player->GetPos());
 					}
 
-					// --- 追加: PlayerMono が検知されたら即時モノ->タヌキに切替 ---
+					// PlayerMono が検知されたら即時モノ->タヌキに切替 
 					if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
 					{
 						if(_playerTanuki && player != _playerTanuki.get())

@@ -35,12 +35,12 @@ public:
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
 	// 敵が初期位置に戻り中かどうかの判定（検知停止用）
-	bool IsReturningToInitialPosition() const { return _isReturningToInitialPos; }
+	bool IsReturning() const { return _isReturning; }
 
 	// 初期位置に戻る処理
-	void UpdateReturningToInitialPosition();	// 初期位置に戻る更新処理
-	void StartReturningToInitialPosition();		// 初期位置に戻る処理を開始
-	bool IsAtInitialPosition() const;			// 初期位置にいるかどうかをチェック
+	void UpdateReturnInitialPos();	// 初期位置に戻る更新処理
+	void ReturnInitialPos();		// 初期位置に戻る処理を開始
+	bool IsAtInitialPos() const;	// 初期位置にいるかどうかをチェック
 
 	// プレイヤーの方向を向く処理
 	void LookAtPlayer();			// 即座にプレイヤーの方向を向く
@@ -66,8 +66,8 @@ public:
 
 	bool IsDetectPlayer() const { return _detectedPlayer; }
 
-	vec::Vec3 GetInitialPosition() const { return _initialPosition; }
-	vec::Vec3 GetInitialDirection() const { return _initialDirection; }
+	vec::Vec3 GetInitialPos() const { return _initialPos; }
+	vec::Vec3 GetInitialDir() const { return _initialDir; }
 
 	virtual	void CaptureInitialTransform();
 
@@ -95,6 +95,7 @@ public:
 	void UpdateDirectionSequence();												// 向き変更のシーケンスの更新
 	void StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel);// 敵サウンドマネージャーから音源に向かって移動する処理を開始
 
+	static vec::Vec3 DirIdToVec3(int id);	// 方向IDをベクトルに変換するヘルパー関数
 protected:
 	uint32_t _enemyId; // 敵のID
 
@@ -106,15 +107,15 @@ protected:
 	float _rotationSpeed;	// 回転速度
 
 	// 移動関連
-	float _moveSpeed;			// 移動速度
-	vec::Vec3 _targetPosition;	// 目標位置（追跡時の移動先）
-	bool _isMoving;				// 移動中かどうか
+	float _moveSpeed;		// 移動速度
+	vec::Vec3 _targetPos;	// 目標位置（追跡時の移動先）
+	bool _isMoving;			// 移動中かどうか
 
 	// 初期位置に戻る機能
-	vec::Vec3 _initialPosition;		// 初期位置
-	vec::Vec3 _initialDirection;	// 初期向き
-	bool _isReturningToInitialPos;	// 初期位置に戻り中かどうか
-	float _returnSpeed;				// 初期位置に戻る速度
+	vec::Vec3 _initialPos;		// 初期位置
+	vec::Vec3 _initialDir;		// 初期向き
+	bool _isReturning;			// 初期位置に戻り中かどうか
+	float _returnSpeed;			// 初期位置に戻る速度
 
 	// 検知終了後の待機処理用
 	bool _waitingBeforeReturn;     // 帰還前の待機中フラグ

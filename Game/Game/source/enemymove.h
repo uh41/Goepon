@@ -2,6 +2,7 @@
 #include "enemybase.h"
 #include "appframe.h"
 #include "movepointcontroll.h"
+#include "applicationglobal.h"
 
 // 前方宣言
 class EnemySensor;
@@ -11,8 +12,6 @@ class EnemyMove : public EnemyBase
 {
 	typedef EnemyBase base;
 public:
-	EnemyMove();
-	~EnemyMove();
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
@@ -26,10 +25,14 @@ public:
 	void ProcessPatrol();
 	void ProcessReturnToPatrolPoint();
 
-	bool IsPatrolling() const
-	{
-		return _isPatroll;
-	}
+	// 巡回ポイントに到着したときの処理
+	void SetPatrolWaitDirection(int id);
+
+	// 巡回中かどうかの判定
+	bool IsPatrolling() const {return _isPatroll;}
+
+	// パトロールポイントの情報を設定
+	void SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointInfo>& points);
 
 	void OnDamageStart()override;
 	void OnDamageEnd()override;
@@ -48,7 +51,7 @@ protected:
 	vec::Vec3 _savePoint;				// 戻る前の位置を保存
 
 	// 初期位置に戻る処理を開始
-	void StartReturningToInitialPosition();		
+	void ReturnInitialPos();		
 
 	// テレポート状態のリセット
 	void ResetTeleport();
@@ -60,5 +63,7 @@ protected:
 	float _patrolWaitTimer;		// 待機カウントダウン
 	float _patrolWaitDuration;	// 待機時間（秒）
 	vec::Vec3 _patrolWaitDir;	// 待機中に向く方向
+
+	at::vet<ApplicationGlobal::PatrolPointInfo> _patrolPointInfo;
 };
 

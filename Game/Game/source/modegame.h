@@ -51,6 +51,11 @@
 #include "modegameload.h"
 #include "StageManager.h"
 #include "henshinui.h"
+#include "counterui.h"
+#include "treasureui.h"
+#include "attackui.h"
+#include "treasureopenui.h"
+
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -168,6 +173,23 @@ public:
 	// 初期ステージIDを設定
 	void SetInitialStageId(const std::string& stageId);
 
+	using enemygroup = at::umtt<std::string, at::vet<vec::Vec3>>;
+
+	// 敵の生成関数
+	void CreateEnemy(const nlohmann::json& object,
+		const enemygroup& patrolGroup,
+		const enemygroup& dogMovementArea,
+		uint32_t& nextEnemyId,
+		MapBase* map);
+
+	at::spc<EnemySensor> CreateEnemySensor(float soundArea, MapBase* map);
+
+	const at::vec<EnemyBase*>& GetEnemiesInAttackRangees() const { return _enemiesInAttackRange; }
+
+	auto GetPlayer() const { return _player; }
+	auto GetPlayerTanuki() const { return _playerTanuki; }
+	auto GetPlayerMono() const { return _playerMono; }
+
 protected:
 	Camera* _camera;
 	Camera* _originalCamera;
@@ -214,6 +236,11 @@ protected:
 	at::spc<UiHp> _uiHp;
 	at::spc<UiMakimono> _uiMakimono;
 	at::spc<HenshinUi> _henshinUi;
+	at::spc<CounterUi> _counterUi;
+	at::spc<TreasureUi> _treasureUi;
+	at::spc<AttackUi> _attackUi;
+	at::spc<TreasureOpenUi> _treasureOpenUi;
+
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
 
@@ -232,6 +259,7 @@ protected:
 	at::spc<NakiEffect> _nakiEffect;
 
 	at::spc<SoundServer3D> _sound3D;
+	soundserver::SoundItemBase* _soundFinish;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
@@ -336,5 +364,7 @@ protected:
 	bool _requestedTransformToMono = false;      // タヌキ -> モノ 要求
 	bool _requestedTransformToHuman = false;     // タヌキ -> 人間 要求（アニメ）
 	bool _requestedReturnToTanuki = false;       // 人間 -> タヌキ（即時）要求
+
+	at::vec<EnemyBase*> _enemiesInAttackRange; // 攻撃範囲内の敵のリスト
 };
 

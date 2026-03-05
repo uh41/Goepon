@@ -51,6 +51,7 @@ namespace texture
   inline constexpr const char* Particle02 = "res/Texture/Particle02.png";
   inline constexpr const char* TX_Tresure3 = "res/Texture/TX_Tresure3.png";
   inline constexpr const char* TX_Tresure4 = "res/Texture/TX_Tresure4.png";
+  inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
   inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
   inline constexpr const char* TX_change = "res/Texture/TX_change.png";
   inline constexpr const char* TX_doya = "res/Texture/TX_doya.png";
@@ -69,8 +70,13 @@ namespace texture
 namespace ui
 {
   inline constexpr const char* Light = "res/Object/building/Light.png";
+  inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
+  inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
+  inline constexpr const char* Makimono = "res/UI/Makimono.png";
+  inline constexpr const char* Mokuhyou = "res/UI/Mokuhyou.png";
+  inline constexpr const char* TailAtacck = "res/UI/TailAtacck.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";
@@ -136,6 +142,7 @@ namespace mv1
   inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
   inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
   inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
+  inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";
   inline constexpr const char* fusama = "res/map/fusama.mv1";
   inline constexpr const char* bil1 = "res/Object/bil1/bil1.mv1";
   inline constexpr const char* Board = "res/Object/Board/Board.mv1";

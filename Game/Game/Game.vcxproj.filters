@@ -273,6 +273,9 @@
     </ClCompile>
     <ClCompile Include="source\Map3.cpp" />
     <ClCompile Include="source\TreasureBase.cpp" />
+    <ClCompile Include="source\counterui.cpp" />
+    <ClCompile Include="source\attackui.cpp" />
+    <ClCompile Include="source\treasureopenui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -348,9 +351,10 @@
     <ClInclude Include="source\MapFactory.h">
       <Filter>ヘッダーファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
     <ClInclude Include="source\Map3.h" />
     <ClInclude Include="source\TreasureBase.h" />
+    <ClInclude Include="source\attackui.h" />
+    <ClInclude Include="source\treasureopenui.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -382,6 +386,7 @@
       <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
     <ClInclude Include="source\treasureui.h" />
+    <ClInclude Include="source\counterui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -931,8 +936,5 @@
     <None Include="resource.py">
       <Filter>Python</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Game.rc" />
   </ItemGroup>
 </Project>
