@@ -34,7 +34,7 @@ bool Player::Initialize()
 	_fCollisionWeight = 20.0f;
 	_cam = nullptr;
 	// 移動速度設定
-	_fMvSpeed = 6.0f;
+	_fMvSpeed = 5.0f;
 
 	_iAxisHoldCount = 0;		// 十字キー水平入力保持カウント初期化
 	_bAxisUseLock = false;			// 十字キー水平入力ロックフラグ初期化

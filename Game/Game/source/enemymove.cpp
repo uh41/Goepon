@@ -39,13 +39,13 @@ bool EnemyMove::Initialize()
 	_rotationSpeed = 0.5f;						
 
 	// 移動関連の初期化
-	_moveSpeed = 8.25f;								
+	_moveSpeed = 7.2f;								
 	_targetPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
 	_isMoving = false;								
 
 	// 初期位置に戻る機能の初期化
 	_isReturning = false;				
-	_returnSpeed = 5.0f;				// 初期位置に戻る速度（追跡より少し遅め）
+	_returnSpeed = 4.0f;				// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
 	_waitingForTeleport = false;
@@ -53,7 +53,7 @@ bool EnemyMove::Initialize()
 
 	_patroll = std::make_shared<MovePointControll>();
 	_isPatroll = false;
-	_patrolSpeed = 5.0f;
+	_patrolSpeed = 4.0f;
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 

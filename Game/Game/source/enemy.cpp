@@ -34,7 +34,7 @@ bool Enemy::Initialize()
 
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
 	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
-	_moveSpeed = 8.25f;
+	_moveSpeed = 7.2f;
 
 	// 整合性のため他は base に委譲済み
 

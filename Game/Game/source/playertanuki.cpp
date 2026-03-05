@@ -20,7 +20,7 @@ bool PlayerTanuki::Initialize()
 	_fCollisionR = 30.0f;			// キャラの当たり判定用の円の半径
 	_fCollisionWeight = 20.0f;		// キャラの重さ
 	_cam = nullptr;
-	_fMvSpeed = 8.0f;
+	_fMvSpeed = 7.0f;
 
 	_normalSpeed = _fMvSpeed;
 	_dash = false;

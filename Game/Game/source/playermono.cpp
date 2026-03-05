@@ -28,7 +28,7 @@ bool PlayerMono::Initialize()
 	_fCollisionWeight = 20.0f;		// ƒLƒƒƒ‰‚Ìd‚³
 
 	_cam = nullptr;
-	_fMvSpeed = 4.0f;
+	_fMvSpeed = 3.5f;
 	_bLand = true;
 
 	return true;

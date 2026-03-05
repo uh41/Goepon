@@ -115,5 +115,5 @@ protected:
 	void RecalculateDetectionSector() const;
 
 	// プレイヤーを検出してから追跡開始までの遅延時間（秒）
-	static constexpr float DETECTION_DELAY_TIME = 0.1f;
+	static constexpr float DETECTION_DELAY_TIME = 0.35f;
 };
