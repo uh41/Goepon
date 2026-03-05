@@ -326,7 +326,7 @@ bool ModeGame::LoadStageData()
 			auto treasure = std::make_shared<Treasure>();
 			treasure->Initialize();
 			treasure->SetJsonDataUE(object);
-			_treasure.emplace_back(treasure);
+			_treasureBase.emplace_back(treasure);
 			continue;
 		}
 
@@ -625,22 +625,22 @@ bool ModeGame::Process()
 	if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasure);
-		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasure);
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
+		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasureBase);
 		PlayerCameraInfo(_playerTanuki.get());
 	}
 	else if(_showMonoPlayer)
 	{
 		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasure);
-		CharaToTreasureOpenCollision(_playerMono.get(), _treasure);
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasureBase);
+		CharaToTreasureOpenCollision(_playerMono.get(), _treasureBase);
 		PlayerCameraInfo(_playerMono.get());
 	}
 	else
 	{
 		EscapeCollision(_player.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasure);
-		CharaToTreasureOpenCollision(_player.get(), _treasure);
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasureBase);
+		CharaToTreasureOpenCollision(_player.get(), _treasureBase);
 		PlayerCameraInfo(_player.get());
 	}
 

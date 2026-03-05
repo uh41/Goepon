@@ -21,7 +21,7 @@ bool TitleTanuki::Terminate()
 	return true;
 }
 
-bool TitleTanuki::Process()
+bool TitleTanuki::Process() 
 {
 	base::Process();
 

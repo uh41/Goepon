@@ -272,6 +272,7 @@
       <Filter>ソースファイル\モードゲーム\マップベース\マップファクトリー</Filter>
     </ClCompile>
     <ClCompile Include="source\Map3.cpp" />
+    <ClCompile Include="source\TreasureBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -349,6 +350,7 @@
     </ClInclude>
     <ClInclude Include="resource.h" />
     <ClInclude Include="source\Map3.h" />
+    <ClInclude Include="source\TreasureBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

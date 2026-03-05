@@ -566,7 +566,7 @@ bool ModeGame::ObjectProcess()
 	}
 
 	// 宝箱処理
-	for (auto& t : _treasure)
+	for (auto& t : _treasureBase)
 	{
 		if (t) t->Process();
 	}
@@ -612,7 +612,7 @@ bool ModeGame::ObjectRender()
 	}
 
 	// 宝箱の描画
-	for (auto& t : _treasure)
+	for (auto& t : _treasureBase)
 	{
 		if (t) t->Render();
 	}

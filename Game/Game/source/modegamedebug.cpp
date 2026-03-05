@@ -133,8 +133,8 @@ bool ModeGame::DebugProcess()
 	{
 		if(!treasure) continue;
 
-		MV1SetFrameVisible(treasure->GetModelHandle(), treasure->GetHitCollisionFrame(), _d_view_collision ? TRUE : FALSE);
-		MV1SetFrameVisible(treasure->GetModelHandle(), treasure->GetOpenCollisionFrame(), _d_view_collision ? TRUE : FALSE);
+		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetHitCollisionFrame(), _d_view_collision ? TRUE : FALSE);
+		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetOpenCollisionFrame(), _d_view_collision ? TRUE : FALSE);
 	}
 
 	// デバック用タイマー（転ばせる）
