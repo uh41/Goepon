@@ -281,6 +281,9 @@
     <ClCompile Include="source\stuneffect.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\TreasureRapidFire.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -363,6 +366,9 @@
     <ClInclude Include="source\dashui.h" />
     <ClInclude Include="source\shirimochieffect.h" />
     <ClInclude Include="source\stuneffect.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TreasureRapidFire.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
