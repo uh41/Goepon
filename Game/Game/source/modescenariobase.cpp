@@ -15,6 +15,7 @@ bool ModeScenarioBase::Initialize()
 {
 	_page.clear();
 	_pageNo = 0;
+	_backHandle = -1;
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	_voice = nullptr;
 
@@ -23,11 +24,25 @@ bool ModeScenarioBase::Initialize()
 
 bool ModeScenarioBase::Terminate()
 {
-	_soundServer->Clear();
-	//_soundServer = nullptr;
-	//_voice = nullptr;
-	//_page.clear();
-	//_pageNo = 0;
+	if (_soundServer)
+	{
+		_soundServer->Clear();
+		_soundServer = nullptr;  // nullptrにセット
+	}
+	_voice = nullptr;  // nullptrにセット
+
+	// ページの画像リソースを解放
+	for (auto& page : _page)
+	{
+		if (page.handle != -1)
+		{
+			DeleteGraph(page.handle);
+			page.handle = -1;
+		}
+	}
+	_page.clear();
+	_pageNo = 0;
+	_backHandle = -1;
 
 	return true;
 }

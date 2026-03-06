@@ -21,6 +21,7 @@ public:
 protected:
 	at::vec<Page> _page;
 	int _pageNo;
+	int _backHandle; // 背景のグラフィックハンドル	
 	at::spc<soundserver::SoundServer> _soundServer;
 	at::spc<soundserver::SoundItemVoice> _voice;
 };
