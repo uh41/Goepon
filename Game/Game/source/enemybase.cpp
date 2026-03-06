@@ -364,6 +364,11 @@ void EnemyBase::UpdateDamageAnimation()
 			_attachStage = 2;
 			_stanTimer = STAN_DURATION;
 
+			if(_effect)
+			{
+				_effect->PlayEffect(_vPos); // ダメージエフェクトを再生
+			}
+
 			// プレイヤーの攻撃SE
 			auto sound = gGlobal._soundServer->Get("30");
 			if(sound && !sound->IsPlay())
