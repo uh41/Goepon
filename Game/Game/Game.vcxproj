@@ -86,6 +86,7 @@
     <ClInclude Include="source\TreasureBase.h" />
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\treasureopenui.h" />
+    <ClInclude Include="source\TreasureRapidFire.h" />
     <ClInclude Include="source\treasureui.h" />
     <ClInclude Include="source\tutorial.h" />
     <ClInclude Include="source\UIActionButton.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="source\TreasureBase.cpp" />
     <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\treasureopenui.cpp" />
+    <ClCompile Include="source\TreasureRapidFire.cpp" />
     <ClCompile Include="source\treasureui.cpp" />
     <ClCompile Include="source\tutorial.cpp" />
     <ClCompile Include="source\UIActionButton.cpp" />

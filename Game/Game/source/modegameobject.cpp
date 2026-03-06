@@ -802,7 +802,18 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-
+	// 連打型宝箱のゲージ描画
+	if (_player)
+	{
+		for (const auto& treasureRapidFire : _treasureRapidFire)
+		{
+			if (treasureRapidFire && treasureRapidFire->IsVisible() && !treasureRapidFire->IsOpen())
+			{
+				// プレイヤーの位置を基準にゲージを描画
+				treasureRapidFire->RenderGauge(_player->GetPos());
+			}
+		}
+	}
 
 	// エフェクト
 	for (auto& effectBase : _effectBase)

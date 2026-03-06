@@ -282,6 +282,9 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\tutorial.cpp" />
+    <ClCompile Include="source\TreasureRapidFire.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -367,6 +370,9 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\tutorial.h" />
+    <ClInclude Include="source\TreasureRapidFire.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

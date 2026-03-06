@@ -22,6 +22,7 @@
 #include "enemymove.h"
 #include "enemydog.h"
 #include "treasure.h"
+#include "TreasureRapidFire.h"
 #include "TreasureBase.h"
 #include "map.h"
 #include "cube.h"
@@ -103,6 +104,7 @@ public:
     // キャラと宝箱の当たり判定処理
 	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<TreasureBase>& treasures);
 	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<TreasureBase>& treasures);
+	bool CharaToTreasureRapidFireCollision(PlayerBase* player, const at::vspc<TreasureRapidFire>& treasures);
 	// プレイヤーとゴールの当たり判定
 	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
 	bool PlayerToTutorialCollision(PlayerBase* player,at::vspc<Tutorial> tutorial);
@@ -222,6 +224,7 @@ protected:
 	// 宝箱(オブジェクト)
 	at::vspc<TreasureBase> _treasureBase;
 	at::vspc<Treasure>     _treasure;
+	at::vspc<TreasureRapidFire> _treasureRapidFire;
 	// 巻物
 	at::vspc<Makimono> _makimono;
 	//ステージベース
