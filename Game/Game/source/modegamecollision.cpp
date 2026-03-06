@@ -114,22 +114,21 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 					continue;
 				}
 
-				// 頭も当たっている場合は通常の地面移動処理
+				// 頭の当たり判定のみを使用（タヌキの場合）
+				// headHitPosを使ってY座標のみ調整
 				vec::Vec3 tmpPos = chara->GetPos();
-				tmpPos.y = bodyHitPos.y; // 体の当たり位置のY座標を使用
+				tmpPos.y = headHitPos.y; // 頭の当たり位置のY座標を使用
 				chara->SetPos(tmpPos);
 
-				// Y変化を移動ベクトルに反映（必要なら）
-				triedV.y += chara->GetPos().y - oldvPos.y;
+				// Y変化を移動ベクトルに反映
+				triedV.y += tmpPos.y - oldvPos.y;
 			}
 			else
 			{
-				// タヌキ以外は通常の地面移動処理
+				// タヌキ以外は通常の地面移動処理（体の当たり判定を使用）
 				vec::Vec3 tmpPos = chara->GetPos();
-				tmpPos.y = bodyHitPos.y; // 体の当たり位置のY座標を使用
+				tmpPos.y = bodyHitPos.y;
 				chara->SetPos(tmpPos);
-
-				// Y変化を移動ベクトルに反映（必要なら）
 				triedV.y += chara->GetPos().y - oldvPos.y;
 			}
 
