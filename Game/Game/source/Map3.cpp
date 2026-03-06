@@ -3,7 +3,7 @@
 
 bool Map3::Initialize()
 {
-	if(base::Initialize()) { return true; }
+	if (!base::Initialize()) { return false; }
 
 	// SkySphere‚Ì“Ç‚İ‚İ
 	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skySphere.mv1");

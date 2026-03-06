@@ -354,13 +354,13 @@ bool PlayerTanuki::Render()
 	{
 		unsigned int col = GetColor(255, 255, 0);
 		// 表示位置は必要に応じて調整してください
-		DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, dash::DASH_DURATION);
-		DrawFormatString(10, 56, col, "Dash cooldown: %.2f", _dashCoolDownTime);
-		DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, (int)dash::DASH_MAX);
+	//	DrawFormatString(10, 40, col, "Dash timer: %.2f / %.2f", _dashTimer, dash::DASH_DURATION);
+	//	DrawFormatString(10, 56, col, "Dash cooldown: %.2f", _dashCoolDownTime);
+	//	DrawFormatString(10, 72, col, "Dash used: %d / %d", _dashCount, (int)dash::DASH_MAX);
 		// 回復タイマー表示（アクティブな場合）
 		if(_dashRecoverActive)
 		{
-			DrawFormatString(10, 88, col, "Recover in: %.2f", _dashRecoverTime);
+			//DrawFormatString(10, 88, col, "Recover in: %.2f", _dashRecoverTime);
 		}
 	}
 #endif
