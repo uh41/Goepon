@@ -79,6 +79,7 @@
     <ClInclude Include="source\shirimochieffect.h" />
     <ClInclude Include="source\soundserver3D.h" />
     <ClInclude Include="source\StageManager.h" />
+    <ClInclude Include="source\stuneffect.h" />
     <ClInclude Include="source\TitleCamera.h" />
     <ClInclude Include="source\TitleTanuki.h" />
     <ClInclude Include="source\Treasure.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="source\playertanuki.cpp" />
     <ClCompile Include="source\shirimochieffect.cpp" />
     <ClCompile Include="source\soundserver3D.cpp" />
+    <ClCompile Include="source\stuneffect.cpp" />
     <ClCompile Include="source\TitleCamera.cpp" />
     <ClCompile Include="source\TitleTanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />

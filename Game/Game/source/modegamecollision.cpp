@@ -642,6 +642,10 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			// 範囲内の敵をリストに追加（UI表示用）
 			_enemiesInAttackRange.push_back(enemy.get());
 
+			_attackUi->SetVisible(true);
+			_attackUi->SetSize(100);
+			_attackUi->Show(player->GetPos());
+
 			// 攻撃ボタンが押された場合のみダメージ処理
 			if(trg & PAD_INPUT_2)
 			{

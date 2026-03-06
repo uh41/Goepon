@@ -49,6 +49,10 @@ namespace texture
   inline constexpr const char* LaserMain01 = "res/Texture/LaserMain01.png";
   inline constexpr const char* Particle01 = "res/Texture/Particle01.png";
   inline constexpr const char* Particle02 = "res/Texture/Particle02.png";
+  inline constexpr const char* TR_1 = "res/Texture/TR_1.png";
+  inline constexpr const char* TR_2 = "res/Texture/TR_2.png";
+  inline constexpr const char* TR_3 = "res/Texture/TR_3.png";
+  inline constexpr const char* TR_4 = "res/Texture/TR_4.png";
   inline constexpr const char* TX_Tresure3 = "res/Texture/TX_Tresure3.png";
   inline constexpr const char* TX_Tresure4 = "res/Texture/TX_Tresure4.png";
   inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
@@ -58,8 +62,10 @@ namespace texture
   inline constexpr const char* TX_doyax = "res/Texture/TX_doyax.png";
   inline constexpr const char* TX_find = "res/Texture/TX_find.png";
   inline constexpr const char* TX_hatena = "res/Texture/TX_hatena.png";
+  inline constexpr const char* TX_kizetsu = "res/Texture/TX_kizetsu.png";
   inline constexpr const char* TX_naki = "res/Texture/TX_naki.png";
   inline constexpr const char* TX_nakix = "res/Texture/TX_nakix.png";
+  inline constexpr const char* TX_shirimochi = "res/Texture/TX_shirimochi.png";
   inline constexpr const char* TX_walk = "res/Texture/TX_walk.png";
   inline constexpr const char* earth = "res/Texture/earth.png";
   inline constexpr const char* explosion = "res/Texture/explosion.png";
@@ -105,6 +111,10 @@ namespace ef
   inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
   inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
   inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
+  inline constexpr const char* tutorial_1 = "res/Effect/tutorial_1.efkefc";
+  inline constexpr const char* tutorial_2 = "res/Effect/tutorial_2.efkefc";
+  inline constexpr const char* tutorial_3 = "res/Effect/tutorial_3.efkefc";
+  inline constexpr const char* tutorial_4 = "res/Effect/tutorial_4.efkefc";
 }
 
 namespace mv1
@@ -162,6 +172,7 @@ namespace mv1
   inline constexpr const char* goepon_busi_03 = "res/PoorEnemyMelee/goepon_busi_03.mv1";
   inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
+  inline constexpr const char* SK_multimotionTanuHuman_06 = "res/Tanuhuman/SK_multimotionTanuHuman_06.mv1";
   inline constexpr const char* SK_tanuhuman_multimotion = "res/Tanuhuman/SK_tanuhuman_multimotion.mv1";
   inline constexpr const char* SK_tanuhuman_multimotion_01 = "res/Tanuhuman/SK_tanuhuman_multimotion_01.mv1";
   inline constexpr const char* SK_tanuhuman_multimotion_02 = "res/Tanuhuman/SK_tanuhuman_multimotion_02.mv1";

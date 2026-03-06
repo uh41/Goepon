@@ -286,6 +286,7 @@ void ModeGame::CreateEnemy
 		enemy->SetEnemySensor(sensor);
 		enemy->SetEffect(_hensinEffect);
 		enemy->SetEffect(_shirimochiEffect);
+		enemy->SetStunEffect(_stunEffect);
 		enemy->SetEnemyId(nextEnemyId++);
 		enemy->SetDirSequenceFromJson(object);
 
@@ -305,6 +306,7 @@ void ModeGame::CreateEnemy
 		enemyMove->SetEnemySensor(sensor);
 		enemyMove->SetEffect(_hensinEffect);
 		enemyMove->SetEffect(_shirimochiEffect);
+		enemyMove->SetStunEffect(_stunEffect);
 		enemyMove->SetEnemyId(nextEnemyId++);
 		enemyMove->SetDirSequenceFromJson(object);
 

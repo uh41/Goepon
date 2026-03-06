@@ -74,6 +74,7 @@ public:
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
 
 	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
+	void SetStunEffect(at::spc<EffectBase> effect) {_stunEffect = effect;}
 
 	// センサーが追跡中かどうか
 	bool IsPlayerChasing() const; 
@@ -143,6 +144,7 @@ protected:
 	static constexpr float SOUND_RETURN_TIME = 5.0f; // 音検知から初期位置に戻るまでの時間
 
 	at::spc<EffectBase> _effect;	// エフェクト
+	at::spc<EffectBase> _stunEffect;	// スタンエフェクト
 
 	bool _isInvincible;		// 無敵状態かどうか
 	float _stanTimer;		// スタン時間

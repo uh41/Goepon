@@ -32,14 +32,26 @@ bool StunEffect::Terminate()
 
 void StunEffect::PlayEffect(const vec::Vec3& pos)
 {
-	if(_handle != -1)
+	if(_handle == -1)
 	{
-		auto em = EffekseerManager::GetInstance();
-		if(em)
-		{
-			_playHandle = em->PlayEffect3DPos(_handle, pos);
-		}
+		return;
 	}
+
+	auto em = EffekseerManager::GetInstance();
+	if(!em)
+	{
+		return;
+	}
+
+	// 再生中なら「再生し直さず」位置だけ追従させる
+	if(_playHandle != -1)
+	{
+		em->SetPosEffect(_playHandle, pos);
+		return;
+	}
+
+	// 未再生なら開始
+	_playHandle = em->PlayEffect3DPos(_handle, pos);
 }
 
 bool StunEffect::StopPlaying()

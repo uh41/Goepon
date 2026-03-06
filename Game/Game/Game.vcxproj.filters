@@ -278,6 +278,9 @@
     <ClCompile Include="source\treasureopenui.cpp" />
     <ClCompile Include="source\dashui.cpp" />
     <ClCompile Include="source\shirimochieffect.cpp" />
+    <ClCompile Include="source\stuneffect.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -359,6 +362,9 @@
     <ClInclude Include="source\treasureopenui.h" />
     <ClInclude Include="source\dashui.h" />
     <ClInclude Include="source\shirimochieffect.h" />
+    <ClInclude Include="source\stuneffect.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

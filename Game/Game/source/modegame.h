@@ -47,6 +47,7 @@
 #include "doyaeffect.h"
 #include "nakieffect.h"
 #include "shirimochieffect.h"
+#include "stuneffect.h"
 #include "Makimono.h"
 #include "enemysoundmanager.h"
 #include "modegameload.h"
@@ -243,6 +244,7 @@ protected:
 	at::spc<AttackUi> _attackUi;
 	at::spc<TreasureOpenUi> _treasureOpenUi;
 	at::spc<DashUi> _dashUi;
+	at::spc<StunEffect> _stunEffect;
 
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;
