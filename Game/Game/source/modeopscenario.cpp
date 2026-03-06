@@ -142,8 +142,8 @@ bool ModeOpScenario::Process()
 			}
 			if(trg & PAD_INPUT_1)
 			{
-				ModeServer::GetInstance()->Add(NEW ModeGame(), 255, "ModeGame");
-				ModeServer::GetInstance()->Del(this);
+				_state = ModeBase::State::FADE_OUT;
+				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
 			}
 			break;
 		}
@@ -158,7 +158,15 @@ bool ModeOpScenario::Process()
 		}
 		case ModeBase::State::DONE:
 		{
-			ModeServer::GetInstance()->Add(NEW ModeGame(), 255, "ModeGame");
+			if(_soundServer)
+			{
+				_soundServer->Clear();
+				_soundServer = nullptr;
+			}
+			_voice = nullptr;
+
+			// ŽŸ‚Ìƒ‚[ƒh‚Ö
+			ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "ModeGame");
 			ModeServer::GetInstance()->Del(this);
 			break;
 		}
