@@ -126,6 +126,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_nakiEffect);
 	_shirimochiEffect = std::make_shared<ShirimochiEffect>();
 	_effectBase.emplace_back(_shirimochiEffect);
+	_stunEffect = std::make_shared<StunEffect>();
+	_effectBase.emplace_back(_stunEffect);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);

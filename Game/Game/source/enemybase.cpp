@@ -384,13 +384,18 @@ void EnemyBase::UpdateDamageAnimation()
 			// エフェクトの再生
 			if(_effect)
 			{
-				_effect->PlayEffect(_vPos);
+				_effect->PlayEffect(_vPos);// 尻もちエフェクト
 			}
 
 			if(!_attachAnimStan.empty())
 			{
 				_animId = PlayAnimation(_attachAnimStan, true);
 				_fPlayTime = 0.0f;
+
+				if(_stunEffect)
+				{
+					_stunEffect->PlayEffect(_vPos); // ダメージエフェクトを再生
+				}
 			}
 		}
 	}
@@ -398,8 +403,19 @@ void EnemyBase::UpdateDamageAnimation()
 	{
 		_stanTimer -= 1.0f / 60.0f; // 60FPSとして計算
 
+		if(_stunEffect)
+		{
+			// スタン中は毎フレーム呼ぶ（再生中なら位置更新、未再生なら開始）
+			_stunEffect->PlayEffect(_vPos);
+		}
+
 		if(_stanTimer <= 0.0f)
 		{
+			if(_stunEffect)
+			{
+				_stunEffect->StopPlaying();
+			}
+
 			_attachStage = 3;
 			if(_animId != -1)
 			{
