@@ -1017,8 +1017,12 @@ bool ModeGame::CheckAllDetections()
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
-						_nakiEffect->SetTargetPlayer(player);
-						_nakiEffect->PlayEffect(player->GetPos());
+						if (eb->GetEnemySensor() && eb->GetEnemySensor()->IsChasing())
+						{
+							_nakiEffect->SetTargetPlayer(player);
+							_nakiEffect->PlayEffect(player->GetPos());
+						}
+						
 					}
 
 					// PlayerMono が検知されたら即時モノ->タヌキに切替 
