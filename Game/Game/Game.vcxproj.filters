@@ -281,6 +281,7 @@
     <ClCompile Include="source\stuneffect.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\tutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -365,6 +366,7 @@
     <ClInclude Include="source\stuneffect.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\tutorial.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
