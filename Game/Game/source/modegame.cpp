@@ -126,7 +126,7 @@ bool ModeGame::Initialize()
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
-	_treasureEffect->SetTreasure(_treasure);
+	_treasureEffect->SetTreasure(_treasureBase);
 	_walkEffect->SetPlayerPos(_playerTanuki.get());
 	_findEffect->SetEnemy(_enemyBase);
 	_aseEffect->SetPlayer(_playerTanuki.get());

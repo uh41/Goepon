@@ -1,7 +1,7 @@
 #pragma once
 #include "effectbase.h"
 
-class Treasure;
+class TreasureBase;
 
 class TreasureEffect : public EffectBase
 {
@@ -15,12 +15,12 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasure(at::vspc<Treasure> treasure) { _treasure = treasure; }
+	void SetTreasure(at::vspc<TreasureBase> treasure) { _treasureBase = treasure; }
 
 protected:
-	at::vspc<Treasure> _treasure;
+	at::vspc<TreasureBase> _treasureBase;
 
 	// •ó” ‚²‚Æ‚ÌÄ¶ƒnƒ“ƒhƒ‹ŠÇ—
-	at::umtc<Treasure*, int> _playHandles;
+	at::umtc<TreasureBase*, int> _playHandles;
 };
 

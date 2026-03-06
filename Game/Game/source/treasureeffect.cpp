@@ -45,7 +45,7 @@ bool TreasureEffect::Process()
 	if(!em) { return true; }
 
 	// 宝箱が一つもないなら全て停止して終了
-	if(_treasure.empty())
+	if(_treasureBase.empty())
 	{
 		// 全て停止
 		for(auto& kv : _playHandles)
@@ -61,9 +61,9 @@ bool TreasureEffect::Process()
 	}
 
 	// 各宝箱ごとに処理
-	for(const auto& t : _treasure)
+	for(const auto& t : _treasureBase)
 	{
-		Treasure* treasure = t.get();
+		TreasureBase* treasure = t.get();
 		if(!treasure) { continue; }
 
 		// 存在しなければ-1で初期化
@@ -112,10 +112,10 @@ bool TreasureEffect::Process()
 	// _treasure に存在しない宝箱のハンドルを削除
 	for(auto it = _playHandles.begin(); it != _playHandles.end();)
 	{
-		Treasure* key = it->first;
+		TreasureBase* key = it->first;
 
 		bool isInTreasureList = false; // _treasure に存在するか
-		for(const auto& t : _treasure)
+		for(const auto& t : _treasureBase)
 		{
 			if(t.get() == key)
 			{

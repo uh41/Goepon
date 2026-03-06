@@ -1,219 +1,221 @@
 ﻿0:ChangeWindowMode実行 
-1:ウインドウモードフラグが立てられました
+0:ウインドウモードフラグが立てられました
 2:ＤＸライブラリの初期化処理開始
 3:	システムの情報を出力します
 3:		ＤＸライブラリ Ver3.24b
-3:		論理プロセッサの数 : 28
-5:		ＯＳ  Windows11 ( Build 26100  )
-105:		現時点のＣＰＵ動作速度：大体2.11GHz
-105:		ＭＭＸ命令を使用します
-105:		ＳＳＥ命令が使用可能です
-106:		ＳＳＥ２命令が使用可能です
-107:		ＣＰＵベンダ：GenuineIntel
-108:		ＣＰＵ名：Intel(R) Core(TM) i7-14700F
-109:	ＣＯＭの初期化... 成功
-114:	非同期読み込み処理の初期化...成功
-115:	ファイルアクセス処理の初期化...成功
-116:	メモリ総量:32609.48MB  空きメモリ領域:18756.32MB 
-119:	タイマーの精度を検査します
-119:	精度結果 更新回数 マルチメディアタイマー：0  パフォーマンスカウンター：60
-120:	 パフォーマンスカウンターを使用します タイマー精度 : 10000.000000 KHz 
-120:	 
-121:	ソフトの二重起動検査... 二重起動はされていませんでした
-121:	ウインドウクラスを登録します... 登録に成功しました
-122:	ウインドウモード起動用のウインドウを作成します
-122:	ディスプレイ情報のセットアップ開始
-122:		モニターの数：1  ディスプレイデバイスの数：4
-123:		No.0  モニター名：\\.\DISPLAY1　1920x1080　32bit　60Hz  96x96dpi
-155:	ディスプレイ情報のセットアップ完了
-156:	ウインドウ矩形 ( 304, 129 )-( 1600, 888 )
-185:	ウインドウの作成に成功しました
-186:	ウインドウを表示します
-208:	ＩＭＥを無効にしました
-210:	ウインドウスタイルをウインドウモード用に変更します... 完了
-236:	XInput DLL の読み込み中... 成功
-240:	DirectInput関係初期化処理
-241:		DirectInput8 の取得を試みます...成功
-315:			引き続き初期化処理... 初期化成功
-317:		ジョイパッドの初期化... 
-318:			XInput 対応コントローラーのチェックを開始します
-318:				XInput 対応コントローラー No.0 をチェック
-321:				XInput 対応コントローラー No.0 の接続を確認しました
-321:				XInput 対応コントローラー No.0 を入力ナンバー 0 で登録します
-321:				XInput 対応コントローラー No.1 をチェック
-321:				XInput 対応コントローラー No.1 の接続は確認できませんでした
-322:				XInput 対応コントローラー No.2 をチェック
-322:				XInput 対応コントローラー No.2 の接続は確認できませんでした
-322:				XInput 対応コントローラー No.3 をチェック
-322:				XInput 対応コントローラー No.3 の接続は確認できませんでした
-322:			XInput 対応コントローラーのチェック完了
-322:			DirectInput 対応ジョイパッドの列挙を開始します
-328:				DirectInput 対応入力装置を検出しました
-328:						Device Product GUID  : 0ce6054c,0000,0000,00,00,50,49,44,56,49,44
-329:						Device Instance GUID : cb751700,a623,11f0,80,01,44,45,53,54,00,00
-329:					DirectInputDevice8 の作成... 成功
-330:					DirectInputDevice の情報を取得します... 成功
-331:						Device Product Name  : DualSense Wireless Controller
-331:						Device Instance Name : DualSense Wireless Controller
-331:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
-332:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
-332:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 不一致
-515:					DirectInputDevice のデータ形式に JOYSTICK 形式を設定... 成功
-516:					DirectInputDevice の協調レベルに DISCL_FOREGROUND | DISCL_EXCLUSIVE を設定... 成功
-516:					DirectInputDevice から取得する X軸 の値の範囲を設定... 成功
-516:					DirectInputDevice から取得する Y軸 の値の範囲を設定... 成功
-517:					DirectInputDevice から取得する Z軸 の値の範囲を設定... 成功
-517:					DirectInputDevice から取得する Rx軸 の値の範囲を設定... 成功
-518:					DirectInputDevice から取得する Ry軸 の値の範囲を設定... 成功
-518:					DirectInputDevice から取得する Rz軸 の値の範囲を設定... 成功
-519:					DirectInputDevice のボタンの数を取得... 成功　ボタンの数は 15 個です
-519:					DirectInputDevice の X軸 のデッドゾーンを設定... 成功
-519:					DirectInputDevice の Y軸 のデッドゾーンを設定... 成功
-520:					DirectInputDevice の Z軸 のデッドゾーンを設定... 成功
-520:					DirectInputDevice の Rx軸 のデッドゾーンを設定... 成功
-521:					DirectInputDevice の Ry軸 のデッドゾーンを設定... 成功
-521:					DirectInputDevice の Rz軸 のデッドゾーンを設定... 成功
-522:					DirectInputDevice の DirectInputEffect No.0 を作成... 失敗 Error Code :0x80004001
-522:					DirectInputDevice の DirectInputEffect No.1 を作成... 失敗 Error Code :0x80004001
-522:					DirectInputDevice の通知処理用の Event を作成... 成功
-522:					DirectInputDevice の通知処理用の Event を DirectInputDevice に設定... 成功
-523:					DirectInputDevice のアクセス権を取得... 成功
-526:					検出した DirectInput 対応入力装置を入力ナンバー 1 で登録します
-526:				検出した DirectInput 対応入力装置の初期化は正常に終了しました
-542:				DirectInput 対応入力装置を検出しました
-542:						Device Product GUID  : 011e0f0d,0000,0000,00,00,50,49,44,56,49,44
-542:						Device Instance GUID : 4d77f2c0,77c3,11f0,80,01,44,45,53,54,00,00
-542:					DirectInputDevice8 の作成... 成功
-543:					DirectInputDevice の情報を取得します... 成功
-544:						Device Product Name  : Controller (HORI FIGHTING STICK α)
-544:						Device Instance Name : Controller (HORI FIGHTING STICK α)
-544:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
-545:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
-545:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 一致
-745:				検出した DirectInput 対応入力装置の初期化を中断します
-779:			DirectInput 対応ジョイパッドの列挙終了
-780:		ジョイパッドの初期化は正常に終了しました
-780:		マウスデバイスの初期化... 初期化成功
-781:		キーボードデバイスの初期化... 初期化成功
-781:	DirectInput 関連の初期化は正常に終了しました
-784:	XAudio2 の初期化を行います
-786:		XAudio2_8.dll を使用します
-788:		XAudio2 インターフェースの取得と初期化を行います....  成功 Ver2.8
-820:	XAudio2 の初期化は正常に終了しました
-823:	d3d11.dll の読み込み.... 成功
-826:	dxgi.dll の読み込み.... 成功
-827:	API CreateDXGIFactory2 のアドレスを取得します.... 成功
-827:	IDXGIFactory2 を作成します.... 成功
-850:	API CreateDXGIFactory6 のアドレスを取得します.... 成功
-851:	IDXGIAdapter を列挙
-851:		Adapter No.0 Desc:NVIDIA GeForce RTX 5070  VRAM:11855MB
-851:			Output Device No.0 Name:\\.\DISPLAY1 ( 0, 0 )-( 1920, 1080 )
-852:		Adapter No.1 Desc:Microsoft Basic Render Driver  VRAM:0MB
-852:	API D3D11CreateDevice のアドレスを取得します.... 成功
-852:	IDXGIAdapter を取得します.... 成功
-853:	IDXGIAdapter1 を取得します.... 成功
-853:	IDXGIAdapter2 を取得します.... 成功
-854:	IDXGIAdapter3 を取得します.... 成功
-854:	IDXGIAdapter4 を取得します.... 成功
-854:	Direct3D 11 FeatureLevel 11_0 以上を対象とします
-855:	ID3D11Device オブジェクトを取得します.... 成功
-990:	IDXGIDevice1 を取得します.... 成功
-990:	IDXGIDevice1->SetMaximunFrameLatency( 1 ); を実行しました
-991:	[ウインドウモード 1280x720 ( 320, 167 )-( 1600, 887 )]
-991:	IDXGISwapChain2 を作成します.... 成功
-998:	IDXGIFactory2->CreateSwapChainForHwnd の戻り値：0x00000000
-998:	IDXGIOutput を取得します.... 成功
-999:	Graphics Device:NVIDIA GeForce RTX 5070
-999:	画面のフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-1000:	16bit Zバッファフォーマットは DXGI_FORMAT_D16_UNORM です
-1000:	24bit Zバッファフォーマットは DXGI_FORMAT_D24_UNORM_S8_UINT です
-1000:	32bit Zバッファフォーマットは DXGI_FORMAT_D32_FLOAT です
-1000:	16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
-1000:	32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
-1001:	アルファ付き 16bit カラーフォーマットは DXGI_FORMAT_B4G4R4A4_UNORM です
-1001:	アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-1001:	アルファテスト用 16bit カラーフォーマットは DXGI_FORMAT_B5G5R5A1_UNORM です
-1001:	アルファテスト用 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-1001:	ＤＸＴ１テクスチャフォーマットは DXGI_FORMAT_BC1_UNORM です
-1001:	ＤＸＴ２テクスチャフォーマットは使えません
-1002:	ＤＸＴ３テクスチャフォーマットは DXGI_FORMAT_BC2_UNORM です
-1002:	ＤＸＴ４テクスチャフォーマットは使えません
-1002:	ＤＸＴ５テクスチャフォーマットは DXGI_FORMAT_BC3_UNORM です
-1002:	BC7_UNORM テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM です
-1002:	BC7_UNORM_SRGB テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM_SRGB です
-1002:	ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
-1002:	ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
-1003:	ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
-1003:	１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
-1003:	１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
-1003:	１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
-1003:	１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
-1003:	２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
-1003:	２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
-1005:	２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
-1005:	２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
-1005:	描画用 16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
-1005:	描画用 32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
-1005:	描画用アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-1006:	描画用 ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
-1006:	描画用 ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
-1006:	描画用 ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
-1006:	描画用１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
-1007:	描画用１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
-1007:	描画用１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
-1007:	描画用１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
-1007:	描画用２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
-1007:	描画用２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
-1008:	描画用２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
-1008:	描画用２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
-1008:	使用する機能レベル:D3D_FEATURE_LEVEL_11_1
-1008:	同時にレンダリングできるバッファの数:8
-1008:	最大テクスチャサイズ　幅:16384 高さ:16384
-1009:	標準描画用の頂点バッファの作成.... 成功
-1009:	シェーダーコード関係の初期化.... 成功
-1018:	各種シェーダー用定数バッファの作成.... 成功
-1019:	各種 ID3D11InputLayout の作成.... 成功
-1028:	画像の単純転送処理の初期化... 成功
-1029:	深度バッファを作成します.... 成功
-1031:	フォントの初期化を行います
-1032:	フォントの初期化は正常に終了しました
-1037:	文字コードバッファの初期化を行います... 完了しました
-1039:ＤＸライブラリの初期化処理終了
-1074:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerB.mv1
-1074:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerR.mv1
-1075:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Treasure.mv1
-1075:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerRX.mv1
-1280:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Goal.mv1
-1281:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerA.mv1
-1288:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerR.mv1
-1405:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Item.mv1
-1406:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Goal.mv1
-1406:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerA.mv1
-1407:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerRX.mv1
-1407:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerB.mv1
-1407:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Treasure.mv1
-1419:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerB.mv1
-1419:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerR.mv1
-1420:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Treasure.mv1
-1420:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerRX.mv1
-1594:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Goal.mv1
-1595:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerA.mv1
-4688:Sound File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game
-4730:Sound File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game
-12187:ウインドウを閉じようとしています
-12193:ウインドウが破棄されようとしています
-12193:ソフトを終了する準備が整いました
-12254:フォントの初期化を行います
-12256:フォントの初期化は正常に終了しました
-12338:d3d11.dll の解放 1
-12338:dxgi.dll の解放 1
-12339:Direct3D11 のオブジェクト数を出力
-12339:Direct3D11 のオブジェクト合計数 : 0
-12342:DirectInput 関連の終了処理... 完了
-12344:サウンド関連の終了処理... 完了
-12359:ウィンドウ関連の終了処理... 完了
-12425:ＣＯＭを終了... 完了
-12425:
-12426:Alloc memory dump
-12426:	Total size:0(0.000kb)  Alloc num:0
-12426:
+4:		論理プロセッサの数 : 28
+4:		ＯＳ  Windows11 ( Build 26100  )
+104:		現時点のＣＰＵ動作速度：大体2.09GHz
+104:		ＭＭＸ命令を使用します
+104:		ＳＳＥ命令が使用可能です
+104:		ＳＳＥ２命令が使用可能です
+104:		ＣＰＵベンダ：GenuineIntel
+106:		ＣＰＵ名：Intel(R) Core(TM) i7-14700F
+106:	ＣＯＭの初期化... 成功
+111:	非同期読み込み処理の初期化...成功
+111:	ファイルアクセス処理の初期化...成功
+111:	メモリ総量:32609.48MB  空きメモリ領域:16970.58MB 
+112:	タイマーの精度を検査します
+112:	精度結果 更新回数 マルチメディアタイマー：0  パフォーマンスカウンター：60
+112:	 パフォーマンスカウンターを使用します タイマー精度 : 10000.000000 KHz 
+112:	 
+113:	ソフトの二重起動検査... 二重起動はされていませんでした
+113:	ウインドウクラスを登録します... 登録に成功しました
+114:	ウインドウモード起動用のウインドウを作成します
+114:	ディスプレイ情報のセットアップ開始
+114:		モニターの数：1  ディスプレイデバイスの数：4
+114:		No.0  モニター名：\\.\DISPLAY1　1920x1080　32bit　60Hz  96x96dpi
+142:	ディスプレイ情報のセットアップ完了
+143:	ウインドウ矩形 ( 304, 129 )-( 1600, 888 )
+147:	ウインドウの作成に成功しました
+147:	ウインドウを表示します
+168:	ＩＭＥを無効にしました
+170:	ウインドウスタイルをウインドウモード用に変更します... 完了
+195:	XInput DLL の読み込み中... 成功
+200:	DirectInput関係初期化処理
+200:		DirectInput8 の取得を試みます...成功
+281:			引き続き初期化処理... 初期化成功
+282:		ジョイパッドの初期化... 
+283:			XInput 対応コントローラーのチェックを開始します
+283:				XInput 対応コントローラー No.0 をチェック
+287:				XInput 対応コントローラー No.0 の接続を確認しました
+287:				XInput 対応コントローラー No.0 を入力ナンバー 0 で登録します
+287:				XInput 対応コントローラー No.1 をチェック
+288:				XInput 対応コントローラー No.1 の接続は確認できませんでした
+288:				XInput 対応コントローラー No.2 をチェック
+288:				XInput 対応コントローラー No.2 の接続は確認できませんでした
+289:				XInput 対応コントローラー No.3 をチェック
+289:				XInput 対応コントローラー No.3 の接続は確認できませんでした
+289:			XInput 対応コントローラーのチェック完了
+290:			DirectInput 対応ジョイパッドの列挙を開始します
+295:				DirectInput 対応入力装置を検出しました
+296:						Device Product GUID  : 0ce6054c,0000,0000,00,00,50,49,44,56,49,44
+296:						Device Instance GUID : cb751700,a623,11f0,80,01,44,45,53,54,00,00
+296:					DirectInputDevice8 の作成... 成功
+297:					DirectInputDevice の情報を取得します... 成功
+298:						Device Product Name  : DualSense Wireless Controller
+298:						Device Instance Name : DualSense Wireless Controller
+298:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
+298:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
+300:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 不一致
+631:					DirectInputDevice のデータ形式に JOYSTICK 形式を設定... 成功
+632:					DirectInputDevice の協調レベルに DISCL_FOREGROUND | DISCL_EXCLUSIVE を設定... 成功
+633:					DirectInputDevice から取得する X軸 の値の範囲を設定... 成功
+633:					DirectInputDevice から取得する Y軸 の値の範囲を設定... 成功
+634:					DirectInputDevice から取得する Z軸 の値の範囲を設定... 成功
+634:					DirectInputDevice から取得する Rx軸 の値の範囲を設定... 成功
+635:					DirectInputDevice から取得する Ry軸 の値の範囲を設定... 成功
+636:					DirectInputDevice から取得する Rz軸 の値の範囲を設定... 成功
+636:					DirectInputDevice のボタンの数を取得... 成功　ボタンの数は 15 個です
+637:					DirectInputDevice の X軸 のデッドゾーンを設定... 成功
+637:					DirectInputDevice の Y軸 のデッドゾーンを設定... 成功
+638:					DirectInputDevice の Z軸 のデッドゾーンを設定... 成功
+638:					DirectInputDevice の Rx軸 のデッドゾーンを設定... 成功
+639:					DirectInputDevice の Ry軸 のデッドゾーンを設定... 成功
+639:					DirectInputDevice の Rz軸 のデッドゾーンを設定... 成功
+640:					DirectInputDevice の DirectInputEffect No.0 を作成... 失敗 Error Code :0x80004001
+640:					DirectInputDevice の DirectInputEffect No.1 を作成... 失敗 Error Code :0x80004001
+641:					DirectInputDevice の通知処理用の Event を作成... 成功
+641:					DirectInputDevice の通知処理用の Event を DirectInputDevice に設定... 成功
+642:					DirectInputDevice のアクセス権を取得... 成功
+654:					検出した DirectInput 対応入力装置を入力ナンバー 1 で登録します
+654:				検出した DirectInput 対応入力装置の初期化は正常に終了しました
+670:				DirectInput 対応入力装置を検出しました
+670:						Device Product GUID  : 011e0f0d,0000,0000,00,00,50,49,44,56,49,44
+670:						Device Instance GUID : 4d77f2c0,77c3,11f0,80,01,44,45,53,54,00,00
+671:					DirectInputDevice8 の作成... 成功
+672:					DirectInputDevice の情報を取得します... 成功
+673:						Device Product Name  : Controller (HORI FIGHTING STICK α)
+673:						Device Instance Name : Controller (HORI FIGHTING STICK α)
+673:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
+674:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
+674:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 一致
+919:				検出した DirectInput 対応入力装置の初期化を中断します
+953:			DirectInput 対応ジョイパッドの列挙終了
+954:		ジョイパッドの初期化は正常に終了しました
+954:		マウスデバイスの初期化... 初期化成功
+954:		キーボードデバイスの初期化... 初期化成功
+955:	DirectInput 関連の初期化は正常に終了しました
+958:	XAudio2 の初期化を行います
+961:		XAudio2_8.dll を使用します
+964:		XAudio2 インターフェースの取得と初期化を行います....  成功 Ver2.8
+998:	XAudio2 の初期化は正常に終了しました
+1002:	d3d11.dll の読み込み.... 成功
+1005:	dxgi.dll の読み込み.... 成功
+1006:	API CreateDXGIFactory2 のアドレスを取得します.... 成功
+1006:	IDXGIFactory2 を作成します.... 成功
+1017:	API CreateDXGIFactory6 のアドレスを取得します.... 成功
+1017:	IDXGIAdapter を列挙
+1018:		Adapter No.0 Desc:NVIDIA GeForce RTX 5070  VRAM:11855MB
+1018:			Output Device No.0 Name:\\.\DISPLAY1 ( 0, 0 )-( 1920, 1080 )
+1019:		Adapter No.1 Desc:Microsoft Basic Render Driver  VRAM:0MB
+1019:	API D3D11CreateDevice のアドレスを取得します.... 成功
+1019:	IDXGIAdapter を取得します.... 成功
+1019:	IDXGIAdapter1 を取得します.... 成功
+1020:	IDXGIAdapter2 を取得します.... 成功
+1020:	IDXGIAdapter3 を取得します.... 成功
+1021:	IDXGIAdapter4 を取得します.... 成功
+1021:	Direct3D 11 FeatureLevel 11_0 以上を対象とします
+1021:	ID3D11Device オブジェクトを取得します.... 成功
+1155:	IDXGIDevice1 を取得します.... 成功
+1156:	IDXGIDevice1->SetMaximunFrameLatency( 1 ); を実行しました
+1156:	[ウインドウモード 1280x720 ( 320, 167 )-( 1600, 887 )]
+1156:	IDXGISwapChain2 を作成します.... 成功
+1164:	IDXGIFactory2->CreateSwapChainForHwnd の戻り値：0x00000000
+1164:	IDXGIOutput を取得します.... 成功
+1164:	Graphics Device:NVIDIA GeForce RTX 5070
+1165:	画面のフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1165:	16bit Zバッファフォーマットは DXGI_FORMAT_D16_UNORM です
+1165:	24bit Zバッファフォーマットは DXGI_FORMAT_D24_UNORM_S8_UINT です
+1165:	32bit Zバッファフォーマットは DXGI_FORMAT_D32_FLOAT です
+1165:	16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
+1166:	32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
+1166:	アルファ付き 16bit カラーフォーマットは DXGI_FORMAT_B4G4R4A4_UNORM です
+1166:	アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1166:	アルファテスト用 16bit カラーフォーマットは DXGI_FORMAT_B5G5R5A1_UNORM です
+1166:	アルファテスト用 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1167:	ＤＸＴ１テクスチャフォーマットは DXGI_FORMAT_BC1_UNORM です
+1167:	ＤＸＴ２テクスチャフォーマットは使えません
+1167:	ＤＸＴ３テクスチャフォーマットは DXGI_FORMAT_BC2_UNORM です
+1167:	ＤＸＴ４テクスチャフォーマットは使えません
+1167:	ＤＸＴ５テクスチャフォーマットは DXGI_FORMAT_BC3_UNORM です
+1168:	BC7_UNORM テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM です
+1168:	BC7_UNORM_SRGB テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM_SRGB です
+1168:	ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
+1168:	ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
+1168:	ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
+1169:	１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
+1169:	１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
+1169:	１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
+1170:	１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
+1170:	２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
+1170:	２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
+1170:	２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
+1170:	２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
+1170:	描画用 16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
+1170:	描画用 32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
+1171:	描画用アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+1171:	描画用 ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
+1171:	描画用 ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
+1171:	描画用 ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
+1171:	描画用１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
+1171:	描画用１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
+1172:	描画用１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
+1172:	描画用１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
+1172:	描画用２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
+1172:	描画用２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
+1173:	描画用２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
+1173:	描画用２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
+1173:	使用する機能レベル:D3D_FEATURE_LEVEL_11_1
+1173:	同時にレンダリングできるバッファの数:8
+1173:	最大テクスチャサイズ　幅:16384 高さ:16384
+1173:	標準描画用の頂点バッファの作成.... 成功
+1174:	シェーダーコード関係の初期化.... 成功
+1184:	各種シェーダー用定数バッファの作成.... 成功
+1186:	各種 ID3D11InputLayout の作成.... 成功
+1194:	画像の単純転送処理の初期化... 成功
+1195:	深度バッファを作成します.... 成功
+1196:	フォントの初期化を行います
+1198:	フォントの初期化は正常に終了しました
+1204:	文字コードバッファの初期化を行います... 完了しました
+1207:ＤＸライブラリの初期化処理終了
+1370:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Item.mv1
+1370:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Goal.mv1
+1371:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerA.mv1
+1371:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerRX.mv1
+1371:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerB.mv1
+1372:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Treasure.mv1
+1372:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerR.mv1
+1379:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerR.mv1
+1495:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Item.mv1
+1495:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Goal.mv1
+1496:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerA.mv1
+1496:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerRX.mv1
+1497:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerB.mv1
+1497:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Treasure.mv1
+1505:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerR.mv1
+1617:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Item.mv1
+1617:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Goal.mv1
+1617:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerA.mv1
+1618:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerRX.mv1
+1618:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\S_MarkerB.mv1
+1619:Model File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game\res\map\Treasure.mv1
+4801:Sound File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game
+4826:Sound File Open Error : C:\Users\kohdai\Documents\KOUDAI\Koudai_Home\Game\Game
+59992:ウインドウを閉じようとしています
+60000:ウインドウが破棄されようとしています
+60000:ソフトを終了する準備が整いました
+60079:フォントの初期化を行います
+60081:フォントの初期化は正常に終了しました
+60165:d3d11.dll の解放 1
+60166:dxgi.dll の解放 1
+60167:Direct3D11 のオブジェクト数を出力
+60167:Direct3D11 のオブジェクト合計数 : 0
+60170:DirectInput 関連の終了処理... 完了
+60173:サウンド関連の終了処理... 完了
+60200:ウィンドウ関連の終了処理... 完了
+60272:ＣＯＭを終了... 完了
+60273:
+60273:Alloc memory dump
+60273:	Total size:0(0.000kb)  Alloc num:0
+60274:

@@ -486,6 +486,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			EndCinematicCamera();		// 演出カメラを終了
 			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
 
+			auto sound = gGlobal._soundServer->Get("60");
+			if (sound && sound->IsPlay())
+			{
+				sound->Stop();
+			}
+
 			// お宝のカウントを減らす
 			if(_counterUi)
 			{
