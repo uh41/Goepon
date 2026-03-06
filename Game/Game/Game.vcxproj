@@ -87,6 +87,7 @@
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\treasureopenui.h" />
     <ClInclude Include="source\treasureui.h" />
+    <ClInclude Include="source\tutorial.h" />
     <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\treasureopenui.cpp" />
     <ClCompile Include="source\treasureui.cpp" />
+    <ClCompile Include="source\tutorial.cpp" />
     <ClCompile Include="source\UIActionButton.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />

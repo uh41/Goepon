@@ -4,14 +4,14 @@
 
 namespace treasure
 {
-	static constexpr auto DEGUTI_X = 1700.0f; // 出口のX座標
-	static constexpr auto DEGUTI_Y = 60.0f; // 出口のY座標
-	static constexpr auto NOKORI_X = 1700.0f; // 残りのX座標
-	static constexpr auto NOKORI_Y = 60.0f; // 残りのY座標
-	static constexpr auto KAKERU_X = 1746.0f; // 掛けるのX座標
-	static constexpr auto KAKERU_Y = 146.0f; // 掛けるのY座標
-	static constexpr auto MAKIMONO_X = 1554.0f; // 巻物のX座標
-	static constexpr auto MAKIMONO_Y = 20.0f; // 巻物のY座標
+	static constexpr auto DEGUTI_X = 1700; // 出口のX座標
+	static constexpr auto DEGUTI_Y = 60; // 出口のY座標
+	static constexpr auto NOKORI_X = 1700; // 残りのX座標
+	static constexpr auto NOKORI_Y = 60; // 残りのY座標
+	static constexpr auto KAKERU_X = 1746; // 掛けるのX座標
+	static constexpr auto KAKERU_Y = 146; // 掛けるのY座標
+	static constexpr auto MAKIMONO_X = 1554; // 巻物のX座標
+	static constexpr auto MAKIMONO_Y = 20; // 巻物のY座標
 }
 
 class TreasureUi : public CounterUi

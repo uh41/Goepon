@@ -213,6 +213,15 @@ bool ModeGame::Terminate()
 	}
 	_effectBase.clear();
 
+	for(auto& tutorial : _tutorial)
+	{
+		if(tutorial)
+		{
+			tutorial->Terminate();
+		}
+	}
+	_tutorial.clear();
+
 	// カメラの削除を最後に行う
 	if(_camera && _camera != _originalCamera)
 	{
@@ -455,6 +464,31 @@ bool ModeGame::LoadStageData()
 			_makimono.emplace_back(makimono);
 			continue;
 		}
+
+		if(name == "S_Marker_Event")
+		{
+			auto tutorial = std::make_shared<Tutorial>();
+			tutorial->Initialize();
+			tutorial->SetJsonDataUE(object);
+
+			std::string customId;
+			if(object.contains("customId"))
+			{
+				object.at("customId").get_to(customId);
+
+				if(!customId.empty())
+				{
+					tutorial->SetEventId(std::stoi(customId));
+				}
+			}
+			else
+			{
+				tutorial->SetEventId(0); // デフォルトのイベントIDを設定
+			}
+
+			_tutorial.emplace_back(tutorial);
+			continue;
+		}
 	}
 
 	if(_counterUi)
@@ -691,6 +725,8 @@ bool ModeGame::Process()
 
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
+
+	PlayerToTutorialCollision(playerBase, _tutorial);
 
 	bool hasCollision = false;
 

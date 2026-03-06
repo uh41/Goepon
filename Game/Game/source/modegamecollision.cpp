@@ -705,3 +705,52 @@ bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
 
 	return hit;
 }
+
+bool ModeGame::PlayerToTutorialCollision(PlayerBase* player, at::vspc<Tutorial> tutorial)
+{
+	if(!player || !_d_use_collision)
+	{
+		return false;
+	}
+
+	for(auto&& tutorial : tutorial)
+	{
+		if(!tutorial)
+		{
+			continue;
+		}
+
+		int collisionFrame = tutorial->GetTutorialCollisionFrame();
+		if(collisionFrame < 0)
+		{
+			continue;
+		}
+
+		int handle = tutorial->GetHandle();
+		if(handle < 0)
+		{
+			continue;
+		}
+
+		vec::Vec3 playerPos = player->GetPos();
+		MATRIX modelMat = tutorial->MakeModelMatrix();
+		MV1SetMatrix(handle, modelMat);
+		MV1RefreshCollInfo(handle, collisionFrame);
+
+
+		vec::Vec3 hitPos;
+		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			playerPos,
+			handle,
+			collisionFrame,
+			player->GetColSubY(),
+			hitPos
+		))
+		{
+			tutorial->PlayTutorial();
+			return true;
+		}
+	}
+
+	return false;
+}

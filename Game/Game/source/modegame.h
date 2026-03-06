@@ -58,6 +58,7 @@
 #include "attackui.h"
 #include "treasureopenui.h"
 #include "dashui.h"
+#include "tutorial.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -104,6 +105,7 @@ public:
 	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<TreasureBase>& treasures);
 	// プレイヤーとゴールの当たり判定
 	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
+	bool PlayerToTutorialCollision(PlayerBase* player,at::vspc<Tutorial> tutorial);
 
 	// 索敵範囲の当たり判定
 	bool IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy);
@@ -266,6 +268,9 @@ protected:
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
+
+	// チュートリアル
+	at::vspc<Tutorial> _tutorial;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;
