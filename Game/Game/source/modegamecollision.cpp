@@ -453,7 +453,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EnemySoundManager::GetInstance()->EmitSound(
 					treasure->GetPos(),  // 宝箱の位置
 					5,                   // 音の大きさレベル（1-3で調整）
-					1000.0f,             // 音波の最大半径
+					200.0f,             // 音波の最大半径
 					10.0f                // 音波の速度
 				);
 			}
@@ -508,7 +508,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			EnemySoundManager::GetInstance()->EmitSound(
 				treasure->GetPos(),  // 宝箱の位置
 				5,                   // 音の大きさレベル（1-3で調整）
-				1000.0f,             // 音波の最大半径
+				200.0f,             // 音波の最大半径
 				10.0f                // 音波の速度
 			);
 
