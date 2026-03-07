@@ -160,6 +160,8 @@ public:
 
 	bool LoadStageData();
 
+	auto GetShowTanuki() const { return _bShowTanuki; }
+
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
 	// クリアに必要な宝箱数

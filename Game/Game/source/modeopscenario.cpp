@@ -166,7 +166,8 @@ bool ModeOpScenario::Process()
 			_voice = nullptr;
 
 			// ŽŸ‚Ìƒ‚[ƒh‚Ö
-			ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "ModeGame");
+			ModeServer::GetInstance()->Add(NEW ModeGameLoad(), 255, "gameLoad");
+			//ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
 			ModeServer::GetInstance()->Del(this);
 			break;
 		}

@@ -299,6 +299,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_player.get());
 			_doyaEffect->SetTargetPlayer(_player.get());
 			_nakiEffect->SetTargetPlayer(_player.get());
+			_aseEffect->StopPlaying();
+			_aseEffect->SetPlayer(nullptr);
 			_player->Process(); // 変身直後の一フレーム更新
 
 			// たぬ人間変身時の処理
@@ -337,6 +339,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_doyaEffect->SetTargetPlayer(_playerMono.get());
 			_nakiEffect->SetTargetPlayer(_playerMono.get());
+			_aseEffect->StopPlaying();
+			_aseEffect->SetPlayer(nullptr);
 
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());

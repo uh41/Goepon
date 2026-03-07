@@ -753,8 +753,28 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 
+	if(player == nullptr)
+	{
+		return false;
+	}
 
 	player = _player.get();
+
+	// たぬき状態なら攻撃UIを消して処理を抜ける（UIが残らないようにする）
+	if(dynamic_cast<PlayerTanuki*>(player) != nullptr)
+	{
+		if(_attackUi)
+		{
+			_attackUi->SetVisible(false);
+		}
+		return false;
+	}
+
+	// 判定開始前にUIをリセット（前フレームの表示が残らないように）
+	if(_attackUi)
+	{
+		_attackUi->SetVisible(false);
+	}
 
 	float halfAngle = DEG2RAD(60.0f); // 60度
 	float rad = 240.0f; // 半径240
@@ -789,9 +809,13 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			// 範囲内の敵をリストに追加（UI表示用）
 			_enemiesInAttackRange.push_back(enemy.get());
 
-			_attackUi->SetVisible(true);
-			_attackUi->SetSize(100);
-			_attackUi->Show(player->GetPos());
+			// 人間状態のみUIを表示（上でたぬきは弾いているのでここでは不要だが二重チェック）
+			if(_attackUi && dynamic_cast<PlayerTanuki*>(player) == nullptr)
+			{
+				_attackUi->SetVisible(true);
+				_attackUi->SetSize(100);
+				_attackUi->Show(player->GetPos());
+			}
 
 			// 攻撃ボタンが押された場合のみダメージ処理
 			if(trg & PAD_INPUT_2)
@@ -802,6 +826,12 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 				_knockdownMessageSec = 1.0f; // 表示時間 1秒
 			}
 		}
+	}
+
+	// 範囲内の敵が一人も居なければUIを隠す（念のため）
+	if(_enemiesInAttackRange.empty() && _attackUi)
+	{
+		_attackUi->SetVisible(false);
 	}
 
 	// ヒットした時だけ攻撃アニメ開始＆ロックON

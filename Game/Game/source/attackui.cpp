@@ -1,5 +1,6 @@
 #include "attackui.h"
 #include "modegame.h"
+#include "playertanuki.h"
 
 AttackUi::AttackUi()
 {
@@ -49,21 +50,29 @@ bool AttackUi::Render()
 		return false;
 	}
 
+	// たぬき状態が表示されている場合は描画しない
+	if(modeGame->GetShowTanuki())
+	{
+		return false;
+	}
+
+	auto player = modeGame->GetPlayer();
+	if(!player)
+	{
+		return false;
+	}
+
 	auto& enemy = modeGame->GetEnemiesInAttackRangees();
 
 	if(!enemy.empty())
 	{
-		auto player = modeGame->GetPlayer();
-		if(player)
-		{
-			// プレイヤーの座標を取得し、Y座標を上にオフセット
-			vec::Vec3 playerPos = player->GetPos();
-			playerPos.z += attack::PLAYER_HEAD_Y; // プレイヤーの頭上に表示
+		// プレイヤーの座標を取得し、Y座標を上にオフセット
+		vec::Vec3 playerPos = player->GetPos();
+		playerPos.z += attack::PLAYER_HEAD_Y; // プレイヤーの頭上に表示
 
-			VECTOR pos = DxlibConverter::VecToDxLib(playerPos);
+		VECTOR pos = DxlibConverter::VecToDxLib(playerPos);
 
-			DrawBillboard3D(pos, 0.5f, 0.5f, _size, _angle, _handle, TRUE);
-		}
+		DrawBillboard3D(pos, 0.5f, 0.5f, _size, _angle, _handle, TRUE);
 	}
 
 	return true;
