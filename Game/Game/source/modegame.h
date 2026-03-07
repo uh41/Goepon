@@ -380,5 +380,17 @@ protected:
 	bool _requestedReturnToTanuki = false;       // 人間 -> タヌキ（即時）要求
 
 	at::vec<EnemyBase*> _enemiesInAttackRange; // 攻撃範囲内の敵のリスト
+
+private:
+	// イントロ演出用
+	bool  _isIntroActive;	   // イントロ演出が有効か
+	bool  _introButtonPressed; // イントロ中にボタンが押されたか
+	float _introTimer;		   // イントロの経過時間
+	static constexpr float INTRO_DURATION = 5.0f; // イントロの総時間（秒）
+
+	// イントロ演出関数
+	bool StartIntroSequence();   // イントロシーケンス開始
+	bool ProcessIntroSequence(); // イントロシーケンスの更新
+	bool EndIntroSequence();     // イントロシーケンス終了
 };
 

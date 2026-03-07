@@ -11,6 +11,14 @@ public:
 	virtual bool Render() override;
 
 	// API（呼ぶだけで演出開始）
+	enum class State
+	{
+		Idle,
+		Orbit,
+		Zoom,
+		Rotate,
+		Shake,
+	};
 
 	// ターゲットを中心に、指定した半径で円軌道を描いて回る（ターゲットは固定）
 	void StartOrbit(const vec::Vec3& target, float durationSeconds, float startRadius, float endRadius, float revolutions = 1.0f);
@@ -24,15 +32,10 @@ public:
 	// 演出をすべて停止する
 	void StopAll();
 
+	auto GetState() const { return _state; }
+
 protected:
-	enum class State
-	{
-		Idle,
-		Orbit,
-		Zoom,
-		Rotate,
-		Shake,
-	};
+
 	State _state = State::Idle; // 現在の演出状態
 	float _timer = 0.0f;        // 演出開始からの経過時間（秒）
 	float _duration = 0.0f;     // 演出の継続時間（秒）
