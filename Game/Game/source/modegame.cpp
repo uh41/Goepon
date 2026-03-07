@@ -88,31 +88,31 @@ bool ModeGame::Initialize()
 	CameraInfoInitialize();// カメラ情報初期化 ← ここで_cameraが作成される
 
 
-	//// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
-	//if(_camera != nullptr)
-	//{
-	//	// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
-	//	vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
+	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
+	if (_camera != nullptr)
+	{
+		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
+		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
-	//	// 初期表示プレイヤー（タヌキ／人間）に合わせる
-	//	PlayerBase* startPlayer = nullptr;
-	//	if(_bShowTanuki)
-	//	{
-	//		startPlayer = _playerTanuki.get();
-	//	}
-	//	else
-	//	{
-	//		startPlayer = _player.get();
-	//	}
+		// 初期表示プレイヤー（タヌキ／人間）に合わせる
+		PlayerBase* startPlayer = nullptr;
+		if (_bShowTanuki)
+		{
+			startPlayer = _playerTanuki.get();
+		}
+		else
+		{
+			startPlayer = _player.get();
+		}
 
-	//	if(startPlayer != nullptr)
-	//	{
-	//		// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
-	//		vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 100.0f, 0.0f));
-	//		_camera->SetTarget(target);
-	//		_camera->SetPos(vec3::VAdd(target, camDelta));
-	//	}
-	//}
+		if (startPlayer != nullptr)
+		{
+			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
+			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			_camera->SetTarget(target);
+			_camera->SetPos(vec3::VAdd(target, camDelta));
+		}
+	}
 
 	// カメラセット
 	if(auto* map = _objectServer->GetMap())

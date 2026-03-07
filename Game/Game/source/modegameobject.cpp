@@ -45,6 +45,7 @@ bool ModeGame::ObjectInitialize()
 	//// マップ初期化
 	//_map = std::make_shared<Map>();
 	//_object.emplace_back(_map);
+	
 	// カメラ初期化
 	_camera = new Camera();
 	_camera->Initialize();
