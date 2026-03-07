@@ -22,6 +22,7 @@
 #include "enemymove.h"
 #include "enemydog.h"
 #include "treasure.h"
+#include "TreasureRapidFire.h"
 #include "TreasureBase.h"
 #include "map.h"
 #include "cube.h"
@@ -58,6 +59,7 @@
 #include "attackui.h"
 #include "treasureopenui.h"
 #include "dashui.h"
+#include "tutorial.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -102,8 +104,10 @@ public:
     // キャラと宝箱の当たり判定処理
 	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<TreasureBase>& treasures);
 	bool CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<TreasureBase>& treasures);
+	bool CharaToTreasureRapidFireCollision(PlayerBase* player, const at::vspc<TreasureRapidFire>& treasures);
 	// プレイヤーとゴールの当たり判定
 	bool PlayerToGoalHitCollision(PlayerBase* player, Goal* goal);
+	bool PlayerToTutorialCollision(PlayerBase* player,at::vspc<Tutorial> tutorial);
 
 	// 索敵範囲の当たり判定
 	bool IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy);
@@ -220,6 +224,7 @@ protected:
 	// 宝箱(オブジェクト)
 	at::vspc<TreasureBase> _treasureBase;
 	at::vspc<Treasure>     _treasure;
+	at::vspc<TreasureRapidFire> _treasureRapidFire;
 	// 巻物
 	at::vspc<Makimono> _makimono;
 	//ステージベース
@@ -266,6 +271,9 @@ protected:
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
+
+	// チュートリアル
+	at::vspc<Tutorial> _tutorial;
 	// デバッグ用
 	bool _d_view_collision;
 	bool _d_use_collision;

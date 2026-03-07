@@ -343,40 +343,53 @@ bool ModeGame::CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<Trea
 bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<TreasureBase>& treasures)
 {
 	// 引数チェック
-	if(!player)
+	if (!player)
 	{
 		return false;
 	}
 
 	// 空中なら処理しない（設計に合わせて維持）
-	if(!player->GetLand())
+	if (!player->GetLand())
 	{
 		// 空中に行った場合は演出カメラを終了
-		if(_isOpeningTreasure)
+		if (_isOpeningTreasure)
 		{
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
 			auto sound = gGlobal._soundServer->Get("60");
-			if(sound && sound->IsPlay())
+			if (sound && sound->IsPlay())
 			{
 				sound->Stop();
 			}
 		}
-		if(_treasureOpenUi)
+		if (_treasureOpenUi)
 		{
 			_treasureOpenUi->SetVisible(false);
+		}
+		// 連打型宝箱もリセット
+		for (const auto& sp : treasures)
+		{
+			if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(sp.get()))
+			{
+				if (!rapidFire->IsOpen())
+				{
+					rapidFire->ResetButtonCount();
+				}
+			}
 		}
 		return false;
 	}
 
 	const int key = ApplicationMain::GetInstance()->GetKey();
+	const int trg = ApplicationMain::GetInstance()->GetTrg();
 	const int holdA = (key & PAD_INPUT_1) != 0;
+	const bool pressedA = (trg & PAD_INPUT_1) != 0;
 
 	bool inAnyTreasure = false; // どれか一つでも当たればtrue
 
 	// 宝箱の指定フレームで判定
-	for(const auto& sp : treasures)
+	for (const auto& sp : treasures)
 	{
 		TreasureBase* treasure = sp.get();
 		if (!treasure)
@@ -384,14 +397,14 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			continue;
 		}
 
-		// すでに開いているなら(おそらくアニメーションが届いたらこちらの条件を変更)
-		if(!treasure->IsVisible())
+		// すでに開いているなら
+		if (!treasure->IsVisible() || treasure->IsOpen())
 		{
 			continue;
 		}
 		const auto handleTreasure = treasure->GetHandle();
-		const auto OpenCollision   = treasure->GetOpenCollisionFrame();
-		if(handleTreasure < 0 || OpenCollision < 0)
+		const auto OpenCollision = treasure->GetOpenCollisionFrame();
+		if (handleTreasure < 0 || OpenCollision < 0)
 		{
 			continue;
 		}
@@ -405,7 +418,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			player->GetColSubY(),
 			hitPos
 		);
-		if(!inTreasure)
+		if (!inTreasure)
 		{
 			continue;
 		}
@@ -413,49 +426,154 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		// 少なくともどれかの宝箱の範囲
 		inAnyTreasure = true;
 
-		// Aボタンを押していなかったら開けない
-		if(!holdA)
+		// 連打型宝箱の処理
+		if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(treasure))
 		{
-			// Aボタンが離されたタイミングで演出カメラを終了
-			if(_isOpeningTreasure)
+			// Aボタンが押された時にカウント追加
+			if (pressedA)
 			{
-				EndCinematicCamera();
-				_isOpeningTreasure = false;
-				_treasureHoldSec = 0.0f;
-				auto sound = gGlobal._soundServer->Get("60");
-				if(sound && sound->IsPlay())
+				rapidFire->AddButtonCount();
+
+				// SE再生（連打音）
+				auto soundButton = gGlobal._soundServer->Get("60");
+				if (soundButton)
 				{
-					sound->Stop();
+					soundButton->Play();
+				}
+
+				// 必要回数に達したら開く
+				if (rapidFire->GetCurrentButtonCount() >= rapidFire->GetRequiredButtonCount())
+				{
+					_treasureTakenCount++;
+					rapidFire->SetOpen(true);
+
+					if (_counterUi)
+					{
+						_counterUi->DecreaseTreasureCount();
+					}
+
+					// エフェクト再生
+					if (_doyaEffect)
+					{
+						_doyaEffect->SetTargetPlayer(player);
+						_doyaEffect->PlayEffect(treasure->GetPos());
+					}
+
+					// 宝箱を開けた時の音波
+					EnemySoundManager::GetInstance()->EmitSound(
+						treasure->GetPos(),
+						5,
+						400.0f,
+						10.0f
+					);
+
+					return true;
 				}
 			}
-			_isOpeningTreasure = false;
-			_treasureHoldSec = 0.0f;
-
-			// TreasureOpenUiを表示（プレイヤーの位置で）
-			if(_treasureOpenUi)
-			{
-				_treasureOpenUi->SetVisible(true);
-				_treasureOpenUi->SetSize(100);
-			}
-
-			continue;
 		}
+		// 通常の長押し型宝箱の処理
 		else
 		{
-			if(_treasureOpenUi)
+			// Aボタンを押していなかったら開けない
+			if (!holdA)
 			{
-				_treasureOpenUi->SetVisible(false);
+				// Aボタンが離されたタイミングで演出カメラを終了
+				if (_isOpeningTreasure)
+				{
+					EndCinematicCamera();
+					_isOpeningTreasure = false;
+					_treasureHoldSec = 0.0f;
+					auto sound = gGlobal._soundServer->Get("60");
+					if (sound && sound->IsPlay())
+					{
+						sound->Stop();
+					}
+				}
+				_isOpeningTreasure = false;
+				_treasureHoldSec = 0.0f;
+
+				// TreasureOpenUiを表示（プレイヤーの位置で）
+				if (_treasureOpenUi)
+				{
+					_treasureOpenUi->SetVisible(true);
+					_treasureOpenUi->SetSize(100);
+				}
+
+				continue;
 			}
-			// 開け始めの1回だけ音波を発生
-			if(!_isOpeningTreasure)
+			else
 			{
+				if (_treasureOpenUi)
+				{
+					_treasureOpenUi->SetVisible(false);
+				}
+				// 開け始めの1回だけ音波を発生
+				if (!_isOpeningTreasure)
+				{
+					// 宝箱を開けた時の音波を発生
+					EnemySoundManager::GetInstance()->EmitSound(
+						treasure->GetPos(),
+						5,
+						400.0f,
+						10.0f
+					);
+				}
+			}
+
+			// 開ける処理開始
+			if (!_isOpeningTreasure)
+			{
+				TreasureOpeningCameraControl();
+				_isOpeningTreasure = true;
+				_treasureHoldSec = 0.0f;
+
+				auto sound = gGlobal._soundServer->Get("60");
+				if (sound && !sound->IsPlay())
+				{
+					sound->Play();
+				}
+			}
+
+			// 経過時間を計算
+			const float dt = 1.0f / 60.0f;
+			_treasureHoldSec += dt;
+
+			// 3秒間ホールドで取得
+			if (_treasureHoldSec >= CHECK_OPEN_TIME)
+			{
+				_treasureTakenCount++;
+				_treasureHoldSec = 0.0f;
+				treasure->SetOpen(true);
+				EndCinematicCamera();
+				_isOpeningTreasure = false;
+
+				// お宝のカウントを減らす
+				if (_counterUi)
+				{
+					_counterUi->DecreaseTreasureCount();
+				}
+
+				if (_treasureOpenUi)
+				{
+					_treasureOpenUi->SetVisible(false);
+				}
+
+				// エフェクト再生
+				if (_doyaEffect)
+				{
+					_doyaEffect->SetTargetPlayer(player);
+					_doyaEffect->PlayEffect(treasure->GetPos());
+				}
+
 				// 宝箱を開けた時の音波を発生
 				EnemySoundManager::GetInstance()->EmitSound(
-					treasure->GetPos(),  // 宝箱の位置
-					5,                   // 音の大きさレベル（1-3で調整）
-					400.0f,             // 音波の最大半径
-					10.0f                // 音波の速度
+					treasure->GetPos(),
+					5,
+					400.0f,
+					10.0f
 				);
+
+				return true;
 			}
 		}
 
@@ -523,30 +641,53 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
 	}
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
-	if(!inAnyTreasure)
+	if (!inAnyTreasure)
 	{
 		// 宝箱範囲外に出た場合、演出カメラを終了
-		if(_isOpeningTreasure)
+		if (_isOpeningTreasure)
 		{
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
 			auto sound = gGlobal._soundServer->Get("60");
-			if(sound && sound->IsPlay())
+			if (sound && sound->IsPlay())
 			{
 				sound->Stop();
 			}
 		}
 
-		if(_treasureOpenUi)
+		if (_treasureOpenUi)
 		{
-			_treasureOpenUi->SetVisible(false); // 開けUIを消す
+			_treasureOpenUi->SetVisible(false);
 		}
 
+		// 連打型宝箱もリセット
+		for (const auto& sp : treasures)
+		{
+			if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(sp.get()))
+			{
+				if (!rapidFire->IsOpen())
+				{
+					rapidFire->ResetButtonCount();
+				}
+			}
+		}
 	}
 	return false;
 }
 
+bool ModeGame::CharaToTreasureRapidFireCollision(PlayerBase* player, const at::vspc<TreasureRapidFire>& treasures)
+{
+	// TreasureRapidFire を TreasureBase として扱う
+	at::vspc<TreasureBase> baseTreasures;
+	baseTreasures.reserve(treasures.size());
+	for (const auto& t : treasures)
+	{
+		baseTreasures.push_back(t);
+	}
+
+	return CharaToTreasureOpenCollision(player, baseTreasures);
+}
 
 // キャラ同士の押し出し処理
 bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
@@ -710,4 +851,53 @@ bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
 	);
 
 	return hit;
+}
+
+bool ModeGame::PlayerToTutorialCollision(PlayerBase* player, at::vspc<Tutorial> tutorial)
+{
+	if(!player || !_d_use_collision)
+	{
+		return false;
+	}
+
+	for(auto&& tutorial : tutorial)
+	{
+		if(!tutorial)
+		{
+			continue;
+		}
+
+		int collisionFrame = tutorial->GetTutorialCollisionFrame();
+		if(collisionFrame < 0)
+		{
+			continue;
+		}
+
+		int handle = tutorial->GetHandle();
+		if(handle < 0)
+		{
+			continue;
+		}
+
+		vec::Vec3 playerPos = player->GetPos();
+		MATRIX modelMat = tutorial->MakeModelMatrix();
+		MV1SetMatrix(handle, modelMat);
+		MV1RefreshCollInfo(handle, collisionFrame);
+
+
+		vec::Vec3 hitPos;
+		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			playerPos,
+			handle,
+			collisionFrame,
+			player->GetColSubY(),
+			hitPos
+		))
+		{
+			tutorial->PlayTutorial();
+			return true;
+		}
+	}
+
+	return false;
 }

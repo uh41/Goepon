@@ -213,6 +213,15 @@ bool ModeGame::Terminate()
 	}
 	_effectBase.clear();
 
+	for(auto& tutorial : _tutorial)
+	{
+		if(tutorial)
+		{
+			tutorial->Terminate();
+		}
+	}
+	_tutorial.clear();
+
 	// カメラの削除を最後に行う
 	if(_camera && _camera != _originalCamera)
 	{
@@ -439,10 +448,12 @@ bool ModeGame::LoadStageData()
 
 		if(name == "Treasure")
 		{
-			auto treasure = std::make_shared<Treasure>();
+			//auto treasure = std::make_shared<Treasure>();
+			auto treasure = std::make_shared<TreasureRapidFire>();
 			treasure->Initialize();
 			treasure->SetJsonDataUE(object);
 			_treasureBase.emplace_back(treasure);
+			_treasureRapidFire.emplace_back(treasure); 
 			continue;
 		}
 
@@ -453,6 +464,31 @@ bool ModeGame::LoadStageData()
 			makimono->SetJsonDataUE(object);
 			makimono->SetCamera(_camera);
 			_makimono.emplace_back(makimono);
+			continue;
+		}
+
+		if(name == "S_Marker_Event")
+		{
+			auto tutorial = std::make_shared<Tutorial>();
+			tutorial->Initialize();
+			tutorial->SetJsonDataUE(object);
+
+			std::string customId;
+			if(object.contains("customId"))
+			{
+				object.at("customId").get_to(customId);
+
+				if(!customId.empty())
+				{
+					tutorial->SetEventId(std::stoi(customId));
+				}
+			}
+			else
+			{
+				tutorial->SetEventId(0); // デフォルトのイベントIDを設定
+			}
+
+			_tutorial.emplace_back(tutorial);
 			continue;
 		}
 	}
@@ -651,7 +687,7 @@ bool ModeGame::Process()
 
 	// 敵AI（追跡/移動はここで実行される）
 
-	if(_bShowTanuki)
+	/*if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
@@ -670,6 +706,29 @@ bool ModeGame::Process()
 		EscapeCollision(_player.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasureBase);
 		CharaToTreasureOpenCollision(_player.get(), _treasureBase);
+		PlayerCameraInfo(_player.get());
+	}*/
+
+	if (_bShowTanuki)
+	{
+		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
+		// 長押し型から連打型に変更
+		CharaToTreasureRapidFireCollision(_playerTanuki.get(), _treasureRapidFire);
+		PlayerCameraInfo(_playerTanuki.get());
+	}
+	else if (_showMonoPlayer)
+	{
+		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
+		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasureBase);
+		CharaToTreasureRapidFireCollision(_playerMono.get(), _treasureRapidFire);
+		PlayerCameraInfo(_playerMono.get());
+	}
+	else
+	{
+		EscapeCollision(_player.get(), _objectServer->GetMap());
+		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasureBase);
+		CharaToTreasureRapidFireCollision(_player.get(), _treasureRapidFire);
 		PlayerCameraInfo(_player.get());
 	}
 
@@ -691,6 +750,8 @@ bool ModeGame::Process()
 
 	// ここで呼ぶ（playerBase が確定してから）
 	PlayerToMakimonoCollision(playerBase, _makimono);
+
+	PlayerToTutorialCollision(playerBase, _tutorial);
 
 	bool hasCollision = false;
 

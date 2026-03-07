@@ -802,7 +802,18 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-
+	// 連打型宝箱のゲージ描画
+	if (_player)
+	{
+		for (const auto& treasureRapidFire : _treasureRapidFire)
+		{
+			if (treasureRapidFire && treasureRapidFire->IsVisible() && !treasureRapidFire->IsOpen())
+			{
+				// プレイヤーの位置を基準にゲージを描画
+				treasureRapidFire->RenderGauge(_player->GetPos());
+			}
+		}
+	}
 
 	// エフェクト
 	for (auto& effectBase : _effectBase)
@@ -1019,8 +1030,12 @@ bool ModeGame::CheckAllDetections()
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
-						_nakiEffect->SetTargetPlayer(player);
-						_nakiEffect->PlayEffect(player->GetPos());
+						if (eb->GetEnemySensor() && eb->GetEnemySensor()->IsChasing())
+						{
+							_nakiEffect->SetTargetPlayer(player);
+							_nakiEffect->PlayEffect(player->GetPos());
+						}
+						
 					}
 
 					// PlayerMono が検知されたら即時モノ->タヌキに切替 
