@@ -441,6 +441,14 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					soundButton->Play();
 				}
 
+				// 宝箱を開けた時の音波
+				EnemySoundManager::GetInstance()->EmitSound(
+					treasure->GetPos(),
+					5,
+					400.0f,
+					10.0f
+				);
+
 				// 必要回数に達したら開く
 				if (rapidFire->GetCurrentButtonCount() >= rapidFire->GetRequiredButtonCount())
 				{
