@@ -8,8 +8,8 @@ namespace makimono
 	static constexpr auto MAKIMONO_Y = 146; // 巻物のY座標 146
 	static constexpr auto KAKERU_X = 1746; // 掛ける画像X座標 1746
 	static constexpr auto KAKERU_Y = 146; // 掛ける画像Y座標 146
-	static constexpr auto MAKIMONO_COUNT_X = 0; // 巻物のカウントX座標 1809
-	static constexpr auto MAKIMONO_COUNT_Y = 0; // 巻物のカウントY座標 145
+	static constexpr auto MAKIMONO_COUNT_X = 1600; // 巻物のカウントX座標 1809
+	static constexpr auto MAKIMONO_COUNT_Y = 140; // 巻物のカウントY座標 145
 }
 
 class UiMakimono :public CounterUi
