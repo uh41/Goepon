@@ -133,47 +133,35 @@ void TreasureRapidFire::RenderGauge(const vec::Vec3& playerPos)
 		return;
 	}
 
-	// 宝箱の3D座標を2D座標に変換（中心位置）
-	VECTOR screenPosCenter = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(_vPos));
+	// 宝箱の中心位置の3D座標を2D座標に変換
+	vec::Vec3 topPos = _vPos;
+	topPos.y += 100.0f;  // 宝箱の上にオフセット（必要に応じて調整）
 
-	// 画面外なら描画しない
-	if (screenPosCenter.z < 0.0f || screenPosCenter.z > 1.0f)
-	{
-		return;
-	}
-
-	// 宝箱のバウンディングボックスを取得して右上の座標を計算
-	// モデルの上端を取得するために、Y軸方向にオフセットを追加
-	vec::Vec3 topRightPos = _vPos;
-	topRightPos.y += 50.0f;  // 宝箱の高さ分上にオフセット（必要に応じて調整）
-	topRightPos.x += 30.0f;  // 右方向にオフセット
-
-	// 右上の3D座標を2D座標に変換
-	VECTOR screenPosTopRight = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(topRightPos));
+	VECTOR screenPos = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(topPos));
 
 	// 画面外チェック
-	if (screenPosTopRight.z < 0.0f || screenPosTopRight.z > 1.0f)
+	if (screenPos.z < 0.0f || screenPos.z > 1.0f)
 	{
 		return;
 	}
 
-	// ゲージの位置を右上に設定
-	int gaugeX = static_cast<int>(screenPosTopRight.x);
-	int gaugeY = static_cast<int>(screenPosTopRight.y);
+	// ゲージの中心位置を宝箱の真上に設定
+	int gaugeX = static_cast<int>(screenPos.x);
+	int gaugeY = static_cast<int>(screenPos.y);
 
 	// 進行度を計算
 	float progress = static_cast<float>(_currentButtonCount) / static_cast<float>(_requiredButtonCount);
 	if (progress > 1.0f) progress = 1.0f;
 
-	// 長方形ゲージを描画（右上基準）
+	// 長方形ゲージを描画（中心基準）
 	DrawRectGauge(gaugeX, gaugeY, progress);
 }
 
 void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 {
-	// ゲージの左上座標を計算（右上基準にするため、左にシフト）
-	const int gaugeX = centerX - _gaugeWidth; // 右端を基準に左に配置
-	const int gaugeY = centerY;               // 上端を基準に配置
+	// ゲージの左上座標を計算（中心基準から左上にシフト）
+	const int gaugeX = centerX - (_gaugeWidth / 2);  // 中心を基準に左にシフト
+	const int gaugeY = centerY - _gaugeHeight - 30;  // ゲージを上に配置（+テキスト分のスペース）
 
 	// 背景（暗いグレー）を描画
 	DrawBox(
