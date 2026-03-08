@@ -3,7 +3,7 @@
 bool TitleTanuki::Initialize()
 {
 	base::Initialize();
-	LoadModel(mv1::SK_goepon_multimotion_4);
+	LoadModel(mv1::gamestart);
 	_iAttachIndex = -1;
 	_status = STATUS::WAIT;
 
@@ -34,7 +34,7 @@ bool TitleTanuki::Process()
 	{
 		_animId = -1;
 
-		std::string animName = "idle";
+		std::string animName = "gamestart_02";
 		_animId = AnimationManager::GetInstance()->Play(_handle, animName, true);
 		if(_animId != -1)
 		{
@@ -73,18 +73,17 @@ bool TitleTanuki::Render()
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
 
-	float ScaleOffset = 1.5f;
+	float ScaleOffset = 2.0f;
 	MATRIX mRotY = MGetRotY(vorty);
 	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f);
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
 	MATRIX mScale = MGetScale(VGet(ScaleOffset, ScaleOffset, ScaleOffset));
-
 	MATRIX m = MGetIdent();
 	//m = MMult(m, mRotZ);
 	//m = MMult(m, mRotY);
 	m = MMult(m, mScale);
 	m = MMult(m, mTrans);
-
+	
 	MV1SetMatrix(_handle, m);
 	MV1DrawModel(_handle);
 	return true;
