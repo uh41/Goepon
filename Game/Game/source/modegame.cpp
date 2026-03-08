@@ -87,7 +87,6 @@ bool ModeGame::Initialize()
 	ShadowInitialize();// シャドウ生成
 	CameraInfoInitialize();// カメラ情報初期化 ← ここで_cameraが作成される
 
-
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if (_camera != nullptr)
 	{
@@ -160,11 +159,11 @@ bool ModeGame::Initialize()
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
 
-	//// カメラが正常に初期化された後にイントロ演出を開始 ★★★
-	//if (_camera != nullptr)
-	//{
-	//	StartIntroSequence();
-	//}
+	// カメラが正常に初期化された後にイントロ演出を開始 ★★★
+	if (_camera != nullptr)
+	{
+		StartIntroSequence();
+	}
 	return true;	
 }
 
@@ -561,43 +560,6 @@ bool ModeGame::Process()
 {
 	base::Process();
 
-	//// イントロ演出中の処理
-	//if (_isIntroActive)
-	//{
-	//	ProcessIntroSequence();
-
-	//	// イントロ中でもメインゲームと同様の処理を実行 ★★★
-	//	if (_isIntroActive)
-	//	{
-	//		// カメラ処理
-	//		if (_camera)
-	//		{
-	//			_camera->Process();
-	//		}
-
-	//		// アニメーション処理（プレイヤーのアニメーション用）
-	//		AnimationManager::GetInstance()->Update(1.0f);
-
-	//		// オブジェクトサーバー処理（マップ描画のため）
-	//		_objectServer->ProcessInit(); // 追加・削除予約の確定
-	//		_objectServer->Process();
-
-	//		// オブジェクト処理（最小限）
-	//		ObjectProcess();
-
-	//		// プレイヤー変身処理（アニメーション継続のため）
-	//		PlayerTransform();
-
-	//		// エフェクト処理（必要に応じて）
-	//		for (auto& effectBase : _effectBase)
-	//		{
-	//			effectBase->Process();
-	//		}
-
-	//		return true;
-	//	}
-	//}
-
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
@@ -607,6 +569,14 @@ bool ModeGame::Process()
 		ResetStage();
 		return true;
 	}*/
+
+	if (_isIntroActive)
+	{
+		ProcessIntroSequence();
+
+		// イントロ中はプレイヤー入力を無効化（必要に応じて）
+		// ここでプレイヤーの操作フラグを制御できます
+	}
 
 	// カメラ処理
 	_camera->Process();
@@ -682,6 +652,8 @@ bool ModeGame::Process()
 
 	// プレイヤー変身処理
 	PlayerTransform();
+
+
 	// オブジェクト処理
 	ObjectProcess();
 
@@ -1341,6 +1313,7 @@ void ModeGame::SetInitialStageId(const std::string& stageId)
 	_initialStageId = stageId;
 }
 
+// イントロ演出開始関数を追加
 bool ModeGame::StartIntroSequence()
 {
 	// カメラが初期化されていない場合は失敗
@@ -1349,7 +1322,7 @@ bool ModeGame::StartIntroSequence()
 		return false;
 	}
 
-	// 演出カメラが初期化されていない場合は作成（ObjectInitialize()で既に作成済みの場合はスキップ）
+	// 演出カメラが未作成の場合は作成
 	if (!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
@@ -1361,73 +1334,42 @@ bool ModeGame::StartIntroSequence()
 	}
 
 	// 元のカメラを保持して演出カメラに切り替え
-	if (!_useCinematicCamera && _camera)
+	if (!_useCinematicCamera)
 	{
 		_originalCamera = _camera;
-		_useCinematicCamera = true;
 		_camera = _cinematicCamera.get();
+		_useCinematicCamera = true;
+	}
 
-		// プレイヤーの情報を取得
-		PlayerBase* targetPlayer = nullptr;
-		if (_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
-		{
-			targetPlayer = _playerTanuki.get();
-		}
-		else if (_player && _player->IsAlive())
-		{
-			targetPlayer = _player.get();
-		}
+	// プレイヤーの取得（タヌキ優先）
+	PlayerBase* targetPlayer = nullptr;
+	if (_bShowTanuki && _playerTanuki)
+	{
+		targetPlayer = StCas<PlayerBase*>(_playerTanuki.get());
+	}
+	else if (_player)
+	{
+		targetPlayer = StCas<PlayerBase*>(_player.get());
+	}
 
-		if (targetPlayer)
-		{
-			vec::Vec3 playerPos = targetPlayer->GetPos();
-			vec::Vec3 playerDir = targetPlayer->GetDir();
+	if (targetPlayer && _cinematicCamera)
+	{
+		// プレイヤーの位置を取得
+		vec::Vec3 playerPos = targetPlayer->GetPos();
 
-			// プレイヤーの向きが正常でない場合はデフォルト向きを使用
-			if (vec3::VSize(playerDir) < 0.001f)
-			{
-				playerDir = vec3::VGet(0.0f, 0.0f, 1.0f); // デフォルト向き（Z軸正方向）
-			}
+		// カメラのターゲット（プレイヤーの顔の高さ）
+		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, 60.0f, 0.0f));
 
-			// プレイヤーの少し上を注視点に設定
-			vec::Vec3 faceTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, 80.0f, 0.0f));
+		// カメラを見下ろす位置に配置（プレイヤーの斜め後ろ上方）
+		// Y軸を大きく取ることで見下ろし視点を作る
+		vec::Vec3 cameraOffset = vec3::VGet(0.0f, 300.0f, 300.0f);
+		vec::Vec3 cameraPos = vec3::VAdd(playerPos, cameraOffset);
 
-			// プレイヤーの前方向に少し離れた位置にカメラを配置
-			vec::Vec3 cameraOffset = vec3::VScale(playerDir, 150.0f); // 150単位前方に変更
-			vec::Vec3 cameraPos = vec3::VAdd(faceTarget, cameraOffset);
-
-			// カメラの設定を適用
-			_cinematicCamera->SetPos(cameraPos);
-			_cinematicCamera->SetTarget(faceTarget);
-			_cinematicCamera->SetClipNear(1.0f);
-			_cinematicCamera->SetClipFar(10000.0f);
-
-			// デバッグ出力でカメラ設定を確認
-			DrawFormatString(10, 100, GetColor(0, 255, 0),
-				"Intro Camera Set - Pos: (%.1f, %.1f, %.1f) Target: (%.1f, %.1f, %.1f)",
-				cameraPos.x, cameraPos.y, cameraPos.z, faceTarget.x, faceTarget.y, faceTarget.z);
-		}
-		else
-		{
-			// プレイヤーが見つからない場合はデフォルトカメラ設定
-			// 元のカメラの設定をコピーして少し調整
-			vec::Vec3 originalPos = _originalCamera->GetPos();
-			vec::Vec3 originalTarget = _originalCamera->GetTarget();
-
-			// より近い位置に設定
-			vec::Vec3 introPos = vec3::VGet(0.0f, 100.0f, -200.0f);
-			vec::Vec3 introTarget = vec3::VGet(0.0f, 50.0f, 0.0f);
-
-			_cinematicCamera->SetPos(introPos);
-			_cinematicCamera->SetTarget(introTarget);
-			_cinematicCamera->SetClipNear(1.0f);
-			_cinematicCamera->SetClipFar(10000.0f);
-
-			// デバッグ出力
-			DrawFormatString(10, 120, GetColor(255, 255, 0),
-				"Intro Camera Default - Pos: (%.1f, %.1f, %.1f) Target: (%.1f, %.1f, %.1f)",
-				introPos.x, introPos.y, introPos.z, introTarget.x, introTarget.y, introTarget.z);
-		}
+		// カメラの設定を適用
+		_cinematicCamera->SetPos(cameraPos);
+		_cinematicCamera->SetTarget(cameraTarget);
+		_cinematicCamera->SetClipNear(1.0f);
+		_cinematicCamera->SetClipFar(10000.0f);
 	}
 
 	// イントロ演出を開始
@@ -1447,9 +1389,33 @@ bool ModeGame::ProcessIntroSequence()
 		return false;
 	}
 
-	// 経過時間を更新
-	float deltaTime = 1.0f / 60.0f; // 60FPS想定
-	_introTimer += deltaTime;
+	// プレイヤーを追尾してカメラを更新
+	PlayerBase* targetPlayer = nullptr;
+	if (_bShowTanuki && _playerTanuki)
+	{
+		targetPlayer = _playerTanuki.get();
+	}
+	else if (_player)
+	{
+		targetPlayer = _player.get();
+	}
+
+	if (targetPlayer && _cinematicCamera)
+	{
+		// プレイヤーの現在位置を取得
+		vec::Vec3 playerPos = targetPlayer->GetPos();
+
+		// カメラのターゲット（プレイヤーの顔の高さ）を更新
+		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, 60.0f, 0.0f));
+
+		// カメラ位置を更新（プレイヤーの斜め後ろ上方を維持）
+		vec::Vec3 cameraOffset = vec3::VGet(0.0f, 300.0f, 300.0f);
+		vec::Vec3 cameraPos = vec3::VAdd(playerPos, cameraOffset);
+
+		// カメラの位置と注視点を更新
+		_cinematicCamera->SetPos(cameraPos);
+		_cinematicCamera->SetTarget(cameraTarget);
+	}
 
 	int trg = ApplicationBase::GetInstance()->GetTrg(); // 入力状態を取得
 
@@ -1463,7 +1429,7 @@ bool ModeGame::ProcessIntroSequence()
 	}
 
 	// ボタンが押されたか、時間が経過したらイントロ終了
-	if (_introButtonPressed || _introTimer >= INTRO_DURATION)
+	if (_introButtonPressed)
 	{
 		EndIntroSequence();
 		return true;
