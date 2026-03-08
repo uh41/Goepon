@@ -1414,7 +1414,7 @@ bool ModeGame::ProcessIntroSequence()
 	// ボタンが押されたか、時間が経過したらイントロ終了
 	if (_introButtonPressed)
 	{
-		EndCinematicCamera();
+		EndIntroSequence();
 		return true;
 	}
 
