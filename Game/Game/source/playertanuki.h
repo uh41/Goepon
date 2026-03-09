@@ -39,6 +39,9 @@ public:
 
 	auto GetDashCount() const { return _dashCount; } // ダッシュ回数を取得するゲッター
 
+	// 入力が有効かどうかのゲッターとセッター
+	bool GetInputEnabled() const { return _inputEnabled; }
+	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
 protected:
 	Camera* _cam;
 
@@ -57,5 +60,7 @@ protected:
 
 	float _dashRecoverTime; // ダッシュ回復のタイマー
 	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
+
+	bool _inputEnabled; // 入力が有効かどうか
 };
 

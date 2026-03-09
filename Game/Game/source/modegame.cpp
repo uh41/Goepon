@@ -1369,9 +1369,9 @@ bool ModeGame::StartIntroSequence()
 		}
 
 		// ★調整パラメータ（ここだけ変更すればOK）★
-		float cameraHeight   = 500.0f;     // カメラの高さ（Y軸のみ）
-		float cameraDistance = 500.0f;   // プレイヤーからの距離
-		float targetHeight   = 300.0f;     // プレイヤーの顔の高さ
+		float cameraHeight   = 500.0f; // カメラの高さ（Y軸のみ）
+		float cameraDistance = 500.0f; // プレイヤーからの距離
+		float targetHeight   = 300.0f; // プレイヤーの顔の高さ
 
 		// カメラ位置（プレイヤーの正面、指定した高さと距離）
 		vec::Vec3 cameraPos = vec3::VGet(
@@ -1394,6 +1394,12 @@ bool ModeGame::StartIntroSequence()
 	_isIntroActive = true;
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
+
+	// ★追加: プレイヤーの操作を無効化
+	if(_playerTanuki)
+	{
+		_playerTanuki->SetInputEnabled(false);
+	}
 
 	return true;
 }
@@ -1444,6 +1450,12 @@ bool ModeGame::EndIntroSequence()
 	_isIntroActive = false;
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
+
+	// ★追加: プレイヤーの操作を再度有効化
+	if(_playerTanuki)
+	{
+		_playerTanuki->SetInputEnabled(true);
+	}
 
 	if (_useCinematicCamera && _originalCamera)
 	{
