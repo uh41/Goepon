@@ -1070,7 +1070,7 @@ bool ModeGame::Render()
 	}
 
 	ObjectRender();// オブジェクト描画処理
-	DebugRender(); // デバック描画処理
+	//DebugRender(); // デバック描画処理
 
 	// 処理時間を画面に表示
 	int y = 40;

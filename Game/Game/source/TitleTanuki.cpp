@@ -73,7 +73,7 @@ bool TitleTanuki::Render()
 
 	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
 
-	float ScaleOffset = 2.0f;
+	float ScaleOffset = 2.4f;
 	MATRIX mRotY = MGetRotY(vorty);
 	MATRIX mRotZ = MGetRotZ(DX_PI_F * 0.5f);
 	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
