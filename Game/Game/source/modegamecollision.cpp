@@ -752,7 +752,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		{
 			_treasureTakenCount++;      // 取得数を増やす
 			_treasureHoldSec = 0.0f;    // 開けるのに必要な時間のカウンタをリセット
-			treasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
+			currentTreasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
 			EndCinematicCamera();		// 演出カメラを終了
 			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
 
@@ -777,12 +777,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			if(_doyaEffect)
 			{
 				_doyaEffect->SetTargetPlayer(player);
-				_doyaEffect->PlayEffect(treasure->GetPos());
+				_doyaEffect->PlayEffect(currentTreasure->GetPos());
 			}
 
 			// 宝箱を開けた時の音波を発生
 			EnemySoundManager::GetInstance()->EmitSound(
-				treasure->GetPos(),  // 宝箱の位置
+				currentTreasure->GetPos(),  // 宝箱の位置
 				5,                   // 音の大きさレベル（1-3で調整）
 				400.0f,             // 音波の最大半径
 				10.0f                // 音波の速度
@@ -790,7 +790,6 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 			return true;				// 1つ開けたら終了
 		}
-		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
 	}
 
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット

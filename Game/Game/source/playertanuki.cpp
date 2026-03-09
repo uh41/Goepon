@@ -216,12 +216,12 @@ bool PlayerTanuki::Process()
 			}
 		}
 	}
-	else
+	/*else
 	{
 		_v = { 0.0f, 0.0f, 0.0f };
 		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
-	}
+	}*/
 
 	if(_dash)
 	{
@@ -305,7 +305,7 @@ bool PlayerTanuki::Process()
 		{
 			SoundWalk();
 		}
-	}
+	
 	
 	// アニメーションの名前取得
 	auto GetAnimName = [this](STATUS name) -> std::string
