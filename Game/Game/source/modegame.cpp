@@ -439,12 +439,20 @@ bool ModeGame::LoadStageData()
 
 		if(name == "Treasure")
 		{
-			//auto treasure = std::make_shared<Treasure>();
+			auto treasure = std::make_shared<Treasure>();
+			treasure->Initialize();
+			treasure->SetJsonDataUE(object);
+			_treasureBase.emplace_back(treasure);
+			continue;
+		}
+
+		if (name == "TreasureX")
+		{
 			auto treasure = std::make_shared<TreasureRapidFire>();
 			treasure->Initialize();
 			treasure->SetJsonDataUE(object);
 			_treasureBase.emplace_back(treasure);
-			_treasureRapidFire.emplace_back(treasure); 
+			_treasureRapidFire.emplace_back(treasure);
 			continue;
 		}
 

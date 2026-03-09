@@ -17,11 +17,11 @@ struct DetectionInfo
 {
 	bool isDetected;				// プレイヤーが検出されたかどうか
 	bool isChasing;					// 追跡状態かどうか
-	bool isInDetectionDelay;		// 遅延中フラグ
+	bool isDelay;					// 遅延中フラグ
 	vec::Vec3 lastPlayerPos;		// 最後に検出されたプレイヤーの位置
 	float timer;					// プレイヤーが検出されてからの経過時間
 	float chaseTimer;				// 追跡状態の経過時間
-	float detectionDelayTimer;		// 検知してから追跡開始までの遅延タイマー
+	float DelayTimer;				// 検知してから追跡開始までの遅延タイマー
 };
 
 class EnemySensor : public EnemyBase

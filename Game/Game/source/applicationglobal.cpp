@@ -286,11 +286,12 @@ bool ApplicationGlobal::Init()
 	_iCgCursor = LoadGraph("res/cursor.png");
 
 	// マップ用
-	LoadMapData("Map1", "stage2_0305.json", "stage");	// 1ステージ目
+	LoadMapData("Map1", "tresure0309.json", "stage");	// 1ステージ目
 	LoadMapData("Map2", "stage2_0304.json", "stage");	// 2ステージ目
 	LoadMapData("Map3", "stage2_0304.json", "stage");	// 3ステージ目
 
-	LoadStageData("Stage1", "stage2_0305.json", "stage"); // 1ステージ目
+	//マーカー用
+	LoadStageData("Stage1", "tresure0309.json", "stage"); // 1ステージ目
 	LoadStageData("Stage2", "stage2_0304.json", "stage");     // 2ステージ目
 	LoadStageData("Stage3", "stage2_0304.json", "stage");     // 3ステージ目
 

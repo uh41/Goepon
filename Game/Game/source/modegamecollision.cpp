@@ -374,7 +374,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				if (!rapidFire->IsOpen())
 				{
-					rapidFire->ResetButtonCount();
+					rapidFire->ResetCount();
 				}
 			}
 		}
@@ -387,6 +387,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	const bool pressedA = (trg & PAD_INPUT_1) != 0;
 
 	bool inAnyTreasure = false; // どれか一つでも当たればtrue
+	TreasureBase* currentTreasure = nullptr; // 現在処理中の宝箱
 
 	// 宝箱の指定フレームで判定
 	for (const auto& sp : treasures)
@@ -425,6 +426,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 		// 少なくともどれかの宝箱の範囲
 		inAnyTreasure = true;
+		currentTreasure = treasure;
 
 		// 連打型宝箱の処理
 		if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(treasure))
@@ -432,7 +434,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			// Aボタンが押された時にカウント追加
 			if (pressedA)
 			{
-				rapidFire->AddButtonCount();
+				rapidFire->AddCount();
 
 				// SE再生（連打音）
 				auto soundButton = gGlobal._soundServer->Get("60");
@@ -450,7 +452,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				);
 
 				// 必要回数に達したら開く
-				if (rapidFire->GetCurrentButtonCount() >= rapidFire->GetRequiredButtonCount())
+				if (rapidFire->GetCurrentCount() >= rapidFire->GetRequiredCount())
 				{
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
@@ -478,54 +480,61 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					return true;
 				}
 			}
+			// 連打型は複数同時に処理可能なのでcontinue
+			continue;
 		}
 		// 通常の長押し型宝箱の処理
 		else
 		{
-			// Aボタンを押していなかったら開けない
-			if (!holdA)
+			// 長押し型は1つずつしか開けられないので、最初に見つかった宝箱で処理を行う
+			break;
+		}
+	}
+
+	// 長押し型宝箱の処理（currentTreasureが長押し型の場合のみ実行）
+	if (currentTreasure && !dynamic_cast<TreasureRapidFire*>(currentTreasure))
+	{
+		// Aボタンを押していなかったら開けない
+		if (!holdA)
+		{
+			// Aボタンが離されたタイミングで演出カメラを終了
+			if (_isOpeningTreasure)
 			{
-				// Aボタンが離されたタイミングで演出カメラを終了
-				if (_isOpeningTreasure)
-				{
-					EndCinematicCamera();
-					_isOpeningTreasure = false;
-					_treasureHoldSec = 0.0f;
-					auto sound = gGlobal._soundServer->Get("60");
-					if (sound && sound->IsPlay())
-					{
-						sound->Stop();
-					}
-				}
+				EndCinematicCamera();
 				_isOpeningTreasure = false;
 				_treasureHoldSec = 0.0f;
-
-				// TreasureOpenUiを表示（プレイヤーの位置で）
-				if (_treasureOpenUi)
+				auto sound = gGlobal._soundServer->Get("60");
+				if (sound && sound->IsPlay())
 				{
-					_treasureOpenUi->SetVisible(true);
-					_treasureOpenUi->SetSize(100);
+					sound->Stop();
 				}
-
-				continue;
 			}
-			else
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+
+			// TreasureOpenUiを表示（プレイヤーの位置で）
+			if (_treasureOpenUi)
 			{
-				if (_treasureOpenUi)
-				{
-					_treasureOpenUi->SetVisible(false);
-				}
-				// 開け始めの1回だけ音波を発生
-				if (!_isOpeningTreasure)
-				{
-					// 宝箱を開けた時の音波を発生
-					EnemySoundManager::GetInstance()->EmitSound(
-						treasure->GetPos(),
-						5,
-						400.0f,
-						10.0f
-					);
-				}
+				_treasureOpenUi->SetVisible(true);
+				_treasureOpenUi->SetSize(100);
+			}
+		}
+		else
+		{
+			if (_treasureOpenUi)
+			{
+				_treasureOpenUi->SetVisible(false);
+			}
+			// 開け始めの1回だけ音波を発生
+			if (!_isOpeningTreasure)
+			{
+				// 宝箱を開けた時の音波を発生
+				EnemySoundManager::GetInstance()->EmitSound(
+					currentTreasure->GetPos(),
+					5,
+					400.0f,
+					10.0f
+				);
 			}
 
 			// 開ける処理開始
@@ -551,7 +560,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				_treasureTakenCount++;
 				_treasureHoldSec = 0.0f;
-				treasure->SetOpen(true);
+				currentTreasure->SetOpen(true);
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
 
@@ -570,12 +579,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				if (_doyaEffect)
 				{
 					_doyaEffect->SetTargetPlayer(player);
-					_doyaEffect->PlayEffect(treasure->GetPos());
+					_doyaEffect->PlayEffect(currentTreasure->GetPos());
 				}
 
 				// 宝箱を開けた時の音波を発生
 				EnemySoundManager::GetInstance()->EmitSound(
-					treasure->GetPos(),
+					currentTreasure->GetPos(),
 					5,
 					400.0f,
 					10.0f
@@ -584,8 +593,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				return true;
 			}
 		}
-		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
 	}
+
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
 	if (!inAnyTreasure)
 	{
@@ -614,7 +623,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				if (!rapidFire->IsOpen())
 				{
-					rapidFire->ResetButtonCount();
+					rapidFire->ResetCount();
 				}
 			}
 		}
