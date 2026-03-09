@@ -79,10 +79,6 @@ bool AseEffect::Process()
 	vec::Vec3 playerPos = _player->GetPos();
 	vec::Vec3 playerDir = _player->GetDir();
 
-	// 頭前方に出すためのオフセット計算
-	const float headOffsetY = 100.0f;   // Y方向の頭上オフセット（適宜調整）
-	const float forwardOffset = 60.0f;  // 前方オフセット（適宜調整）
-
 	// XZ平面の前方ベクトルを正規化（上下成分は無視）
 	vec::Vec3 forward = playerDir;
 	forward.y = 0.0f;
