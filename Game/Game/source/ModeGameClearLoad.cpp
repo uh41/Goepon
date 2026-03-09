@@ -40,13 +40,20 @@ bool ModeGameClearLoad::Terminate()
 bool ModeGameClearLoad::Process()
 {
 	base::Process();
-	 //ModeGameが存在するかを確認
+
+	// ModeGameが存在するかを確認
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");
-	if (gameBase == nullptr)
+	if(gameBase == nullptr)
 	{
 		// gameがないなら待機してから新しく追加してロード追加
 		if(!_spawnedGame)
 		{
+			// 画像が読み込まれるまで待つ
+			if(_handle == -1)
+			{
+				return true;
+			}
+
 			// クリアしたステージの「次」を決定
 			std::string nextStageId;
 			if(_stageManager)
@@ -67,7 +74,7 @@ bool ModeGameClearLoad::Process()
 			newGame->SetInitialStageId(nextStageId);
 
 			ModeServer::GetInstance()->Add(newGame, 0, "game");
-			ModeServer::GetInstance()->ProcessInit(); // 追加したモードの初期化を行う
+			// ProcessInit() をここでは呼ばない - 次のフレームで初期化させる
 			_spawnedGame = true;
 		}
 		return true;
@@ -75,10 +82,10 @@ bool ModeGameClearLoad::Process()
 
 	// gameが存在する場合、ModeGameにキャストしてロード完了を確認
 	auto* game = dynamic_cast<ModeGame*>(gameBase);
-	if (game == nullptr) return false;
+	if(game == nullptr) return false;
 
 	// 新しく追加された ModeGame のロードが完了したらオーバーレイを削除する
-	if (game->IsLoadComplete())
+	if(game->IsLoadComplete())
 	{
 		ModeServer::GetInstance()->Del(this);
 	}
@@ -89,29 +96,35 @@ bool ModeGameClearLoad::Render()
 {
 	base::Render();
 
-	_frameShow++;
+	ModeBase* gameClear = ModeServer::GetInstance()->Get("ModeGameClear");
+	bool shouldRender = (gameClear == nullptr);
 
-	// デバッグ: Render 呼び出し確認表示（画面左上）
-	DrawFormatString(10, 10, GetColor(0, 255, 255), "ModeGameClearLoad Render frame=%d handle=%d", _frameShow, _handle);
-
-	if (_handle != -1)
+	if(shouldRender)
 	{
-		// 画像を画面中央に描画
-		int screenW, screenH;
-		GetScreenState(&screenW, &screenH, nullptr);
+		_frameShow++;
 
-		int imgW, imgH;
-		GetGraphSize(_handle, &imgW, &imgH);
+		// デバッグ: Render 呼び出し確認表示（画面左上）
+		DrawFormatString(10, 10, GetColor(0, 255, 255), "ModeGameClearLoad Render frame=%d handle=%d", _frameShow, _handle);
 
-		int x = (screenW - imgW) / 2;
-		int y = (screenH - imgH) / 2;
+		if(_handle != -1)
+		{
+			// 画像を画面中央に描画
+			int screenW, screenH;
+			GetScreenState(&screenW, &screenH, nullptr);
 
-		DrawGraph(x, y, _handle, TRUE);
-	}
-	else
-	{
-		// フォールバック表示（デバッグ用）
-		DrawString(10, 50, "GameClear Loading...", GetColor(0, 255, 255));
+			int imgW, imgH;
+			GetGraphSize(_handle, &imgW, &imgH);
+
+			int x = (screenW - imgW) / 2;
+			int y = (screenH - imgH) / 2;
+
+			DrawGraph(x, y, _handle, TRUE);
+		}
+		else
+		{
+			// フォールバック表示（デバッグ用）
+			DrawString(10, 50, "GameClear Loading...", GetColor(0, 255, 255));
+		}
 	}
 	return true;
 }

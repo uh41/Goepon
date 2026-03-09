@@ -5,6 +5,7 @@ namespace img
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
   inline constexpr const char* Af_Scenario = "res/Af_Scenario.png";
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
+  inline constexpr const char* BG_stageclear = "res/BG_stageclear.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* L_UI = "res/L_UI.png";
   inline constexpr const char* Loading_1start = "res/Loading_1start.png";

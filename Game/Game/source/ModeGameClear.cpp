@@ -54,14 +54,15 @@ bool ModeGameClear::Process()
 			ModeServer::GetInstance()->Del(existing);
 		}
 
-		// ModeGameLoadを使用してゲームを再ロード（ゲームオーバー時と同様の処理）
+		// 自分自身を削除予約（先に削除して、ModeGameClearLoadが上に来るようにする）
+		ModeServer::GetInstance()->Del(this);
+
+		// ModeGameClearLoadを使用してゲームを再ロード
+		// layer を 100 に下げて、確実に上に描画されるようにする
 		if(ModeServer::GetInstance()->Get("gameclearload") == nullptr)
 		{
-			ModeServer::GetInstance()->Add(new ModeGameClearLoad(nullptr, currentStageId), 300, "gameclearload");
+			ModeServer::GetInstance()->Add(new ModeGameClearLoad(nullptr, currentStageId), 100, "gameclearload");
 		}
-
-		// 自分自身を削除予約
-		ModeServer::GetInstance()->Del(this);
 
 		// 削除・追加は次フレームの ModeServer::ProcessInit() で実行されるため、
 		// ここでは早期リターンして安全に終了する。
