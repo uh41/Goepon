@@ -125,26 +125,23 @@ bool Player::Process()
 	// ローカル入力ベクトル（キーボード）
 	vec3::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 
-	if((key & (PAD_INPUT_7 | PAD_INPUT_8)) == 0)
-	{
-		// キャラ移動(カメラ設定に合わせて)
 
 		// 操作（キーボード）
-		if(CheckHitKey(KEY_INPUT_UP))
-		{
-			inputLocal.x = 1.0f;
-		}
-		if(CheckHitKey(KEY_INPUT_DOWN))
+		if(key & PAD_INPUT_UP)
 		{
 			inputLocal.x = -1.0f;
 		}
-		if(CheckHitKey(KEY_INPUT_LEFT))
+		if(key & PAD_INPUT_DOWN)
 		{
-			inputLocal.z = 1.0f;
+			inputLocal.x = 1.0f;
 		}
-		if(CheckHitKey(KEY_INPUT_RIGHT))
+		if(key & PAD_INPUT_LEFT)
 		{
 			inputLocal.z = -1.0f;
+		}
+		if(key & PAD_INPUT_RIGHT)
+		{
+			inputLocal.z = 1.0f;
 		}
 
 		// アナログ入力の長さ/角度
@@ -297,7 +294,6 @@ bool Player::Process()
 			}
 
 		}
-	}
 
 	// 地上移動（アニメ・向き更新のみ。実際の座標更新は ModeGame::EscapeCollision に任せる）
 	if(vec3::VSize(_v) > 0.0f)

@@ -194,7 +194,7 @@ bool PlayerTanuki::Process()
 		{
 			_dash = false;
 			_dashTimer = 0.0f;
-			_fMvSpeed = _normalSpeed;
+			_fMvSpeed = _normalSpeed * dash::DASH_COOLDOWN_SPEED;
 			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
 			_dashRecoverTime = 0.0f;
 			_dashRecoverActive = false;
@@ -208,6 +208,7 @@ bool PlayerTanuki::Process()
 		if(_dashCoolDownTime < 0.0f)
 		{
 			_dashCoolDownTime = 0.0f;
+			_fMvSpeed = _normalSpeed; // クールダウンが終わったら速度を元に戻す
 			if(_dashCount > 0 && !_dashRecoverActive)
 			{
 				_dashRecoverActive = true; // クールダウンが終わったら回復開始

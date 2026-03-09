@@ -19,6 +19,7 @@ namespace dash
 	static constexpr auto DASH_RECOVER_INTERVAL = 5.0f;// ダッシュ回復のインターバル（秒）
 	static constexpr auto DASH_SPEED = 5.0f; // ダッシュ中の移動速度
 	static constexpr auto DASH_DURATION = 0.3f; // ダッシュ状態の持続時間
+	static constexpr auto DASH_COOLDOWN_SPEED = 0.6f; // クールダウン中の移動量
 }
 
 class PlayerTanuki : public PlayerBase
