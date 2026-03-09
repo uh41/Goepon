@@ -42,10 +42,10 @@ bool ModeGameClear::Process()
 			}
 		}
 
-		if(_ownerGame)
-		{
-			ModeServer::GetInstance()->Del(_ownerGame); // ゲームモードを削除
-		}
+		//if(_ownerGame)
+		//{
+		//	ModeServer::GetInstance()->Del(_ownerGame); // ゲームモードを削除
+		//}
 
 		// 名前"game" で登録されているモードがあれば削除予約
 		ModeBase* existing = ModeServer::GetInstance()->Get("game");
@@ -58,7 +58,6 @@ bool ModeGameClear::Process()
 		if(ModeServer::GetInstance()->Get("gameclearload") == nullptr)
 		{
 			ModeServer::GetInstance()->Add(new ModeGameClearLoad(nullptr, currentStageId), 300, "gameclearload");
-			ModeServer::GetInstance()->ProcessInit();
 		}
 
 		// 自分自身を削除予約
