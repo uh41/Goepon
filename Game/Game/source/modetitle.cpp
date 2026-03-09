@@ -52,6 +52,21 @@ bool ModeTitle::Initialize()
 	// �t�F�[�h�Ȃ� - �����ɕ\��
 	_state = ModeBase::State::WAIT;
 
+	if(!_soundServer && gGlobal._soundServer)
+	{
+		_soundServer = gGlobal._soundServer;
+	}
+
+	if(_soundServer)
+	{
+		_soundServer->Add("titlebgm", std::make_shared<soundserver::SoundItemBGM>(mp3::Title));
+		auto bgm = _soundServer->Get("titlebgm");
+		if(bgm)
+		{
+			bgm->Play(); // 追加後に明示的に再生
+		}
+	}
+
 	return true;
 }
 
@@ -75,6 +90,16 @@ bool ModeTitle::Terminate()
 	{
 		delete _cam;
 		_cam = nullptr;
+	}
+
+	if(gGlobal._soundServer)
+	{
+		auto bgm = gGlobal._soundServer->Get("titlebgm");
+		if(bgm)
+		{
+			bgm->Stop();
+			gGlobal._soundServer->Del("titlebgm");
+		}
 	}
 
 	return true;

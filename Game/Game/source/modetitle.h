@@ -2,6 +2,13 @@
 #include "appframe.h"
 #include "TitleTanuki.h"
 #include "TitleCamera.h"
+#include "applicationglobal.h"
+
+namespace soundserver
+{
+	class SoundServer;
+}
+
 class ModeTitle : public ModeBase
 {
 	typedef ModeBase base;
@@ -16,5 +23,8 @@ public:
 protected:
 	at::spc<TitleTanuki> _player;
 	TitleCamera* _cam;
+
+	at::spc<soundserver::SoundServer> _soundServer;
+	int _gbmHandle;
 };
 

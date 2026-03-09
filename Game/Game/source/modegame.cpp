@@ -261,6 +261,15 @@ bool ModeGame::Terminate()
 		_soundFinish = nullptr;
 	}
 
+	if(gGlobal._soundServer)
+	{
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+	}
+
+	// BGM ハンドル参照をクリア（安全のため）
+	_bgmInitialize = nullptr;
+	_bgmChenge = nullptr;
+
 	return true;
 }
 
