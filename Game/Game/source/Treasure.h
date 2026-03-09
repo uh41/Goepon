@@ -22,6 +22,6 @@ public:
 	bool Render()     override; // 描画
 
 protected:    
-	int _attachIndex;        
+	int _attachIndex;    
 };
 
