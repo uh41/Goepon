@@ -50,11 +50,11 @@ bool MovieManager::PlayMovie(int handle, bool loop)
 	int loopFlag;
 	if(loop)
 	{
-		loopFlag = true;
+		loopFlag = 1;
 	}
 	else
 	{
-		loopFlag = false;
+		loopFlag = 0;
 	}
 
 	int ret = PlayMovieToGraph(handle, loopFlag);
@@ -83,7 +83,7 @@ void MovieManager::UnloadMovie(int handle)
 	auto it = _handle.find(handle);
 	if(it != _handle.end())
 	{
-		if(IsMoviePlaying(handle))
+		if(!IsMoviePlaying(handle))
 		{
 			StopMovie(handle);
 		}

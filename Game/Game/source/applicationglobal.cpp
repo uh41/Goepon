@@ -286,11 +286,11 @@ bool ApplicationGlobal::Init()
 	_iCgCursor = LoadGraph("res/cursor.png");
 
 	// マップ用
-	LoadMapData("Map1", "stage2_0304.json", "stage");	// 1ステージ目
+	LoadMapData("Map1", "dogcheck.json", "stage");	// 1ステージ目
 	LoadMapData("Map2", "stage2_0304.json", "stage");	// 2ステージ目
 	LoadMapData("Map3", "stage2_0304.json", "stage");	// 3ステージ目
 
-	LoadStageData("Stage1", "stage2_0304.json", "stage"); // 1ステージ目
+	LoadStageData("Stage1", "dogcheck.json", "stage"); // 1ステージ目
 	LoadStageData("Stage2", "stage2_0304.json", "stage");     // 2ステージ目
 	LoadStageData("Stage3", "stage2_0304.json", "stage");     // 3ステージ目
 
@@ -342,7 +342,7 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("3", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_henshinfinish));
 	_soundServer->Add("10", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_tailattack));
 	_soundServer->Add("30", std::make_shared<soundserver::SoundItemSE>(mp3::bushi_stun_start));
-	_soundServer->Add("40", std::make_shared<soundserver::SoundItemSE>(mp3::dog_howling, soundserver::SoundItemBase::FLG_LOOP));
+	_soundServer->Add("40", std::make_shared<soundserver::SoundItemSE>(mp3::dog_howling,soundserver::SoundItemBase::FLG_3D | soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk, soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("50", std::make_shared<soundserver::SoundItemSE>(mp3::okimono_move));
 	_soundServer->Add("60", std::make_shared<soundserver::SoundItemSE>(mp3::UI_charin, soundserver::SoundItemBase::FLG_LOOP));

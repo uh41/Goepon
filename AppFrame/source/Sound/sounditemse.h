@@ -17,7 +17,7 @@ namespace soundserver
 		typedef SoundItemStatic base;
 	public:
 
-		SoundItemSE(std::string filename, int flag = 0) : base(filename, flag) {}
+		SoundItemSE(std::string filename, int flag = 0, int loop = 0) : base(filename, flag | loop) {}
 
 		virtual TYPE GetType()override { return TYPE::SE; }
 
