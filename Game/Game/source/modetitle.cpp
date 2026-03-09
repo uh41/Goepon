@@ -38,7 +38,7 @@ bool ModeTitle::Initialize()
 		}
 
 		// �Œ�ʒu�ɔz�u�iY���W��K�؂ɐݒ�j
-		_player->SetPos(vec::Vec3(70.0f, -50.0f, 0.0f));
+		_player->SetPos(vec::Vec3(70.0f, -70.0f, 0.0f));
 		_player->SetDir(vec::Vec3(1.0f, 0.0f, 0.0f));
 	}
 
