@@ -1,0 +1,97 @@
+#include "modecredit.h"
+#include "modeinit.h"
+
+ModeCredit::ModeCredit()
+{
+	Initialize();
+
+	// フェードインは行わずすぐ再生するため、状態は WAIT にする
+	Fade::GetInstance()->ColorMask(0, 0, 0, 0);
+	_state = ModeBase::State::WAIT;
+	_fadeTimer = 0;
+}
+
+bool ModeCredit::Initialize()
+{
+	_handle = MovieManager::GetInstance()->LoadMovie(mp4::EndCredits);
+
+	// ロード成功していれば即再生する
+	if(_handle != -1)
+	{
+		MovieManager::GetInstance()->PlayMovie(_handle);
+	}
+
+	return true;
+}
+
+bool ModeCredit::Terminate()
+{
+	if(_handle != -1)
+	{
+		MovieManager::GetInstance()->UnloadMovie(_handle);
+		_handle = -1;
+	}
+	return true;
+}
+
+bool ModeCredit::Process()
+{
+	ModeServer::GetInstance()->SkipProcessUnderLayer();
+	ModeServer::GetInstance()->SkipRenderUnderLayer();
+
+	switch(_state)
+	{
+		// FADE_IN を使わないため省略
+
+	case ModeBase::State::WAIT:
+	{
+		// 再生終了を監視し、終わったらフェードアウトへ
+		if(_handle != -1)
+		{
+			if(!MovieManager::GetInstance()->IsMoviePlaying(_handle))
+			{
+				_state = ModeBase::State::FADE_OUT;
+				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// フェードアウト開始
+			}
+		}
+		else
+		{
+			// ハンドル無ければ即フェードアウト
+			_state = ModeBase::State::FADE_OUT;
+			Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
+		}
+		break;
+	}
+	case ModeBase::State::FADE_OUT:
+	{
+		Fade::GetInstance()->Process();
+		if(Fade::GetInstance()->IsFade() == false)
+		{
+			_state = ModeBase::State::DONE;
+		}
+		break;
+	}
+	case ModeBase::State::DONE:
+	{
+		ModeServer::GetInstance()->Add(new ModeInit(), 0, "init");
+		ModeServer::GetInstance()->Del(this);
+
+		break;
+	}
+	}
+
+	return true;
+}
+
+bool ModeCredit::Render()
+{
+	// 再生中のムービーを描画（Play は Initialize で一度だけ行っている）
+	if(_handle != -1)
+	{
+		DrawGraph(0, 0, _handle, TRUE);
+	}
+
+	// フェードを重ねる（フェードアウト時に有効）
+	Fade::GetInstance()->Render();
+	return true;
+}

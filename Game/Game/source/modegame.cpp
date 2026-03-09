@@ -555,6 +555,14 @@ bool ModeGame::Process()
 	// デバック用カメラ切り替え
 	DebugCinematicCameraControl();
 
+	int trg = ApplicationBase::GetInstance()->GetTrg();
+	if(trg & PAD_INPUT_10)
+	{
+		_isGameClear = true;
+		ModeServer::GetInstance()->Add(NEW ModeGameClear(this), 255, "ModeGameClear");
+		return true;
+	}
+
 	//// **ロード完了後の最初のフレームでロード画面を削除**
 	//if(!_isLoadComplete)
 	//{
