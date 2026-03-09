@@ -68,12 +68,30 @@ bool ModeOpScenario::Initialize()
 		_voice->Play();
 	}
 
+	if(gGlobal._soundServer)
+	{
+		auto bgm = gGlobal._soundServer->Get("110");
+		if(bgm)
+		{
+			bgm->Play();
+		}
+	}
+
 	return true;
 }
 
 bool ModeOpScenario::Terminate()
 {
 	base::Terminate();
+
+	if(gGlobal._soundServer)
+	{
+		auto bgm = gGlobal._soundServer->Get("110");
+		if(bgm)
+		{
+			bgm->Stop();
+		}
+	}
 
 	return true;
 }

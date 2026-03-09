@@ -32,7 +32,7 @@ bool MovieManager::Terminate()
 
 int MovieManager::LoadMovie(const std::string& path)
 {
-	int handle = LoadGraph(path.c_str());
+	int handle = OpenMovieToGraph(path.c_str(), FALSE);
 	if(handle != -1)
 	{
 		_handle.insert(handle);// 成功したらハンドルをセットに追加
@@ -50,11 +50,11 @@ bool MovieManager::PlayMovie(int handle, bool loop)
 	int loopFlag;
 	if(loop)
 	{
-		loopFlag = TRUE;
+		loopFlag = true;
 	}
 	else
 	{
-		loopFlag = FALSE;
+		loopFlag = false;
 	}
 
 	int ret = PlayMovieToGraph(handle, loopFlag);
@@ -69,11 +69,7 @@ bool MovieManager::StopMovie(int handle)
 		return false;
 	}
 
-#ifdef StopMovieToGraph
-	StopMovieToGraph(handle);
-#else
-	StopMovie(handle);
-#endif
+	PauseMovieToGraph(handle); // 再生を停止する
 
 	return true;
 }
@@ -87,6 +83,11 @@ void MovieManager::UnloadMovie(int handle)
 	auto it = _handle.find(handle);
 	if(it != _handle.end())
 	{
+		if(IsMoviePlaying(handle))
+		{
+			StopMovie(handle);
+		}
+
 		DeleteGraph(handle);
 		_handle.erase(it);
 	}
