@@ -34,6 +34,8 @@ bool PlayerTanuki::Initialize()
 
 	_bLand = true;
 
+	_inputEnabled = true;
+
 	return true;
 }
 
@@ -98,157 +100,163 @@ bool PlayerTanuki::Process()
 
 	_v = { 0,0,0 };
 
-	float sx = _cam->GetPos().x - _cam->GetTarget().x;
-	float sz = _cam->GetPos().z - _cam->GetTarget().z;
-	float camrad = atan2(sz, sx);
-
-
-	lStickX = fLx;
-	lStickZ = fLz;
-
-	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-	if(key & PAD_INPUT_DOWN)
+	if(!_inputEnabled)
 	{
-		inputLocal.z = 1.0f;
-	}
-	if(key & PAD_INPUT_UP)
-	{
-		inputLocal.z = -1.0f;
-	}
-	if(key & PAD_INPUT_LEFT)
-	{
-		inputLocal.x = -1.0f;
-	}
-	if(key & PAD_INPUT_RIGHT)
-	{
-		inputLocal.x = 1.0f;
-	}
-
-	// 左スティックの長さを計算
-	float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
-
-	// デッドゾーン未満なら十字キーを採用（合成ではなく置き換え）
-	if (length < _fAnalogDeadZone)
-	{
-		// 十字キーの入力を fLx/fLz と同じ軸系に寄せる
-		lStickX = inputLocal.x;
-		lStickZ = inputLocal.z;
-
-		length = sqrtf(lStickX * lStickX + lStickZ * lStickZ); 
-	}
-
-	// ローカル角度
-	float localRad = 0.0f;
-
-	if (length >= _fAnalogDeadZone)
-	{
-		float moveX = lStickZ; // 前後
-		float moveZ = lStickX; // 左右
-
-		// 入力ベクトル保存
-		_vInput = vec3::VGet(moveX, 0.0f, moveZ);
-		// 正規化
-		if (vec3::VSize(_vInput) > 0.0f)
-		{
-			_vInput = vec3::VNorm(_vInput); 
-		}
-
-		// 角度は atan2(z, x) がXZ平面の標準
-		localRad = atan2f(moveZ, moveX);
-
-		// 速度：アナログは length(0..1想定) * _fMvSpeed にした方が自然
-		float speed = _fMvSpeed;
-		float moveLen = speed * length;
-
-		// ワールド方向の移動ベクトルに変換
-		_v.x = cosf(localRad + camrad) * moveLen;
-		_v.z = sinf(localRad + camrad) * moveLen;
-
-		_vDir = _v;
-		_status = STATUS::WALK;
-
-		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
-		{
-			_dash = true;
-			_dashTimer = dash::DASH_DURATION;
-			_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
-			_dashCount++;
-			if(_dashRecoverActive)
-			{
-				_dashRecoverActive = false;
-				_dashRecoverTime = 0.0f;
-			}
-		}
+		_status = STATUS::WAIT;
 	}
 	else
 	{
-		_v = { 0.0f, 0.0f, 0.0f };
-		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
-		_status = STATUS::WAIT;
-	}
+		float sx = _cam->GetPos().x - _cam->GetTarget().x;
+		float sz = _cam->GetPos().z - _cam->GetTarget().z;
+		float camrad = atan2(sz, sx);
 
-	if(_dash)
-	{
-		_dashTimer -= 1.0f/ 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
-		if(_dashTimer <= 0.0f)
+
+		lStickX = fLx;
+		lStickZ = fLz;
+
+		vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
+		if(key & PAD_INPUT_DOWN)
 		{
-			_dash = false;
-			_dashTimer = 0.0f;
-			_fMvSpeed = _normalSpeed * dash::DASH_COOLDOWN_SPEED;
-			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
-			_dashRecoverTime = 0.0f;
-			_dashRecoverActive = false;
+			inputLocal.z = 1.0f;
 		}
-	}
-
-	// ダッシュ時のクールタイム
-	if(_dashCoolDownTime > 0.0f)
-	{
-		_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
-		if(_dashCoolDownTime < 0.0f)
+		if(key & PAD_INPUT_UP)
 		{
-			_dashCoolDownTime = 0.0f;
-			_fMvSpeed = _normalSpeed; // クールダウンが終わったら速度を元に戻す
-			if(_dashCount > 0 && !_dashRecoverActive)
+			inputLocal.z = -1.0f;
+		}
+		if(key & PAD_INPUT_LEFT)
+		{
+			inputLocal.x = -1.0f;
+		}
+		if(key & PAD_INPUT_RIGHT)
+		{
+			inputLocal.x = 1.0f;
+		}
+
+		// 左スティックの長さを計算
+		float length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+
+		// デッドゾーン未満なら十字キーを採用（合成ではなく置き換え）
+		if(length < _fAnalogDeadZone)
+		{
+			// 十字キーの入力を fLx/fLz と同じ軸系に寄せる
+			lStickX = inputLocal.x;
+			lStickZ = inputLocal.z;
+
+			length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+		}
+
+		// ローカル角度
+		float localRad = 0.0f;
+
+		if(length >= _fAnalogDeadZone)
+		{
+			float moveX = lStickZ; // 前後
+			float moveZ = lStickX; // 左右
+
+			// 入力ベクトル保存
+			_vInput = vec3::VGet(moveX, 0.0f, moveZ);
+			// 正規化
+			if(vec3::VSize(_vInput) > 0.0f)
 			{
-				_dashRecoverActive = true; // クールダウンが終わったら回復開始
-				_dashRecoverTime = dash::DASH_RECOVER_INTERVAL;
+				_vInput = vec3::VNorm(_vInput);
+			}
+
+			// 角度は atan2(z, x) がXZ平面の標準
+			localRad = atan2f(moveZ, moveX);
+
+			// 速度：アナログは length(0..1想定) * _fMvSpeed にした方が自然
+			float speed = _fMvSpeed;
+			float moveLen = speed * length;
+
+			// ワールド方向の移動ベクトルに変換
+			_v.x = cosf(localRad + camrad) * moveLen;
+			_v.z = sinf(localRad + camrad) * moveLen;
+
+			_vDir = _v;
+			_status = STATUS::WALK;
+
+			if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+			{
+				_dash = true;
+				_dashTimer = dash::DASH_DURATION;
+				_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
+				_dashCount++;
+				if(_dashRecoverActive)
+				{
+					_dashRecoverActive = false;
+					_dashRecoverTime = 0.0f;
+				}
 			}
 		}
-	}
-
-	// ダッシュ回復処理
-	if(_dashRecoverActive)
-	{
-		_dashRecoverTime -= 1.0f / 60.0f; // 回復タイマーも進める
-		if(_dashRecoverTime <= 0.0f)
+		else
 		{
-			if(_dashCount > 0)
-			{
-				_dashCount = _dashCount - 1;
-			}
-			else
-			{
-				_dashCount = 0;
-			}
+			_v = { 0.0f, 0.0f, 0.0f };
+			_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+			_status = STATUS::WAIT;
+		}
 
-			if(_dashCount > 0)
+		if(_dash)
+		{
+			_dashTimer -= 1.0f / 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
+			if(_dashTimer <= 0.0f)
 			{
-				_dashRecoverTime = dash::DASH_RECOVER_INTERVAL; // 回復インターバルをリセットして次の回復まで待つ
-			}
-			else
-			{
-				_dashRecoverActive = false; // 全て回復したら回復終了
+				_dash = false;
+				_dashTimer = 0.0f;
+				_fMvSpeed = _normalSpeed;
+				_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
 				_dashRecoverTime = 0.0f;
+				_dashRecoverActive = false;
 			}
 		}
-	}
 
-	if(old_status != _status)
-	{
-		SoundWalk();
-	}
+		// ダッシュ時のクールタイム
+		if(_dashCoolDownTime > 0.0f)
+		{
+			_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
+			if(_dashCoolDownTime < 0.0f)
+			{
+				_dashCoolDownTime = 0.0f;
+				if(_dashCount > 0 && !_dashRecoverActive)
+				{
+					_dashRecoverActive = true; // クールダウンが終わったら回復開始
+					_dashRecoverTime = dash::DASH_RECOVER_INTERVAL;
+				}
+			}
+		}
 
+		// ダッシュ回復処理
+		if(_dashRecoverActive)
+		{
+			_dashRecoverTime -= 1.0f / 60.0f; // 回復タイマーも進める
+			if(_dashRecoverTime <= 0.0f)
+			{
+				if(_dashCount > 0)
+				{
+					_dashCount = _dashCount - 1;
+				}
+				else
+				{
+					_dashCount = 0;
+				}
+
+				if(_dashCount > 0)
+				{
+					_dashRecoverTime = dash::DASH_RECOVER_INTERVAL; // 回復インターバルをリセットして次の回復まで待つ
+				}
+				else
+				{
+					_dashRecoverActive = false; // 全て回復したら回復終了
+					_dashRecoverTime = 0.0f;
+				}
+			}
+		}
+
+		if(old_status != _status)
+		{
+			SoundWalk();
+		}
+	}
+	
 	// アニメーションの名前取得
 	auto GetAnimName = [this](STATUS name) -> std::string
 		{

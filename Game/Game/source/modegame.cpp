@@ -1372,16 +1372,16 @@ void ModeGame::SetInitialStageId(const std::string& stageId)
 bool ModeGame::StartIntroSequence()
 {
 	// カメラが初期化されていない場合は失敗
-	if (!_camera)
+	if(!_camera)
 	{
 		return false;
 	}
 
 	// 演出カメラが未作成の場合は作成
-	if (!_cinematicCamera)
+	if(!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
-		if (!_cinematicCamera->Initialize())
+		if(!_cinematicCamera->Initialize())
 		{
 			_cinematicCamera.reset();
 			return false;
@@ -1389,7 +1389,7 @@ bool ModeGame::StartIntroSequence()
 	}
 
 	// 元のカメラを保持して演出カメラに切り替え
-	if (!_useCinematicCamera)
+	if(!_useCinematicCamera)
 	{
 		_originalCamera = _camera;
 		_camera = _cinematicCamera.get();
@@ -1398,24 +1398,23 @@ bool ModeGame::StartIntroSequence()
 
 	// プレイヤーの取得（タヌキ優先）
 	PlayerBase* targetPlayer = nullptr;
-	if (_bShowTanuki && _playerTanuki)
+	if(_bShowTanuki && _playerTanuki)
 	{
-		targetPlayer = StCas<PlayerBase*>(_playerTanuki.get());
+		targetPlayer = _playerTanuki.get();
 	}
-	else if (_player)
+	else if(_player)
 	{
-		targetPlayer = StCas<PlayerBase*>(_player.get());
+		targetPlayer = _player.get();
 	}
 
-	if (targetPlayer && _cinematicCamera)
+	if(targetPlayer && _cinematicCamera)
 	{
-		// ★ プレイヤーの位置を取得（参考コードと同様の処理）★
 		vec::Vec3 playerPos = targetPlayer->GetPos();
 		vec::Vec3 playerDir = targetPlayer->GetDir();
 
-		// プレイヤーの向きが無効な場合はデフォルト方向を使用
+		// プレイヤーの向きを正規化
 		float dirLength = vec3::VSize(playerDir);
-		if (dirLength < 0.001f)
+		if(dirLength < 0.001f)
 		{
 			playerDir = vec3::VGet(0.0f, 0.0f, 1.0f);
 		}
@@ -1424,14 +1423,22 @@ bool ModeGame::StartIntroSequence()
 			playerDir = vec3::VNorm(playerDir);
 		}
 
-		// カメラのターゲット（プレイヤーの顔の高さ）
-		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, 200.0f, 0.0f));
+		// ★調整パラメータ（ここだけ変更すればOK）★
+		float cameraHeight   = 500.0f; // カメラの高さ（Y軸のみ）
+		float cameraDistance = 500.0f; // プレイヤーからの距離
+		float targetHeight   = 300.0f; // プレイヤーの顔の高さ
 
-		// カメラをプレイヤーの正面に配置（距離300単位）
-		vec::Vec3 cameraOffset = vec3::VScale(playerDir, 300.0f);
-		vec::Vec3 cameraPos = vec3::VAdd(cameraTarget, cameraOffset);
+		// カメラ位置（プレイヤーの正面、指定した高さと距離）
+		vec::Vec3 cameraPos = vec3::VGet(
+			playerPos.x + playerDir.x * cameraDistance,
+			playerPos.y + cameraHeight,
+			playerPos.z + playerDir.z * cameraDistance
+		);
 
-		// ★ カメラの設定を適用（参考コードと同様にSetPosとSetTargetを使用）★
+		// カメラターゲット（プレイヤーの顔）
+		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, targetHeight, 0.0f));
+
+		// カメラ設定を適用
 		_cinematicCamera->SetPos(cameraPos);
 		_cinematicCamera->SetTarget(cameraTarget);
 		_cinematicCamera->SetClipNear(1.0f);
@@ -1442,6 +1449,12 @@ bool ModeGame::StartIntroSequence()
 	_isIntroActive = true;
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
+
+	// ★追加: プレイヤーの操作を無効化
+	if(_playerTanuki)
+	{
+		_playerTanuki->SetInputEnabled(false);
+	}
 
 	return true;
 }
@@ -1454,8 +1467,16 @@ bool ModeGame::ProcessIntroSequence()
 		return false;
 	}
 
-	int trg = ApplicationBase::GetInstance()->GetTrg();
+	PlayerTanuki* tanuki = _playerTanuki.get();	
+	if(tanuki && tanuki->IsAlive())
+	{
+		vec::Vec3 playerPos = tanuki->GetPos();
 
+		_cinematicCamera->SetTarget(playerPos);
+	}
+
+	// ボタン入力でイントロ終了
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 	if(!_introButtonPressed)
 	{
 		if(trg & PAD_INPUT_1)
@@ -1464,10 +1485,9 @@ bool ModeGame::ProcessIntroSequence()
 		}
 	}
 
-	// ★ 修正: EndCinematicCamera() ではなく EndIntroSequence() を呼ぶ
 	if(_introButtonPressed)
 	{
-		EndIntroSequence(); // ← ここを変更
+		EndIntroSequence();
 		return true;
 	}
 
@@ -1485,6 +1505,12 @@ bool ModeGame::EndIntroSequence()
 	_isIntroActive = false;
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
+
+	// ★追加: プレイヤーの操作を再度有効化
+	if(_playerTanuki)
+	{
+		_playerTanuki->SetInputEnabled(true);
+	}
 
 	if (_useCinematicCamera && _originalCamera)
 	{
