@@ -94,3 +94,4 @@ bool Treasure::Render()
 
 	return true;
 }
+
