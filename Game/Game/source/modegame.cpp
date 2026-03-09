@@ -261,6 +261,15 @@ bool ModeGame::Terminate()
 		_soundFinish = nullptr;
 	}
 
+	if(gGlobal._soundServer)
+	{
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+	}
+
+	// BGM ハンドル参照をクリア（安全のため）
+	_bgmInitialize = nullptr;
+	_bgmChenge = nullptr;
+
 	return true;
 }
 
@@ -560,6 +569,51 @@ bool ModeGame::Process()
 {
 	base::Process();
 
+	// デバック用カメラ切り替え
+	DebugCinematicCameraControl();
+
+	int trg = ApplicationBase::GetInstance()->GetTrg();
+	if(trg & PAD_INPUT_10)
+	{
+		_isGameClear = true;
+		ModeServer::GetInstance()->Add(NEW ModeGameClear(this), 255, "ModeGameClear");
+		return true;
+	}
+
+	//// **ロード完了後の最初のフレームでロード画面を削除**
+	//if(!_isLoadComplete)
+	//{
+	//	_isLoadComplete = true;
+	//	if(_modeGameLoad)
+	//	{
+	//		ModeServer::GetInstance()->Del(_modeGameLoad);
+	//		_modeGameLoad = nullptr;
+	//	}
+	//	return true; // 最初のフレームは他の処理をスキップ
+	//}
+
+
+	//// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
+	//if (_requestNextStage)
+	//{
+	//	_requestNextStage = false;
+
+	//	// 次のステージがあるなら進めて再構築
+	//	if(_stageManager.GoNext())
+	//	{
+	//		ResetStage();
+	//	}
+	//	// 次のステージがないならタイトルに戻る
+	//	else
+	//	{
+	//		ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeTitle");
+
+	//		// 自分自身のモードを削除して遷移する
+	//		ModeServer::GetInstance()->Del(this);
+	//	}
+
+	//	return true;
+	//}
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
@@ -671,6 +725,7 @@ bool ModeGame::Process()
 	/*if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
+		//CheckTanukiHeadCollision(_playerTanuki.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
 		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasureBase);
 		PlayerCameraInfo(_playerTanuki.get());
@@ -1016,7 +1071,7 @@ bool ModeGame::Render()
 	}
 
 	ObjectRender();// オブジェクト描画処理
-	DebugRender(); // デバック描画処理
+	//DebugRender(); // デバック描画処理
 
 	// 処理時間を画面に表示
 	int y = 40;

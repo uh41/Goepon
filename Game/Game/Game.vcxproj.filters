@@ -285,6 +285,7 @@
     <ClCompile Include="source\TreasureRapidFire.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\modecredit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -373,6 +374,7 @@
     <ClInclude Include="source\TreasureRapidFire.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\modecredit.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

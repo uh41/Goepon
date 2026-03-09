@@ -46,6 +46,7 @@
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\MapFactory.h" />
     <ClInclude Include="source\modeAffterScenario.h" />
+    <ClInclude Include="source\modecredit.h" />
     <ClInclude Include="source\ModeGameClear.h" />
     <ClInclude Include="source\ModeGameClearLoad.h" />
     <ClInclude Include="source\modegameload.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\MapFactory.cpp" />
     <ClCompile Include="source\modeAffterScenario.cpp" />
+    <ClCompile Include="source\modecredit.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\ModeGameClearLoad.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
