@@ -1394,16 +1394,14 @@ bool ModeGame::StartIntroSequence()
 // ProcessIntroSequence()関数を追加
 bool ModeGame::ProcessIntroSequence()
 {
-	// イントロ演出がアクティブでない場合は処理しない
-	if (!_isIntroActive)
+	if(!_isIntroActive)
 	{
 		return false;
 	}
 
-	int trg = ApplicationBase::GetInstance()->GetTrg(); // 入力状態を取得
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 
-	// ボタン入力をチェック（スペースキー、エンターキー、またはゲームパッドのAボタン）
-	if (!_introButtonPressed)
+	if(!_introButtonPressed)
 	{
 		if(trg & PAD_INPUT_1)
 		{
@@ -1411,15 +1409,12 @@ bool ModeGame::ProcessIntroSequence()
 		}
 	}
 
-	// ボタンが押されたか、時間が経過したらイントロ終了
-	if (_introButtonPressed)
+	// ★ 修正: EndCinematicCamera() ではなく EndIntroSequence() を呼ぶ
+	if(_introButtonPressed)
 	{
-		EndCinematicCamera();
+		EndIntroSequence(); // ← ここを変更
 		return true;
 	}
-
-	// イントロ中はプレイヤーの操作を無効化
-	// （必要に応じてプレイヤーの入力を無視する処理をここに追加）
 
 	return true;
 }
