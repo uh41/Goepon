@@ -59,8 +59,8 @@ bool ModeTitle::Initialize()
 
 	if(_soundServer)
 	{
-		_soundServer->Add("titlebgm", std::make_shared<soundserver::SoundItemBGM>(mp3::Title));
-		auto bgm = _soundServer->Get("titlebgm");
+		_soundServer->Add("102", std::make_shared<soundserver::SoundItemBGM>(mp3::Title));
+		auto bgm = _soundServer->Get("102");
 		if(bgm)
 		{
 			bgm->Play(); // 追加後に明示的に再生
@@ -94,11 +94,11 @@ bool ModeTitle::Terminate()
 
 	if(gGlobal._soundServer)
 	{
-		auto bgm = gGlobal._soundServer->Get("titlebgm");
+		auto bgm = gGlobal._soundServer->Get("102");
 		if(bgm)
 		{
 			bgm->Stop();
-			gGlobal._soundServer->Del("titlebgm");
+			gGlobal._soundServer->Del("102");
 		}
 	}
 

@@ -198,6 +198,7 @@ namespace mp3
   inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
   inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
+  inline constexpr const char* Prologe = "res/BGM/Prologe.mp3";
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";

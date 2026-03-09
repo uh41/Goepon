@@ -1,6 +1,7 @@
 #include "enemydog.h"
 #include "enemysensor.h"
 #include "enemysoundmanager.h"
+#include "applicationglobal.h"
 
 bool EnemyDog::Initialize()
 {
@@ -310,6 +311,15 @@ bool EnemyDog::Process()
 			}
 			_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
 			_wasChasing = true;
+
+			if(gGlobal._soundServer)
+			{
+				auto doghow = gGlobal._soundServer->Get("40");
+				if (doghow)
+				{
+					doghow->Play();
+				}
+			}
 		}
 		else
 		{

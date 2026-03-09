@@ -178,6 +178,15 @@ bool PlayerTanuki::Process()
 				_dashRecoverActive = false;
 				_dashRecoverTime = 0.0f;
 			}
+
+			if(gGlobal._soundServer)
+			{
+				auto s = gGlobal._soundServer->Get("5"); // ApplicationGlobal で "5" に tanuki_run を登録済み
+				if(s && !s->IsPlay())
+				{
+					s->Play();
+				}
+			}
 		}
 	}
 	else
@@ -198,6 +207,15 @@ bool PlayerTanuki::Process()
 			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
 			_dashRecoverTime = 0.0f;
 			_dashRecoverActive = false;
+
+			if(gGlobal._soundServer)
+			{
+				auto s = gGlobal._soundServer->Get("5");
+				if(s && s->IsPlay())
+				{
+					s->Stop();
+				}
+			}
 		}
 	}
 
