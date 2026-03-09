@@ -126,6 +126,7 @@ namespace mv1
   inline constexpr const char* FloatingIsland = "res/FloatingIsland/FloatingIsland.mv1";
   inline constexpr const char* Sky = "res/FloatingIsland/Sky.mv1";
   inline constexpr const char* Wood = "res/FloatingIsland/Wood.mv1";
+  inline constexpr const char* Game_clear = "res/Gameclear/Game_clear.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* Ground = "res/Ground/Ground.mv1";
   inline constexpr const char* S_Barrel = "res/IslandJson/S_Barrel.mv1";
@@ -187,6 +188,7 @@ namespace mv1
   inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
   inline constexpr const char* Kagurayaki = "res/tanumono/Kagurayaki.mv1";
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
+  inline constexpr const char* gamestart = "res/Titleanimation/gamestart.mv1";
   inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
 }
@@ -197,6 +199,7 @@ namespace mp3
   inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* UI_Henshin_pon = "res/SE/UI_Henshin_pon.mp3";
   inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
   inline constexpr const char* UI_no_makimono = "res/SE/UI_no_makimono.mp3";
   inline constexpr const char* bush_found = "res/SE/bush_found.mp3";

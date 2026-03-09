@@ -58,6 +58,19 @@ bool TreasureUi::Process()
 	return true;
 }
 
+
+bool TreasureUi::GetHandleMakimono()
+{
+	if(_handleMakimono == -1)
+	{
+		return false;
+	}
+
+	DrawGraph(treasure::MAKIMONO_X, treasure::MAKIMONO_Y, _handleMakimono, TRUE);
+
+	return true;
+}
+
 bool TreasureUi::Render()
 {
 	base::Render();
@@ -67,7 +80,7 @@ bool TreasureUi::Render()
 		return false;
 	}
 
-	DrawGraph(treasure::MAKIMONO_X, treasure::MAKIMONO_Y, _handleMakimono, TRUE);
+
 
 	if(_remainCount > 0)
 	{

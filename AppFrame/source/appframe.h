@@ -30,3 +30,4 @@
 #include "manager/collisionmanager.h"
 #include "manager/effekseermanager.h"
 #include "CFile/TextUtil.h"
+#include "manager/moviemanager.h"

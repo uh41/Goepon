@@ -85,7 +85,7 @@ bool CounterUi::Render()
 {
 	base::Render();
 
-	RenderNumber(_treasureCount, counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y);
+	//RenderNumber(_treasureCount, counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y);
 
 	return true;
 }
