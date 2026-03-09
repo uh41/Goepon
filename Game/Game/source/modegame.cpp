@@ -725,6 +725,7 @@ bool ModeGame::Process()
 	/*if(_bShowTanuki)
 	{
 		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
+		//CheckTanukiHeadCollision(_playerTanuki.get(), _objectServer->GetMap());
 		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
 		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasureBase);
 		PlayerCameraInfo(_playerTanuki.get());
