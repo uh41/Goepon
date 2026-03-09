@@ -375,5 +375,7 @@ protected:
 	bool _requestedReturnToTanuki = false;       // 人間 -> タヌキ（即時）要求
 
 	at::vec<EnemyBase*> _enemiesInAttackRange; // 攻撃範囲内の敵のリスト
+
+	float progress;
 };
 

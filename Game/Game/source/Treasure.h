@@ -21,20 +21,7 @@ public:
 	bool Process()    override; // 処理
 	bool Render()     override; // 描画
 
-	// ゲージ描画
-	void RenderGauge(const vec::Vec3& playerPos);
 protected:    
 	int _attachIndex;    
-
-	// ゲージ描画用のパラメータ（長方形ゲージ）
-	void DrawRectGauge(int centerX, int centerY, float progress);
-
-	int _gaugeWidth;          // ゲージの横幅
-	int _gaugeHeight;         // ゲージの高さ
-	int _gaugeBorderThickness; // 枠の太さ
-	unsigned int _bgColor;    // 背景色
-	unsigned int _fillColor;  // 塗りつぶし色
-	unsigned int _borderColor; // 枠線の色
-	unsigned int _textColor;  // テキストの色
 };
 

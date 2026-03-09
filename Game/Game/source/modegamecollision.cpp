@@ -555,6 +555,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			const float dt = 1.0f / 60.0f;
 			_treasureHoldSec += dt;
 
+			// 進行度を計算（0.0～1.0）
+			progress = _treasureHoldSec / CHECK_OPEN_TIME;
+			if (progress > 1.0f) progress = 1.0f; // 上限を1.0に制限
+
 			// 3秒間ホールドで取得
 			if (_treasureHoldSec >= CHECK_OPEN_TIME)
 			{

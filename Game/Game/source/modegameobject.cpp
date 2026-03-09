@@ -802,15 +802,19 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+	
+
 	// 連打型宝箱のゲージ描画
 	if (_player)
 	{
-		for (const auto& treasure : _treasure)
+		for (const auto& treasureBase : _treasureBase)
 		{
-			if (treasure && treasure->IsVisible() && !treasure->IsOpen())
+			if (treasureBase && treasureBase->IsVisible() && !treasureBase->IsOpen())
 			{
-				// プレイヤーの位置を基準にゲージを描画
-				treasure->RenderGauge(_player->GetPos());
+				//// プレイヤーの位置を基準にゲージを描画
+				//treasureBase->RenderGauge(_player->GetPos());
+				
+				treasureBase->RenderGauge(_player->GetPos(), progress);
 			}
 		}
 
