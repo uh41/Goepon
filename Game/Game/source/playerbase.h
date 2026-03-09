@@ -30,6 +30,9 @@ public:
 	virtual bool IsDash() const { return false; } // ダッシュ中かどうかを返す（デフォルトはfalse）
 
 	int GetModelHandle() const { return _handle; }
+
+	void SetInputDisable(bool disable) { _inputDisabled = disable; } // 入力を無効にする
+	bool IsInputDisabled() const { return _inputDisabled; }		   // 入力が無効かどうかを返す
 protected:
 
 	//アナログスティック関係
@@ -53,5 +56,7 @@ protected:
 	float _targetY; // プレイヤーの向きの目標値（Y軸回転角）
 	float _ySpeed; // プレイヤーの向きの回転速度
 	float _yRotation; // プレイヤーのY軸回転角
+
+	bool _inputDisabled; // 入力を受け付けるかどうか
 };
 

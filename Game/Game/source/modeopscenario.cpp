@@ -13,7 +13,7 @@ ModeOpScenario::ModeOpScenario()
 {
 	Initialize();
 
-	Fade::GetInstance()->ColorMask(0, 0, 0, 0);		// ƒJƒ‰[ƒ}ƒXƒN‚Ìİ’è
+	Fade::GetInstance()->ColorMask(0, 0, 0, 0);		// ï¿½Jï¿½ï¿½ï¿½[ï¿½}ï¿½Xï¿½Nï¿½Ìİ’ï¿½
 	_state = ModeBase::State::WAIT;
 	_fadeTimer = 0;
 }
@@ -28,35 +28,35 @@ bool ModeOpScenario::Initialize()
 	base::Initialize();
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 
-	_backHandle = LoadGraph("res/Prologue/BG_opstory.png");	// ”wŒi‰æ‘œ‚Ì“Ç‚İ‚İ
+	_backHandle = LoadGraph("res/Prologue/BG_opstory.png");	// ï¿½wï¿½iï¿½æ‘œï¿½Ì“Ç‚İï¿½ï¿½ï¿½
 
 	_page =
 	{
-		{ LoadGraph("res/Prologue/1.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/2.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/3.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/4.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/5.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/6.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/7.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/8.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/9.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph("res/Prologue/10.png"), ""},// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
+		{ LoadGraph("res/Prologue/1.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/2.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/3.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/4.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/5.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/6.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/7.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/8.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/9.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
+		{ LoadGraph("res/Prologue/10.png"), ""},// ï¿½æ‘œï¿½Ç‚İï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½tï¿½@ï¿½Cï¿½ï¿½
 	};
 
-	// ƒy[ƒW‚Ì•\¦ƒf[ƒ^‚ğİ’è
+	// ï¿½yï¿½[ï¿½Wï¿½Ì•\ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½İ’ï¿½
 	_panelData =
 	{
-		{ 50,  50,  250, 250, 0.0f },   // ƒy[ƒW1‚ÌˆÊ’uEƒTƒCƒYE“§–¾“x
-		{ 50, 200,  250, 250, 0.0f },   // ƒy[ƒW2
-		{ 50,  450, 250, 250, 0.0f },   // ƒy[ƒW3
-		{ 300,  50, 250, 250, 0.0f },   // ƒy[ƒW4
-		{ 300, 300, 250, 250, 0.0f },   // ƒy[ƒW5
-		{ 300, 500, 250, 250, 0.0f },   // ƒy[ƒW6
-		{ 550,  50, 300, 300, 0.0f },   // ƒy[ƒW7
-		{ 550, 340, 350, 350, 0.0f },   // ƒy[ƒW8
-		{ 900,  50, 400, 400, 0.0f },   // ƒy[ƒW9
-		{ 920, 450, 300, 300, 0.0f },   // ƒy[ƒW10
+		{ 50,  50,  250, 250, 0.0f },   // ï¿½yï¿½[ï¿½W1ï¿½ÌˆÊ’uï¿½Eï¿½Tï¿½Cï¿½Yï¿½Eï¿½ï¿½ï¿½ï¿½ï¿½x
+		{ 50, 200,  250, 250, 0.0f },   // ï¿½yï¿½[ï¿½W2
+		{ 50,  450, 250, 250, 0.0f },   // ï¿½yï¿½[ï¿½W3
+		{ 300,  50, 250, 250, 0.0f },   // ï¿½yï¿½[ï¿½W4
+		{ 300, 300, 250, 250, 0.0f },   // ï¿½yï¿½[ï¿½W5
+		{ 300, 500, 250, 250, 0.0f },   // ï¿½yï¿½[ï¿½W6
+		{ 550,  50, 300, 300, 0.0f },   // ï¿½yï¿½[ï¿½W7
+		{ 550, 340, 350, 350, 0.0f },   // ï¿½yï¿½[ï¿½W8
+		{ 900,  50, 400, 400, 0.0f },   // ï¿½yï¿½[ï¿½W9
+		{ 920, 450, 300, 300, 0.0f },   // ï¿½yï¿½[ï¿½W10
 	};
 	_pageNo = 0;
 	_fadeTimer = 0;
@@ -85,17 +85,17 @@ bool ModeOpScenario::Process()
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	// ƒTƒEƒ“ƒhXV
+	// ï¿½Tï¿½Eï¿½ï¿½ï¿½hï¿½Xï¿½V
 	_soundServer->Update();
 
-	// ƒtƒF[ƒhƒCƒ“ˆ—
+	// ï¿½tï¿½Fï¿½[ï¿½hï¿½Cï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(_pageNo >= 0 && _pageNo < StCas<int>(_panelData.size()))
 	{
 		if(_panelData[_pageNo].alpha < 1.0f)
 		{
 			_fadeTimer++;
 			_panelData[_pageNo].alpha = StCas<float>(_fadeTimer) / FADE_FRAME;
-			// “§–¾“x‚ª1.0f‚ğ’´‚¦‚È‚¢‚æ‚¤‚É‚·‚é	
+			// ï¿½ï¿½ï¿½ï¿½ï¿½xï¿½ï¿½1.0fï¿½ğ’´‚ï¿½ï¿½È‚ï¿½ï¿½æ‚¤ï¿½É‚ï¿½ï¿½ï¿½	
 			if(_panelData[_pageNo].alpha > 1.0f)
 			{
 				_panelData[_pageNo].alpha = 1.0f;
@@ -115,13 +115,13 @@ bool ModeOpScenario::Process()
 					_panelData[_pageNo].alpha = 1.0f;
 				}
 
-				// Ÿ‚Ìƒy[ƒW‚ª‚ ‚é‚È‚çi‚ß‚é
+				// ï¿½ï¿½ï¿½Ìƒyï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½iï¿½ß‚ï¿½
 				if(_pageNo < StCas<int>(_page.size()) - 1)
 				{
 					_pageNo++;
 					_fadeTimer = 0;
 
-					// ‰¹º‚ª‚ ‚ê‚ÎÄ¶
+					// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎÄï¿½
 					if(!_page[_pageNo].voiceFile.empty())
 					{
 						if (_soundServer)
@@ -135,9 +135,9 @@ bool ModeOpScenario::Process()
 				}
 				else
 				{
-					// ÅIƒy[ƒW‚È‚Ì‚ÅƒtƒF[ƒhƒAƒEƒgŠJn
+					// ï¿½ÅIï¿½yï¿½[ï¿½Wï¿½È‚Ì‚Åƒtï¿½Fï¿½[ï¿½hï¿½Aï¿½Eï¿½gï¿½Jï¿½n
 					_state = ModeBase::State::FADE_OUT;
-					Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// ƒtƒF[ƒhƒAƒEƒgŠJn
+					Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// ï¿½tï¿½Fï¿½[ï¿½hï¿½Aï¿½Eï¿½gï¿½Jï¿½n
 				}
 			}
 			if(trg & PAD_INPUT_1)
@@ -165,9 +165,8 @@ bool ModeOpScenario::Process()
 			}
 			_voice = nullptr;
 
-			// Ÿ‚Ìƒ‚[ƒh‚Ö
-			ModeServer::GetInstance()->Add(NEW ModeGameLoad(), 255, "gameLoad");
-			//ModeServer::GetInstance()->Add(NEW ModeGame(), 0, "game");
+			// ï¿½ï¿½ï¿½Ìƒï¿½ï¿½[ï¿½hï¿½ï¿½
+			ModeServer::GetInstance()->Add(NEW ModeGameLoad(), 0, "ModeGameLoad");
 			ModeServer::GetInstance()->Del(this);
 			break;
 		}
@@ -179,20 +178,20 @@ bool ModeOpScenario::Render()
 {
 	base::Render();
 
-	// ”wŒi‚Ì•`‰æ
+	// ï¿½wï¿½iï¿½Ì•`ï¿½ï¿½
 	if(_backHandle != -1)
 	{
 		DrawGraph(0, 0, _backHandle, TRUE);
 	}
 
-	// •\¦‚³‚ê‚Ä‚¢‚éƒRƒ}‚ğ‡”Ô‚É•`‰æ
+	// ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Rï¿½}ï¿½ï¿½ï¿½ï¿½Ô‚É•`ï¿½ï¿½
 	for(int i = 0; i <= _pageNo && i < StCas<int>(_page.size()); i++)
 	{
 		if(_page[i].handle != -1 && i < StCas<int>(_panelData.size()))
 		{
-			// ƒRƒ}‚ğ–¾‚é‚­‚·‚éƒGƒtƒFƒNƒg‚ğ’Ç‰Á
-			SetDrawBlendMode(DX_BLENDMODE_ADD, 30); // ‰ÁZƒuƒŒƒ“ƒh‚Å­‚µ–¾‚é‚­
-			// ’Êí‚Ì•`‰æ
+			// ï¿½Rï¿½}ï¿½ğ–¾‚é‚­ï¿½ï¿½ï¿½ï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½ï¿½Ç‰ï¿½
+			SetDrawBlendMode(DX_BLENDMODE_ADD, 30); // ï¿½ï¿½ï¿½Zï¿½uï¿½ï¿½ï¿½ï¿½ï¿½hï¿½Åï¿½ï¿½ï¿½ï¿½ï¿½ï¿½é‚­
+			// ï¿½Êï¿½Ì•`ï¿½ï¿½
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, StCas<int>(255 * _panelData[i].alpha));
 			DrawExtendGraph
 			(
@@ -206,6 +205,6 @@ bool ModeOpScenario::Render()
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
-	Fade::GetInstance()->Render();	// ƒtƒF[ƒh•`‰æ
+	Fade::GetInstance()->Render();	// ï¿½tï¿½Fï¿½[ï¿½hï¿½`ï¿½ï¿½
 	return true;
 }

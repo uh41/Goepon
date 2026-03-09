@@ -59,6 +59,9 @@ bool Player::Initialize()
 		MV1SetupCollInfo(_handle, _tailCollisionFrame, 8, 8, 8);
 		MV1SetFrameVisible(_handle, _tailCollisionFrame, FALSE);
 	}
+
+	_inputDisabled = false; // 入力は初期状態で有効
+
 	return true;
 }
 
