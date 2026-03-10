@@ -25,21 +25,26 @@ public:
 	void SetMovementArea(const std::vector<vec::Vec3>& areaPoints);
 
 private:
-	// ランダムウォーク用の変数
-	float _randomWalkTimer;			// ランダム移動のタイマー
-	float _randomWalkInterval;		// 次の方向変更までの時間
-	vec::Vec3 _randomWalkDir;		// ランダム移動の方向
-	bool _isRandomWalking;			// ランダム移動中かどうか
-	float _randomWalkDistance;		// ランダム移動の距離
-	float _randomWalkTraveledDistance;	// 移動した距離
+	// ランダムウォーク用:_rm
+	vec::Vec3 _rmWalkDir;			// ランダム移動の方向
+	bool _bRmWalking;				// ランダム移動中かどうか
+	float _rmWalkTimer;				// ランダム移動のタイマー
+	float _rmWalkInterval;			// 次の方向変更までの時間
+	float _rmWalkDistance;			// ランダム移動の距離
+	float _rmWalkTraveledDistance;	// 移動した距離
+
+	// 方向転換時の待機用:_dc
+	bool _bDirectionChange;  // 方向転換待機中フラグ
+	float _dCWaitTimer;    // 方向転換待機タイマー
+	static constexpr float DC_WAIT_TIME = 1.0f; // 待機時間
 
 	// 移動範囲制限用の変数
 	std::vector<vec::Vec3> _movementAreaPoints;	// 移動可能範囲のポリゴン頂点
-	bool _hasMovementArea;						// 移動範囲が設定されているか
+	bool _bMovementArea;						// 移動範囲が設定されているか
 
 	// 音波発生用の変数
-	bool _wasChasing;				// 前フレームで追跡中だったか
-	float _soundEmitTimer;			// 音波発生タイマー
+	bool _bChasing;				// 前フレームで追跡中だったか
+	float _soundEmitTimer;		// 音波発生タイマー
 	static constexpr float SOUND_EMIT_INTERVAL = 1.0f; // 音波発生間隔
 
 	// ランダムウォークの処理

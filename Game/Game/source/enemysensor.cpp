@@ -8,29 +8,29 @@ bool EnemySensor::Initialize()
 	base::Initialize();
 
 	// 索敵システムの初期化
-	_bHasDetectionSector = false;	
+	_bDetectionSector = false;	
 	_bSensorEnabled = true;			
 
 	// 検出情報の初期化
-	_detectionInfo.isDetected = false;	
-	_detectionInfo.timer = 0.0f;		
+	_detect.bDetected = false;	
+	_detect.timer = 0.0f;		
 
 	// 追跡情報の初期化
-	_detectionInfo.isChasing = false;	
-	_detectionInfo.lastPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
-	_detectionInfo.chaseTimer = 0.0f;	
+	_detect.bChasing = false;	
+	_detect.lastPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_detect.chaseTimer = 0.0f;	
 
 	// 検知遅延の初期化
-	_detectionInfo.DelayTimer = 0.0f;
-	_detectionInfo.isDelay = false;
+	_detect.DelayTimer = 0.0f;
+	_detect.bDelay = false;
 
 	// フレームカウンタと検出結果の初期化
-	_detectionFrameCount = 0;
-	_CanDetectionResult = false;
+	_detectFrameCount = 0;
+	_bDetectionResult = false;
 
 	// キャッシュ関連初期化
-	_detectionCachedPolygons.clear();
-	_detectionCacheCounter = 0;
+	_CachedPolygons.clear();
+	_CacheCounter = 0;
 
 	return true;
 }
@@ -83,12 +83,12 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 	}
 
 	// フレーム間隔(扇形判定の負荷軽減用)
-	_detectionFrameCount++;
-	if (_detectionFrameCount < DetectionFrame)
+	_detectFrameCount++;
+	if (_detectFrameCount < DetectionFrame)
 	{
-		return _CanDetectionResult;
+		return _bDetectionResult;
 	}
-	_detectionFrameCount = 0;
+	_detectFrameCount = 0;
 
 	vec::Vec3 playerPos = player->GetPos();	// プレイヤーの位置取得
 	
@@ -113,58 +113,58 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 	if (detected)
 	{
 		// プレイヤーが範囲内にいる場合
-		if (!_detectionInfo.isDetected)
+		if (!_detect.bDetected)
 		{
 			// 新しく検出された場合
-			_detectionInfo.isDetected = true;				
-			_detectionInfo.timer = DETECTION_DISPLAY_TIME;	
+			_detect.bDetected = true;				
+			_detect.timer = DETECTION_DISPLAY_TIME;	
 		}
 
 		// プレイヤーを検出中は常に位置を更新
-		_detectionInfo.lastPlayerPos = playerPos;	// 最後に確認された位置更新
+		_detect.lastPlayerPos = playerPos;	// 最後に確認された位置更新
 
 		// 追跡開始に遅延
-		if (!_detectionInfo.isChasing)
+		if (!_detect.bChasing)
 		{
 			// まだ追跡していない場合
-			if (!_detectionInfo.isDelay)
+			if (!_detect.bDelay)
 			{
 				// 遅延開始
-				_detectionInfo.isDelay = true;
-				_detectionInfo.DelayTimer = DETECTION_DELAY_TIME;
+				_detect.bDelay = true;
+				_detect.DelayTimer = DETECTION_DELAY_TIME;
 			}
 			else
 			{
 				// 遅延タイマーを減算
-				_detectionInfo.DelayTimer -= 1.0f / 60.0f;
+				_detect.DelayTimer -= 1.0f / 60.0f;
 
 				// 遅延時間が経過したら追跡開始
-				if (_detectionInfo.DelayTimer <= 0.0f)
+				if (_detect.DelayTimer <= 0.0f)
 				{
-					_detectionInfo.isChasing = true;
-					_detectionInfo.chaseTimer = CHASE_TIME;
-					_detectionInfo.isDelay = false;
-					_detectionInfo.DelayTimer = 0.0f;
+					_detect.bChasing = true;
+					_detect.chaseTimer = CHASE_TIME;
+					_detect.bDelay = false;
+					_detect.DelayTimer = 0.0f;
 				}
 			}
 		}
 		else
 		{
 			// すでに追跡中の場合は追跡タイマーをリセット
-			_detectionInfo.chaseTimer = CHASE_TIME;
+			_detect.chaseTimer = CHASE_TIME;
 		}
 	}
 	else
 	{
 		// プレイヤーが範囲外に出た場合、遅延状態をリセット
-		if (_detectionInfo.isDelay)
+		if (_detect.bDelay)
 		{
-			_detectionInfo.isDelay = false;
-			_detectionInfo.DelayTimer = 0.0f;
+			_detect.bDelay = false;
+			_detect.DelayTimer = 0.0f;
 		}
 	}
 
-	_CanDetectionResult = detected;
+	_bDetectionResult = detected;
 
 	return detected;
 }
@@ -177,7 +177,7 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 	float playerCapsuleRadius
 ) const
 {
-	if (!_bHasDetectionSector || !_bSensorEnabled)
+	if (!_bDetectionSector || !_bSensorEnabled)
 	{
 		return false;
 	}
@@ -186,7 +186,7 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 	vec::Vec3 detectionCenter = GetDetectionCenter();
 
 	// 扇形の半角をラジアンに変換
-	float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
+	float halfAngleRad = (_detectSector.angle * 0.5f) * DX_PI_F / 180.0f;
 
 	// 正規化された前方ベクトル
 	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
@@ -195,7 +195,7 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 	bool detected = CollisionManager::GetInstance()->CheckSectorToCapsule(
 		detectionCenter,
 		forwardNorm,
-		_detectionSector.radius,
+		_detectSector.radius,
 		halfAngleRad,
 		playerCapsuleTop,
 		playerCapsuleBottom,
@@ -220,46 +220,46 @@ bool EnemySensor::IsPlayerInDetectionRangeWithCapsule(
 void EnemySensor::ResetDetection()
 {
 	// 検出状態リセット
-	_detectionInfo.isDetected = false;	
-	_detectionInfo.timer = 0.0f;		
+	_detect.bDetected = false;	
+	_detect.timer = 0.0f;		
 
 	// 追跡状態リセット
-	_detectionInfo.isChasing = false;	
-	_detectionInfo.lastPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
-	_detectionInfo.chaseTimer = 0.0f;	
+	_detect.bChasing = false;	
+	_detect.lastPlayerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
+	_detect.chaseTimer = 0.0f;	
 
 	// 検知遅延のリセット
-	_detectionInfo.isDelay = false;
-	_detectionInfo.DelayTimer = 0.0f;
+	_detect.bDelay = false;
+	_detect.DelayTimer = 0.0f;
 
 	// フレームカウンタと検出結果のリセット
-	_detectionFrameCount = 0;
-	_CanDetectionResult = false;
+	_detectFrameCount = 0;
+	_bDetectionResult = false;
 }
 
 // 検出タイマーの更新
 void EnemySensor::UpdateDetectionTimer()
 {
 	// 追跡タイマーの更新
-	if (_detectionInfo.isChasing)
+	if (_detect.bChasing)
 	{
-		_detectionInfo.chaseTimer -= 1.0f / 60.0f; // 60FPSとして計算
+		_detect.chaseTimer -= 1.0f / 60.0f; // 60FPSとして計算
 
-		if (_detectionInfo.chaseTimer <= 0.0f)
+		if (_detect.chaseTimer <= 0.0f)
 		{
-			_detectionInfo.isChasing = false;
-			_detectionInfo.chaseTimer = 0.0f;
+			_detect.bChasing = false;
+			_detect.chaseTimer = 0.0f;
 		}
 	}
 
 	// 検出表示タイマーの更新
-	if (_detectionInfo.timer > 0.0f)
+	if (_detect.timer > 0.0f)
 	{
-		_detectionInfo.timer -= 1.0f / 60.0f; 
+		_detect.timer -= 1.0f / 60.0f; 
 
-		if (_detectionInfo.timer <= 0.0f)
+		if (_detect.timer <= 0.0f)
 		{
-			_detectionInfo.isDetected = false;
+			_detect.bDetected = false;
 		}
 	}
 }
@@ -267,16 +267,16 @@ void EnemySensor::UpdateDetectionTimer()
 // 索敵範囲の設定
 void EnemySensor::SetDetectionSector(float radius, float angle)
 {
-	_detectionSector.radius = radius;
-	_detectionSector.angle = angle;
-	_bHasDetectionSector = true;
+	_detectSector.radius = radius;
+	_detectSector.angle = angle;
+	_bDetectionSector = true;
 }
 
 // 索敵範囲の中心位置を取得（敵の正面に配置）
 vec::Vec3 EnemySensor::GetDetectionCenter() const
 {
 	// 敵の正面方向に一定距離進んだ位置を中心にする
-	const float offsetDistance = _detectionSector.radius * 0.1f; // 半径の10%前方
+	const float offsetDistance = _detectSector.radius * 0.1f; // 半径の10%前方
 	vec::Vec3 forwardNorm = vec3::VNorm(_vDir);
 	return vec3::VAdd(_vPos, vec3::VScale(forwardNorm, offsetDistance));
 }
@@ -429,7 +429,7 @@ bool EnemySensor::GetFloorYCollision(const vec::Vec3& position, float colSubY, f
 // 検出UI表示
 void EnemySensor::RenderDetectionUI() const
 {
-	if (_detectionInfo.isDetected && _detectionInfo.timer > 0.0f)
+	if (_detect.bDetected && _detect.timer > 0.0f)
 	{
 		// 画面中央に大きく「found」を表示
 		int screenWidth = 1920;  // 画面幅
@@ -458,24 +458,24 @@ void EnemySensor::RenderDetectionUI() const
 
 		// タイマー情報
 		DrawFormatString(x, y + 80, GetColor(255, 255, 0),
-			"Timer: %.1f", _detectionInfo.timer);
+			"Timer: %.1f", _detect.timer);
 	}
 }
 
 // キャッシュを再計算する実装
 void EnemySensor::RecalculateDetectionSector() const
 {
-	_detectionCachedPolygons.clear();
+	_CachedPolygons.clear();
 
 	// 索敵範囲が設定されていない場合は何もしない
-	if (!_bHasDetectionSector)
+	if (!_bDetectionSector)
 	{
 		return;
 	}
 
 	// 色（検出時 / 非検出時）
 	COLOR_U8 fillColorU8;
-	if (_detectionInfo.isDetected)
+	if (_detect.bDetected)
 	{
 		fillColorU8 = GetColorU8(255, 0, 0, 255);   // 検出時：赤
 	}
@@ -486,7 +486,7 @@ void EnemySensor::RecalculateDetectionSector() const
 
 	const int angleSegments = 16;	// 扇形の角度を分割する数
 	const int radiusSegments = 7;	// 半径方向の分割数
-	const float halfAngleRad = (_detectionSector.angle * 0.5f) * DX_PI_F / 180.0f;
+	const float halfAngleRad = (_detectSector.angle * 0.5f) * DX_PI_F / 180.0f;
 	const vec::Vec3 center = GetDetectionCenter();
 	const vec::Vec3 forward = vec3::VNorm(_vDir);
 	const float baseAngle = atan2f(forward.x, forward.z);
@@ -505,8 +505,8 @@ void EnemySensor::RecalculateDetectionSector() const
 	VERTEX3D verts[6];
 	for (int r = 0; r < radiusSegments; ++r)
 	{
-		const float innerRadius = (_detectionSector.radius / radiusSegments) * r;
-		const float outerRadius = (_detectionSector.radius / radiusSegments) * (r + 1);
+		const float innerRadius = (_detectSector.radius / radiusSegments) * r;
+		const float outerRadius = (_detectSector.radius / radiusSegments) * (r + 1);
 
 		vec::Vec3 prevInnerPos{};
 		vec::Vec3 prevOuterPos{};
@@ -557,7 +557,7 @@ void EnemySensor::RecalculateDetectionSector() const
 				// キャッシュに追加（地面）
 				std::array<VERTEX3D, 6> poly{};
 				for (int vi = 0; vi < 6; ++vi) poly[vi] = verts[vi];
-				_detectionCachedPolygons.push_back(poly);
+				_CachedPolygons.push_back(poly);
 
 				// 少し上にも描画する分もキャッシュ（視認性向上）
 				for (int vi = 0; vi < 6; ++vi)
@@ -566,7 +566,7 @@ void EnemySensor::RecalculateDetectionSector() const
 				}
 				std::array<VERTEX3D, 6> polyUp{};
 				for (int vi = 0; vi < 6; ++vi) polyUp[vi] = verts[vi];
-				_detectionCachedPolygons.push_back(polyUp);
+				_CachedPolygons.push_back(polyUp);
 			}
 
 			prevInnerPos = innerPos;
@@ -580,26 +580,26 @@ void EnemySensor::RecalculateDetectionSector() const
 void EnemySensor::RenderDetectionSector() const
 {
 	// 索敵範囲が設定されていない場合は描画しない
-	if (!_bHasDetectionSector)
+	if (!_bDetectionSector)
 	{
 		return;
 	}
 
 	// キャッシュの更新タイミング制御
-	if (_detectionCacheCounter <= 0 || _detectionCachedPolygons.empty())
+	if (_CacheCounter <= 0 || _CachedPolygons.empty())
 	{
 		RecalculateDetectionSector();
-		_detectionCacheCounter = DetectionSectorCacheInterval;
+		_CacheCounter = CacheInterval;
 	}
 	// 次回までカウントダウン
-	_detectionCacheCounter--;
+	_CacheCounter--;
 
 	// 描画設定
 	SetUseLighting(FALSE);	// ライティング無効
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 78); // 半透明
 
 	// キャッシュから描画（各要素は 2 ポリゴン分の頂点：配列サイズ 6）
-	for (const auto& poly : _detectionCachedPolygons)
+	for (const auto& poly : _CachedPolygons)
 	{
 		DrawPolygon3D(poly.data(), 2, DX_NONE_GRAPH, FALSE);
 	}
