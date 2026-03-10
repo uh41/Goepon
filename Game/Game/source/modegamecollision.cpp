@@ -27,6 +27,9 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	// マップの情報（obj が Map なら取得、なければ ModeGame::_map を使う）
 	MapBase* map = dynamic_cast<MapBase*>(obj);
 
+	// PlayerTanukiかどうかをチェック
+	PlayerTanuki* tanuki = dynamic_cast<PlayerTanuki*>(chara);
+
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		vec::Vec3 oldvPos = chara->GetPos();
@@ -55,7 +58,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		}
 
 		// 当たり判定（Map がある場合は各ブロックの collisionFrame を使う）
-		vec::Vec3 hitPos;
+		vec::Vec3 bodyHitPos; // 体の当たり位置
 		bool hit = false;
 
 		if(map)
@@ -85,7 +88,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 					block.modelHandle,
 					block.collisionFrame,
 					chara->GetColSubY(),
-					hitPos))
+					bodyHitPos)) // 体の当たり位置を取得
 				{
 					hit = true;
 					break;
@@ -95,12 +98,39 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 
 		if(hit)
 		{
-			vec::Vec3 tmpPos = chara->GetPos();
-			tmpPos.y = hitPos.y;
-			chara->SetPos(tmpPos);
+			// 体が当たった場合、タヌキなら頭の判定もチェック
+			if(tanuki)
+			{
+				// 先に頭の判定をチェック（移動後の位置で）
+				vec::Vec3 headHitPos; // 頭の当たり位置（別途用意）
+				bool headHit = CheckTanukiHeadCollision(tanuki, obj, headHitPos);
 
-			// Y変化を移動ベクトルに反映（必要なら）
-  			triedV.y += chara->GetPos().y - oldvPos.y;
+				if(!headHit)
+				{
+					// 頭が当たっていない＝天井や壁にめり込もうとしている
+					// 元の位置に戻す（押し出し処理）
+					chara->SetPos(oldvPos);
+					// 次の角度を試すためにループを続行
+					continue;
+				}
+
+				// 頭の当たり判定のみを使用（タヌキの場合）
+				// headHitPosを使ってY座標のみ調整
+				vec::Vec3 tmpPos = chara->GetPos();
+				tmpPos.y = headHitPos.y; // 頭の当たり位置のY座標を使用
+				chara->SetPos(tmpPos);
+
+				// Y変化を移動ベクトルに反映
+				triedV.y += tmpPos.y - oldvPos.y;
+			}
+			else
+			{
+				// タヌキ以外は通常の地面移動処理（体の当たり判定を使用）
+				vec::Vec3 tmpPos = chara->GetPos();
+				tmpPos.y = bodyHitPos.y;
+				chara->SetPos(tmpPos);
+				triedV.y += chara->GetPos().y - oldvPos.y;
+			}
 
 			break;
 		}
@@ -112,6 +142,107 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	}
 
 	return true;
+}
+
+bool ModeGame::CheckTanukiHeadCollision(PlayerTanuki* player, ObjectBase* obj, vec::Vec3& outHitPos)
+{
+	// プレイヤーが無効なら処理しない
+	if(!player)
+	{
+		return false;
+	}
+
+	// マップの情報を取得
+	MapBase* map = dynamic_cast<MapBase*>(obj);
+	if(!map)
+	{
+		return false;
+	}
+
+	// 入力情報を取得
+	int key = ApplicationMain::GetInstance()->GetKey();
+
+	// 頭の位置を計算（入力方向に応じて変更）
+	vec::Vec3 headPos = player->GetPos();
+	vec::Vec3 offset = vec3::VGet(0.0f, 0.0f, 0.0f);
+	float offsetScale = player->GetColSubY() * 1.5f;
+
+	// 各方向の入力をチェックしてオフセットを累積
+	bool hasInput = false;
+
+	if(key & PAD_INPUT_UP)
+	{
+		offset.z += offsetScale; // 上方向
+		hasInput = true;
+	}
+	if(key & PAD_INPUT_DOWN)
+	{
+		offset.z -= offsetScale; // 下方向
+		hasInput = true;
+	}
+	if(key & PAD_INPUT_RIGHT)
+	{
+		offset.x += offsetScale; // 右方向
+		hasInput = true;
+	}
+	if(key & PAD_INPUT_LEFT)
+	{
+		offset.x -= offsetScale; // 左方向
+		hasInput = true;
+	}
+
+	// 斜め入力の場合、ベクトルを正規化して距離を保つ
+	if(hasInput)
+	{
+		float length = sqrt(offset.x * offset.x + offset.z * offset.z);
+		if(length > 0.0f)
+		{
+			offset.x = (offset.x / length) * offsetScale;
+			offset.z = (offset.z / length) * offsetScale;
+		}
+		headPos = vec3::VAdd(headPos, offset);
+	}
+	else
+	{
+		// 入力がない場合はデフォルトで上方向（元の処理）
+		headPos.z += offsetScale;
+	}
+
+	// 頭の位置で当たり判定をチェック
+	bool headHit = false;
+
+	auto& list = map->GetBlockPosList();
+	for(size_t bi = 0; bi < list.size(); ++bi)
+	{
+		auto& block = list[bi];
+
+		if(block.modelHandle >= 0)
+		{
+			// transform を適用
+			MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+			MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+			MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+			MV1RefreshCollInfo(block.modelHandle, block.collisionFrame);
+		}
+
+		// 必要な条件を満たさない場合はスキップ
+		if(block.modelHandle < 0) continue;
+		if(block.collisionFrame < 0) continue;
+
+		// 頭の位置で当たり判定（体より小さい半径を使用）
+		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			headPos,
+			block.modelHandle,
+			block.collisionFrame,
+			player->GetColSubY() * 0.3f, // 体の30%の半径（頭のサイズ）
+			outHitPos)) // 頭の当たり位置を出力パラメータに格納
+		{
+			headHit = true;
+			break;
+		}
+	}
+
+	return headHit;
 }
 
 bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)

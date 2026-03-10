@@ -27,6 +27,8 @@ typedef CounterUi base;
 
 	void SetTreasureList(const at::vspc<Treasure>& treasure) { _treasure = treasure; }
 
+	bool GetHandleMakimono();
+
 protected:
 	int _handleDeguti; // oŒû‰æ‘œ
 	int _handleNokori; // c‚è‰æ‘œ

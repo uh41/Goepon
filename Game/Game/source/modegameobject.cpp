@@ -82,6 +82,8 @@ bool ModeGame::ObjectInitialize()
 	//_uiHp->SetPlayer(_player.get());
 	//_uiBase.emplace_back(_uiHp);
 
+       // ← 最初に登録
+
 	_uiMakimono = std::make_shared<UiMakimono>();
 	_uiMakimono->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiMakimono);
@@ -93,10 +95,6 @@ bool ModeGame::ObjectInitialize()
 	_counterUi = std::make_shared<CounterUi>();
 	_uiBase.emplace_back(_counterUi);
 
-	_treasureUi = std::make_shared<TreasureUi>();
-	_treasureUi->SetTreasureList(_treasure);
-	_uiBase.emplace_back(_treasureUi);
-
 	_attackUi = std::make_shared<AttackUi>();
 	_attackUi->Show(_player.get()->GetPos());
 	_uiBase.emplace_back(_attackUi);
@@ -107,6 +105,10 @@ bool ModeGame::ObjectInitialize()
 	_dashUi = std::make_shared<DashUi>();
 	_dashUi->SetPlayer(_playerTanuki.get());
 	_uiBase.emplace_back(_dashUi);
+
+	_treasureUi = std::make_shared<TreasureUi>();
+	_treasureUi->SetTreasureList(_treasure);
+	_uiBase.emplace_back(_treasureUi);
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
@@ -829,13 +831,17 @@ bool ModeGame::ObjectRender()
 	SetUseZBuffer3D(FALSE);
 	SetWriteZBuffer3D(FALSE);
 
-	// UIを描画
+	// UIを描画（巻物UIを最初に、その後に残りのUIを描画）
+	// 巻物アイコンを最背面に描画
+	if(_treasureUi)
+	{
+		_treasureUi->GetHandleMakimono();
+	}
+
+	// 他のUIをその上に描画
 	for(auto& ui_base : _uiBase)
 	{
-		int y = 20;
-		bool ok = ui_base->Render();
-		DrawFormatString(20, y, GetColor(255, 255, 0), "UI render ret=%d", ok ? 1 : 0);
-		y += 16;
+		ui_base->Render();
 	}
 
 	return true;

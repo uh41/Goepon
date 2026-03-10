@@ -1,6 +1,6 @@
 #include "modeAffterScenario.h"
 #include "modegame.h"
-#include "modeteamlogo.h"
+#include "modecredit.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -117,7 +117,7 @@ bool ModeAfScenario::Process()
 		case ModeBase::State::DONE:
 		{
 			// ŽŸ‚Ìƒ‚[ƒh‚ÖˆÚs
-			ModeServer::GetInstance()->Add(NEW ModeTeamLogo(), 2, "teamlogo");
+			ModeServer::GetInstance()->Add(NEW ModeCredit(), 2, "credit");
 			ModeServer::GetInstance()->Del(this);
 			break;
 		}

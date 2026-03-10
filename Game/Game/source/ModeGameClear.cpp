@@ -7,6 +7,11 @@
 bool ModeGameClear::Initialize()
 {
 	if(!base::Initialize()) return false;
+
+	if(gGlobal._soundServer)
+	{
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+	}
 	return true;
 }
 
