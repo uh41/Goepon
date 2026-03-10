@@ -15,9 +15,8 @@ bool TreasureBase::Initialize()
 	_vPos = vec::Vec3(0.0f, 0.0f, 0.0f);
 	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 
-
 	// ゲージ描画用のパラメータ初期化（長方形）
-	_gaugeWidth = 300;                      // 横幅
+	_gaugeWidth = 150;						// 横幅
 	_gaugeHeight = 30;                      // 高さ
 	_gaugeBorderThickness = 3;              // 枠の太さ
 	_bgColor = GetColor(50, 50, 50);        // 暗いグレー（背景）
@@ -115,11 +114,17 @@ void TreasureBase::RenderGauge(const vec::Vec3& playerPos, float progress)
 	DrawRectGauge(gaugeX, gaugeY, progress);
 }
 
+void TreasureBase::RenderGaugeRF(const vec::Vec3& playerPos, float progress)
+{
+	// デフォルト実装: 通常のRenderGaugeを呼び出す
+	RenderGauge(playerPos, progress);
+}
+
 void TreasureBase::DrawRectGauge(int centerX, int centerY, float progress)
 {
 	// ゲージの左上座標を計算（中心基準から左上にシフト）
 	const int gaugeX = centerX - (_gaugeWidth / 2);  // 中心を基準に左にシフト
-	const int gaugeY = centerY - _gaugeHeight - 30;  // ゲージを上に配置（+テキスト分のスペース）
+	const int gaugeY = centerY - _gaugeHeight -50 ;  // ゲージを上に配置（+テキスト分のスペース）
 
 	// 背景（暗いグレー）を描画
 	DrawBox(
@@ -177,12 +182,4 @@ void TreasureBase::DrawRectGauge(int centerX, int centerY, float progress)
 	const int textY = gaugeY + (_gaugeHeight - 16) / 2;       // 縦方向で中央揃え
 
 	DrawString(textX, textY, text, _textColor);
-
-	// 「Aボタン長押し！」のテキストをゲージの上に表示
-	const char* instruction = "Aボタン長押し！";
-	const int instrWidth = GetDrawStringWidth(instruction, static_cast<int>(strlen(instruction)));
-	const int instrX = gaugeX + (_gaugeWidth - instrWidth) / 2; // ゲージ幅で中央揃え
-	const int instrY = gaugeY - 25; // ゲージの上に配置
-
-	DrawString(instrX, instrY, instruction, _textColor);
 }

@@ -27,7 +27,7 @@ public:
 	void AddCount();  // ボタンを1回押した時に呼ぶ
 	void ResetCount(); // 範囲外に出た時などにリセット
 
-	void RenderGauge(const vec::Vec3& playerPos); // プレイヤー位置を基にゲージを描画
+	void RenderGaugeRF(const vec::Vec3& playerPos, float progress) override;
 
 protected:
 	int _attachIndex;

@@ -282,6 +282,7 @@ bool EnemyDog::Process()
 			ReturnInitialPos();
 			_playSightOffOnReturn = true;
 		}
+
 		// 待機中にプレイヤーを再検出したら待機をキャンセル
 		if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
 		{
