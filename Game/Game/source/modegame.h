@@ -384,6 +384,10 @@ protected:
 
 	at::vec<EnemyBase*> _enemiesInAttackRange; // 攻撃範囲内の敵のリスト
 
+	// 宝箱ごとの進行度を管理するマップを追加
+	at::umtt<TreasureBase*, float> _treasureProgressMap;
+	TreasureBase* _currentOpeningTreasure = nullptr; // 現在開けている宝箱
+
 private:
 	// イントロ演出用
 	bool  _isIntroActive;	   // イントロ演出が有効か

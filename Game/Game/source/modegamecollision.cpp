@@ -625,6 +625,21 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	// 長押し型宝箱の処理（currentTreasureが長押し型の場合のみ実行）
 	if (currentTreasure && !dynamic_cast<TreasureRapidFire*>(currentTreasure))
 	{
+		// 開けている宝箱が変わった場合はリセット
+		if (_currentOpeningTreasure != currentTreasure)
+		{
+			// 前の宝箱が開け途中だった場合は進行度をリセット
+			if (_currentOpeningTreasure != nullptr)
+			{
+				_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
+			}
+
+			// 新しい宝箱に切り替え
+			_currentOpeningTreasure = currentTreasure;
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+		}
+
 		// Aボタンを押していなかったら開けない
 		if (!holdA)
 		{
@@ -634,6 +649,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
 				_treasureHoldSec = 0.0f;
+				_treasureProgressMap[currentTreasure] = 0.0f;
 				auto sound = gGlobal._soundServer->Get("60");
 				if (sound && sound->IsPlay())
 				{
@@ -686,9 +702,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			const float dt = 1.0f / 60.0f;
 			_treasureHoldSec += dt;
 
-			// 進行度を計算（0.0～1.0）
-			progress = _treasureHoldSec / CHECK_OPEN_TIME;
-			if (progress > 1.0f) progress = 1.0f; // 上限を1.0に制限
+			// この宝箱専用の進行度を計算してマップに保存
+			float currentProgress = _treasureHoldSec / CHECK_OPEN_TIME;
+			if (currentProgress > 1.0f) currentProgress = 1.0f;
+			_treasureProgressMap[currentTreasure] = currentProgress;
 
 			// 3秒間ホールドで取得
 			if (_treasureHoldSec >= CHECK_OPEN_TIME)
@@ -728,68 +745,6 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				return true;
 			}
 		}
-
-		// 開ける処理開始
-		if(!_isOpeningTreasure)
-		{
-			TreasureOpeningCameraControl();
-			_isOpeningTreasure = true;
-			_treasureHoldSec = 0.0f; // 開始時点でリセットしておく
-
-			auto sound = gGlobal._soundServer->Get("60");
-			if(sound && !sound->IsPlay())
-			{
-				sound->Play();
-			}
-		}
-
-		// 経過時間を計算
-		const float dt = 1.0f / 60.0f; // 60FPS固定とする
-		_treasureHoldSec += dt;		   // 開けるのに必要な時間を 1秒とする
-
-		// 3秒間ホールドで取得
-		if(_treasureHoldSec >= CHECK_OPEN_TIME)
-		{
-			_treasureTakenCount++;      // 取得数を増やす
-			_treasureHoldSec = 0.0f;    // 開けるのに必要な時間のカウンタをリセット
-			currentTreasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
-			EndCinematicCamera();		// 演出カメラを終了
-			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
-
-			auto sound = gGlobal._soundServer->Get("60");
-			if (sound && sound->IsPlay())
-			{
-				sound->Stop();
-			}
-
-			// お宝のカウントを減らす
-			if(_counterUi)
-			{
-				_counterUi->DecreaseTreasureCount();
-			}
-
-			if(_treasureOpenUi)
-			{
-				_treasureOpenUi->SetVisible(false); // 開けUIを消す
-			}
-
-			// エフェクト再生
-			if(_doyaEffect)
-			{
-				_doyaEffect->SetTargetPlayer(player);
-				_doyaEffect->PlayEffect(currentTreasure->GetPos());
-			}
-
-			// 宝箱を開けた時の音波を発生
-			EnemySoundManager::GetInstance()->EmitSound(
-				currentTreasure->GetPos(),  // 宝箱の位置
-				5,                   // 音の大きさレベル（1-3で調整）
-				400.0f,             // 音波の最大半径
-				10.0f                // 音波の速度
-			);
-
-			return true;				// 1つ開けたら終了
-		}
 	}
 
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
@@ -801,6 +756,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
+			// 開けていた宝箱の進行度をリセット
+			if (_currentOpeningTreasure != nullptr)
+			{
+				_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
+			}
+			_currentOpeningTreasure = nullptr;
 			auto sound = gGlobal._soundServer->Get("60");
 			if (sound && sound->IsPlay())
 			{
@@ -812,6 +773,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		{
 			_treasureOpenUi->SetVisible(false);
 		}
+
+		progress = 0.0f;	//進行度をリセット
 
 		// 連打型宝箱もリセット
 		for (const auto& sp : treasures)
