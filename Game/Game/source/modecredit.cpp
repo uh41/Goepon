@@ -36,8 +36,10 @@ bool ModeCredit::Terminate()
 
 bool ModeCredit::Process()
 {
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
+	//ModeServer::GetInstance()->SkipProcessUnderLayer();
+	//ModeServer::GetInstance()->SkipRenderUnderLayer();
+
+	int trg = ApplicationBase::GetInstance()->GetTrg();
 
 	switch(_state)
 	{
@@ -45,6 +47,21 @@ bool ModeCredit::Process()
 
 	case ModeBase::State::WAIT:
 	{
+		if(trg & PAD_INPUT_1)
+		{
+			// 修正: _handle のチェックを先に行う
+			if(_handle != -1)
+			{
+				MovieManager::GetInstance()->StopMovie(_handle);
+				MovieManager::GetInstance()->UnloadMovie(_handle);
+				_handle = -1;
+			}
+
+			_state = ModeBase::State::FADE_OUT;
+			Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// フェードアウト開始
+			break;
+		}
+
 		// 再生終了を監視し、終わったらフェードアウトへ
 		if(_handle != -1)
 		{
@@ -65,6 +82,12 @@ bool ModeCredit::Process()
 	case ModeBase::State::FADE_OUT:
 	{
 		Fade::GetInstance()->Process();
+		// 修正: UnloadMovie 後に _handle を -1 にリセットして毎フレーム呼ばれるのを防ぐ
+		if(_handle != -1)
+		{
+			MovieManager::GetInstance()->UnloadMovie(_handle);
+			_handle = -1;
+		}
 		if(Fade::GetInstance()->IsFade() == false)
 		{
 			_state = ModeBase::State::DONE;
@@ -73,6 +96,7 @@ bool ModeCredit::Process()
 	}
 	case ModeBase::State::DONE:
 	{
+		Terminate();
 		ModeServer::GetInstance()->Add(new ModeInit(), 0, "init");
 		ModeServer::GetInstance()->Del(this);
 

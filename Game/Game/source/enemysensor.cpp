@@ -21,8 +21,8 @@ bool EnemySensor::Initialize()
 	_detectionInfo.chaseTimer = 0.0f;	
 
 	// 検知遅延の初期化
-	_detectionInfo.detectionDelayTimer = 0.0f;
-	_detectionInfo.isInDetectionDelay = false;
+	_detectionInfo.DelayTimer = 0.0f;
+	_detectionInfo.isDelay = false;
 
 	// フレームカウンタと検出結果の初期化
 	_detectionFrameCount = 0;
@@ -127,24 +127,24 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 		if (!_detectionInfo.isChasing)
 		{
 			// まだ追跡していない場合
-			if (!_detectionInfo.isInDetectionDelay)
+			if (!_detectionInfo.isDelay)
 			{
 				// 遅延開始
-				_detectionInfo.isInDetectionDelay = true;
-				_detectionInfo.detectionDelayTimer = DETECTION_DELAY_TIME;
+				_detectionInfo.isDelay = true;
+				_detectionInfo.DelayTimer = DETECTION_DELAY_TIME;
 			}
 			else
 			{
 				// 遅延タイマーを減算
-				_detectionInfo.detectionDelayTimer -= 1.0f / 60.0f;
+				_detectionInfo.DelayTimer -= 1.0f / 60.0f;
 
 				// 遅延時間が経過したら追跡開始
-				if (_detectionInfo.detectionDelayTimer <= 0.0f)
+				if (_detectionInfo.DelayTimer <= 0.0f)
 				{
 					_detectionInfo.isChasing = true;
 					_detectionInfo.chaseTimer = CHASE_TIME;
-					_detectionInfo.isInDetectionDelay = false;
-					_detectionInfo.detectionDelayTimer = 0.0f;
+					_detectionInfo.isDelay = false;
+					_detectionInfo.DelayTimer = 0.0f;
 				}
 			}
 		}
@@ -157,10 +157,10 @@ bool EnemySensor::CheckPlayerDetection(PlayerBase* player)
 	else
 	{
 		// プレイヤーが範囲外に出た場合、遅延状態をリセット
-		if (_detectionInfo.isInDetectionDelay)
+		if (_detectionInfo.isDelay)
 		{
-			_detectionInfo.isInDetectionDelay = false;
-			_detectionInfo.detectionDelayTimer = 0.0f;
+			_detectionInfo.isDelay = false;
+			_detectionInfo.DelayTimer = 0.0f;
 		}
 	}
 
@@ -229,8 +229,8 @@ void EnemySensor::ResetDetection()
 	_detectionInfo.chaseTimer = 0.0f;	
 
 	// 検知遅延のリセット
-	_detectionInfo.isInDetectionDelay = false;
-	_detectionInfo.detectionDelayTimer = 0.0f;
+	_detectionInfo.isDelay = false;
+	_detectionInfo.DelayTimer = 0.0f;
 
 	// フレームカウンタと検出結果のリセット
 	_detectionFrameCount = 0;
@@ -522,7 +522,6 @@ void EnemySensor::RecalculateDetectionSector() const
 			vec::Vec3 innerPos = vec3::VAdd(center, vec3::VGet(s * innerRadius, 0.0f, c * innerRadius));
 			vec::Vec3 outerPos = vec3::VAdd(center, vec3::VGet(s * outerRadius, 0.0f, c * outerRadius));
 
-			// --- 変更点: 各頂点の高さを床のYに合わせる ---
 			// 安定した床判定のため、各サンプルの y を床の Y に合わせる。
 			constexpr float kFloorSearchColSubY = 200.0f;
 			float floorYInner = 0.0f;

@@ -5,6 +5,7 @@ namespace img
   inline constexpr const char* AMGlogo = "res/AMGlogo.png";
   inline constexpr const char* Af_Scenario = "res/Af_Scenario.png";
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
+  inline constexpr const char* BG_stageclear = "res/BG_stageclear.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
   inline constexpr const char* L_UI = "res/L_UI.png";
   inline constexpr const char* Loading_1start = "res/Loading_1start.png";
@@ -198,6 +199,7 @@ namespace mp3
   inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
   inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
+  inline constexpr const char* Prologe = "res/BGM/Prologe.mp3";
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";

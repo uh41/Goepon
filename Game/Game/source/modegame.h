@@ -395,5 +395,7 @@ private:
 	bool StartIntroSequence();   // イントロシーケンス開始
 	bool ProcessIntroSequence(); // イントロシーケンスの更新
 	bool EndIntroSequence();     // イントロシーケンス終了
+	
+	float progress;
 };
 

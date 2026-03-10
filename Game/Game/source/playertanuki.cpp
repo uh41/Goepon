@@ -194,7 +194,57 @@ bool PlayerTanuki::Process()
 			_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
 			_status = STATUS::WAIT;
 		}
+		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+		{
+			_dash = true;
+			_dashTimer = dash::DASH_DURATION;
+			_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
+			_dashCount++;
+			if(_dashRecoverActive)
+			{
+				_dashRecoverActive = false;
+				_dashRecoverTime = 0.0f;
+			}
 
+			if(gGlobal._soundServer)
+			{
+				auto s = gGlobal._soundServer->Get("5"); // ApplicationGlobal で "5" に tanuki_run を登録済み
+				if(s && !s->IsPlay())
+				{
+					s->Play();
+				}
+			}
+		}
+	}
+	/*else
+	{
+		_v = { 0.0f, 0.0f, 0.0f };
+		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+		_status = STATUS::WAIT;
+	}*/
+
+	if(_dash)
+	{
+		_dashTimer -= 1.0f/ 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
+		if(_dashTimer <= 0.0f)
+		{
+			_dash = false;
+			_dashTimer = 0.0f;
+			_fMvSpeed = _normalSpeed * dash::DASH_COOLDOWN_SPEED;
+			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
+			_dashRecoverTime = 0.0f;
+			_dashRecoverActive = false;
+
+			if(gGlobal._soundServer)
+			{
+				auto s = gGlobal._soundServer->Get("5");
+				if(s && s->IsPlay())
+				{
+					s->Stop();
+				}
+			}
+		}
+	}
 		if(_dash)
 		{
 			_dashTimer -= 1.0f / 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
@@ -255,7 +305,7 @@ bool PlayerTanuki::Process()
 		{
 			SoundWalk();
 		}
-	}
+	
 	
 	// アニメーションの名前取得
 	auto GetAnimName = [this](STATUS name) -> std::string
