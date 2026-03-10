@@ -147,10 +147,24 @@ bool Enemy::Process()
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
 			}
+			else if (_waitingBeforeReturn)	// 検知終了後の待機処理
+			{
+				const float dt = 1.0f / 60.0f; // 60FPS想定
+				_returnWaitTimer -= dt;
+
+				if (_returnWaitTimer <= 0.0f)
+				{
+					_waitingBeforeReturn = false;
+
+					// 初期位置へ戻る処理は base 実装を使う
+					ReturnInitialPos();
+				}
+
+				_status = STATUS::WAIT;
+			}
 			else if (_isReturning)	// 初期位置に戻り中
 			{
 				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
-
 				UpdateReturnInitialPos();
 			}
 			else if (_isMovingToSound)	// 音源に向かって移動中
