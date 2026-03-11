@@ -65,5 +65,7 @@ protected:
 	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
 
 	bool _inputEnabled; // 入力が有効かどうか
+
+	float _target_Rotation_Y;
 };
 

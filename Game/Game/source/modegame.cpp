@@ -103,12 +103,12 @@ bool ModeGame::Initialize()
 	// ゴール初期化
 	_isGameClear = false;
 
-	// ★★★ カメラ初期化をここで行う ★★★
+	// カメラ初期化をここで行う
 	DebugInitialize();// デバック初期化
 	ShadowInitialize();// シャドウ生成
 	CameraInfoInitialize();// カメラ情報初期化 ← ここで_cameraが作成される
 
-	// ★★★ カメラが正常に作成されたことを確認 ★★★
+	//  カメラが正常に作成されたことを確認 
 	if(_camera == nullptr)
 	{
 		// エラーハンドリング：カメラが作成されていない場合
