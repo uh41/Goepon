@@ -149,10 +149,22 @@ public:
 	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
 	bool DebugCameraControl();
+
 	//　演出カメラ
-	bool TreasureOpeningCameraControl();
-	bool EndCinematicCamera();
-	bool DebugCinematicCameraControl();
+	bool TreasureOpeningCameraControl(); // 宝箱オープン演出カメラ制御
+	bool EndCinematicCamera();           // 演出カメラ終了
+	bool EndCinematicSequence(bool restoreToMainCamera); // 汎用的な演出カメラ終了関数
+
+	bool DebugCinematicCameraControl();  // デバッグ用の演出カメラ制御
+	// イントロ演出関数
+	bool StartIntroSequence();   // イントロシーケンス開始
+	bool ProcessIntroSequence(); // イントロシーケンスの更新
+	bool EndIntroSequence();     // イントロシーケンス終了
+	// ゲームクリア演出用の関数を追加
+	bool StartClearSequence();   // クリアシーケンス開始
+	bool ProcessClearSequence(); // クリアシーケンスの更新
+	bool EndClearSequence();     // クリアシーケンス終了
+
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();
 	void EndCameraControlAndRestore();
@@ -395,12 +407,12 @@ private:
 	bool  _isIntroActive;	   // イントロ演出が有効か
 	bool  _introButtonPressed; // イントロ中にボタンが押されたか
 	float _introTimer;		   // イントロの経過時間
-	static constexpr float INTRO_DURATION = 5.0f; // イントロの総時間（秒）
+	static constexpr float INTRO_DURATION = 3.0f; // イントロの総時間（秒）
 
-	// イントロ演出関数
-	bool StartIntroSequence();   // イントロシーケンス開始
-	bool ProcessIntroSequence(); // イントロシーケンスの更新
-	bool EndIntroSequence();     // イントロシーケンス終了
+	// ゲームクリア演出用
+	bool _isGameClearCinematicActive; // ゲームクリア演出が有効か
+	float _clearCinematicTimer;         // クリア演出の経過時間
+	static constexpr float CLEAR_CINEMATIC_DURATION = 3.0f; // クリア演出の総時間（秒）
 	
 	float progress;
 };

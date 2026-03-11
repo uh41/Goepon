@@ -286,6 +286,7 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\modecredit.cpp" />
+    <ClCompile Include="source\ModeGameCinematicCamera.cpp" />
     <ClCompile Include="source\configui.cpp" />
   </ItemGroup>
   <ItemGroup>
