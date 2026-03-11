@@ -475,13 +475,20 @@ void EnemySensor::RecalculateDetectionSector() const
 
 	// 色（検出時 / 非検出時）
 	COLOR_U8 fillColorU8;
-	if (_detect.bDetected)
+	if (_detect.bChasing)
 	{
-		fillColorU8 = GetColorU8(255, 0, 0, 255);   // 検出時：赤
+		// 追跡中：赤色
+		fillColorU8 = GetColorU8(255, 0, 0, 255);
+	}
+	else if (_detect.bDetected)
+	{
+		// 検知中（追跡前）：黄色
+		fillColorU8 = GetColorU8(255, 255, 0, 255);
 	}
 	else
 	{
-		fillColorU8 = GetColorU8(255, 255, 0, 255); // 非検出時：黄
+		// 通常時：水色
+		fillColorU8 = GetColorU8(0, 255, 255, 255);
 	}
 
 	const int angleSegments = 16;	// 扇形の角度を分割する数
@@ -554,10 +561,10 @@ void EnemySensor::RecalculateDetectionSector() const
 				initVertex(verts[4], outerPos);
 				initVertex(verts[5], innerPos);
 
-				// キャッシュに追加（地面）
-				std::array<VERTEX3D, 6> poly{};
-				for (int vi = 0; vi < 6; ++vi) poly[vi] = verts[vi];
-				_CachedPolygons.push_back(poly);
+				//// キャッシュに追加（地面）
+				//std::array<VERTEX3D, 6> poly{};
+				//for (int vi = 0; vi < 6; ++vi) poly[vi] = verts[vi];
+				//_CachedPolygons.push_back(poly);
 
 				// 少し上にも描画する分もキャッシュ（視認性向上）
 				for (int vi = 0; vi < 6; ++vi)
