@@ -18,7 +18,7 @@ bool EnemyMove::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/busi_multimotion.mv1");
+	_handle = MV1LoadModel("res/PoorEnemyMelee/SK_busi_multimotion_03.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -51,15 +51,15 @@ bool EnemyMove::Initialize()
 	_waitingForTeleport = false;
 	_teleportTimer = 0.0f;
 
-	_patroll = std::make_shared<MovePointControll>();
-	_isPatroll = false;
+	_patrol = std::make_shared<MovePointControll>();
+	_isPatrol = false;
 	_patrolSpeed = 4.0f;
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 
 	_hasSavePoint = false;
 
-	_isPatrolWaiting = false;
+	_bPatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 	_patrolWaitDuration = 2.0f; // 到着時にその場で視線を変える時間（秒）
 	_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
@@ -75,8 +75,8 @@ void EnemyMove::SetPatrolPoint(const at::vet<vec::Vec3>& point)
 		return; // 2点未満なら設定しない
 	}
 
-	_patroll->SetMovePoint(point);
-	_isPatroll = true;
+	_patrol->SetMovePoint(point);
+	_isPatrol = true;
 	_patrolIndex = 0;
 }
 
@@ -111,7 +111,7 @@ void EnemyMove::SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointI
 // 巡回処理
 void EnemyMove::ProcessPatrol()
 {
-	if(!_isPatroll || !_patroll->IsValid())
+	if(!_isPatrol || !_patrol->IsValid())
 	{
 		return;
 	}
@@ -122,7 +122,7 @@ void EnemyMove::ProcessPatrol()
 	}
 
 	// 待機中
-	if(_isPatrolWaiting)
+	if(_bPatrolWaiting)
 	{
 		const float dt = 1.0f / 60.0f;
 		_patrolWaitTimer -= dt;
@@ -135,12 +135,12 @@ void EnemyMove::ProcessPatrol()
 
 		if(_patrolWaitTimer <= 0.0f)
 		{
-			_isPatrolWaiting = false;
-			_patroll->MoveToNextPoint();
-			_patrolIndex = _patroll->GetMovePointIndex();
+			_bPatrolWaiting = false;
+			_patrol->MoveToNextPoint();
+			_patrolIndex = _patrol->GetMovePointIndex();
 
 			// 次のポイントの direction を取得して向きを設定
-			const int nextIdx = _patroll->GetMovePointIndex();
+			const int nextIdx = _patrol->GetMovePointIndex();
 			if(nextIdx >= 0 && nextIdx < StCas<int>(_patrolPointInfo.size()))
 			{
 				int nextDirId = _patrolPointInfo[nextIdx].id;
@@ -157,7 +157,7 @@ void EnemyMove::ProcessPatrol()
 				else
 				{
 					// direction が指定されていない場合は次のターゲット方向へ
-					vec::Vec3 nextTarget = _patroll->GetTargetPoint();
+					vec::Vec3 nextTarget = _patrol->GetTargetPoint();
 					vec::Vec3 toNextTarget = vec3::VSub(nextTarget, _vPos);
 					toNextTarget.y = 0.0f;
 					if(toNextTarget.LengthSquare() > 0.0001f)
@@ -188,7 +188,7 @@ void EnemyMove::ProcessPatrol()
 		}
 	}
 
-	vec::Vec3 target = _patroll->GetTargetPoint();
+	vec::Vec3 target = _patrol->GetTargetPoint();
 
 	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
 	toTarget.y = 0.0f;
@@ -200,7 +200,7 @@ void EnemyMove::ProcessPatrol()
 		// 到着したポイント index に対応する direction / waittime を採用
 		int dirId = 0;
 		float waitSec = 0.0f;
-		const int idx = _patroll->GetMovePointIndex();
+		const int idx = _patrol->GetMovePointIndex();
 		if(idx >= 0 && idx < StCas<int>(_patrolPointInfo.size()))
 		{
 			dirId = _patrolPointInfo[idx].id;
@@ -239,7 +239,7 @@ void EnemyMove::ProcessPatrol()
 		// 待機開始
 		_status = STATUS::WAIT;
 		_patrolWaitTimer = _patrolWaitDuration;
-		_isPatrolWaiting = true;
+		_bPatrolWaiting = true;
 		return;
 	}
 
@@ -263,7 +263,7 @@ void EnemyMove::ProcessPatrol()
 		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
 		{
 			_patrolWaitTimer = _patrolWaitDuration;
-			_isPatrolWaiting = true;
+			_bPatrolWaiting = true;
 		}
 	}
 }
@@ -331,9 +331,9 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			_effect->PlayEffect(_vPos);
 
 			// 巡回インデックス復帰
-			_patroll->SetMovePointIndex(_savePatrolIndex);
+			_patrol->SetMovePointIndex(_savePatrolIndex);
 			_patrolIndex = _savePatrolIndex;
-			_isPatroll = true;
+			_isPatrol = true;
 
 			_hasSavePoint = false;
 		}
@@ -350,9 +350,9 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 	if(distSq < (threshold * threshold))
 	{
 		_isReturning = false;
-		_patroll->SetMovePointIndex(_savePatrolIndex);
+		_patrol->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
-		_isPatroll = true;
+		_isPatrol = true;
 		_hasSavePoint = false;
 		return;
 	}
@@ -391,9 +391,9 @@ void EnemyMove::ReturnInitialPos()
 	// 巡回ルートが有効なら現在の巡回ターゲットへ、さもなくば初期位置へ戻す
 	if(!_hasSavePoint)
 	{
-		if(_patroll && _patroll->IsValid())
+		if(_patrol && _patrol->IsValid())
 		{
-			_savePoint = _patroll->GetTargetPoint();
+			_savePoint = _patrol->GetTargetPoint();
 		}
 		else
 		{
@@ -401,7 +401,7 @@ void EnemyMove::ReturnInitialPos()
 		}
 	}
 
-	_isPatroll = false;
+	_isPatrol = false;
 	_isReturning = true;
 
 	// 念のためテレポート状態をリセットしておく
@@ -411,17 +411,17 @@ void EnemyMove::ReturnInitialPos()
 void EnemyMove::OnDamageStart()
 {
 	_savePatrolIndex = _patrolIndex;
-	_isPatroll = false;
+	_isPatrol = false;
 	_hasSavePoint = true;
 }
 
 void EnemyMove::OnDamageEnd()
 {
-	if(_patroll && _patroll->IsValid())
+	if(_patrol && _patrol->IsValid())
 	{
-		_patroll->SetMovePointIndex(_savePatrolIndex);
+		_patrol->SetMovePointIndex(_savePatrolIndex);
 		_patrolIndex = _savePatrolIndex;
-		_isPatroll = true;
+		_isPatrol = true;
 		_hasSavePoint = false;
 	}
 }
@@ -449,16 +449,16 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 
 	// 巡回を止めて現在の巡回インデックスを保存
 	_savePatrolIndex = _patrolIndex;
-	_isPatroll = false;
+	_isPatrol = false;
 
 	// 巡回待機状態をリセット
-	_isPatrolWaiting = false;
+	_bPatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 
 	// 巡回ターゲット座標を保存（復帰時に使う）
-	if(_patroll && _patroll->IsValid())
+	if(_patrol && _patrol->IsValid())
 	{
-		_savePoint = _patroll->GetTargetPoint();
+		_savePoint = _patrol->GetTargetPoint();
 	}
 	else
 	{
@@ -539,7 +539,7 @@ bool EnemyMove::Process()
 			if(_hasSavePoint)
 			{
 				_isReturning = true;
-				_isPatroll = false;
+				_isPatrol = false;
 				ResetTeleport();
 			}
 			else
@@ -564,14 +564,14 @@ bool EnemyMove::Process()
 		}
 
 		_isReturning = false;
-		_isPatroll = false;
+		_isPatrol = false;
 	}
 	else if (_enemySensor && _enemySensor->IsChasing())	// プレイヤーを検出している場合
 	{
 		_status = STATUS::FOUND;
 		UpdateChasing();
 		_isReturning = false;
-		_isPatroll = false;		// 巡回停止
+		_isPatrol = false;		// 巡回停止
 	}
 	else if (_isReturning)	// 初期位置に戻り中
 	{
@@ -585,7 +585,7 @@ bool EnemyMove::Process()
 		}
 		ProcessReturnToPatrolPoint();	// 初期位置への帰還処理
 	}
-	else if (_isPatroll)	// 巡回中
+	else if (_isPatrol)	// 巡回中
 	{
 		_status = STATUS::WALK;
 		ProcessPatrol();

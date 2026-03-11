@@ -47,7 +47,7 @@ bool TreasureRapidFire::Initialize()
 	_buttonResetTimer = 0.0f;
 
 	// ゲージ描画用のパラメータ初期化（長方形）
-	_gaugeWidth = 300;                      // 横幅
+	_gaugeWidth = 150;                      // 横幅
 	_gaugeHeight = 30;                      // 高さ
 	_gaugeBorderThickness = 3;              // 枠の太さ
 	_bgColor = GetColor(50, 50, 50);        // 暗いグレー（背景）
@@ -125,7 +125,7 @@ void TreasureRapidFire::ResetCount()
 	_buttonResetTimer = 0.0f;
 }
 
-void TreasureRapidFire::RenderGauge(const vec::Vec3& playerPos)
+void TreasureRapidFire::RenderGaugeRF(const vec::Vec3& playerPos, float progress)
 {
 	// 宝箱が開いている場合は描画しない
 	if (_isOpen)
@@ -133,35 +133,32 @@ void TreasureRapidFire::RenderGauge(const vec::Vec3& playerPos)
 		return;
 	}
 
+	// 進行度を計算（引数のprogressは無視し、連打カウントから計算）
+	float calculatedProgress = static_cast<float>(_currentCount) / static_cast<float>(_requiredCount);
+	if (calculatedProgress > 1.0f) calculatedProgress = 1.0f;
+
 	// 宝箱の中心位置の3D座標を2D座標に変換
 	vec::Vec3 topPos = _vPos;
-	topPos.y += 100.0f;  // 宝箱の上にオフセット（必要に応じて調整）
+	topPos.y += 100.0f;
 
 	VECTOR screenPos = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(topPos));
 
-	// 画面外チェック
 	if (screenPos.z < 0.0f || screenPos.z > 1.0f)
 	{
 		return;
 	}
 
-	// ゲージの中心位置を宝箱の真上に設定
 	int gaugeX = static_cast<int>(screenPos.x);
 	int gaugeY = static_cast<int>(screenPos.y);
 
-	// 進行度を計算
-	float progress = static_cast<float>(_currentCount) / static_cast<float>(_requiredCount);
-	if (progress > 1.0f) progress = 1.0f;
-
-	// 長方形ゲージを描画（中心基準）
-	DrawRectGauge(gaugeX, gaugeY, progress);
+	DrawRectGauge(gaugeX, gaugeY, calculatedProgress);
 }
 
 void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 {
 	// ゲージの左上座標を計算（中心基準から左上にシフト）
 	const int gaugeX = centerX - (_gaugeWidth / 2);  // 中心を基準に左にシフト
-	const int gaugeY = centerY - _gaugeHeight - 30;  // ゲージを上に配置（+テキスト分のスペース）
+	const int gaugeY = centerY - _gaugeHeight - 50;  // ゲージを上に配置（+テキスト分のスペース）
 
 	// 背景（暗いグレー）を描画
 	DrawBox(
@@ -219,12 +216,4 @@ void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 	const int textY = gaugeY + (_gaugeHeight - 16) / 2;       // 縦方向で中央揃え
 
 	DrawString(textX, textY, text, _textColor);
-
-	// 「Aボタン連打！」のテキストをゲージの上に表示
-	const char* instruction = "Aボタン連打！";
-	const int instrWidth = GetDrawStringWidth(instruction, static_cast<int>(strlen(instruction)));
-	const int instrX = gaugeX + (_gaugeWidth - instrWidth) / 2; // ゲージ幅で中央揃え
-	const int instrY = gaugeY - 25; // ゲージの上に配置
-
-	DrawString(instrX, instrY, instruction, _textColor);
 }

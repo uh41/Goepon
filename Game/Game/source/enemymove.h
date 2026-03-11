@@ -29,7 +29,7 @@ public:
 	void SetPatrolWaitDirection(int id);
 
 	// 巡回中かどうかの判定
-	bool IsPatrolling() const {return _isPatroll;}
+	bool IsPatrolling() const {return _isPatrol;}
 
 	// パトロールポイントの情報を設定
 	void SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointInfo>& points);
@@ -42,8 +42,8 @@ public:
 
 protected:
 	// 巡回ルート関連
-	at::spc<MovePointControll> _patroll;// 巡回ポイント管理クラス
-	bool _isPatroll;					// 巡回中かどうか
+	at::spc<MovePointControll> _patrol;// 巡回ポイント管理クラス
+	bool _isPatrol;						// 巡回中かどうか
 	float _patrolSpeed;					// 巡回速度
 	int _patrolIndex;					// 現在の巡回ポイントのインデックス
 	int _savePatrolIndex;				// 戻る前の巡回ポイントのインデックス
@@ -59,11 +59,12 @@ protected:
 	// 音見地から保存した地点があるか
 	bool _hasSavePoint;
 
-	bool _isPatrolWaiting;		// 到着後の待機中フラグ
+	// 巡回ポイント到着後の待機
+	bool _bPatrolWaiting;		// 到着後の待機中フラグ
 	float _patrolWaitTimer;		// 待機カウントダウン
 	float _patrolWaitDuration;	// 待機時間（秒）
 	vec::Vec3 _patrolWaitDir;	// 待機中に向く方向
 
-	at::vet<ApplicationGlobal::PatrolPointInfo> _patrolPointInfo;
+	at::vet<ApplicationGlobal::PatrolPointInfo> _patrolPointInfo;	// パトロールポイントの情報リスト
 };
 

@@ -33,6 +33,7 @@ public:
 
 	// ÉQÅ[ÉWï`âÊ
 	void RenderGauge(const vec::Vec3& playerPos, float progress);
+	virtual void RenderGaugeRF(const vec::Vec3& playerPos, float progress);
 protected:
 	OBJSTATUS _objStatus;
 

@@ -809,28 +809,30 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-	
-
-	// 連打型宝箱のゲージ描画
 	if (_player)
 	{
+		//長押し宝箱のゲージ描画
 		for (const auto& treasureBase : _treasureBase)
 		{
 			if (treasureBase && treasureBase->IsVisible() && !treasureBase->IsOpen())
 			{
-				//// プレイヤーの位置を基準にゲージを描画
-				//treasureBase->RenderGauge(_player->GetPos());
+				float treasureProgress = 0.0f;
+				auto it = _treasureProgressMap.find(treasureBase.get());
+				if (it != _treasureProgressMap.end())
+				{
+					treasureProgress = it->second;
+				}
 				
-				treasureBase->RenderGauge(_player->GetPos(), progress);
+				treasureBase->RenderGauge(_player->GetPos(), treasureProgress);
 			}
 		}
 
+		// 連打宝箱のゲージ描画
 		for (const auto& treasureRapidFire : _treasureRapidFire)
 		{
 			if (treasureRapidFire && treasureRapidFire->IsVisible() && !treasureRapidFire->IsOpen())
 			{
-				// プレイヤーの位置を基準にゲージを描画
-				treasureRapidFire->RenderGauge(_player->GetPos());
+				treasureRapidFire->RenderGaugeRF(_player->GetPos(), 0.0f);
 			}
 		}
 	}
