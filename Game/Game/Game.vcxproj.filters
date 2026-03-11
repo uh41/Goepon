@@ -286,6 +286,7 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\modecredit.cpp" />
+    <ClCompile Include="source\configui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -375,6 +376,7 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\modecredit.h" />
+    <ClInclude Include="source\configui.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

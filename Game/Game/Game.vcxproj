@@ -27,6 +27,7 @@
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\CinematicCamera.h" />
+    <ClInclude Include="source\configui.h" />
     <ClInclude Include="source\counterui.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\dashui.h" />
@@ -105,6 +106,7 @@
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
+    <ClCompile Include="source\configui.cpp" />
     <ClCompile Include="source\counterui.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\dashui.cpp" />

@@ -17,16 +17,30 @@ void ModeGame::RequestTransformToMono()
 {
 	// 要求フラグを立てるだけ。実際の消費/変身は PlayerTransform() 内で行う
 	_requestedTransformToMono = true;
+
+	if(_configUi)
+	{
+		_configUi->SetTransForm(ConfigUi::FormType::TANUMONO);
+	}
 }
 
 void ModeGame::RequestTransformToHuman()
 {
 	_requestedTransformToHuman = true;
+
+	if(_configUi)
+	{
+		_configUi->SetTransForm(ConfigUi::FormType::TANUBITO);
+	}
 }
 
 void ModeGame::RequestReturnToTanukiFromHuman()
 {
 	_requestedReturnToTanuki = true;
+	if(_configUi)
+	{
+		_configUi->SetTransForm(ConfigUi::FormType::TANUKI);
+	}
 }
 
 bool ModeGame::IsTransforming() const
@@ -78,37 +92,29 @@ bool ModeGame::ObjectInitialize()
 	_object.emplace_back(_goal);
 
 	// ui初期化
-	//_uiHp = std::make_shared<UiHp>();
-	//_uiHp->SetPlayer(_player.get());
-	//_uiBase.emplace_back(_uiHp);
-
-       // ← 最初に登録
-
 	_uiMakimono = std::make_shared<UiMakimono>();
 	_uiMakimono->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiMakimono);
-
 	_henshinUi = std::make_shared<HenshinUi>();
 	_henshinUi->SetOwner(this);
 	_uiBase.emplace_back(_henshinUi);
-
 	_counterUi = std::make_shared<CounterUi>();
 	_uiBase.emplace_back(_counterUi);
-
 	_attackUi = std::make_shared<AttackUi>();
 	_attackUi->Show(_player.get()->GetPos());
 	_uiBase.emplace_back(_attackUi);
-
 	_treasureOpenUi = std::make_shared<TreasureOpenUi>();
 	_uiBase.emplace_back(_treasureOpenUi);
-
 	_dashUi = std::make_shared<DashUi>();
 	_dashUi->SetPlayer(_playerTanuki.get());
 	_uiBase.emplace_back(_dashUi);
-
 	_treasureUi = std::make_shared<TreasureUi>();
 	_treasureUi->SetTreasureList(_treasure);
 	_uiBase.emplace_back(_treasureUi);
+	_configUi = std::make_shared<ConfigUi>();
+	_configUi->SetVisible(true);
+	_uiBase.emplace_back(_configUi);
+
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();

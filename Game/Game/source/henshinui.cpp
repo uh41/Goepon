@@ -89,6 +89,30 @@ bool HenshinUi::Process()
 		return true;
 	}
 
+	// 追加: PAD_INPUT_4 を押したら UI を開かずにすぐ TANUBITO を選択（変身要求を送る）
+	if(!_padInput5Active && (trg & PAD_INPUT_4))
+	{
+		if(_owner)
+		{
+			ModeGame* mg2 = StCas<ModeGame*>(_owner);
+			if(mg2)
+			{
+				// 変身中/保留中なら無視
+				if(mg2->IsTransforming() || mg2->IsTransformRequested())
+				{
+					// 何もしない
+				}
+				else
+				{
+					// 直接変身要求を送る（TANUBITO）
+					mg2->RequestTransformToHuman();
+					_padInput5Active = false;
+					return true;
+				}
+			}
+		}
+	}
+
 	// PAD_INPUT_5 の立ち上がり（トリガー）で選択を開始／切替する
 	if(trg & PAD_INPUT_5)
 	{
@@ -108,6 +132,15 @@ bool HenshinUi::Process()
 			else
 			{
 				_select = Select::TANUBITO;
+			}
+		}
+
+		if(gGlobal._soundServer)
+		{
+			auto ui = gGlobal._soundServer->Get("63"); // "63" は UI_Henshin_pon
+			if(ui)
+			{
+				ui->Play();
 			}
 		}
 	}
