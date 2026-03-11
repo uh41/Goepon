@@ -15,5 +15,8 @@ public:
 
 protected:
 	int _loadHandle;
+
+	int _effectHandle;
+	int _playHandle;
 };
 
