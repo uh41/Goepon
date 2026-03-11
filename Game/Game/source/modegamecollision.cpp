@@ -27,6 +27,9 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	// マップの情報（obj が Map なら取得、なければ ModeGame::_map を使う）
 	MapBase* map = dynamic_cast<MapBase*>(obj);
 
+	// PlayerTanukiかどうかをチェック
+	PlayerTanuki* tanuki = dynamic_cast<PlayerTanuki*>(chara);
+
 	for(int i = 0; i < sizeof(escapeTbl) / sizeof(escapeTbl[0]); i++)
 	{
 		vec::Vec3 oldvPos = chara->GetPos();
@@ -55,7 +58,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 		}
 
 		// 当たり判定（Map がある場合は各ブロックの collisionFrame を使う）
-		vec::Vec3 hitPos;
+		vec::Vec3 bodyHitPos; // 体の当たり位置
 		bool hit = false;
 
 		if(map)
@@ -85,7 +88,7 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 					block.modelHandle,
 					block.collisionFrame,
 					chara->GetColSubY(),
-					hitPos))
+					bodyHitPos)) // 体の当たり位置を取得
 				{
 					hit = true;
 					break;
@@ -95,12 +98,39 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 
 		if(hit)
 		{
-			vec::Vec3 tmpPos = chara->GetPos();
-			tmpPos.y = hitPos.y;
-			chara->SetPos(tmpPos);
+			// 体が当たった場合、タヌキなら頭の判定もチェック
+			if(tanuki)
+			{
+				// 先に頭の判定をチェック（移動後の位置で）
+				vec::Vec3 headHitPos; // 頭の当たり位置（別途用意）
+				bool headHit = CheckTanukiHeadCollision(tanuki, obj, headHitPos);
 
-			// Y変化を移動ベクトルに反映（必要なら）
-  			triedV.y += chara->GetPos().y - oldvPos.y;
+				if(!headHit)
+				{
+					// 頭が当たっていない＝天井や壁にめり込もうとしている
+					// 元の位置に戻す（押し出し処理）
+					chara->SetPos(oldvPos);
+					// 次の角度を試すためにループを続行
+					continue;
+				}
+
+				// 頭の当たり判定のみを使用（タヌキの場合）
+				// headHitPosを使ってY座標のみ調整
+				vec::Vec3 tmpPos = chara->GetPos();
+				tmpPos.y = headHitPos.y; // 頭の当たり位置のY座標を使用
+				chara->SetPos(tmpPos);
+
+				// Y変化を移動ベクトルに反映
+				triedV.y += tmpPos.y - oldvPos.y;
+			}
+			else
+			{
+				// タヌキ以外は通常の地面移動処理（体の当たり判定を使用）
+				vec::Vec3 tmpPos = chara->GetPos();
+				tmpPos.y = bodyHitPos.y;
+				chara->SetPos(tmpPos);
+				triedV.y += chara->GetPos().y - oldvPos.y;
+			}
 
 			break;
 		}
@@ -112,6 +142,107 @@ bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 	}
 
 	return true;
+}
+
+bool ModeGame::CheckTanukiHeadCollision(PlayerTanuki* player, ObjectBase* obj, vec::Vec3& outHitPos)
+{
+	// プレイヤーが無効なら処理しない
+	if(!player)
+	{
+		return false;
+	}
+
+	// マップの情報を取得
+	MapBase* map = dynamic_cast<MapBase*>(obj);
+	if(!map)
+	{
+		return false;
+	}
+
+	// 入力情報を取得
+	int key = ApplicationMain::GetInstance()->GetKey();
+
+	// 頭の位置を計算（入力方向に応じて変更）
+	vec::Vec3 headPos = player->GetPos();
+	vec::Vec3 offset = vec3::VGet(0.0f, 0.0f, 0.0f);
+	float offsetScale = player->GetColSubY() * 1.5f;
+
+	// 各方向の入力をチェックしてオフセットを累積
+	bool hasInput = false;
+
+	if(key & PAD_INPUT_UP)
+	{
+		offset.z += offsetScale; // 上方向
+		hasInput = true;
+	}
+	if(key & PAD_INPUT_DOWN)
+	{
+		offset.z -= offsetScale; // 下方向
+		hasInput = true;
+	}
+	if(key & PAD_INPUT_RIGHT)
+	{
+		offset.x += offsetScale; // 右方向
+		hasInput = true;
+	}
+	if(key & PAD_INPUT_LEFT)
+	{
+		offset.x -= offsetScale; // 左方向
+		hasInput = true;
+	}
+
+	// 斜め入力の場合、ベクトルを正規化して距離を保つ
+	if(hasInput)
+	{
+		float length = sqrt(offset.x * offset.x + offset.z * offset.z);
+		if(length > 0.0f)
+		{
+			offset.x = (offset.x / length) * offsetScale;
+			offset.z = (offset.z / length) * offsetScale;
+		}
+		headPos = vec3::VAdd(headPos, offset);
+	}
+	else
+	{
+		// 入力がない場合はデフォルトで上方向（元の処理）
+		headPos.z += offsetScale;
+	}
+
+	// 頭の位置で当たり判定をチェック
+	bool headHit = false;
+
+	auto& list = map->GetBlockPosList();
+	for(size_t bi = 0; bi < list.size(); ++bi)
+	{
+		auto& block = list[bi];
+
+		if(block.modelHandle >= 0)
+		{
+			// transform を適用
+			MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+			MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+			MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+			MV1RefreshCollInfo(block.modelHandle, block.collisionFrame);
+		}
+
+		// 必要な条件を満たさない場合はスキップ
+		if(block.modelHandle < 0) continue;
+		if(block.collisionFrame < 0) continue;
+
+		// 頭の位置で当たり判定（体より小さい半径を使用）
+		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			headPos,
+			block.modelHandle,
+			block.collisionFrame,
+			player->GetColSubY() * 0.3f, // 体の30%の半径（頭のサイズ）
+			outHitPos)) // 頭の当たり位置を出力パラメータに格納
+		{
+			headHit = true;
+			break;
+		}
+	}
+
+	return headHit;
 }
 
 bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
@@ -374,7 +505,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				if (!rapidFire->IsOpen())
 				{
-					rapidFire->ResetButtonCount();
+					rapidFire->ResetCount();
 				}
 			}
 		}
@@ -387,6 +518,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	const bool pressedA = (trg & PAD_INPUT_1) != 0;
 
 	bool inAnyTreasure = false; // どれか一つでも当たればtrue
+	TreasureBase* currentTreasure = nullptr; // 現在処理中の宝箱
 
 	// 宝箱の指定フレームで判定
 	for (const auto& sp : treasures)
@@ -425,6 +557,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 		// 少なくともどれかの宝箱の範囲
 		inAnyTreasure = true;
+		currentTreasure = treasure;
 
 		// 連打型宝箱の処理
 		if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(treasure))
@@ -432,7 +565,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			// Aボタンが押された時にカウント追加
 			if (pressedA)
 			{
-				rapidFire->AddButtonCount();
+				rapidFire->AddCount();
 
 				// SE再生（連打音）
 				auto soundButton = gGlobal._soundServer->Get("60");
@@ -441,8 +574,16 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					soundButton->Play();
 				}
 
+				// 宝箱を開けた時の音波
+				EnemySoundManager::GetInstance()->EmitSound(
+					treasure->GetPos(),
+					5,
+					400.0f,
+					10.0f
+				);
+
 				// 必要回数に達したら開く
-				if (rapidFire->GetCurrentButtonCount() >= rapidFire->GetRequiredButtonCount())
+				if (rapidFire->GetCurrentCount() >= rapidFire->GetRequiredCount())
 				{
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
@@ -470,54 +611,77 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					return true;
 				}
 			}
+			// 連打型は複数同時に処理可能なのでcontinue
+			continue;
 		}
 		// 通常の長押し型宝箱の処理
 		else
 		{
-			// Aボタンを押していなかったら開けない
-			if (!holdA)
+			// 長押し型は1つずつしか開けられないので、最初に見つかった宝箱で処理を行う
+			break;
+		}
+	}
+
+	// 長押し型宝箱の処理（currentTreasureが長押し型の場合のみ実行）
+	if (currentTreasure && !dynamic_cast<TreasureRapidFire*>(currentTreasure))
+	{
+		// 開けている宝箱が変わった場合はリセット
+		if (_currentOpeningTreasure != currentTreasure)
+		{
+			// 前の宝箱が開け途中だった場合は進行度をリセット
+			if (_currentOpeningTreasure != nullptr)
 			{
-				// Aボタンが離されたタイミングで演出カメラを終了
-				if (_isOpeningTreasure)
-				{
-					EndCinematicCamera();
-					_isOpeningTreasure = false;
-					_treasureHoldSec = 0.0f;
-					auto sound = gGlobal._soundServer->Get("60");
-					if (sound && sound->IsPlay())
-					{
-						sound->Stop();
-					}
-				}
+				_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
+			}
+
+			// 新しい宝箱に切り替え
+			_currentOpeningTreasure = currentTreasure;
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+		}
+
+		// Aボタンを押していなかったら開けない
+		if (!holdA)
+		{
+			// Aボタンが離されたタイミングで演出カメラを終了
+			if (_isOpeningTreasure)
+			{
+				EndCinematicCamera();
 				_isOpeningTreasure = false;
 				_treasureHoldSec = 0.0f;
-
-				// TreasureOpenUiを表示（プレイヤーの位置で）
-				if (_treasureOpenUi)
+				_treasureProgressMap[currentTreasure] = 0.0f;
+				auto sound = gGlobal._soundServer->Get("60");
+				if (sound && sound->IsPlay())
 				{
-					_treasureOpenUi->SetVisible(true);
-					_treasureOpenUi->SetSize(100);
+					sound->Stop();
 				}
-
-				continue;
 			}
-			else
+			_isOpeningTreasure = false;
+			_treasureHoldSec = 0.0f;
+
+			// TreasureOpenUiを表示（プレイヤーの位置で）
+			if (_treasureOpenUi)
 			{
-				if (_treasureOpenUi)
-				{
-					_treasureOpenUi->SetVisible(false);
-				}
-				// 開け始めの1回だけ音波を発生
-				if (!_isOpeningTreasure)
-				{
-					// 宝箱を開けた時の音波を発生
-					EnemySoundManager::GetInstance()->EmitSound(
-						treasure->GetPos(),
-						5,
-						400.0f,
-						10.0f
-					);
-				}
+				_treasureOpenUi->SetVisible(true);
+				_treasureOpenUi->SetSize(100);
+			}
+		}
+		else
+		{
+			if (_treasureOpenUi)
+			{
+				_treasureOpenUi->SetVisible(false);
+			}
+			// 開け始めの1回だけ音波を発生
+			if (!_isOpeningTreasure)
+			{
+				// 宝箱を開けた時の音波を発生
+				EnemySoundManager::GetInstance()->EmitSound(
+					currentTreasure->GetPos(),
+					5,
+					400.0f,
+					10.0f
+				);
 			}
 
 			// 開ける処理開始
@@ -538,12 +702,17 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			const float dt = 1.0f / 60.0f;
 			_treasureHoldSec += dt;
 
+			// この宝箱専用の進行度を計算してマップに保存
+			float currentProgress = _treasureHoldSec / CHECK_OPEN_TIME;
+			if (currentProgress > 1.0f) currentProgress = 1.0f;
+			_treasureProgressMap[currentTreasure] = currentProgress;
+
 			// 3秒間ホールドで取得
 			if (_treasureHoldSec >= CHECK_OPEN_TIME)
 			{
 				_treasureTakenCount++;
 				_treasureHoldSec = 0.0f;
-				treasure->SetOpen(true);
+				currentTreasure->SetOpen(true);
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
 
@@ -562,12 +731,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				if (_doyaEffect)
 				{
 					_doyaEffect->SetTargetPlayer(player);
-					_doyaEffect->PlayEffect(treasure->GetPos());
+					_doyaEffect->PlayEffect(currentTreasure->GetPos());
 				}
 
 				// 宝箱を開けた時の音波を発生
 				EnemySoundManager::GetInstance()->EmitSound(
-					treasure->GetPos(),
+					currentTreasure->GetPos(),
 					5,
 					400.0f,
 					10.0f
@@ -576,70 +745,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				return true;
 			}
 		}
-
-		// 開ける処理開始
-		if(!_isOpeningTreasure)
-		{
-			TreasureOpeningCameraControl();
-			_isOpeningTreasure = true;
-			_treasureHoldSec = 0.0f; // 開始時点でリセットしておく
-
-			auto sound = gGlobal._soundServer->Get("60");
-			if(sound && !sound->IsPlay())
-			{
-				sound->Play();
-			}
-		}
-
-		// 経過時間を計算
-		const float dt = 1.0f / 60.0f; // 60FPS固定とする
-		_treasureHoldSec += dt;		   // 開けるのに必要な時間を 1秒とする
-
-		// 3秒間ホールドで取得
-		if(_treasureHoldSec >= CHECK_OPEN_TIME)
-		{
-			_treasureTakenCount++;      // 取得数を増やす
-			_treasureHoldSec = 0.0f;    // 開けるのに必要な時間のカウンタをリセット
-			treasure->SetOpen(true);    // 宝箱の状態を開けるにする（アニメーション開始のトリガーになる想定）
-			EndCinematicCamera();		// 演出カメラを終了
-			_isOpeningTreasure = false; // 開ける処理中フラグを下ろす
-
-			auto sound = gGlobal._soundServer->Get("60");
-			if (sound && sound->IsPlay())
-			{
-				sound->Stop();
-			}
-
-			// お宝のカウントを減らす
-			if(_counterUi)
-			{
-				_counterUi->DecreaseTreasureCount();
-			}
-
-			if(_treasureOpenUi)
-			{
-				_treasureOpenUi->SetVisible(false); // 開けUIを消す
-			}
-
-			// エフェクト再生
-			if(_doyaEffect)
-			{
-				_doyaEffect->SetTargetPlayer(player);
-				_doyaEffect->PlayEffect(treasure->GetPos());
-			}
-
-			// 宝箱を開けた時の音波を発生
-			EnemySoundManager::GetInstance()->EmitSound(
-				treasure->GetPos(),  // 宝箱の位置
-				5,                   // 音の大きさレベル（1-3で調整）
-				400.0f,             // 音波の最大半径
-				10.0f                // 音波の速度
-			);
-
-			return true;				// 1つ開けたら終了
-		}
-		break; // 1つの宝箱に対して処理するので、当たったらループを抜ける
 	}
+
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
 	if (!inAnyTreasure)
 	{
@@ -649,6 +756,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
 			_treasureHoldSec = 0.0f;
+			// 開けていた宝箱の進行度をリセット
+			if (_currentOpeningTreasure != nullptr)
+			{
+				_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
+			}
+			_currentOpeningTreasure = nullptr;
 			auto sound = gGlobal._soundServer->Get("60");
 			if (sound && sound->IsPlay())
 			{
@@ -661,6 +774,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			_treasureOpenUi->SetVisible(false);
 		}
 
+		progress = 0.0f;	//進行度をリセット
+
 		// 連打型宝箱もリセット
 		for (const auto& sp : treasures)
 		{
@@ -668,7 +783,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				if (!rapidFire->IsOpen())
 				{
-					rapidFire->ResetButtonCount();
+					rapidFire->ResetCount();
 				}
 			}
 		}

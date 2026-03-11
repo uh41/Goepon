@@ -15,13 +15,13 @@ struct DetectionSector
 // プレイヤーの検出情報を表す構造体
 struct DetectionInfo
 {
-	bool isDetected;				// プレイヤーが検出されたかどうか
-	bool isChasing;					// 追跡状態かどうか
-	bool isInDetectionDelay;		// 遅延中フラグ
-	vec::Vec3 lastPlayerPos;		// 最後に検出されたプレイヤーの位置
-	float timer;					// プレイヤーが検出されてからの経過時間
-	float chaseTimer;				// 追跡状態の経過時間
-	float detectionDelayTimer;		// 検知してから追跡開始までの遅延タイマー
+	bool bDetected;				// プレイヤーが検出されたかどうか
+	bool bChasing;				// 追跡状態かどうか
+	bool bDelay;				// 遅延中フラグ
+	vec::Vec3 lastPlayerPos;	// 最後に検出されたプレイヤーの位置
+	float timer;				// プレイヤーが検出されてからの経過時間
+	float chaseTimer;			// 追跡状態の経過時間
+	float DelayTimer;			// 検知してから追跡開始までの遅延タイマー
 };
 
 class EnemySensor : public EnemyBase
@@ -41,15 +41,15 @@ public:
 	bool CheckPlayerDetection(PlayerBase* player);
 
 	// 索敵情報のゲッター
-	const DetectionInfo& GetDetectionInfo() const { return _detectionInfo; }
+	const DetectionInfo& GetDetectionInfo() const { return _detect; }
 
 	// 索敵状態のリセット
 	void ResetDetection();
 
 	// 追跡状態のセッターとゲッター
-	bool IsChasing() const { return _detectionInfo.isChasing; } 
-	vec::Vec3 GetLastPlayerPos() const { return _detectionInfo.lastPlayerPos; }
-	float GetChaseTimer() const { return _detectionInfo.chaseTimer; }
+	bool IsChasing() const { return _detect.bChasing; } 
+	vec::Vec3 GetLastPlayerPos() const { return _detect.lastPlayerPos; }
+	float GetChaseTimer() const { return _detect.chaseTimer; }
 
 	// 索敵範囲表示
 	void RenderDetectionSector() const;
@@ -82,11 +82,11 @@ public:
 	) const;
 
 protected:
-	DetectionSector _detectionSector; 
-	bool _bHasDetectionSector; 
-	bool _bSensorEnabled;          
+	DetectionSector _detectSector;	// 索敵範囲の情報
+	DetectionInfo _detect;			// プレイヤーの検出情報
 
-	DetectionInfo _detectionInfo;      
+	bool _bDetectionSector;			// 索敵範囲が設定されているかどうかのフラグ
+	bool _bSensorEnabled;			// センサーが有効かどうかのフラグ   
 
 	// 索敵結果の表示時間（秒）
 	static constexpr float DETECTION_DISPLAY_TIME = 0.1f;
@@ -94,9 +94,9 @@ protected:
 	// 追跡状態の持続時間（秒）
 	static constexpr float CHASE_TIME = 5.0f;
 
-	int _detectionFrameCount;
+	int _detectFrameCount;
 	static constexpr int DetectionFrame = 1;	
-	bool _CanDetectionResult;					
+	bool _bDetectionResult;					
 
 	// 索敵範囲の描画用キャッシュとタイマー
 	void UpdateDetectionTimer();		  
@@ -105,11 +105,11 @@ protected:
 	MapBase* _map;
 
 	// 描画キャッシュ（const メソッドから更新するため mutable）
-	mutable std::vector<std::array<VERTEX3D, 6>> _detectionCachedPolygons;
-	mutable int _detectionCacheCounter;
+	mutable std::vector<std::array<VERTEX3D, 6>> _CachedPolygons;
+	mutable int _CacheCounter;
 
 	// キャッシュ再計算インターバル（フレーム）
-	static constexpr int DetectionSectorCacheInterval = 5;
+	static constexpr int CacheInterval = 5;
 
 	// キャッシュを再計算する（描画用。内部で重い判定を実行）
 	void RecalculateDetectionSector() const;

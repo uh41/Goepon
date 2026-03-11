@@ -98,8 +98,9 @@ public:
 	}
 
 	// 当たり判定処理
-	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);// キャラの回避処理
-	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);// キャラ同士の当たり判定処理
+	bool EscapeCollision(CharaBase* chara, ObjectBase* obj);				// キャラの回避処理
+	bool CheckTanukiHeadCollision(PlayerTanuki* player, ObjectBase* obj, vec::Vec3& outHitPos);
+	bool CharaToCharaCollision(CharaBase* c1, CharaBase* c2);				// キャラ同士の当たり判定処理
 	bool PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>& makimono);// プレイヤーと巻物の当たり判定処理
     // キャラと宝箱の当たり判定処理
 	bool CharaToTreasureHitCollision(CharaBase* chara, const at::vspc<TreasureBase>& treasures);
@@ -383,6 +384,10 @@ protected:
 
 	at::vec<EnemyBase*> _enemiesInAttackRange; // 攻撃範囲内の敵のリスト
 
+	// 宝箱ごとの進行度を管理するマップを追加
+	at::umtt<TreasureBase*, float> _treasureProgressMap;
+	TreasureBase* _currentOpeningTreasure = nullptr; // 現在開けている宝箱
+
 private:
 	// イントロ演出用
 	bool  _isIntroActive;	   // イントロ演出が有効か
@@ -394,5 +399,7 @@ private:
 	bool StartIntroSequence();   // イントロシーケンス開始
 	bool ProcessIntroSequence(); // イントロシーケンスの更新
 	bool EndIntroSequence();     // イントロシーケンス終了
+	
+	float progress;
 };
 

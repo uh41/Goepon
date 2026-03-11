@@ -22,19 +22,19 @@ public:
 	bool Render()     override; // 描画
 
 	// 連打カウント関連
-	int GetRequiredButtonCount() const { return _requiredButtonCount; }
-	int GetCurrentButtonCount() const { return _currentButtonCount; }
-	void AddButtonCount();  // ボタンを1回押した時に呼ぶ
-	void ResetButtonCount(); // 範囲外に出た時などにリセット
+	int GetRequiredCount() const { return _requiredCount; }
+	int GetCurrentCount() const { return _currentCount; }
+	void AddCount();  // ボタンを1回押した時に呼ぶ
+	void ResetCount(); // 範囲外に出た時などにリセット
 
-	void RenderGauge(const vec::Vec3& playerPos); // プレイヤー位置を基にゲージを描画
+	void RenderGaugeRF(const vec::Vec3& playerPos, float progress) override;
 
 protected:
 	int _attachIndex;
 
 	// 連打型用のパラメータ
-	int _requiredButtonCount; // 開けるのに必要な連打回数
-	int _currentButtonCount;  // 現在の連打回数
+	int _requiredCount; // 開けるのに必要な連打回数
+	int _currentCount;  // 現在の連打回数
 	float _buttonResetTimer;  // 連打リセットタイマー（入力がない時間）
 	static constexpr float BUTTON_RESET_TIME = 2.0f; // 2秒間入力がないとリセット
 

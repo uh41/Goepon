@@ -19,6 +19,7 @@ namespace dash
 	static constexpr auto DASH_RECOVER_INTERVAL = 5.0f;// ダッシュ回復のインターバル（秒）
 	static constexpr auto DASH_SPEED = 5.0f; // ダッシュ中の移動速度
 	static constexpr auto DASH_DURATION = 0.3f; // ダッシュ状態の持続時間
+	static constexpr auto DASH_COOLDOWN_SPEED = 0.8f; // クールダウン中の移動量
 }
 
 class PlayerTanuki : public PlayerBase
@@ -39,6 +40,9 @@ public:
 
 	auto GetDashCount() const { return _dashCount; } // ダッシュ回数を取得するゲッター
 
+	// 入力が有効かどうかのゲッターとセッター
+	bool GetInputEnabled() const { return _inputEnabled; }
+	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
 protected:
 	Camera* _cam;
 
@@ -57,5 +61,7 @@ protected:
 
 	float _dashRecoverTime; // ダッシュ回復のタイマー
 	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
+
+	bool _inputEnabled; // 入力が有効かどうか
 };
 

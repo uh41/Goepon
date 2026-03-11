@@ -42,12 +42,12 @@ bool TreasureRapidFire::Initialize()
 	_isVisible = true;
 
 	// 連打型のパラメータ初期化
-	_requiredButtonCount = 5;
-	_currentButtonCount = 0;
+	_requiredCount = 5;
+	_currentCount = 0;
 	_buttonResetTimer = 0.0f;
 
 	// ゲージ描画用のパラメータ初期化（長方形）
-	_gaugeWidth = 300;                      // 横幅
+	_gaugeWidth = 150;                      // 横幅
 	_gaugeHeight = 30;                      // 高さ
 	_gaugeBorderThickness = 3;              // 枠の太さ
 	_bgColor = GetColor(50, 50, 50);        // 暗いグレー（背景）
@@ -72,7 +72,7 @@ bool TreasureRapidFire::Process()
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
 
 	// 連打リセットタイマー処理
-	if (_currentButtonCount > 0 && !_isOpen)
+	if (_currentCount > 0 && !_isOpen)
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_buttonResetTimer += dt;
@@ -80,7 +80,7 @@ bool TreasureRapidFire::Process()
 		// 一定時間入力がなければリセット
 		if (_buttonResetTimer >= BUTTON_RESET_TIME)
 		{
-			ResetButtonCount();
+			ResetCount();
 		}
 	}
 
@@ -110,22 +110,22 @@ bool TreasureRapidFire::Render()
 	return true;
 }
 
-void TreasureRapidFire::AddButtonCount()
+void TreasureRapidFire::AddCount()
 {
 	if (!_isOpen)
 	{
-		_currentButtonCount++;
+		_currentCount++;
 		_buttonResetTimer = 0.0f; // タイマーリセット
 	}
 }
 
-void TreasureRapidFire::ResetButtonCount()
+void TreasureRapidFire::ResetCount()
 {
-	_currentButtonCount = 0;
+	_currentCount = 0;
 	_buttonResetTimer = 0.0f;
 }
 
-void TreasureRapidFire::RenderGauge(const vec::Vec3& playerPos)
+void TreasureRapidFire::RenderGaugeRF(const vec::Vec3& playerPos, float progress)
 {
 	// 宝箱が開いている場合は描画しない
 	if (_isOpen)
@@ -133,47 +133,32 @@ void TreasureRapidFire::RenderGauge(const vec::Vec3& playerPos)
 		return;
 	}
 
-	// 宝箱の3D座標を2D座標に変換（中心位置）
-	VECTOR screenPosCenter = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(_vPos));
+	// 進行度を計算（引数のprogressは無視し、連打カウントから計算）
+	float calculatedProgress = static_cast<float>(_currentCount) / static_cast<float>(_requiredCount);
+	if (calculatedProgress > 1.0f) calculatedProgress = 1.0f;
 
-	// 画面外なら描画しない
-	if (screenPosCenter.z < 0.0f || screenPosCenter.z > 1.0f)
+	// 宝箱の中心位置の3D座標を2D座標に変換
+	vec::Vec3 topPos = _vPos;
+	topPos.y += 100.0f;
+
+	VECTOR screenPos = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(topPos));
+
+	if (screenPos.z < 0.0f || screenPos.z > 1.0f)
 	{
 		return;
 	}
 
-	// 宝箱のバウンディングボックスを取得して右上の座標を計算
-	// モデルの上端を取得するために、Y軸方向にオフセットを追加
-	vec::Vec3 topRightPos = _vPos;
-	topRightPos.y += 50.0f;  // 宝箱の高さ分上にオフセット（必要に応じて調整）
-	topRightPos.x += 30.0f;  // 右方向にオフセット
+	int gaugeX = static_cast<int>(screenPos.x);
+	int gaugeY = static_cast<int>(screenPos.y);
 
-	// 右上の3D座標を2D座標に変換
-	VECTOR screenPosTopRight = ConvWorldPosToScreenPos(DxlibConverter::VecToDxLib(topRightPos));
-
-	// 画面外チェック
-	if (screenPosTopRight.z < 0.0f || screenPosTopRight.z > 1.0f)
-	{
-		return;
-	}
-
-	// ゲージの位置を右上に設定
-	int gaugeX = static_cast<int>(screenPosTopRight.x);
-	int gaugeY = static_cast<int>(screenPosTopRight.y);
-
-	// 進行度を計算
-	float progress = static_cast<float>(_currentButtonCount) / static_cast<float>(_requiredButtonCount);
-	if (progress > 1.0f) progress = 1.0f;
-
-	// 長方形ゲージを描画（右上基準）
-	DrawRectGauge(gaugeX, gaugeY, progress);
+	DrawRectGauge(gaugeX, gaugeY, calculatedProgress);
 }
 
 void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 {
-	// ゲージの左上座標を計算（右上基準にするため、左にシフト）
-	const int gaugeX = centerX - _gaugeWidth; // 右端を基準に左に配置
-	const int gaugeY = centerY;               // 上端を基準に配置
+	// ゲージの左上座標を計算（中心基準から左上にシフト）
+	const int gaugeX = centerX - (_gaugeWidth / 2);  // 中心を基準に左にシフト
+	const int gaugeY = centerY - _gaugeHeight - 50;  // ゲージを上に配置（+テキスト分のスペース）
 
 	// 背景（暗いグレー）を描画
 	DrawBox(
@@ -224,19 +209,11 @@ void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 
 	// カウント数をゲージの中央に表示
 	char text[32];
-	sprintf_s(text, "%d/%d", _currentButtonCount, _requiredButtonCount);
+	sprintf_s(text, "%d/%d", _currentCount, _requiredCount);
 
 	const int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)));
 	const int textX = gaugeX + (_gaugeWidth - textWidth) / 2; // ゲージ内で中央揃え
 	const int textY = gaugeY + (_gaugeHeight - 16) / 2;       // 縦方向で中央揃え
 
 	DrawString(textX, textY, text, _textColor);
-
-	// 「Aボタン連打！」のテキストをゲージの上に表示
-	const char* instruction = "Aボタン連打！";
-	const int instrWidth = GetDrawStringWidth(instruction, static_cast<int>(strlen(instruction)));
-	const int instrX = gaugeX + (_gaugeWidth - instrWidth) / 2; // ゲージ幅で中央揃え
-	const int instrY = gaugeY - 25; // ゲージの上に配置
-
-	DrawString(instrX, instrY, instruction, _textColor);
 }

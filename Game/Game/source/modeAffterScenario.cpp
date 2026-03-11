@@ -1,6 +1,7 @@
 #include "modeAffterScenario.h"
 #include "modegame.h"
 #include "modecredit.h"
+#include "applicationglobal.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -41,12 +42,29 @@ bool ModeAfScenario::Initialize()
 		_voice->Play();
 	}
 
+	if(gGlobal._soundServer)
+	{
+		if(auto bgm = gGlobal._soundServer->Get("120"))
+		{
+			bgm->Play();
+		}
+	}
+
 	return true;
 }
 
 bool ModeAfScenario::Terminate()
 {
 	ModeBase::Terminate();
+
+	if(gGlobal._soundServer)
+	{
+		if(auto bgm = gGlobal._soundServer->Get("120"))
+		{
+			bgm->Stop();
+		}
+	}
+
 
 	if(_soundServer)
 	{
