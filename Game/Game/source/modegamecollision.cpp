@@ -608,6 +608,18 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 						10.0f
 					);
 
+					if (gGlobal._soundServer)
+					{
+						auto sOpen = gGlobal._soundServer->Get("4"); // "4" = tanuki_Tresure_open
+						if (sOpen) sOpen->Play();
+					}
+
+					auto sound = gGlobal._soundServer->Get("60");
+					if (sound && sound->IsPlay())
+					{
+						sound->Stop();
+					}
+
 					return true;
 				}
 			}
@@ -788,17 +800,22 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 		progress = 0.0f;	//進行度をリセット
 
-		//// 連打型宝箱もリセット
-		//for (const auto& sp : treasures)
-		//{
-		//	if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(sp.get()))
-		//	{
-		//		if (!rapidFire->IsOpen())
-		//		{
-		//			rapidFire->ResetCount();
-		//		}
-		//	}
-		//}
+		// 連打型宝箱もリセット
+		for (const auto& sp : treasures)
+		{
+			if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(sp.get()))
+			{
+				if (!rapidFire->IsOpen())
+				{
+					//rapidFire->ResetCount();
+					auto sound = gGlobal._soundServer->Get("60");
+					if (sound && sound->IsPlay())
+					{
+						sound->Stop();
+					}
+				}
+			}
+		}
 	}
 	return false;
 }
