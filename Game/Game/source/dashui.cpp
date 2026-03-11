@@ -42,11 +42,9 @@ bool DashUi::Render()
 
 	if(_player != nullptr && _handle != -1)
 	{
-		bool canDash = (!_player->IsDash()) &&
-			(_player->GetDashCoolDownTime() <= 0.0f) &&
-			(_player->GetDashCount() < dash::DASH_MAX);
+		float cd = _player->GetDashCoolDownTime();
 
-		if(canDash)
+		if(cd > 0.0f)
 		{
 			DrawGraph(dash::DASH_ICON_X, dash::DASH_ICON_Y, _handle, TRUE);
 		}
