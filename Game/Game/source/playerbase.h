@@ -24,6 +24,7 @@ public:
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 
 	int GetMakimonoCount() const { return _makimonoCount; } // まきものの所持数を取得する
+	void SetMakimonoCount(int count) { _makimonoCount = count; } // まきものの所持数を設定する
 	void AddMakimono(int addCount);                         // まきものの所持数を増やす
 	void SubMakimono(int subCount);                         // まきものの所持数を減らす	
 

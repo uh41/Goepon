@@ -304,6 +304,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = false;
 			_player->SetPos(_playerTanuki->GetPos());
 			_player->SetDir(_playerTanuki->GetDir());
+			_player->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
 			_doyaEffect->SetTargetPlayer(_player.get());
@@ -344,6 +345,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = true;
 			_playerMono->SetPos(_playerTanuki->GetPos());
 			_playerMono->SetDir(_playerTanuki->GetDir());
+			_playerMono->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_doyaEffect->SetTargetPlayer(_playerMono.get());
@@ -453,6 +455,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetPos(_playerMono->GetPos());
 			_playerTanuki->SetDir(_playerMono->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->SetMakimonoCount(_playerMono->GetMakimonoCount());
 			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
@@ -498,6 +501,8 @@ bool ModeGame::PlayerTransform()
 				_playerTanuki->SetPos(srcPlayer->GetPos());
 				_playerTanuki->SetDir(srcPlayer->GetDir());
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+
+				_playerTanuki->SetMakimonoCount(srcPlayer->GetMakimonoCount());
 
 				// モノから戻る場合もタヌキの待機アニメーションを再生する
 				_playerTanuki->PlayAnimation("idle", true);
@@ -557,6 +562,7 @@ bool ModeGame::PlayerTransform()
 		if(_bShowTanuki)
 		{
 			// 人間へ変身（アニメあり）
+			_playerTanuki->SubMakimono(1);
 			if(PlayerTransformToTanuki(true))
 			{
 				return true;
@@ -1084,6 +1090,7 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->SetPos(player->GetPos());
 							_playerTanuki->SetDir(player->GetDir());
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
+							_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 							_playerTanuki->PlayAnimation("goepon_idle", true);
 							_playerTanuki->Process();
 
@@ -1116,6 +1123,7 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->SetPos(player->GetPos());
 							_playerTanuki->SetDir(player->GetDir());
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
+							_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 							_playerTanuki->PlayAnimation("idle", true);
 							_playerTanuki->Process();
 							reEffect = true;
