@@ -407,7 +407,7 @@ private:
 	bool  _isIntroActive;	   // イントロ演出が有効か
 	bool  _introButtonPressed; // イントロ中にボタンが押されたか
 	float _introTimer;		   // イントロの経過時間
-	static constexpr float INTRO_DURATION = 5.0f; // イントロの総時間（秒）
+	static constexpr float INTRO_DURATION = 3.0f; // イントロの総時間（秒）
 
 	// ゲームクリア演出用
 	bool _isGameClearCinematicActive; // ゲームクリア演出が有効か

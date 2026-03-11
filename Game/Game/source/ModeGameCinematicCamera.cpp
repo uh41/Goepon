@@ -288,12 +288,23 @@ bool ModeGame::ProcessIntroSequence()
 		return false;
 	}
 
+
 	PlayerTanuki* tanuki = _playerTanuki.get();
 	if (tanuki && tanuki->IsAlive())
 	{
 		vec::Vec3 playerPos = tanuki->GetPos();
 
 		_cinematicCamera->SetTarget(playerPos);
+	}
+
+	// ★★★ 時間経過でイントロ終了 ★★★
+	_introTimer += 1.0f / 60.0f; // 60FPS想定
+
+	// イントロ演出の総時間（INTRO_DURATION）を超えたら終了
+	if(_introTimer >= INTRO_DURATION)
+	{
+		EndIntroSequence();
+		return true;
 	}
 
 	// ボタン入力でイントロ終了
