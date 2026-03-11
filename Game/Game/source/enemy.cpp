@@ -16,7 +16,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel(mv1::busi_multimotion);
+	_handle = MV1LoadModel(mv1::SK_busi_multimotion_03);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;

@@ -18,7 +18,7 @@ bool EnemyMove::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/busi_multimotion.mv1");
+	_handle = MV1LoadModel("res/PoorEnemyMelee/SK_busi_multimotion_03.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
