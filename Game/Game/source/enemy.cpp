@@ -106,14 +106,14 @@ bool Enemy::Process()
 	}
 
 	// 検知終了後の待機処理（共通フラグを参照）
-	if(_waitingBeforeReturn)
+	if(_waitingReturn)
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_returnWaitTimer -= dt;
 
 		if(_returnWaitTimer <= 0.0f)
 		{
-			_waitingBeforeReturn = false;
+			_waitingReturn = false;
 
 			// 初期位置へ戻る処理は base 実装を使う
 			ReturnInitialPos();
@@ -147,14 +147,14 @@ bool Enemy::Process()
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
 			}
-			else if (_waitingBeforeReturn)	// 検知終了後の待機処理
+			else if (_waitingReturn)	// 検知終了後の待機処理
 			{
 				const float dt = 1.0f / 60.0f; // 60FPS想定
 				_returnWaitTimer -= dt;
 
 				if (_returnWaitTimer <= 0.0f)
 				{
-					_waitingBeforeReturn = false;
+					_waitingReturn = false;
 
 					// 初期位置へ戻る処理は base 実装を使う
 					ReturnInitialPos();
@@ -164,8 +164,15 @@ bool Enemy::Process()
 			}
 			else if (_isReturning)	// 初期位置に戻り中
 			{
-				_status = _waitingForTeleport ? STATUS::WAIT : STATUS::WALK;
-				UpdateReturnInitialPos();
+				if (_waitingTeleport) 
+				{
+					_status = STATUS::WAIT;
+				}
+				else 
+				{
+					_status = STATUS::WALK;
+				}
+				UpdateReturnInitialPos();	// 初期位置への帰還処理は base 実装を使う
 			}
 			else if (_isMovingToSound)	// 音源に向かって移動中
 			{

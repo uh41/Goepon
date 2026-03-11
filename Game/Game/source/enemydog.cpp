@@ -293,7 +293,7 @@ bool EnemyDog::Process()
 	}
 
 	// 検知終了後の待機処理（帰還前の待機）
-	if (_waitingBeforeReturn)
+	if (_waitingReturn)
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_returnWaitTimer -= dt;
@@ -302,7 +302,7 @@ bool EnemyDog::Process()
 
 		if (_returnWaitTimer <= 0.0f)
 		{
-			_waitingBeforeReturn = false;
+			_waitingReturn = false;
 			_returnWaitTimer = 0.0f;
 			ReturnInitialPos();
 			_playSightOffOnReturn = true;
@@ -311,7 +311,7 @@ bool EnemyDog::Process()
 		// 待機中にプレイヤーを再検出したら待機をキャンセル
 		if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
 		{
-			_waitingBeforeReturn = false;
+			_waitingReturn = false;
 			_returnWaitTimer = 0.0f;
 		}
 		return true;

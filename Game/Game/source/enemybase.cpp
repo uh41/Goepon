@@ -49,15 +49,16 @@ bool EnemyBase::Initialize()
 	_returnSpeed = 1.5f;	// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
-	_waitingForTeleport = false;
+	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
 
-	_waitingBeforeReturn = false;
+	// 初期位置に戻る際の待機処理の初期化
+	_waitingReturn = false;
 	_returnWaitTimer = 0.0f;
 
 	// 音検知による移動の初期化
 	_isMovingToSound = false;
-	_soundSourcePosition = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_soundSourcePos = vec3::VGet(0.0f, 0.0f, 0.0f);
 
 	// 音源到達後の待機処理の初期化
 	_waitingAtSound = false;
@@ -106,7 +107,7 @@ void EnemyBase::CaptureInitialTransform()
 // テレポート状態のリセット
 void EnemyBase::ResetTeleport()
 {
-	_waitingForTeleport = false;
+	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
 }
 
@@ -170,7 +171,7 @@ void EnemyBase::OnPlayerLost()
 		_isMoving = false;
 
 		// 検知終了後、すぐに戻らず待機状態にする
-		_waitingBeforeReturn = true;
+		_waitingReturn = true;
 		_returnWaitTimer = RETURN_WAIT_TIME;
 
 		// センサーの追跡状態をリセット
@@ -329,7 +330,7 @@ void EnemyBase::StartDamage()
 	_attachStage = 1;// ダメージステージに移行
 	_stanTimer = 0.0f;
 	_isReturning = false;
-	_waitingForTeleport = false;
+	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
 
 	// ダメージ開始時の処理
@@ -464,7 +465,7 @@ void EnemyBase::UpdateReturnInitialPos()
 	_detectedPlayer = false;
 
 	// テレポート待機中の場合
-	if(_waitingForTeleport)
+	if(_waitingTeleport)
 	{
 		_teleportTimer -= 1.0f / 60.0f; // 60FPSとして計算
 
@@ -479,7 +480,7 @@ void EnemyBase::UpdateReturnInitialPos()
 				_vDir = _initialDir;
 			}
 			_isReturning = false;				// 初期位置に戻り完了
-			_waitingForTeleport = false;		// テレポート待機終了
+			_waitingTeleport = false;		// テレポート待機終了
 			_teleportTimer = 0.0f;				// テレポート完了後のタイマーリセット
 			_effect->PlayEffect(_vPos);			// テレポート後のエフェクト
 		}
@@ -559,9 +560,9 @@ void EnemyBase::UpdateReturnInitialPos()
 	else
 	{
 		// 床がない場合はテレポート待機開始
-		if(!_waitingForTeleport)
+		if(!_waitingTeleport)
 		{
-			_waitingForTeleport = true;
+			_waitingTeleport = true;
 			_teleportTimer = TELEPORT_WAIT_TIME;
 		}
 	}
@@ -575,7 +576,7 @@ void EnemyBase::UpdateMovingToSound()
 	if (!_isMovingToSound) return;
 
 	// 音源までの距離を計算
-	vec::Vec3 toSound = vec3::VSub(_soundSourcePosition, _vPos);
+	vec::Vec3 toSound = vec3::VSub(_soundSourcePos, _vPos);
 	toSound.y = 0.0f; // Y軸は無視
 
 	float distance = vec3::VSize(toSound);
@@ -1141,7 +1142,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 				ResetTeleport();
 
 				_isMovingToSound = true;
-				_soundSourcePosition = soundPos;
+				_soundSourcePos = soundPos;
 
 				_soundDetectionActive = true;
 				_soundDetectionTimer = 0.0f;
@@ -1165,7 +1166,7 @@ void EnemyBase::StartMoveToSoundFromManager(const vec::Vec3& soundPos, int sound
 		ResetTeleport();
 
 		_isMovingToSound = true;
-		_soundSourcePosition = soundPos;
+		_soundSourcePos = soundPos;
 
 		_soundDetectionActive = true;
 		_soundDetectionTimer = 0.0f;
