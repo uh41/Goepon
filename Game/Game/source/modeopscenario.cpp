@@ -77,6 +77,8 @@ bool ModeOpScenario::Initialize()
 		}
 	}
 
+	_moveHandle = LoadGraph(ui::prologe_config);
+
 	return true;
 }
 
@@ -201,6 +203,8 @@ bool ModeOpScenario::Render()
 	{
 		DrawGraph(0, 0, _backHandle, TRUE);
 	}
+
+	DrawGraph(ui::MOVE_X, ui::MOVE_Y, _moveHandle, TRUE);
 
 	// �\������Ă���R�}����Ԃɕ`��
 	for(int i = 0; i <= _pageNo && i < StCas<int>(_page.size()); i++)

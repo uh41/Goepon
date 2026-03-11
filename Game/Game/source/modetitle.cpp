@@ -27,6 +27,8 @@ bool ModeTitle::Initialize()
 		return false;
 	}
 
+	_startHandle = LoadGraph(ui::B_gamestart);
+
 	// �K�L�����f�[�^��쐬
 	_player = std::make_shared<TitleTanuki>();
 	if(_player)
@@ -156,6 +158,8 @@ bool ModeTitle::Render()
 	{
 		DrawGraph(0, 0, _handle, TRUE);
 	}
+
+	DrawGraph(ui::START_CONFIG_X, ui::START_CONFIG_Y, _startHandle, TRUE);
 
 	// �J�����ݒ�X�V
 	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_cam->GetPos()), DxlibConverter::VecToDxLib(_cam->GetTarget()));

@@ -22,6 +22,11 @@ namespace dash
 	static constexpr auto DASH_COOLDOWN_SPEED = 0.8f; // クールダウン中の移動量
 }
 
+namespace rad
+{
+	static constexpr auto ROTATION_SPEED = 20.0f; // 90度をラジアンで表した値
+}
+
 class PlayerTanuki : public PlayerBase
 {
 	typedef PlayerBase base;
@@ -63,5 +68,8 @@ protected:
 	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
 
 	bool _inputEnabled; // 入力が有効かどうか
+
+	float _rotation_Y; // プレイヤーのY軸回転角
+	float _target_Rotation_Y; // プレイヤーのY軸回転の目標値
 };
 

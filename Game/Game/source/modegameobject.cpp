@@ -304,6 +304,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = false;
 			_player->SetPos(_playerTanuki->GetPos());
 			_player->SetDir(_playerTanuki->GetDir());
+			_player->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
 			_doyaEffect->SetTargetPlayer(_player.get());
@@ -344,6 +345,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = true;
 			_playerMono->SetPos(_playerTanuki->GetPos());
 			_playerMono->SetDir(_playerTanuki->GetDir());
+			_playerMono->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_doyaEffect->SetTargetPlayer(_playerMono.get());
@@ -453,6 +455,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetPos(_playerMono->GetPos());
 			_playerTanuki->SetDir(_playerMono->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->SetMakimonoCount(_playerMono->GetMakimonoCount());
 			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
@@ -498,6 +501,8 @@ bool ModeGame::PlayerTransform()
 				_playerTanuki->SetPos(srcPlayer->GetPos());
 				_playerTanuki->SetDir(srcPlayer->GetDir());
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
+
+				_playerTanuki->SetMakimonoCount(srcPlayer->GetMakimonoCount());
 
 				// モノから戻る場合もタヌキの待機アニメーションを再生する
 				_playerTanuki->PlayAnimation("idle", true);
@@ -557,6 +562,7 @@ bool ModeGame::PlayerTransform()
 		if(_bShowTanuki)
 		{
 			// 人間へ変身（アニメあり）
+			_playerTanuki->SubMakimono(1);
 			if(PlayerTransformToTanuki(true))
 			{
 				return true;
@@ -974,8 +980,11 @@ bool ModeGame::CheckAllDetections()
 				// 視覚検知判定
 				bool detected = false;
 
+				// --- 犬の場合は人間形態でも全方向から検知可能 ---
+				bool isEnemyDog = (dynamic_cast<EnemyDog*>(eb) != nullptr);
+
 				// --- PlayerMono 表示時の特別処理 ---
-				if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+				if (_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
 				{
 					// PlayerMono のときは「扇形内にいて、かつプレイヤーが動いた場合のみ」検知させる
 					// プレイヤーのカプセル情報を取得
@@ -994,7 +1003,7 @@ bool ModeGame::CheckAllDetections()
 						bool inputMoving = (vec3::VSize(player->GetInputVector()) > 0.001f);
 
 						// 座標差が閾値超過、もしくは入力があるなら「動いた」とみなす
-						if(moved > kMonoMoveDetectThreshold || inputMoving)
+						if (moved > kMonoMoveDetectThreshold || inputMoving)
 						{
 							detected = sensor->CheckPlayerDetection(player);
 						}
@@ -1009,16 +1018,16 @@ bool ModeGame::CheckAllDetections()
 						detected = false;
 					}
 				}
-				else if(!isHumanForm)
+				else if (!isHumanForm || isEnemyDog)
 				{
-					// 非人状態：既存の通常判定をそのまま使用
+					// 非人状態 または 犬の場合：既存の通常判定をそのまま使用
 					detected = sensor->CheckPlayerDetection(player);
 				}
 				else
 				{
-					if(player != nullptr && sensor != nullptr)
+					if (player != nullptr && sensor != nullptr)
 					{
-						// 人状態：プレイヤーの尻尾(後方)を見られたときのみ検知する
+						// 人状態（犬以外）：プレイヤーの尻尾(後方)を見られたときのみ検知する
 						vec::Vec3 playerPos = player->GetPos();
 						vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
 						vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
@@ -1028,19 +1037,19 @@ bool ModeGame::CheckAllDetections()
 						{
 							vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
 							toEnemy.y = 0.0f;
-							if(vec3::VSize(toEnemy) > 0.0001f)
+							if (vec3::VSize(toEnemy) > 0.0001f)
 							{
 								vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
 
 								vec::Vec3 playerForward = player->GetDir();
 								playerForward.y = 0.0f;
-								if(vec3::VSize(playerForward) > 0.0001f)
+								if (vec3::VSize(playerForward) > 0.0001f)
 								{
 									playerForward = vec3::VNorm(playerForward);
 
 									const float backDotThreshold = 0.0f;
 									float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
-									if(dot <= backDotThreshold)
+									if (dot <= backDotThreshold)
 									{
 										detected = sensor->CheckPlayerDetection(player);
 									}
@@ -1081,6 +1090,7 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->SetPos(player->GetPos());
 							_playerTanuki->SetDir(player->GetDir());
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
+							_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 							_playerTanuki->PlayAnimation("goepon_idle", true);
 							_playerTanuki->Process();
 
@@ -1113,6 +1123,7 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->SetPos(player->GetPos());
 							_playerTanuki->SetDir(player->GetDir());
 							_playerTanuki->_status = CharaBase::STATUS::WAIT;
+							_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 							_playerTanuki->PlayAnimation("idle", true);
 							_playerTanuki->Process();
 							reEffect = true;

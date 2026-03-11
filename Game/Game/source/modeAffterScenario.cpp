@@ -50,6 +50,8 @@ bool ModeAfScenario::Initialize()
 		}
 	}
 
+	_moveHandle = LoadGraph(ui::prologe_config);
+
 	return true;
 }
 
@@ -151,6 +153,8 @@ bool ModeAfScenario::Render()
 	{
 		DrawGraph(0, 0, _page[_pageNo].handle, TRUE);
 	}
+
+	DrawGraph(ui::MOVE_X, ui::MOVE_Y, _moveHandle, TRUE);
 
 	Fade::GetInstance()->Render();
 	return true;

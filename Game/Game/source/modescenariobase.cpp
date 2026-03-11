@@ -18,6 +18,7 @@ bool ModeScenarioBase::Initialize()
 	_backHandle = -1;
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 	_voice = nullptr;
+	_moveHandle = -1;
 
 	return true;
 }
