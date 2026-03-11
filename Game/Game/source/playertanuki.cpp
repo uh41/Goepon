@@ -387,7 +387,7 @@ bool PlayerTanuki::Render()
 {
 	base::Render();
 
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	float vorty = _rotationY;// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
 	MATRIX mRotY = MGetRotY(vorty);
 

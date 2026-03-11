@@ -21,6 +21,7 @@ bool CharaBase::Initialize()
 	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_vOldPos = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_vDir = vec3:: VGet(0.0f, 0.0f, 0.0f);
+	_rotationY = 0.0f; // Y軸回転角を初期化
 	_fColSubY = 0.0f;
 	_fCollisionR = 0.0f;
 	_fCollisionWeight = 0.0f;

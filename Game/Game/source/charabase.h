@@ -38,13 +38,16 @@ public:
 	virtual bool Render();
 
 	// 位置は ObjectBase::_vPos を使う（重複メンバは持たない）
-	const vec::Vec3& GetPos() const {
+	const vec::Vec3& GetPos() const
+	{
 		return _vPos;
 	}
-	const vec::Vec3& GetOldPos() const {
+	const vec::Vec3& GetOldPos() const
+	{
 		return _vOldPos;
 	}
-	void SetOldPos(const vec::Vec3& pos) {
+	void SetOldPos(const vec::Vec3& pos)
+	{
 		_vOldPos = pos;
 	}
 	auto GetColSubY() const {
@@ -52,11 +55,13 @@ public:
 	}
 
 	// 明示的にベースの SetPos を呼ぶ実装（呼び側は戻り値を使わない想定）
-	void SetPos(const vec::Vec3& pos) {
+	void SetPos(const vec::Vec3& pos)
+	{
 		base::SetPos(pos);
 	}
 
-	const vec::Vec3& GetDir() const {
+	const vec::Vec3& GetDir() const
+	{
 		return _vDir;
 	}
 
@@ -64,16 +69,19 @@ public:
 	{
 		return _fCollisionR;
 	}
-	auto GetCollisionWeight() const {
+	auto GetCollisionWeight() const
+	{
 		return _fCollisionWeight;
 	}
 
 	bool Damage(float damage);
 
-	float GetHP() const {
+	float GetHP() const
+	{
 		return _fHp;
 	}	// HP取得用ゲッター
-	bool IsAlive() const {
+	bool IsAlive() const 
+	{
 		return _bIsAlive;
 	} // 生存確認用
 
@@ -83,18 +91,39 @@ public:
 	int PlayAnimation(std::string name, bool loop = false);
 	void StopAnimation();
 
-	const vec::Vec3& GetInputVector() const {
+	const vec::Vec3& GetInputVector() const
+	{
 		return _vInput;
 	}
-	float GetMoveSpeed() const {
+	float GetMoveSpeed() const
+	{
 		return _fMvSpeed;
 	}
 
-	auto GetLand() const {
+	auto GetLand() const
+	{
 		return _bLand;
 	}
-	void SetLand(bool land) {
+	void SetLand(bool land)
+	{
 		_bLand = land;
+
+		_vDir.x = sinf(_rotationY);
+		_vDir.z = cosf(_rotationY);
+		_vDir = vec3::VNorm(_vDir);
+	}
+
+	float GetRotationY() const
+	{
+		return _rotationY;
+	}
+	void SetRotationY(float rotationY)
+	{
+		_rotationY = rotationY;
+	}
+	void UpdataRotationFromDir()
+	{
+		_rotationY = atan2f(_vDir.x, _vDir.z);
 	}
 
 protected:
@@ -115,4 +144,6 @@ protected:
 	vec::Vec3 _vInput;
 
 	bool    _bLand; // 着地フラグ
+
+	float _rotationY; // Y軸回転角
 };

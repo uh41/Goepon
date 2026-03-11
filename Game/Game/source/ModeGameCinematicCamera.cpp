@@ -297,7 +297,7 @@ bool ModeGame::ProcessIntroSequence()
 		_cinematicCamera->SetTarget(playerPos);
 	}
 
-	// ★★★ 時間経過でイントロ終了 ★★★
+	// 時間経過でイントロ終了
 	_introTimer += 1.0f / 60.0f; // 60FPS想定
 
 	// イントロ演出の総時間（INTRO_DURATION）を超えたら終了
@@ -352,22 +352,51 @@ bool ModeGame::StartClearSequence()
 {
 	_isGameClearCinematicActive = true;
 	_clearCinematicTimer = 0.0f;
+	_clearSequencePhase = 0; // 0: プレイヤー回転, 1: カメラズーム
+
+	// ゲームクリア時は強制的にタヌキに変身 
+	if(!_bShowTanuki)
+	{
+		// 現在表示中のプレイヤーの位置と向きを保存
+		PlayerBase* currentPlayer = nullptr;
+		if(_showMonoPlayer && _playerMono)
+		{
+			currentPlayer = _playerMono.get();
+		}
+		else if(_player)
+		{
+			currentPlayer = _player.get();
+		}
+
+		// タヌキに切り替え
+		_bShowTanuki = true;
+		_showMonoPlayer = false;
+
+		// 位置と向きを引き継ぐ
+		if(currentPlayer && _playerTanuki)
+		{
+			_playerTanuki->SetPos(currentPlayer->GetPos());
+			_playerTanuki->SetDir(currentPlayer->GetDir());
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("idle", true);
+		}
+	}
 
 	// シネマティックカメラが未作成の場合は作成
-	if (!_cinematicCamera)
+	if(!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
-		if (!_cinematicCamera->Initialize())
+		if(!_cinematicCamera->Initialize())
 		{
 			_cinematicCamera.reset();
 			return false;
 		}
 	}
 
-	// ★ カメラの切り替え処理を追加（イントロと同様の処理）
-	if (!_useCinematicCamera)
+	// カメラの切り替え処理
+	if(!_useCinematicCamera)
 	{
-		if (_cinematicCamera && _camera)
+		if(_cinematicCamera && _camera)
 		{
 			// 演出カメラに現在のカメラ位置と注目点をコピー
 			_cinematicCamera->SetPos(_camera->GetPos());
@@ -385,81 +414,66 @@ bool ModeGame::StartClearSequence()
 		}
 	}
 
-	// プレイヤーを取得
-	PlayerBase* targetPlayer = nullptr;
-	if (_bShowTanuki && _playerTanuki)
-	{
-		targetPlayer = _playerTanuki.get();
-	}
-	else if (_showMonoPlayer && _playerMono)
-	{
-		targetPlayer = _playerMono.get();
-	}
-	else if (_player)
-	{
-		targetPlayer = _player.get();
-	}
-
-	if (targetPlayer && _cinematicCamera)
-	{
-		vec::Vec3 playerPos = targetPlayer->GetPos();
-
-		// 現在のカメラ位置からプレイヤーまでの距離を計算
-		vec::Vec3 currentPos = _cinematicCamera->GetPos();
-		float currentDist = vec3::VSize(vec3::VSub(currentPos, playerPos));
-
-		// ズーム後の距離（現在の距離の25%程度に設定してより近づける）
-		float endDist = currentDist * 0.25f;
-		if (endDist < 150.0f) endDist = 150.0f; // 最小距離を設定（近すぎないように）
-
-		// ★ CinematicCamera::StartZoom() を使用してズーム演出を開始
-		_cinematicCamera->StartZoom(playerPos, CLEAR_CINEMATIC_DURATION, currentDist, endDist);
-	}
+	// プレイヤー回転演出を開始
+	StartPlayerRotation();
 
 	return true;
 }
 
 bool ModeGame::ProcessClearSequence()
 {
-	if (!_isGameClearCinematicActive) 
+	if(!_isGameClearCinematicActive)
 	{
 		return true;
 	}
 
-	// ★ CinematicCamera::Process() を呼び出してズーム演出を更新
-	if (_cinematicCamera && _useCinematicCamera)
+	// フェーズ0: プレイヤー回転
+	if(_clearSequencePhase == 0)
 	{
-		_cinematicCamera->Process();
+		bool rotationComplete = ProcessPlayerRotation();
 
-		// プレイヤーの位置を追跡（プレイヤーが動いた場合に対応）
-		PlayerBase* targetPlayer = nullptr;
-		if (_bShowTanuki && _playerTanuki)
+		if(rotationComplete)
 		{
-			targetPlayer = _playerTanuki.get();
-		}
-		else if (_showMonoPlayer && _playerMono)
-		{
-			targetPlayer = _playerMono.get();
-		}
-		else if (_player)
-		{
-			targetPlayer = _player.get();
+			// 回転終了後、カメラズーム演出を開始
+			_clearSequencePhase = 1;
+
+			// ★★★ タヌキプレイヤーの位置でズーム演出を開始 ★★★
+			if(_playerTanuki && _cinematicCamera)
+			{
+				vec::Vec3 playerPos = _playerTanuki->GetPos();
+				vec::Vec3 currentPos = _cinematicCamera->GetPos();
+				float currentDist = vec3::VSize(vec3::VSub(currentPos, playerPos));
+				float endDist = currentDist * 0.25f;
+				if(endDist < 150.0f) endDist = 150.0f;
+
+				_cinematicCamera->StartZoom(playerPos, CLEAR_CINEMATIC_DURATION, currentDist, endDist);
+			}
 		}
 
-		// ターゲット位置を更新（プレイヤーの顔の高さに合わせる）
-		if (targetPlayer)
-		{
-			vec::Vec3 targetPos = vec3::VAdd(targetPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			_cinematicCamera->SetTarget(targetPos);
-		}
+		return true;
 	}
 
-	_clearCinematicTimer += 1.0f / 60.0f;
-
-	// 演出が終了したら
-	if (_clearCinematicTimer >= CLEAR_CINEMATIC_DURATION)
+	// フェーズ1: カメラズーム
+	if(_clearSequencePhase == 1)
 	{
-		return EndClearSequence();
+		if(_cinematicCamera && _useCinematicCamera)
+		{
+			_cinematicCamera->Process();
+
+			// ★★★ タヌキプレイヤーの位置を追跡 ★★★
+			if(_playerTanuki)
+			{
+				vec::Vec3 targetPos = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+				_cinematicCamera->SetTarget(targetPos);
+			}
+		}
+
+		_clearCinematicTimer += 1.0f / 60.0f;
+
+		if(_clearCinematicTimer >= CLEAR_CINEMATIC_DURATION)
+		{
+			return EndClearSequence();
+		}
 	}
 
 	return true;
@@ -533,4 +547,73 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 	_useCinematicCamera = false;
 
 	return true;
+}
+
+bool ModeGame::StartPlayerRotation()
+{
+	// ★★★ タヌキプレイヤーのみを対象に回転演出を初期化 ★★★
+	PlayerBase* targetPlayer = _playerTanuki.get();
+
+	if(!targetPlayer)
+	{
+		return false; // タヌキプレイヤーが存在しない場合は処理しない
+	}
+
+	// 回転演出の初期化
+	_isPlayerRotating = true;
+	_playerRotationTimer = 0.0f;
+	_playerRotationDuration = 2.0f; // 回転演出の総時間（秒）
+
+	// 向きベクトルから現在の回転角度を計算
+	targetPlayer->UpdataRotationFromDir();
+	_playerInitialRotation = targetPlayer->GetRotationY();
+
+	// タヌキプレイヤーの操作を無効化
+	if(_playerTanuki)
+	{
+		_playerTanuki->SetInputEnabled(false);
+	}
+
+	return true;
+}
+
+bool ModeGame::ProcessPlayerRotation()
+{
+	if(!_isPlayerRotating)
+	{
+		return false;
+	}
+
+	PlayerBase* targetPlayer = _playerTanuki.get();
+
+	if(!targetPlayer)
+	{
+		_isPlayerRotating = false; // プレイヤーが存在しない場合は回転演出を終了
+		return true; //回転終了
+	}
+
+	// 時間更新
+	_playerRotationTimer += 1.0f / 60.0f; // 60FPS想定
+
+	// 回転進捗度を計算（0.0?1.0）
+	float progress = _playerRotationTimer / _playerRotationDuration;
+
+	if(progress >= 1.0f)
+	{
+		// 回転完了
+		progress = 1.0f;
+		_isPlayerRotating = false;
+
+		// 狸プレイヤーの操作
+		if(_playerTanuki)
+		{
+			_playerTanuki->SetInputEnabled(true);
+		}
+		return true;
+	}
+	// Y軸回転
+	float rotationY = _playerInitialRotation + (DX_PI_F * 2.0f * progress);
+	targetPlayer->SetRotationY(rotationY);
+
+	return false;
 }

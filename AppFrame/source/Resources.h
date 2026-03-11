@@ -81,6 +81,7 @@ namespace texture
 namespace ui
 {
   inline constexpr const char* Light = "res/Object/building/Light.png";
+  inline constexpr const char* B_gamestart = "res/UI/B_gamestart.png";
   inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
@@ -104,6 +105,7 @@ namespace ui
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
   inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
   inline constexpr const char* UI_x = "res/UI/UI_x.png";
+  inline constexpr const char* prologe_config = "res/UI/prologe_config.png";
 }
 
 namespace ef
@@ -173,7 +175,7 @@ namespace mv1
   inline constexpr const char* SignBoard = "res/Object/SignBoard/SignBoard.mv1";
   inline constexpr const char* Player = "res/Player/Player.mv1";
   inline constexpr const char* PoorEnemy = "res/PoorEnemyMelee/PoorEnemy.mv1";
-  inline constexpr const char* SK_busi_multimotion_03 = "res/PoorEnemyMelee/SK_busi_multimotion_03.mv1";
+  inline constexpr const char* SK_busi_multimotion = "res/PoorEnemyMelee/SK_busi_multimotion.mv1";
   inline constexpr const char* bushi_0114taiki = "res/PoorEnemyMelee/bushi_0114taiki.mv1";
   inline constexpr const char* bushi_karitaiki = "res/PoorEnemyMelee/bushi_karitaiki.mv1";
   inline constexpr const char* busi_multimotion = "res/PoorEnemyMelee/busi_multimotion.mv1";
