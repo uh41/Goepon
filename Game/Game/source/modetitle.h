@@ -9,6 +9,12 @@ namespace soundserver
 	class SoundServer;
 }
 
+namespace ui
+{
+	static constexpr auto START_CONFIG_X = 0;
+	static constexpr auto START_CONFIG_Y = 1030;
+}
+
 class ModeTitle : public ModeBase
 {
 	typedef ModeBase base;
@@ -26,5 +32,6 @@ protected:
 
 	at::spc<soundserver::SoundServer> _soundServer;
 	int _gbmHandle;
+	int _startHandle;
 };
 

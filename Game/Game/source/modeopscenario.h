@@ -24,5 +24,7 @@ private:
 	at::vec<ComicPanel> _panelData;    // 漫画風コマのリスト
 	int _fadeTimer;					   // フェード用タイマー
 	static const int FADE_FRAME = 30;  // フェード時間
+
+	
 };
 

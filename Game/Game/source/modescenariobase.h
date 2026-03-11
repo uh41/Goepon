@@ -1,6 +1,13 @@
 #pragma once
 #include "appframe.h"
 
+namespace ui
+{
+
+	static constexpr auto MOVE_X = 0;
+	static constexpr auto MOVE_Y = 1030;
+}
+
 class ModeScenarioBase : public ModeBase
 {
 public:
@@ -24,5 +31,7 @@ protected:
 	int _backHandle; // 背景のグラフィックハンドル	
 	at::spc<soundserver::SoundServer> _soundServer;
 	at::spc<soundserver::SoundItemVoice> _voice;
+
+	int _moveHandle;
 };
 
