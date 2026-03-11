@@ -79,6 +79,27 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
+	_treasure.clear();
+	for(auto& tb : _treasureBase)
+	{
+		if(!tb) continue;
+		if(auto t = std::dynamic_pointer_cast<Treasure>(tb))
+		{
+			_treasure.emplace_back(t);
+		}
+	}
+
+	// カウンタ/UI に正しい数を反映
+	if(_counterUi)
+	{
+		_counterUi->SetTreasureCount(static_cast<int>(_treasure.size()));
+	}
+
+	if(_treasureUi)
+	{
+		_treasureUi->SetTreasureList(_treasure);
+	}
+
 	// ゴール初期化
 	_isGameClear = false;
 
@@ -913,6 +934,8 @@ bool ModeGame::Process()
 
 	// 3Dサウンド処理
 
+	// 3Dサウンド処理
+
 	if(_sound3D)
 	{
 		// 全ての EnemyBase 系に対して、歩行中のみ3D音を再生する
@@ -923,18 +946,28 @@ bool ModeGame::Process()
 			// 生存チェック
 			if(eb->IsAlive())
 			{
-				// 歩行状態のときだけ再生、それ以外は停止
-				if(eb->_status == CharaBase::STATUS::WALK)
+				// 犬の場合は専用の処理
+				if(auto* dog = dynamic_cast<EnemyDog*>(eb.get()))
 				{
-					// EnemyMove 型かどうかで音を切り替える
-					if(dynamic_cast<EnemyMove*>(eb.get()) != nullptr)
+					// 犬がプレイヤーを追跡中（FOUND状態）の場合のみ吠え声を再生
+					if(dog->_status == CharaBase::STATUS::FOUND)
 					{
-						_sound3D->PlayLoopSound3D(eb.get(), "31", eb->GetPos());
+						_sound3D->PlayLoopSound3D(eb.get(), "40", eb->GetPos());
+					}
+					else if(dog->_status == CharaBase::STATUS::WALK)
+					{
+						_sound3D->PlayLoopSound3D(eb.get(), "41", eb->GetPos());
 					}
 					else
 					{
-						_sound3D->PlayLoopSound3D(eb.get(), "31", eb->GetPos());
+						// 追跡していない場合は停止
+						_sound3D->StopSound3D(eb.get());
 					}
+				}
+				// 武士（EnemyMove, Enemy）の場合
+				else if(eb->_status == CharaBase::STATUS::WALK)
+				{
+					_sound3D->PlayLoopSound3D(eb.get(), "31", eb->GetPos());
 				}
 				else
 				{
@@ -981,6 +1014,11 @@ bool ModeGame::Process()
 			// タヌキ表示へ切替
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
+
+			if(_configUi)
+			{
+				_configUi->SetTransForm(ConfigUi::FormType::TANUKI);
+			}
 
 			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
 			if(prevActive && _playerTanuki)

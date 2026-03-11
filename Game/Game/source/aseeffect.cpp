@@ -50,11 +50,11 @@ bool AseEffect::Process()
 		return true;
 	}
 
-	// タヌキのダッシュ時のみ汗エフェクトを出す（敵に見つかっている場合は排除）
+	// タヌキのクールダウン中のみ汗エフェクトを出す
 	bool needEffect = false;
 	PlayerTanuki* tan = dynamic_cast<PlayerTanuki*>(_player);
 
-	// タヌキプレイヤーである場合のみエフェクトを出す
+	// タヌキプレイヤーである場合のみエフェクトを出す（クールダウン時間で判定）
 	if(tan != nullptr)
 	{
 		if(tan->GetDashCoolDownTime() > 0.0f)
@@ -64,7 +64,21 @@ bool AseEffect::Process()
 	}
 	else
 	{
-		// タヌキではない場合（人間やモノ）、エフェクトを確実に停止
+		// タヌキではない場合、エフェクトを確実に停止
+		if(_playHandle != -1)
+		{
+			if(em->IsPlayingEffect(_playHandle))
+			{
+				em->StopEffect(_playHandle);
+			}
+			_playHandle = -1;
+		}
+		return true;
+	}
+
+	// needEffect が false の場合は再生中のエフェクトを停止して早期リターン
+	if(!needEffect)
+	{
 		if(_playHandle != -1)
 		{
 			if(em->IsPlayingEffect(_playHandle))
@@ -86,67 +100,9 @@ bool AseEffect::Process()
 	{
 		forward = vec3::VNorm(forward);
 	}
-
-	// 2. 「左側」の方向ベクトルを計算 (常にプレイヤーの真左を指す)
-	// Y軸(0,1,0)と前方の外積で「左」を求める
-	vec::Vec3 leftDir = vec::Vec3(-forward.z, 0.0f, forward.x);
-
-	// 3. 座標の計算
-	const float headOffsetY = 100.0f; // 高さ
-	const float leftOffsetAmt = 40.0f; // 左への距離
-	vec::Vec3 effectPos = _player->GetPos();
-	effectPos.y += headOffsetY;
-	effectPos.x += leftDir.x * leftOffsetAmt;
-	effectPos.z += leftDir.z * leftOffsetAmt;
-
-	// 4. 回転の計算 (ここが重要！)
-	// プレイヤーの向きを判定（X軸方向の成分が大きいなら左右を向いている）
-	float absX = fabsf(forward.x);
-	float absZ = fabsf(forward.z);
-
-	vec::Vec3 rotation = vec::Vec3(0.0f, 0.0f, 0.0f);
-
-	if(absX > absZ)
-	{
-		float yaw = atan2(playerDir.x, playerDir.z);
-
-		// 右向き（XZ平面で正のX成分が強い）ならエフェクトを180度回転させる
-		if(forward.x > 0.5f)
-		{
-			yaw += PI; // 180度回転
-		}
-
-		vec::Vec3 rot = vec::Vec3(0.0f, yaw, 0.0f);
-		// 再生ハンドルが無ければ新規再生
-		if(_playHandle == -1)
-		{
-			_playHandle = em->PlayEffect3DPos(_handle, effectPos);
-			if(_playHandle != -1)
-			{
-				em->SetRotationEffect(_playHandle, rotation);
-			}
-		}
-		else
-		{
-			// ハンドルがある場合は再生中なら位置更新、再生終了なら再生再開
-			if(em->IsPlayingEffect(_playHandle))
-			{
-				em->SetPosEffect(_playHandle, effectPos);
-				em->SetRotationEffect(_playHandle, rotation);
-			}
-			else
-			{
-				_playHandle = em->PlayEffect3DPos(_handle, effectPos);
-				if(_playHandle != -1)
-				{
-					em->SetRotationEffect(_playHandle, rotation);
-				}
-			}
-		}
-	}
 	else
 	{
-		// 条件を満たさないときは確実に停止（ハンドルが有効のみ）
+		// 向き情報が無ければ再生しない
 		if(_playHandle != -1)
 		{
 			if(em->IsPlayingEffect(_playHandle))
@@ -154,6 +110,49 @@ bool AseEffect::Process()
 				em->StopEffect(_playHandle);
 			}
 			_playHandle = -1;
+		}
+		return true;
+	}
+
+	// 左側ベクトル
+	vec::Vec3 leftDir = vec::Vec3(-forward.z, 0.0f, forward.x);
+
+	// エフェクト位置計算
+	const float headOffsetY = 100.0f; // 高さ
+	const float leftOffsetAmt = 40.0f; // 左への距離
+	vec::Vec3 effectPos = _player->GetPos();
+	effectPos.y += headOffsetY;
+	effectPos.x += leftDir.x * leftOffsetAmt;
+	effectPos.z += leftDir.z * leftOffsetAmt;
+
+	// 回転は常にプレイヤーの向きから算出して設定する（左右限定をやめる）
+	float yaw = atan2(playerDir.x, playerDir.z);
+	vec::Vec3 rot = vec::Vec3(0.0f, yaw, 0.0f);
+
+	// 再生ハンドルが無ければ新規再生
+	if(_playHandle == -1)
+	{
+		_playHandle = em->PlayEffect3DPos(_handle, effectPos);
+		if(_playHandle != -1)
+		{
+			em->SetRotationEffect(_playHandle, rot);
+		}
+	}
+	else
+	{
+		// ハンドルがある場合は再生中なら位置更新、再生終了なら再生再開
+		if(em->IsPlayingEffect(_playHandle))
+		{
+			em->SetPosEffect(_playHandle, effectPos);
+			em->SetRotationEffect(_playHandle, rot);
+		}
+		else
+		{
+			_playHandle = em->PlayEffect3DPos(_handle, effectPos);
+			if(_playHandle != -1)
+			{
+				em->SetRotationEffect(_playHandle, rot);
+			}
 		}
 	}
 

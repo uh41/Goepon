@@ -91,6 +91,7 @@ namespace ui
   inline constexpr const char* TailAtacck = "res/UI/TailAtacck.png";
   inline constexpr const char* Tanubito_config = "res/UI/Tanubito_config.png";
   inline constexpr const char* Tanuki_config = "res/UI/Tanuki_config.png";
+  inline constexpr const char* Tanumono_config = "res/UI/Tanumono_config.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";
@@ -210,6 +211,7 @@ namespace mp3
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* Dog_walk = "res/SE/Dog_walk.mp3";
   inline constexpr const char* UI_Henshin_pon = "res/SE/UI_Henshin_pon.mp3";
   inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
   inline constexpr const char* UI_no_makimono = "res/SE/UI_no_makimono.mp3";
