@@ -22,6 +22,8 @@ namespace dash
 	static constexpr auto DASH_COOLDOWN_SPEED = 0.8f; // クールダウン中の移動量
 }
 
+
+
 class PlayerTanuki : public PlayerBase
 {
 	typedef PlayerBase base;
@@ -63,5 +65,7 @@ protected:
 	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
 
 	bool _inputEnabled; // 入力が有効かどうか
+
+
 };
 

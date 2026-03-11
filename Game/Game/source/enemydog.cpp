@@ -427,7 +427,7 @@ bool EnemyDog::Process()
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "taiki");
+			int animIndex = MV1GetAnimIndex(_handle, "dog_idle");
 			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -441,7 +441,7 @@ bool EnemyDog::Process()
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "walk");
+			int animIndex = MV1GetAnimIndex(_handle, "dog_walk");
 			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -455,7 +455,7 @@ bool EnemyDog::Process()
 		}
 		case STATUS::FOUND:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "");
+			int animIndex = MV1GetAnimIndex(_handle, "dog_hoeru");
 			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));

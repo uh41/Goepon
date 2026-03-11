@@ -35,7 +35,6 @@ bool PlayerTanuki::Initialize()
 	_bLand = true;
 
 	_inputEnabled = true;
-
 	return true;
 }
 
@@ -172,6 +171,8 @@ bool PlayerTanuki::Process()
 			_v.x = cosf(localRad + camrad) * moveLen;
 			_v.z = sinf(localRad + camrad) * moveLen;
 
+			SetTargetRotationFromDirection(_v); // 入力方向に向くように目標回転を設定
+
 			_vDir = _v;
 			_status = STATUS::WALK;
 
@@ -216,12 +217,11 @@ bool PlayerTanuki::Process()
 			}
 		}
 	}
-	/*else
+
+	if(_status == STATUS::WALK)
 	{
-		_v = { 0.0f, 0.0f, 0.0f };
-		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
-		_status = STATUS::WAIT;
-	}*/
+		UpdateRotation();
+	}
 
 	if(_dash)
 	{
@@ -387,7 +387,7 @@ bool PlayerTanuki::Render()
 {
 	base::Render();
 
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	float vorty = GetRotationY();// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
 	MATRIX mRotY = MGetRotY(vorty);
 

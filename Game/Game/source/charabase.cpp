@@ -9,6 +9,7 @@
 /*********************************************************************/
 
 #include "charabase.h"
+#include "appframe.h"
 
 // 初期化
 bool CharaBase::Initialize()
@@ -24,6 +25,8 @@ bool CharaBase::Initialize()
 	_fColSubY = 0.0f;
 	_fCollisionR = 0.0f;
 	_fCollisionWeight = 0.0f;
+	_rotationY = 0.0f;
+	_targetRotationY = 0.0f;
 	_status = STATUS::NONE;
 	_bIsAlive = true; // 生存フラグを初期化
 
@@ -90,6 +93,61 @@ bool CharaBase::Damage(float damage)
 	}
 
 	return true;
+}
+
+void CharaBase::UpdateRotation()
+{
+	// 目標角度と現在角度の差分を計算
+	float angleDiff = _targetRotationY - _rotationY;
+
+	// 角度差を -π～π の範囲に正規化
+	while(angleDiff > DX_PI_F)
+	{
+		angleDiff -= DX_TWO_PI_F;
+	}
+	while(angleDiff < -DX_PI_F)
+	{
+		angleDiff += DX_TWO_PI_F;
+	}
+
+	// 20度をラジアンに変換（度→ラジアン）
+	float rotationStep = DEG2RAD(rad::ROTATION_SPEED);
+
+	if(fabsf(angleDiff) > rotationStep)
+	{
+		// 差分が大きい場合は20度ずつ回転
+		if(angleDiff > 0.0f)
+		{
+			_rotationY += rotationStep;
+		}
+		else
+		{
+			_rotationY -= rotationStep;
+		}
+	}
+	else
+	{
+		// 差分が小さい場合は目標角度にぴったり合わせる
+		_rotationY = _targetRotationY;
+	}
+
+	// 角度を -π～π の範囲に正規化
+	while(_rotationY > DX_PI_F)
+	{
+		_rotationY -= DX_TWO_PI_F;
+	}
+	while(_rotationY < -DX_PI_F)
+	{
+		_rotationY += DX_TWO_PI_F;
+	}
+}
+
+void CharaBase::SetTargetRotationFromDirection(const vec::Vec3& dir)
+{
+	if(vec3::VSize(dir) > 0.0f) // 入力ベクトルがほぼゼロでない場合のみ回転を更新
+	{
+		_targetRotationY = atan2f(dir.x * -1.0f, dir.z * -1.0f); // XZ平面の角度を計算
+	}
 }
 
 // 描画処理

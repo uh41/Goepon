@@ -14,7 +14,7 @@ bool Treasure::Initialize()
 	base::Initialize();
 
 
-	LoadModel("res/Treasure/tuzura_05.mv1");
+	LoadModel(mv1::tuzura_05);
 	if(_handle < 0) { DxLib::printfDx("Treasure model load failed\n"); return false; }
 
 

@@ -15,7 +15,7 @@ bool TreasureRapidFire::Initialize()
 {
 	base::Initialize();
 
-	LoadModel("res/Treasure/tuzura_05.mv1");
+	LoadModel(mv1::tuzura_05);
 	if (_handle < 0) { DxLib::printfDx("TreasureRapidFire model load failed\n"); return false; }
 
 	_hitCollisionFrame = MV1SearchFrame(_handle, "Collision_04");
@@ -71,19 +71,20 @@ bool TreasureRapidFire::Process()
 
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
 
-	// 連打リセットタイマー処理
-	if (_currentCount > 0 && !_isOpen)
-	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
-		_buttonResetTimer += dt;
+	//// 連打リセットタイマー処理
+	//if (_currentCount > 0 && !_isOpen)
+	//{
+	//	const float dt = 1.0f / 60.0f; // 60FPS想定
+	//	_buttonResetTimer += dt;
 
-		// 一定時間入力がなければリセット
-		if (_buttonResetTimer >= BUTTON_RESET_TIME)
-		{
-			ResetCount();
-		}
-	}
+	//	// 一定時間入力がなければリセット
+	//	if (_buttonResetTimer >= BUTTON_RESET_TIME)
+	//	{
+	//		ResetCount();
+	//	}
+	//}
 
+	// 宝箱が開いていない状態で、必要な連打回数に達したら開く
 	if (!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
 		_objStatus = OBJSTATUS::OPEN;
@@ -115,14 +116,14 @@ void TreasureRapidFire::AddCount()
 	if (!_isOpen)
 	{
 		_currentCount++;
-		_buttonResetTimer = 0.0f; // タイマーリセット
+		//_buttonResetTimer = 0.0f; // タイマーリセット
 	}
 }
 
 void TreasureRapidFire::ResetCount()
 {
 	_currentCount = 0;
-	_buttonResetTimer = 0.0f;
+	//_buttonResetTimer = 0.0f;
 }
 
 void TreasureRapidFire::RenderGaugeRF(const vec::Vec3& playerPos, float progress)
@@ -158,7 +159,7 @@ void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 {
 	// ゲージの左上座標を計算（中心基準から左上にシフト）
 	const int gaugeX = centerX - (_gaugeWidth / 2);  // 中心を基準に左にシフト
-	const int gaugeY = centerY - _gaugeHeight - 50;  // ゲージを上に配置（+テキスト分のスペース）
+	const int gaugeY = centerY - _gaugeHeight - 70;  // ゲージを上に配置（+テキスト分のスペース）
 
 	// 背景（暗いグレー）を描画
 	DrawBox(
@@ -213,7 +214,7 @@ void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 
 	const int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)));
 	const int textX = gaugeX + (_gaugeWidth - textWidth) / 2; // ゲージ内で中央揃え
-	const int textY = gaugeY + (_gaugeHeight - 16) / 2;       // 縦方向で中央揃え
+	const int textY = gaugeY + (_gaugeHeight - 20) / 2;       // 縦方向で中央揃え
 
 	DrawString(textX, textY, text, _textColor);
 }
