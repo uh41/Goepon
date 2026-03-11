@@ -5,8 +5,8 @@ class PlayerTanuki;
 
 namespace dash
 {
-	static constexpr auto DASH_ICON_X = 800; // ダッシュアイコンのX座標
-	static constexpr auto DASH_ICON_Y = 900; // ダッシュアイコンのY座標
+	static constexpr auto DASH_ICON_X = 916; // ダッシュアイコンのX座標
+	static constexpr auto DASH_ICON_Y = 840; // ダッシュアイコンのY座標
 }
 
 class DashUi : public UiBase
