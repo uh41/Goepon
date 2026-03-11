@@ -127,8 +127,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_findEffect);
 	_hatenaEffect = std::make_shared<HatenaEffect>();
 	_effectBase.emplace_back(_hatenaEffect);
-	_aseEffect = std::make_shared<AseEffect>();
-	_effectBase.emplace_back(_aseEffect);
+	//_aseEffect = std::make_shared<AseEffect>();
+	//_effectBase.emplace_back(_aseEffect);
 	_doyaEffect = std::make_shared<DoyaEffect>();
 	_effectBase.emplace_back(_doyaEffect);
 	_nakiEffect = std::make_shared<NakiEffect>();
@@ -309,8 +309,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_player.get());
 			_doyaEffect->SetTargetPlayer(_player.get());
 			_nakiEffect->SetTargetPlayer(_player.get());
-			_aseEffect->StopPlaying();
-			_aseEffect->SetPlayer(nullptr);
+			//_aseEffect->StopPlaying();
+			//_aseEffect->SetPlayer(nullptr);
 			_player->Process(); // 変身直後の一フレーム更新
 
 			// たぬ人間変身時の処理
@@ -350,8 +350,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_doyaEffect->SetTargetPlayer(_playerMono.get());
 			_nakiEffect->SetTargetPlayer(_playerMono.get());
-			_aseEffect->StopPlaying();
-			_aseEffect->SetPlayer(nullptr);
+			//_aseEffect->StopPlaying();
+			//_aseEffect->SetPlayer(nullptr);
 
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
@@ -511,7 +511,7 @@ bool ModeGame::PlayerTransform()
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_aseEffect->SetPlayer(_playerTanuki.get());
+			//_aseEffect->SetPlayer(_playerTanuki.get());
 
 			auto soundFinish = gGlobal._soundServer->Get("3");
 			if(soundFinish && !soundFinish->IsPlay())
@@ -1129,7 +1129,7 @@ bool ModeGame::CheckAllDetections()
 							{
 								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 								_walkEffect->SetPlayerPos(_playerTanuki.get());
-								_aseEffect->SetPlayer(_playerTanuki.get());
+								//_aseEffect->SetPlayer(_playerTanuki.get());
 							}
 
 							_changeTimeActive = false;

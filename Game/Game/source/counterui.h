@@ -3,8 +3,8 @@
 
 namespace counter
 {
-	static constexpr auto COUNTER_TREASURE_X = 1700;//1809.0f
-	static constexpr auto COUNTER_TREASURE_Y = 100;//100.0f
+	static constexpr auto COUNTER_TREASURE_X = 1760;//1809.0f
+	static constexpr auto COUNTER_TREASURE_Y = 51;//100.0f
 	static constexpr auto COUNTER_MAKIMONO_X = 1400;
 	static constexpr auto COUNTER_MAKIMONO_Y = 600;
 	static constexpr auto COUNTER_TREASURE_NEXT_X = 25;

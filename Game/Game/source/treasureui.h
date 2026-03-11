@@ -4,12 +4,12 @@
 
 namespace treasure
 {
-	static constexpr auto DEGUTI_X = 1700; // 出口のX座標
-	static constexpr auto DEGUTI_Y = 60; // 出口のY座標
-	static constexpr auto NOKORI_X = 1650; // 残りのX座標
-	static constexpr auto NOKORI_Y = 180; // 残りのY座標
-	static constexpr auto KAKERU_X = 1650; // 掛けるのX座標
-	static constexpr auto KAKERU_Y = 120; // 掛けるのY座標
+	static constexpr auto DEGUTI_X = 1600; // 出口のX座標
+	static constexpr auto DEGUTI_Y = 54; // 出口のY座標
+	static constexpr auto NOKORI_X = 1600; // 残りのX座標
+	static constexpr auto NOKORI_Y = 48; // 残りのY座標
+	static constexpr auto KAKERU_X = 1600; // 掛けるのX座標
+	static constexpr auto KAKERU_Y = 48; // 掛けるのY座標
 	static constexpr auto MAKIMONO_X = 1554; // 巻物のX座標
 	static constexpr auto MAKIMONO_Y = 820; // 巻物のY座標
 }

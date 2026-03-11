@@ -162,9 +162,9 @@ bool ModeGame::Initialize()
 	_treasureEffect->SetTreasure(_treasureBase);
 	_walkEffect->SetPlayerPos(_playerTanuki.get());
 	_findEffect->SetEnemy(_enemyBase);
-	_aseEffect->SetPlayer(_playerTanuki.get());
+	//_aseEffect->SetPlayer(_playerTanuki.get());
 	_hatenaEffect->Enemy(_enemyBase);
-	_aseEffect->SetEnemy(_enemyBase);
+	//_aseEffect->SetEnemy(_enemyBase);
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
