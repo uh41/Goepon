@@ -48,6 +48,12 @@ public:
 	// 入力が有効かどうかのゲッターとセッター
 	bool GetInputEnabled() const { return _inputEnabled; }
 	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
+
+	// 回転制御用メソッド
+	float GetRotationY() const { return _rotation_Y; }
+	void SetRotationY(float rotation) { _rotation_Y = rotation; }
+	void SetTargetRotationY(float rotation) { _target_Rotation_Y = rotation; }
+
 protected:
 	Camera* _cam;
 

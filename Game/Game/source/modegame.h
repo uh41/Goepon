@@ -421,7 +421,7 @@ private:
 	float _playerRotationTimer = 0.0f;
 	float _playerRotationDuration = 2.0f; // プレイヤーが回転する演出の時間（秒）
 	float _playerInitialRotation = 0.0f;  // プレイヤー回転演出開始時のプレイヤーの向き（角度）
-
+	float _playerTargetRotation = 0.0f;   // プレイヤー回転演出の目標の向き（角度）
 	int _clearSequencePhase = 0; // クリア演出のフェーズ管理用変数
 	float progress;
 	
