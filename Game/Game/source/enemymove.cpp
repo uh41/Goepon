@@ -18,7 +18,7 @@ bool EnemyMove::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/SK_busi_multimotion_03.mv1");
+	_handle = MV1LoadModel("res/PoorEnemyMelee/SK_busi_multimotion.mv1");
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -635,7 +635,7 @@ bool EnemyMove::Process()
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "bushi_idle");
+			int animIndex = MV1GetAnimIndex(_handle, "idle");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -649,7 +649,7 @@ bool EnemyMove::Process()
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "kari_walk");
+			int animIndex = MV1GetAnimIndex(_handle, "walk");
 			if(animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
@@ -663,7 +663,7 @@ bool EnemyMove::Process()
 		}
 		case STATUS::FOUND:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "bushi_okkake");
+			int animIndex = MV1GetAnimIndex(_handle, "okkake");
 			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));

@@ -16,7 +16,7 @@ bool Enemy::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel(mv1::SK_busi_multimotion_03);
+	_handle = MV1LoadModel(mv1::SK_busi_multimotion);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -38,9 +38,9 @@ bool Enemy::Initialize()
 
 	// 整合性のため他は base に委譲済み
 
-	_attachAnimDamage = "bushi_okkake";
+	_attachAnimDamage = "okkake";
 	_attachAnimStan = "bushi_tentou";
-	_attachAnimGetUp = "bushi_idle";
+	_attachAnimGetUp = "idle";
 	// タイマー初期化等は base にて行われている
 	return true;
 }
@@ -198,11 +198,11 @@ bool Enemy::Process()
 		switch(s)
 		{
 		case CharaBase::STATUS::WAIT:
-			return "bushi_idle";
+			return "idle";
 		case CharaBase::STATUS::WALK:
-			return "kari_walk";
+			return "walk";
 		case CharaBase::STATUS::FOUND:
-			return "bushi_okkake";
+			return "okkake";
 		default:
 			return std::string();
 		}
