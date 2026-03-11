@@ -9,7 +9,7 @@ HenshinUi::HenshinUi()
 	_handleTanubito = -1;
 	_handleMono = -1;
 	_select = Select::TANUBITO;
-	_padInput5Active = false;
+	_padInput5Active = true;  // 初期状態で選択状態を有効化
 	_owner = nullptr;
 	Initialize();
 }
@@ -89,8 +89,16 @@ bool HenshinUi::Process()
 		return true;
 	}
 
-	// 追加: PAD_INPUT_4 を押したら UI を開かずにすぐ TANUBITO を選択（変身要求を送る）
-	if(!_padInput5Active && (trg & PAD_INPUT_4))
+	// タヌキに戻った時、選択状態を自動的に有効化（TANUBITO を選択状態にする）
+	if(mgCheck && mgCheck->IsShowingTanuki() && !_padInput5Active)
+	{
+		_padInput5Active = true;
+		_select = Select::TANUBITO;
+	}
+
+	// 最優先: PAD_INPUT_4 を押したら UI を開かずにすぐ TANUBITO を選択（変身要求を送る）
+	// PAD_INPUT_5 の処理より前に配置することで即座に反応させる
+	if(trg & PAD_INPUT_4)
 	{
 		if(_owner)
 		{
@@ -98,15 +106,28 @@ bool HenshinUi::Process()
 			if(mg2)
 			{
 				// 変身中/保留中なら無視
-				if(mg2->IsTransforming() || mg2->IsTransformRequested())
+				if(!(mg2->IsTransforming() || mg2->IsTransformRequested()))
 				{
-					// 何もしない
-				}
-				else
-				{
-					// 直接変身要求を送る（TANUBITO）
-					mg2->RequestTransformToHuman();
-					_padInput5Active = false;
+					// UI が開いている場合は選択に応じて変身
+					if(_padInput5Active)
+					{
+						if(_select == Select::TANUBITO)
+						{
+							mg2->RequestTransformToHuman();	// タヌキ -> 人間（アニメあり）の要求
+						}
+						else if(_select == Select::TANUMONO)
+						{
+							mg2->RequestTransformToMono();	// タヌキ -> モノ（巻物消費）の要求
+						}
+						_padInput5Active = false;
+					}
+					else
+					{
+						// UI が開いていない場合は直接 TANUBITO 変身
+						_padInput5Active = true;
+						_select = Select::TANUBITO;
+						mg2->RequestTransformToHuman();
+					}
 					return true;
 				}
 			}
@@ -143,35 +164,6 @@ bool HenshinUi::Process()
 				ui->Play();
 			}
 		}
-	}
-
-	// 選択中に PAD_INPUT_4 が押されたら変身要求を発行して選択を閉じる
-	if(_padInput5Active && (trg & PAD_INPUT_4))
-	{
-		if(_owner)
-		{
-			ModeGame* mg2 = StCas<ModeGame*>(_owner);
-			if(mg2)
-			{
-				// 念のため再確認：変身中なら無視
-				if(mg2->IsTransforming() || mg2->IsTransformRequested())
-				{
-					_padInput5Active = false;
-					return true;
-				}
-
-				// 選択に応じて変身要求を送る
-				if(_select == Select::TANUBITO)
-				{
-					mg2->RequestTransformToHuman();	// タヌキ -> 人間（アニメあり）の要求
-				}
-				else if(_select == Select::TANUMONO)
-				{
-					mg2->RequestTransformToMono();	// タヌキ -> モノ（巻物消費）の要求
-				}
-			}
-		}
-		_padInput5Active = false; // 変身が決定したら選択状態をリセット
 	}
 
 	return true;
