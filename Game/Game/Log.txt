@@ -1,210 +1,194 @@
 ﻿0:ChangeWindowMode実行 
 0:ウインドウモードフラグが立てられました
-3:ＤＸライブラリの初期化処理開始
-4:	システムの情報を出力します
-4:		ＤＸライブラリ Ver3.24b
-4:		論理プロセッサの数 : 12
-4:		ＯＳ  Windows11 ( Build 22631  )
-105:		現時点のＣＰＵ動作速度：大体3.17GHz
-105:		ＭＭＸ命令を使用します
-105:		ＳＳＥ命令が使用可能です
-105:		ＳＳＥ２命令が使用可能です
-105:		ＣＰＵベンダ：GenuineIntel
-107:		ＣＰＵ名：Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
-108:	ＣＯＭの初期化... 成功
-111:	非同期読み込み処理の初期化...成功
-111:	ファイルアクセス処理の初期化...成功
-113:	メモリ総量:16214.34MB  空きメモリ領域:5448.52MB 
-113:	タイマーの精度を検査します
-113:	精度結果 更新回数 マルチメディアタイマー：0  パフォーマンスカウンター：60
-113:	 パフォーマンスカウンターを使用します タイマー精度 : 10000.000000 KHz 
-113:	 
-114:	ソフトの二重起動検査... 二重起動はされていませんでした
-114:	ウインドウクラスを登録します... 登録に成功しました
-114:	ウインドウモード起動用のウインドウを作成します
-114:	ディスプレイ情報のセットアップ開始
-115:		モニターの数：1  ディスプレイデバイスの数：7
-115:		No.0  モニター名：\\.\DISPLAY1　1920x1080　32bit　60Hz  96x96dpi
-123:	ディスプレイ情報のセットアップ完了
-123:	ウインドウ矩形 ( -16, -50 )-( 1920, 1069 )
-128:	ウインドウの作成に成功しました
-128:	ウインドウを表示します
-156:	ＩＭＥを無効にしました
-157:	ウインドウスタイルをウインドウモード用に変更します... 完了
-189:	XInput DLL の読み込み中... 成功
-195:	DirectInput関係初期化処理
-197:		DirectInput8 の取得を試みます...成功
-217:			引き続き初期化処理... 初期化成功
-227:		ジョイパッドの初期化... 
-227:			XInput 対応コントローラーのチェックを開始します
-227:				XInput 対応コントローラー No.0 をチェック
-227:				XInput 対応コントローラー No.0 の接続は確認できませんでした
-228:				XInput 対応コントローラー No.1 をチェック
-228:				XInput 対応コントローラー No.1 の接続は確認できませんでした
-228:				XInput 対応コントローラー No.2 をチェック
-228:				XInput 対応コントローラー No.2 の接続は確認できませんでした
-229:				XInput 対応コントローラー No.3 をチェック
-229:				XInput 対応コントローラー No.3 の接続は確認できませんでした
-229:			XInput 対応コントローラーのチェック完了
-229:			DirectInput 対応ジョイパッドの列挙を開始します
-248:				DirectInput 対応入力装置を検出しました
-248:						Device Product GUID  : 2020056e,0000,0000,00,00,50,49,44,56,49,44
-248:						Device Instance GUID : 54637240,504e,11f0,80,02,44,45,53,54,00,00
-248:					DirectInputDevice8 の作成... 成功
-249:					DirectInputDevice の情報を取得します... 成功
-250:						Device Product Name  : GP20X-Dinput
-250:						Device Instance Name : GP20X-Dinput
-251:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
-251:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
-253:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 不一致
-500:					DirectInputDevice のデータ形式に JOYSTICK 形式を設定... 成功
-500:					DirectInputDevice の協調レベルに DISCL_FOREGROUND | DISCL_EXCLUSIVE を設定... 成功
-500:					DirectInputDevice から取得する X軸 の値の範囲を設定... 成功
-501:					DirectInputDevice から取得する Y軸 の値の範囲を設定... 成功
-501:					DirectInputDevice から取得する Z軸 の値の範囲を設定... 成功
-502:					DirectInputDevice から取得する Rx軸 の値の範囲を設定... 成功
-502:					DirectInputDevice から取得する Ry軸 の値の範囲を設定... 成功
-502:					DirectInputDevice から取得する Rz軸 の値の範囲を設定... 成功
-503:					DirectInputDevice のボタンの数を取得... 成功　ボタンの数は 13 個です
-503:					DirectInputDevice の X軸 のデッドゾーンを設定... 成功
-504:					DirectInputDevice の Y軸 のデッドゾーンを設定... 成功
-504:					DirectInputDevice の Z軸 のデッドゾーンを設定... 成功
-505:					DirectInputDevice の Rx軸 のデッドゾーンを設定... 成功
-505:					DirectInputDevice の Ry軸 のデッドゾーンを設定... 成功
-505:					DirectInputDevice の Rz軸 のデッドゾーンを設定... 成功
-505:					DirectInputDevice の DirectInputEffect No.0 を作成... 失敗 Error Code :0x80004001
-505:					DirectInputDevice の DirectInputEffect No.1 を作成... 失敗 Error Code :0x80004001
-506:					DirectInputDevice の通知処理用の Event を作成... 成功
-506:					DirectInputDevice の通知処理用の Event を DirectInputDevice に設定... 成功
-507:					DirectInputDevice のアクセス権を取得... 成功
-511:					検出した DirectInput 対応入力装置を入力ナンバー 0 で登録します
-511:				検出した DirectInput 対応入力装置の初期化は正常に終了しました
-511:			DirectInput 対応ジョイパッドの列挙終了
-511:		ジョイパッドの初期化は正常に終了しました
-511:		マウスデバイスの初期化... 初期化成功
-512:		キーボードデバイスの初期化... 初期化成功
-513:	DirectInput 関連の初期化は正常に終了しました
-516:	XAudio2 の初期化を行います
-518:		XAudio2_8.dll を使用します
-521:		XAudio2 インターフェースの取得と初期化を行います....  成功 Ver2.8
-615:	XAudio2 の初期化は正常に終了しました
-619:	d3d11.dll の読み込み.... 成功
-622:	dxgi.dll の読み込み.... 成功
-623:	API CreateDXGIFactory2 のアドレスを取得します.... 成功
-623:	IDXGIFactory2 を作成します.... 成功
-635:	API CreateDXGIFactory6 のアドレスを取得します.... 成功
-635:	IDXGIAdapter を列挙
-635:		Adapter No.0 Desc:NVIDIA GeForce GTX 1080  VRAM:8059MB
-636:			Output Device No.0 Name:\\.\DISPLAY1 ( 0, 0 )-( 1920, 1080 )
-636:		Adapter No.1 Desc:Intel(R) UHD Graphics 630  VRAM:128MB
-637:		Adapter No.2 Desc:Microsoft Basic Render Driver  VRAM:0MB
-637:	API D3D11CreateDevice のアドレスを取得します.... 成功
-637:	IDXGIAdapter を取得します.... 成功
-638:	IDXGIAdapter1 を取得します.... 成功
-638:	IDXGIAdapter2 を取得します.... 成功
-638:	IDXGIAdapter3 を取得します.... 成功
-639:	IDXGIAdapter4 を取得します.... 成功
-639:	Direct3D 11 FeatureLevel 11_0 以上を対象とします
-640:	ID3D11Device オブジェクトを取得します.... 成功
-854:	IDXGIDevice1 を取得します.... 成功
-854:	IDXGIDevice1->SetMaximunFrameLatency( 1 ); を実行しました
-854:	[ウインドウモード 1920x1080 ( 0, 0 )-( 1920, 1080 )]
-855:	IDXGISwapChain2 を作成します.... 成功
-857:	IDXGIFactory2->CreateSwapChainForHwnd の戻り値：0x00000000
-857:	IDXGIOutput を取得します.... 成功
-858:	Graphics Device:NVIDIA GeForce GTX 1080
-858:	画面のフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-858:	16bit Zバッファフォーマットは DXGI_FORMAT_D16_UNORM です
-859:	24bit Zバッファフォーマットは DXGI_FORMAT_D24_UNORM_S8_UINT です
-859:	32bit Zバッファフォーマットは DXGI_FORMAT_D32_FLOAT です
-859:	16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
-859:	32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
-859:	アルファ付き 16bit カラーフォーマットは DXGI_FORMAT_B4G4R4A4_UNORM です
-859:	アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-860:	アルファテスト用 16bit カラーフォーマットは DXGI_FORMAT_B5G5R5A1_UNORM です
-860:	アルファテスト用 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-860:	ＤＸＴ１テクスチャフォーマットは DXGI_FORMAT_BC1_UNORM です
-861:	ＤＸＴ２テクスチャフォーマットは使えません
-861:	ＤＸＴ３テクスチャフォーマットは DXGI_FORMAT_BC2_UNORM です
-861:	ＤＸＴ４テクスチャフォーマットは使えません
-861:	ＤＸＴ５テクスチャフォーマットは DXGI_FORMAT_BC3_UNORM です
-862:	BC7_UNORM テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM です
-862:	BC7_UNORM_SRGB テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM_SRGB です
-863:	ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
-863:	ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
-864:	ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
-864:	１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
-864:	１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
-865:	１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
-865:	１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
-865:	２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
-865:	２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
-865:	２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
-866:	２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
-866:	描画用 16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
-867:	描画用 32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
-867:	描画用アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
-867:	描画用 ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
-868:	描画用 ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
-868:	描画用 ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
-869:	描画用１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
-869:	描画用１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
-870:	描画用１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
-870:	描画用１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
-871:	描画用２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
-871:	描画用２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
-871:	描画用２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
-872:	描画用２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
-872:	使用する機能レベル:D3D_FEATURE_LEVEL_11_1
-872:	同時にレンダリングできるバッファの数:8
-873:	最大テクスチャサイズ　幅:16384 高さ:16384
-873:	標準描画用の頂点バッファの作成.... 成功
-875:	シェーダーコード関係の初期化.... 成功
-892:	各種シェーダー用定数バッファの作成.... 成功
-896:	各種 ID3D11InputLayout の作成.... 成功
-943:	画像の単純転送処理の初期化... 成功
-945:	深度バッファを作成します.... 成功
-948:	フォントの初期化を行います
-952:	フォントの初期化は正常に終了しました
-1038:	文字コードバッファの初期化を行います... 完了しました
-1057:ＤＸライブラリの初期化処理終了
-1171:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerB.mv1
-1172:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerR.mv1
-1173:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Treasure.mv1
-1174:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerRX.mv1
-1175:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\TreasureX.mv1
-1571:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Goal.mv1
-1572:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerA.mv1
-1592:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerR.mv1
-1815:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Item.mv1
-1815:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Goal.mv1
-1816:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerA.mv1
-1816:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerRX.mv1
-1816:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerB.mv1
-1817:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Treasure.mv1
-1831:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerR.mv1
-2082:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Item.mv1
-2083:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Goal.mv1
-2084:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerA.mv1
-2084:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerRX.mv1
-2085:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerB.mv1
-2085:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Treasure.mv1
-12020:Sound File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game
-12524:Sound File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game
-60611:ウインドウを閉じようとしています
-60620:ウインドウが破棄されようとしています
-60620:ソフトを終了する準備が整いました
-60720:フォントの初期化を行います
-60724:フォントの初期化は正常に終了しました
-60821:d3d11.dll の解放 1
-60822:dxgi.dll の解放 1
-60823:Direct3D11 のオブジェクト数を出力
-60823:Direct3D11 のオブジェクト合計数 : 0
-60826:DirectInput 関連の終了処理... 完了
-60828:サウンド関連の終了処理... 完了
-60878:ウィンドウ関連の終了処理... 完了
-60943:ＣＯＭを終了... 完了
-60943:
-60943:Alloc memory dump
-60943:	Total size:0(0.000kb)  Alloc num:0
-60944:
+4:ＤＸライブラリの初期化処理開始
+5:	システムの情報を出力します
+6:		ＤＸライブラリ Ver3.24b
+6:		論理プロセッサの数 : 12
+6:		ＯＳ  Windows11 ( Build 22631  )
+107:		現時点のＣＰＵ動作速度：大体3.16GHz
+107:		ＭＭＸ命令を使用します
+107:		ＳＳＥ命令が使用可能です
+107:		ＳＳＥ２命令が使用可能です
+108:		ＣＰＵベンダ：GenuineIntel
+115:		ＣＰＵ名：Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+115:	ＣＯＭの初期化... 成功
+172:	非同期読み込み処理の初期化...成功
+173:	ファイルアクセス処理の初期化...成功
+174:	メモリ総量:16214.34MB  空きメモリ領域:4995.23MB 
+174:	タイマーの精度を検査します
+174:	精度結果 更新回数 マルチメディアタイマー：0  パフォーマンスカウンター：60
+174:	 パフォーマンスカウンターを使用します タイマー精度 : 10000.000000 KHz 
+175:	 
+175:	ソフトの二重起動検査... 二重起動はされていませんでした
+176:	ウインドウクラスを登録します... 登録に成功しました
+176:	ウインドウモード起動用のウインドウを作成します
+176:	ディスプレイ情報のセットアップ開始
+177:		モニターの数：1  ディスプレイデバイスの数：7
+178:		No.0  モニター名：\\.\DISPLAY1　1920x1080　32bit　60Hz  96x96dpi
+187:	ディスプレイ情報のセットアップ完了
+188:	ウインドウ矩形 ( -16, -50 )-( 1920, 1069 )
+193:	ウインドウの作成に成功しました
+193:	ウインドウを表示します
+222:	ＩＭＥを無効にしました
+223:	ウインドウスタイルをウインドウモード用に変更します... 完了
+252:	XInput DLL の読み込み中... 成功
+255:	DirectInput関係初期化処理
+257:		DirectInput8 の取得を試みます...成功
+277:			引き続き初期化処理... 初期化成功
+291:		ジョイパッドの初期化... 
+291:			XInput 対応コントローラーのチェックを開始します
+292:				XInput 対応コントローラー No.0 をチェック
+292:				XInput 対応コントローラー No.0 の接続は確認できませんでした
+292:				XInput 対応コントローラー No.1 をチェック
+292:				XInput 対応コントローラー No.1 の接続は確認できませんでした
+293:				XInput 対応コントローラー No.2 をチェック
+293:				XInput 対応コントローラー No.2 の接続は確認できませんでした
+293:				XInput 対応コントローラー No.3 をチェック
+293:				XInput 対応コントローラー No.3 の接続は確認できませんでした
+293:			XInput 対応コントローラーのチェック完了
+294:			DirectInput 対応ジョイパッドの列挙を開始します
+314:				DirectInput 対応入力装置を検出しました
+315:						Device Product GUID  : 2020056e,0000,0000,00,00,50,49,44,56,49,44
+315:						Device Instance GUID : 54637240,504e,11f0,80,02,44,45,53,54,00,00
+315:					DirectInputDevice8 の作成... 成功
+316:					DirectInputDevice の情報を取得します... 成功
+317:						Device Product Name  : GP20X-Dinput
+317:						Device Instance Name : GP20X-Dinput
+317:					検出した DirectInput 対応入力装置が Xbox360コントローラーか確認... 不一致
+318:					検出した DirectInput 対応入力装置が XboxOneコントローラーか確認... 不一致
+318:					検出した DirectInput 対応入力装置が XInput 対応コントローラーか確認... 不一致
+553:					DirectInputDevice のデータ形式に JOYSTICK 形式を設定... 成功
+553:					DirectInputDevice の協調レベルに DISCL_FOREGROUND | DISCL_EXCLUSIVE を設定... 成功
+554:					DirectInputDevice から取得する X軸 の値の範囲を設定... 成功
+554:					DirectInputDevice から取得する Y軸 の値の範囲を設定... 成功
+555:					DirectInputDevice から取得する Z軸 の値の範囲を設定... 成功
+555:					DirectInputDevice から取得する Rx軸 の値の範囲を設定... 成功
+555:					DirectInputDevice から取得する Ry軸 の値の範囲を設定... 成功
+556:					DirectInputDevice から取得する Rz軸 の値の範囲を設定... 成功
+556:					DirectInputDevice のボタンの数を取得... 成功　ボタンの数は 13 個です
+556:					DirectInputDevice の X軸 のデッドゾーンを設定... 成功
+557:					DirectInputDevice の Y軸 のデッドゾーンを設定... 成功
+557:					DirectInputDevice の Z軸 のデッドゾーンを設定... 成功
+558:					DirectInputDevice の Rx軸 のデッドゾーンを設定... 成功
+558:					DirectInputDevice の Ry軸 のデッドゾーンを設定... 成功
+558:					DirectInputDevice の Rz軸 のデッドゾーンを設定... 成功
+559:					DirectInputDevice の DirectInputEffect No.0 を作成... 失敗 Error Code :0x80004001
+559:					DirectInputDevice の DirectInputEffect No.1 を作成... 失敗 Error Code :0x80004001
+559:					DirectInputDevice の通知処理用の Event を作成... 成功
+560:					DirectInputDevice の通知処理用の Event を DirectInputDevice に設定... 成功
+560:					DirectInputDevice のアクセス権を取得... 成功
+566:					検出した DirectInput 対応入力装置を入力ナンバー 0 で登録します
+566:				検出した DirectInput 対応入力装置の初期化は正常に終了しました
+566:			DirectInput 対応ジョイパッドの列挙終了
+567:		ジョイパッドの初期化は正常に終了しました
+567:		マウスデバイスの初期化... 初期化成功
+568:		キーボードデバイスの初期化... 初期化成功
+569:	DirectInput 関連の初期化は正常に終了しました
+573:	XAudio2 の初期化を行います
+575:		XAudio2_8.dll を使用します
+579:		XAudio2 インターフェースの取得と初期化を行います....  成功 Ver2.8
+647:	XAudio2 の初期化は正常に終了しました
+651:	d3d11.dll の読み込み.... 成功
+654:	dxgi.dll の読み込み.... 成功
+654:	API CreateDXGIFactory2 のアドレスを取得します.... 成功
+654:	IDXGIFactory2 を作成します.... 成功
+666:	API CreateDXGIFactory6 のアドレスを取得します.... 成功
+666:	IDXGIAdapter を列挙
+667:		Adapter No.0 Desc:NVIDIA GeForce GTX 1080  VRAM:8059MB
+667:			Output Device No.0 Name:\\.\DISPLAY1 ( 0, 0 )-( 1920, 1080 )
+667:		Adapter No.1 Desc:Intel(R) UHD Graphics 630  VRAM:128MB
+667:		Adapter No.2 Desc:Microsoft Basic Render Driver  VRAM:0MB
+667:	API D3D11CreateDevice のアドレスを取得します.... 成功
+668:	IDXGIAdapter を取得します.... 成功
+668:	IDXGIAdapter1 を取得します.... 成功
+668:	IDXGIAdapter2 を取得します.... 成功
+669:	IDXGIAdapter3 を取得します.... 成功
+669:	IDXGIAdapter4 を取得します.... 成功
+669:	Direct3D 11 FeatureLevel 11_0 以上を対象とします
+669:	ID3D11Device オブジェクトを取得します.... 成功
+886:	IDXGIDevice1 を取得します.... 成功
+887:	IDXGIDevice1->SetMaximunFrameLatency( 1 ); を実行しました
+887:	[ウインドウモード 1920x1080 ( 0, 0 )-( 1920, 1080 )]
+888:	IDXGISwapChain2 を作成します.... 成功
+890:	IDXGIFactory2->CreateSwapChainForHwnd の戻り値：0x00000000
+891:	IDXGIOutput を取得します.... 成功
+895:	Graphics Device:NVIDIA GeForce GTX 1080
+895:	画面のフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+896:	16bit Zバッファフォーマットは DXGI_FORMAT_D16_UNORM です
+896:	24bit Zバッファフォーマットは DXGI_FORMAT_D24_UNORM_S8_UINT です
+896:	32bit Zバッファフォーマットは DXGI_FORMAT_D32_FLOAT です
+897:	16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
+897:	32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
+897:	アルファ付き 16bit カラーフォーマットは DXGI_FORMAT_B4G4R4A4_UNORM です
+897:	アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+898:	アルファテスト用 16bit カラーフォーマットは DXGI_FORMAT_B5G5R5A1_UNORM です
+898:	アルファテスト用 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+898:	ＤＸＴ１テクスチャフォーマットは DXGI_FORMAT_BC1_UNORM です
+898:	ＤＸＴ２テクスチャフォーマットは使えません
+898:	ＤＸＴ３テクスチャフォーマットは DXGI_FORMAT_BC2_UNORM です
+899:	ＤＸＴ４テクスチャフォーマットは使えません
+899:	ＤＸＴ５テクスチャフォーマットは DXGI_FORMAT_BC3_UNORM です
+899:	BC7_UNORM テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM です
+900:	BC7_UNORM_SRGB テクスチャフォーマットは DXGI_FORMAT_BC7_UNORM_SRGB です
+900:	ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
+900:	ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
+900:	ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
+900:	１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
+901:	１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
+901:	１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
+901:	１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
+901:	２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
+902:	２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
+902:	２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
+902:	２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
+902:	描画用 16bit カラーフォーマットは DXGI_FORMAT_B5G6R5_UNORM です
+902:	描画用 32bit カラーフォーマットは DXGI_FORMAT_B8G8R8X8_UNORM です
+903:	描画用アルファ付き 32bit カラーフォーマットは DXGI_FORMAT_R8G8B8A8_UNORM です
+903:	描画用 ABGR 整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_UNORM です
+903:	描画用 ABGR 浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16B16A16_FLOAT です
+903:	描画用 ABGR 浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32B32A32_FLOAT です
+903:	描画用１チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8_UNORM です
+903:	描画用１チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_UNORM です
+904:	描画用１チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16_FLOAT です
+904:	描画用１チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32_FLOAT です
+905:	描画用２チャンネル整数 8 ビット型カラーフォーマットは DXGI_FORMAT_R8G8_UNORM です
+905:	描画用２チャンネル整数 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_UNORM です
+906:	描画用２チャンネル浮動小数点 16 ビット型カラーフォーマットは DXGI_FORMAT_R16G16_FLOAT です
+906:	描画用２チャンネル浮動小数点 32 ビット型カラーフォーマットは DXGI_FORMAT_R32G32_FLOAT です
+907:	使用する機能レベル:D3D_FEATURE_LEVEL_11_1
+907:	同時にレンダリングできるバッファの数:8
+907:	最大テクスチャサイズ　幅:16384 高さ:16384
+907:	標準描画用の頂点バッファの作成.... 成功
+908:	シェーダーコード関係の初期化.... 成功
+925:	各種シェーダー用定数バッファの作成.... 成功
+928:	各種 ID3D11InputLayout の作成.... 成功
+971:	画像の単純転送処理の初期化... 成功
+972:	深度バッファを作成します.... 成功
+976:	フォントの初期化を行います
+979:	フォントの初期化は正常に終了しました
+1057:	文字コードバッファの初期化を行います... 完了しました
+1075:ＤＸライブラリの初期化処理終了
+1233:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerB.mv1
+1236:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerR.mv1
+1237:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Treasure.mv1
+1240:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerRX.mv1
+1843:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Goal.mv1
+1845:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerA.mv1
+1846:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerDGR.mv1
+1847:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Dog.mv1
+1875:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerR.mv1
+2276:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Item.mv1
+2278:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Goal.mv1
+2278:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerA.mv1
+2279:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerRX.mv1
+2279:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerB.mv1
+2281:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Treasure.mv1
+2311:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerR.mv1
+2613:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Item.mv1
+2613:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Goal.mv1
+2615:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerA.mv1
+2615:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerRX.mv1
+2617:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\S_MarkerB.mv1
+2618:Model File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game\res\map\Treasure.mv1
+13195:Sound File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game
+13710:Sound File Open Error : D:\KOUDAI_ISISISISISIISISSIMORI\GOEPON_01\Goepon\Game\Game
