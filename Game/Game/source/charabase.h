@@ -118,23 +118,11 @@ public:
 		_vDir = vec3::VNorm(_vDir);
 	}
 
-	float GetRotationY() const
-	{
-		return _rotationY;
-	}
-	void SetRotationY(float rotationY)
-	{
-		_rotationY = rotationY;
-	}
-	void UpdataRotationFromDir()
-	{
-		_rotationY = atan2f(_vDir.x, _vDir.z);
-	}
-
 	void UpdateRotation();
 	void SetTargetRotationFromDirection(const vec::Vec3& dir);
 	auto GetRotationY() const { return _rotationY; }
 	void SetRotationY(float rotationY) { _rotationY = rotationY; }
+	void SetTargetRotationY(float rotation) { _targetRotationY = rotation; }
 
 protected:
 	float _iAttachIndex;

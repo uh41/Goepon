@@ -82,6 +82,7 @@ namespace ui
 {
   inline constexpr const char* Light = "res/Object/building/Light.png";
   inline constexpr const char* B_gamestart = "res/UI/B_gamestart.png";
+  inline constexpr const char* B_gamestart_1 = "res/UI/B_gamestart_1.png";
   inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
@@ -117,6 +118,7 @@ namespace ef
   inline constexpr const char* EF_doya = "res/Effect/EF_doya.efkefc";
   inline constexpr const char* EF_find = "res/Effect/EF_find.efkefc";
   inline constexpr const char* EF_hatena = "res/Effect/EF_hatena.efkefc";
+  inline constexpr const char* EF_load_1 = "res/Effect/EF_load_1.efkefc";
   inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
   inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
   inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
