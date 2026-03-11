@@ -60,6 +60,7 @@
 #include "treasureopenui.h"
 #include "dashui.h"
 #include "tutorial.h"
+#include "configui.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -253,6 +254,7 @@ protected:
 	at::spc<TreasureOpenUi> _treasureOpenUi;
 	at::spc<DashUi> _dashUi;
 	at::spc<StunEffect> _stunEffect;
+	at::spc<ConfigUi> _configUi;
 
 	// シャドウ
 	at::vspc<CharaShadow> _charaShadow;

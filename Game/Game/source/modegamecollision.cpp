@@ -734,6 +734,18 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					_doyaEffect->PlayEffect(currentTreasure->GetPos());
 				}
 
+				if(gGlobal._soundServer)
+				{
+					auto sOpen = gGlobal._soundServer->Get("4"); // "4" = tanuki_Tresure_open
+					if(sOpen) sOpen->Play();
+				}
+
+				auto sound = gGlobal._soundServer->Get("60");
+				if(sound && sound->IsPlay())
+				{
+					sound->Stop();
+				}
+
 				// 宝箱を開けた時の音波を発生
 				EnemySoundManager::GetInstance()->EmitSound(
 					currentTreasure->GetPos(),
