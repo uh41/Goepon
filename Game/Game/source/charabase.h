@@ -12,6 +12,11 @@
 #include "objectbase.h"
 #include "camera.h"
 
+namespace rad
+{
+	static constexpr auto ROTATION_SPEED = 20.0f; // 90度をラジアンで表した値
+}
+
 class CharaBase : public ObjectBase
 {
 	typedef ObjectBase base;
@@ -126,6 +131,11 @@ public:
 		_rotationY = atan2f(_vDir.x, _vDir.z);
 	}
 
+	void UpdateRotation();
+	void SetTargetRotationFromDirection(const vec::Vec3& dir);
+	auto GetRotationY() const { return _rotationY; }
+	void SetRotationY(float rotationY) { _rotationY = rotationY; }
+
 protected:
 	float _iAttachIndex;
 	float _fTotalTime;
@@ -145,5 +155,6 @@ protected:
 
 	bool    _bLand; // 着地フラグ
 
-	float _rotationY; // Y軸回転角
+	float _rotationY; // プレイヤーのY軸回転角
+	float _targetRotationY; // プレイヤーのY軸回転の目標値
 };

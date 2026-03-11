@@ -166,6 +166,8 @@ bool Player::Process()
 		_v.x = cos(radStick + camrad) * length;
 		_v.z = sin(radStick + camrad) * length;
 
+		SetTargetRotationFromDirection(_v); // 向きの目標値を移動方向に合わせる
+
 		// 重要：ここで直接 _vPos に加算しない。
 		// 移動（位置更新）と床判定は ModeGame::EscapeCollision に委ねる。
 		// 代わりに入力ベクトルを保存して、EscapeCollision が使えるようにする。
@@ -312,6 +314,8 @@ bool Player::Process()
 			_vDir = _v;
 		}
 
+		UpdateRotation(); // 向きを更新
+
 		_status = STATUS::WALK;
 	}
 	else
@@ -414,7 +418,7 @@ bool Player::Render()
 	// 再生時間をセットする
 	//MV1SetAttachAnimTime(_handle, static_cast<int>(_iAttachIndex), _fPlayTime);
 
-	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	float vorty = GetRotationY();// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
 	MATRIX mRotY = MGetRotY(vorty);
 

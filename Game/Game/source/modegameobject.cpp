@@ -680,7 +680,6 @@ bool ModeGame::ObjectRender()
 		if(makimono) makimono->Render();
 	}
 
-
 	// 宝箱の描画
 	for (auto& t : _treasure)
 	{
@@ -777,8 +776,6 @@ bool ModeGame::ObjectRender()
 
 	if (_uiHp) { _uiHp->SetPlayer(currentPlayer); }
 	if (_uiMakimono) { _uiMakimono->SetPlayer(currentPlayer); }
-
-
 
 	// 各敵のセンサーを個別に描画
 	// プレイヤーから半径内にいる敵だけ索敵範囲を描画

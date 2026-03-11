@@ -4,6 +4,8 @@
 ModeGameLoad::ModeGameLoad()
 {
 	_loadHandle = -1;
+	_effectHandle = -1;
+	_playHandle = -1;
 }
 
 ModeGameLoad::~ModeGameLoad()
@@ -15,6 +17,16 @@ bool ModeGameLoad::Initialize()
 	if(!base::Initialize()) { return false; }
 	_loadHandle = ResourceServer::LoadGraph(img::Loading_1start);
 	Fade::GetInstance()->ColorMask(0, 0, 0, 0);
+
+	auto em = EffekseerManager::GetInstance();
+	if(em)
+	{
+		_effectHandle = em->LoadEffect(ef::EF_doya);
+		int screenW, screenH;
+		GetScreenState(&screenW, &screenH, nullptr);
+		vec::Vec3 centerPos(screenW / 2.0f, screenH / 2.0f, 0.0f);
+		_playHandle = em->PlayEffect2DPos(_effectHandle, centerPos);
+	}
 	return true;
 }
 
@@ -26,12 +38,41 @@ bool ModeGameLoad::Terminate()
 		DeleteGraph(_loadHandle);
 		_loadHandle = -1;
 	}
+
+	auto em = EffekseerManager::GetInstance();
+	if(em)
+	{
+		if(_playHandle != -1)
+		{
+			em->StopEffect2D(_playHandle);
+			_playHandle = -1;
+		}
+		if(_effectHandle != -1)
+		{
+			em->DeleteEffect(_effectHandle);
+			_effectHandle = -1;
+		}
+	}
+
 	return true;
 }
 
 bool ModeGameLoad::Process()
 {
 	base::Process();
+
+	// エフェクトがロード済みで、再生が停止している場合は再度再生
+	auto em = EffekseerManager::GetInstance();
+	if(em && _effectHandle != -1)
+	{
+		if(_playHandle == -1 || !em->IsPlayingEffect2D(_playHandle))
+		{
+			int screenW, screenH;
+			GetScreenState(&screenW, &screenH, nullptr);
+			vec::Vec3 centerPos(screenW / 2.0f, screenH / 2.0f, 0.0f);
+			_playHandle = em->PlayEffect2DPos(_effectHandle, centerPos);
+		}
+	}
 
 	// まだゲームが居なければ追加（1回だけ）
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");
