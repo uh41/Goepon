@@ -318,7 +318,7 @@ bool ModeGame::ProcessIntroSequence()
 // EndIntroSequence()関数を追加
 bool ModeGame::EndIntroSequence()
 {
-	if (!_isIntroActive)
+	if(!_isIntroActive)
 	{
 		return false;
 	}
@@ -327,45 +327,14 @@ bool ModeGame::EndIntroSequence()
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
 
-	// ★追加: プレイヤーの操作を再度有効化
-	if (_playerTanuki)
+	// プレイヤーの操作を再度有効化
+	if(_playerTanuki)
 	{
 		_playerTanuki->SetInputEnabled(true);
 	}
 
-	if (_useCinematicCamera && _originalCamera)
-	{
-		_camera = _originalCamera;
-		_useCinematicCamera = false;
-
-		if (_cinematicCamera)
-		{
-			_cinematicCamera->StopAll();
-		}
-
-		// ★追加: カメラをプレイヤーに再同期
-		PlayerBase* startPlayer = nullptr;
-		if (_bShowTanuki && _playerTanuki)
-		{
-			startPlayer = _playerTanuki.get();
-		}
-		else if (_player)
-		{
-			startPlayer = _player.get();
-		}
-
-		if (startPlayer && _camera)
-		{
-			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, 0.0f); // 元のオフセット
-			_camera->SetTarget(target);
-			_camera->SetPos(vec3::VAdd(target, camDelta));
-		}
-
-		_originalCamera = nullptr;
-	}
-
-	return true;
+	// 汎用関数でカメラを戻す
+	return EndCinematicSequence(true); // true = メインカメラに戻す
 }
 
 bool ModeGame::StartClearSequence()
@@ -504,6 +473,53 @@ bool ModeGame::EndClearSequence()
 
 	// ゲームクリアロード画面へ遷移
 	ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");
+
+	return true;
+}
+
+bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
+{
+	// 演出カメラを使用していない場合は何もしない
+	if(!_useCinematicCamera || !_cinematicCamera)
+	{
+		return false;	
+	}
+
+	// 演出カメラの停止
+	_cinematicCamera->StopAll();
+
+	// メインカメラに戻す処理
+	if(restoreToMainCamera && _originalCamera)
+	{
+		// プレイヤー位置にカメラを再同期
+		PlayerBase* startPlayer = nullptr;
+		if(_bShowTanuki && _playerTanuki)
+		{
+			startPlayer = _playerTanuki.get();
+		}
+		else if(_showMonoPlayer && _playerMono)
+		{
+			startPlayer = _playerMono.get();
+		}
+		else if(_player)
+		{
+			startPlayer = _player.get();
+		}
+
+		// プレイヤーの位置にカメラを再配置（必要に応じてオフセットを調整）
+		if(startPlayer)
+		{
+			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, -662.0f); // 元のオフセット（必要に応じて調整）
+			_originalCamera->SetTarget(target);
+			_originalCamera->SetPos(vec3::VAdd(target, camDelta));
+		}
+
+		// メインカメラに切り替え
+		_camera = _originalCamera;
+		
+	}
+	_useCinematicCamera = false;
 
 	return true;
 }

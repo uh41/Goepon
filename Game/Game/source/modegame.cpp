@@ -87,6 +87,13 @@ bool ModeGame::Initialize()
 	ShadowInitialize();// シャドウ生成
 	CameraInfoInitialize();// カメラ情報初期化 ← ここで_cameraが作成される
 
+	// ★★★ カメラが正常に作成されたことを確認 ★★★
+	if(_camera == nullptr)
+	{
+		// エラーハンドリング：カメラが作成されていない場合
+		return false;
+	}
+
 	// カメラをプレイヤー位置に合わせる（JSONでプレイヤー位置を読み込んだ直後に適用）
 	if (_camera != nullptr)
 	{
@@ -160,10 +167,7 @@ bool ModeGame::Initialize()
 	_introTimer = 0.0f;
 
 	// カメラが正常に初期化された後にイントロ演出を開始 ★★★
-	if (_camera != nullptr)
-	{
-		StartIntroSequence();
-	}
+	StartIntroSequence();
 	return true;	
 }
 

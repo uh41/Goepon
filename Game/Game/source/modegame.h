@@ -152,6 +152,8 @@ public:
 	//　演出カメラ
 	bool TreasureOpeningCameraControl(); // 宝箱オープン演出カメラ制御
 	bool EndCinematicCamera();           // 演出カメラ終了
+	bool EndCinematicSequence(bool restoreToMainCamera); // 汎用的な演出カメラ終了関数
+
 	bool DebugCinematicCameraControl();  // デバッグ用の演出カメラ制御
 	// イントロ演出関数
 	bool StartIntroSequence();   // イントロシーケンス開始
