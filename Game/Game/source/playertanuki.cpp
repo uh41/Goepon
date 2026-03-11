@@ -35,10 +35,6 @@ bool PlayerTanuki::Initialize()
 	_bLand = true;
 
 	_inputEnabled = true;
-
-	_rotation_Y = 0.0f;
-	_target_Rotation_Y = 0.0f;
-
 	return true;
 }
 
@@ -175,7 +171,7 @@ bool PlayerTanuki::Process()
 			_v.x = cosf(localRad + camrad) * moveLen;
 			_v.z = sinf(localRad + camrad) * moveLen;
 
-			_target_Rotation_Y = atan2f(_v.x * -1.0f, _v.z * -1.0f); 
+			SetTargetRotationFromDirection(_v); // 入力方向に向くように目標回転を設定
 
 			_vDir = _v;
 			_status = STATUS::WALK;
@@ -224,43 +220,7 @@ bool PlayerTanuki::Process()
 
 	if(_status == STATUS::WALK)
 	{
-		float angleDiff = _target_Rotation_Y - _rotation_Y;
-
-		while(angleDiff > DX_PI_F)
-		{
-			angleDiff -= DX_TWO_PI_F;
-		}
-		while(angleDiff < -DX_PI_F)
-		{
-			angleDiff += DX_TWO_PI_F;
-		}
-
-		float rotationStep = DEG2RAD(rad::ROTATION_SPEED);
-
-		if(fabsf(angleDiff) > rotationStep)
-		{
-			if(angleDiff > 0)
-			{
-				_rotation_Y += rotationStep;
-			}
-			else
-			{
-				_rotation_Y -= rotationStep;
-			}
-		}
-		else
-		{
-			_rotation_Y = _target_Rotation_Y;
-		}
-
-		while(_rotation_Y > DX_PI_F)
-		{
-			_rotation_Y -= DX_TWO_PI_F;
-		}
-		while(_rotation_Y < -DX_PI_F)
-		{
-			_rotation_Y += DX_TWO_PI_F;
-		}
+		UpdateRotation();
 	}
 
 	if(_dash)
@@ -427,7 +387,7 @@ bool PlayerTanuki::Render()
 {
 	base::Render();
 
-	float vorty =_rotation_Y;// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
+	float vorty = GetRotationY();// モデルが標準でどちらを向いているかで式が変わる(これは-zを向いている場合)
 
 	MATRIX mRotY = MGetRotY(vorty);
 
