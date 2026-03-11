@@ -984,6 +984,11 @@ bool ModeGame::Process()
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
 
+			if(_configUi)
+			{
+				_configUi->SetTransForm(ConfigUi::FormType::TANUKI);
+			}
+
 			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
 			if(prevActive && _playerTanuki)
 			{
