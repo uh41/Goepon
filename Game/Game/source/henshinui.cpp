@@ -181,8 +181,9 @@ bool HenshinUi::Render()
 	}
 
 	// ここで早期リターンしない：タヌビト/モノ画像は常時表示する
-	float selectScele = 1.25f;
-	float normalScele = 1.0f;
+	// 選択時は大きく、非選択時は小さく表示するためのスケール
+	float selectScele = 1.6f; // 選択時の拡大率（大きく）
+	float normalScele = 0.6f; // 非選択時の縮小率（小さく）
 
 	// オーナーが変身中かどうかをチェックし、変身中は選択表示を無効化する
 	ModeGame* mg = nullptr;
@@ -208,8 +209,22 @@ bool HenshinUi::Render()
 
 		int drawW = StCas<int>(origW * scale);
 		int drawH = StCas<int>(origH * scale);
-		int x = henshin::TANUBITO_X - drawW / 2;
-		int y = henshin::TANUBITO_Y - drawH / 2;
+
+		// 選択時は大きい位置（巻物中央寄せ）、非選択時は小さいアイコン位置
+		int x, y;
+		if(effectivePad5 && _select == Select::TANUBITO)
+		{
+			// 大きく表示するときは巻物中心付近に表示（調整可）
+			x = henshin::MAKIMONO_X + 48 - drawW / 2;
+			y = henshin::MAKIMONO_Y + 36 - drawH / 2;
+		}
+		else
+		{
+			// 小アイコンは既定の位置
+			x = henshin::TANUBITO_X - drawW / 2;
+			y = henshin::TANUBITO_Y - drawH / 2;
+		}
+
 		DrawExtendGraph(x, y, x + drawW, y + drawH, _handleTanubito, TRUE);
 
 		if(effectivePad5 && _select == Select::TANUBITO)
@@ -234,8 +249,21 @@ bool HenshinUi::Render()
 
 		int drawW = StCas<int>(origW * scale);
 		int drawH = StCas<int>(origH * scale);
-		int x = henshin::TANUMONO_X - drawW / 2;
-		int y = henshin::TANUMONO_Y - drawH / 2;
+
+		// 選択時は大きい位置（巻物中央寄せ）、非選択時は小さいアイコン位置。
+		// 非選択時はヒトの小アイコンと被らないよう右に少しずらす。
+		int x, y;
+		if(effectivePad5 && _select == Select::TANUMONO)
+		{
+			x = henshin::MAKIMONO_X + 48 - drawW / 2;
+			y = henshin::MAKIMONO_Y + 36 - drawH / 2;
+		}
+		else
+		{
+			x = henshin::TANUMONO_X - drawW / 2 + 20; // ずらし量は必要に応じて調整
+			y = henshin::TANUMONO_Y - drawH / 2;
+		}
+
 		DrawExtendGraph(x, y, x + drawW, y + drawH, _handleMono, TRUE);
 
 		if(effectivePad5 && _select == Select::TANUMONO)

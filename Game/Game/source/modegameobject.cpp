@@ -194,9 +194,19 @@ bool ModeGame::ObjectInitialize()
 // 影の初期化
 bool ModeGame::ShadowInitialize()
 {
-	auto charaShadow = std::make_shared<CharaShadow>();
+	// 既存シャドウを安全に削除（再初期化対応）
+	for(auto& s : _charaShadow)
+	{
+		if(s)
+		{
+			s->Terminate();
+		}
+	}
+	_charaShadow.clear();
+
 	// プレイヤーに対するシャドウ
-	charaShadow->SetTargetChara([this]() -> CharaBase*
+	auto playerShadow = std::make_shared<CharaShadow>();
+	playerShadow->SetTargetChara([this]() -> CharaBase*
 		{
 			if(_showMonoPlayer)
 			{
@@ -211,9 +221,11 @@ bool ModeGame::ShadowInitialize()
 				return _player.get();
 			}
 		});
-	_charaShadow.emplace_back(charaShadow);
+	// 初期化を呼ぶ（LoadGraph 等を行う）
+	playerShadow->Initialize();
+	_charaShadow.emplace_back(playerShadow);
 
-	// 敵のシャドウは実際に処理されるコンテナ（_enemyBase）を参照するように変更
+	// 敵のシャドウは敵生成後のコンテナを参照する
 	for(auto& eb : _enemyBase)
 	{
 		if(!eb)
@@ -223,6 +235,8 @@ bool ModeGame::ShadowInitialize()
 		auto shadow = std::make_shared<CharaShadow>();
 		// eb をキャプチャして EnemyBase* を返すラムダを渡す
 		shadow->SetTargetChara([eb]() -> CharaBase* { return StCas<CharaBase*>(eb.get()); });
+		// 初期化を呼ぶ
+		shadow->Initialize();
 		_charaShadow.emplace_back(shadow);
 	}
 
