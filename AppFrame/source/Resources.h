@@ -54,6 +54,10 @@ namespace texture
   inline constexpr const char* TR_2 = "res/Texture/TR_2.png";
   inline constexpr const char* TR_3 = "res/Texture/TR_3.png";
   inline constexpr const char* TR_4 = "res/Texture/TR_4.png";
+  inline constexpr const char* TR_5 = "res/Texture/TR_5.png";
+  inline constexpr const char* TR_6 = "res/Texture/TR_6.png";
+  inline constexpr const char* TR_7 = "res/Texture/TR_7.png";
+  inline constexpr const char* TR_8 = "res/Texture/TR_8.png";
   inline constexpr const char* TX_Tresure3 = "res/Texture/TX_Tresure3.png";
   inline constexpr const char* TX_Tresure4 = "res/Texture/TX_Tresure4.png";
   inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
@@ -83,7 +87,10 @@ namespace ui
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";
   inline constexpr const char* Mokuhyou = "res/UI/Mokuhyou.png";
+  inline constexpr const char* Okimono_config = "res/UI/Okimono_config.png";
   inline constexpr const char* TailAtacck = "res/UI/TailAtacck.png";
+  inline constexpr const char* Tanubito_config = "res/UI/Tanubito_config.png";
+  inline constexpr const char* Tanuki_config = "res/UI/Tanuki_config.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";
@@ -203,6 +210,7 @@ namespace mp3
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
+  inline constexpr const char* Dog_walk = "res/SE/Dog_walk.mp3";
   inline constexpr const char* UI_Henshin_pon = "res/SE/UI_Henshin_pon.mp3";
   inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
   inline constexpr const char* UI_no_makimono = "res/SE/UI_no_makimono.mp3";
