@@ -18,7 +18,7 @@ bool EnemyMove::Initialize()
 {
 	base::Initialize();
 
-	_handle = MV1LoadModel("res/PoorEnemyMelee/SK_busi_multimotion.mv1");
+	_handle = MV1LoadModel(mv1::SK_busi_multimotion);
 	_iAttachIndex = -1;
 	// ステータスを「無し」に設定
 	_status = STATUS::NONE;
@@ -111,12 +111,26 @@ void EnemyMove::SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointI
 // 巡回処理
 void EnemyMove::ProcessPatrol()
 {
-	if(!_isPatrol || !_patrol->IsValid())
+	// 巡回が無効、または巡回ルートが無効な場合は処理しない
+	if (!_isPatrol || !_patrol->IsValid())
 	{
 		return;
 	}
 
-	if(_isMovingToSound)
+	// 音源への移動中は巡回処理をスキップ
+	if (_isMovingToSound)
+	{
+		return;
+	}
+
+	// プレイヤー検出中は巡回処理をスキップ
+	if (_detectedPlayer || (_enemySensor && _enemySensor->IsChasing()))
+	{
+		return;
+	}
+
+	// 帰還中は巡回処理をスキップ
+	if (_isReturning)
 	{
 		return;
 	}
@@ -298,7 +312,22 @@ void EnemyMove::OnPlayerLost()
 
 	_detectedPlayer = false;
 
-	ReturnInitialPos();
+	// 巡回状態を保存して帰還開始
+	if (!_hasSavePoint)
+	{
+		_savePatrolIndex = _patrolIndex;
+		if (_patrol && _patrol->IsValid())
+		{
+			_savePoint = _patrol->GetTargetPoint();
+		}
+		else
+		{
+			_savePoint = _initialPos;
+		}
+		_hasSavePoint = true;
+	}
+
+	ReturnInitialPos();	// 初期位置に戻る処理を開始
 }
 
 // 初期位置に戻る処理の更新
@@ -349,10 +378,14 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 
 	if(distSq < (threshold * threshold))
 	{
+		// 帰還完了：巡回を再開
 		_isReturning = false;
-		_patrol->SetMovePointIndex(_savePatrolIndex);
-		_patrolIndex = _savePatrolIndex;
-		_isPatrol = true;
+		if (_patrol && _patrol->IsValid())
+		{
+			_patrol->SetMovePointIndex(_savePatrolIndex);
+			_patrolIndex = _savePatrolIndex;
+			_isPatrol = true;
+		}
 		_hasSavePoint = false;
 		return;
 	}
@@ -441,11 +474,11 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 		return;
 	}
 
-	// レベルフィルタ（今のロジックに合わせて 5 のみ反応）
-	if(soundLevel != 5)
-	{
-		return;
-	}
+	//// レベルフィルタ（今のロジックに合わせて 5 のみ反応）
+	//if(soundLevel != 5)
+	//{
+	//	return;
+	//}
 
 	// 巡回を止めて現在の巡回インデックスを保存
 	_savePatrolIndex = _patrolIndex;
@@ -585,7 +618,7 @@ bool EnemyMove::Process()
 		}
 		ProcessReturnToPatrolPoint();	// 初期位置への帰還処理
 	}
-	else if (_isPatrol)	// 巡回中
+	else if (_isPatrol )		// 巡回中
 	{
 		_status = STATUS::WALK;
 		ProcessPatrol();
