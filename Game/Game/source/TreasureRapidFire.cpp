@@ -71,19 +71,20 @@ bool TreasureRapidFire::Process()
 
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
 
-	// 連打リセットタイマー処理
-	if (_currentCount > 0 && !_isOpen)
-	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
-		_buttonResetTimer += dt;
+	//// 連打リセットタイマー処理
+	//if (_currentCount > 0 && !_isOpen)
+	//{
+	//	const float dt = 1.0f / 60.0f; // 60FPS想定
+	//	_buttonResetTimer += dt;
 
-		// 一定時間入力がなければリセット
-		if (_buttonResetTimer >= BUTTON_RESET_TIME)
-		{
-			ResetCount();
-		}
-	}
+	//	// 一定時間入力がなければリセット
+	//	if (_buttonResetTimer >= BUTTON_RESET_TIME)
+	//	{
+	//		ResetCount();
+	//	}
+	//}
 
+	// 宝箱が開いていない状態で、必要な連打回数に達したら開く
 	if (!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
 		_objStatus = OBJSTATUS::OPEN;
@@ -115,14 +116,14 @@ void TreasureRapidFire::AddCount()
 	if (!_isOpen)
 	{
 		_currentCount++;
-		_buttonResetTimer = 0.0f; // タイマーリセット
+		//_buttonResetTimer = 0.0f; // タイマーリセット
 	}
 }
 
 void TreasureRapidFire::ResetCount()
 {
 	_currentCount = 0;
-	_buttonResetTimer = 0.0f;
+	//_buttonResetTimer = 0.0f;
 }
 
 void TreasureRapidFire::RenderGaugeRF(const vec::Vec3& playerPos, float progress)

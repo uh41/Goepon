@@ -788,17 +788,17 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 		progress = 0.0f;	//進行度をリセット
 
-		// 連打型宝箱もリセット
-		for (const auto& sp : treasures)
-		{
-			if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(sp.get()))
-			{
-				if (!rapidFire->IsOpen())
-				{
-					rapidFire->ResetCount();
-				}
-			}
-		}
+		//// 連打型宝箱もリセット
+		//for (const auto& sp : treasures)
+		//{
+		//	if (auto rapidFire = dynamic_cast<TreasureRapidFire*>(sp.get()))
+		//	{
+		//		if (!rapidFire->IsOpen())
+		//		{
+		//			rapidFire->ResetCount();
+		//		}
+		//	}
+		//}
 	}
 	return false;
 }
