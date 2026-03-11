@@ -480,9 +480,10 @@ void EnemySensor::RecalculateDetectionSector() const
 		// 追跡中：赤色
 		fillColorU8 = GetColorU8(255, 0, 0, 255);
 	}
-	else if (_detect.bDetected)
+	else if (_detect.bDetected || _soundDetectionActive || _isMovingToSound)
 	{
 		// 検知中（追跡前）：黄色
+		// 音検知や音源へ移動中も黄色にする
 		fillColorU8 = GetColorU8(255, 255, 0, 255);
 	}
 	else

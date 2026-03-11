@@ -48,7 +48,7 @@ bool EnemyMove::Initialize()
 	_returnSpeed = 4.0f;				// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
-	_waitingForTeleport = false;
+	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
 
 	_patrol = std::make_shared<MovePointControll>();
@@ -292,7 +292,7 @@ bool EnemyMove::Terminate()
 // テレポート状態のリセット
 void EnemyMove::ResetTeleport()
 {
-	_waitingForTeleport = false;
+	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
 }
 
@@ -344,7 +344,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 	}
 
 	// テレポート待機中の処理（床がないためテレポート待ち）
-	if(_waitingForTeleport)
+	if(_waitingTeleport)
 	{
 		// カウントダウン
 		_teleportTimer -= 1.0f / 60.0f; // 60FPS 前提
@@ -355,7 +355,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 			_vPos = _savePoint;
 			_vDir = _initialDir; // 向きは初期向きに戻す（必要なら変更可）
 			_isReturning = false;
-			_waitingForTeleport = false;
+			_waitingTeleport = false;
 			_teleportTimer = 0.0f;
 			_effect->PlayEffect(_vPos);
 
@@ -406,7 +406,7 @@ void EnemyMove::ProcessReturnToPatrolPoint()
 		else
 		{
 			// 床がない → テレポート待機を開始
-			_waitingForTeleport = true;
+			_waitingTeleport = true;
 			_teleportTimer = TELEPORT_WAIT_TIME;
 			// 状態は待機にしてアニメ等を止める（Process 内で反映される）
 		}
@@ -501,14 +501,14 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 
 	// 音源へ向けて移動開始
 	_isMovingToSound = true;
-	_soundSourcePosition = soundPos;
+	_soundSourcePos = soundPos;
 
 	// 音検知タイマー開始
 	_soundDetectionActive = true;
 	_soundDetectionTimer = 0.0f;
 
 	// 初期位置への帰還待機は中断
-	_waitingBeforeReturn = false;
+	_waitingReturn = false;
 	_returnWaitTimer = 0.0f;
 
 	_waitingAtSound = false;
@@ -608,7 +608,7 @@ bool EnemyMove::Process()
 	}
 	else if (_isReturning)	// 初期位置に戻り中
 	{
-		if(_waitingForTeleport)
+		if(_waitingTeleport)
 		{
 			_status = STATUS::WAIT;
 		}
