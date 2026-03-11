@@ -238,9 +238,9 @@ bool ModeGame::StartIntroSequence()
 
 		// プレイヤーの前方向ベクトルを計算
 		vec::Vec3 playerDir;
-		playerDir.x = cosf(playerRotY);
+		playerDir.x = sinf(playerRotY);
 		playerDir.y = 0.0f;
-		playerDir.z = sinf(playerRotY);
+		playerDir.z = cosf(playerRotY);
 
 		// 念のため正規化
 		float dirLength = vec3::VSize(playerDir);
