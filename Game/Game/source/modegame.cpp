@@ -79,6 +79,27 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
+	_treasure.clear();
+	for(auto& tb : _treasureBase)
+	{
+		if(!tb) continue;
+		if(auto t = std::dynamic_pointer_cast<Treasure>(tb))
+		{
+			_treasure.emplace_back(t);
+		}
+	}
+
+	// カウンタ/UI に正しい数を反映
+	if(_counterUi)
+	{
+		_counterUi->SetTreasureCount(static_cast<int>(_treasure.size()));
+	}
+
+	if(_treasureUi)
+	{
+		_treasureUi->SetTreasureList(_treasure);
+	}
+
 	// ゴール初期化
 	_isGameClear = false;
 
