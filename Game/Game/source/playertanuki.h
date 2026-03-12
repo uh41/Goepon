@@ -66,6 +66,6 @@ protected:
 
 	bool _inputEnabled; // “ü—Í‚ª—LŒø‚©‚Ç‚¤‚©
 
-
+	float _target_Rotation_Y;
 };
 

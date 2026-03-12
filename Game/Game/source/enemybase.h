@@ -83,7 +83,7 @@ public:
 	virtual void OnDamageStart() {} // ダメージアニメーション開始時の処理
 	virtual void OnDamageEnd() {}   // ダメージアニメーション終了時の処理
 
-	bool IsStun() const { return _isInvincible && _attachStage == 2; }
+	bool IsStun() const { return _isInvincible && _attachStage == 2; } // スタン状態の判定
 
 	void SetEnemyId(uint32_t id) { _enemyId = id; }
 	uint32_t GetEnemyId() const { return _enemyId; }
