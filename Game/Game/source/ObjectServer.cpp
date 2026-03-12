@@ -108,7 +108,8 @@ void ObjectServer::DeleteObject(ObjectBase* obj)
 	}
 
 	iter = std::find(_addObj.begin(), _addObj.end(), obj);
-	if(iter != _addObj.end()) {
+	if(iter != _addObj.end())
+	{
 		(*iter)->Terminate();
 		delete (*iter);
 		_addObj.erase(iter);
