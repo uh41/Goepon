@@ -1,35 +1,35 @@
-#include "modegame.h"
+ï»¿#include "modegame.h"
 #include "ModeGameClear.h"
-
+#include "mymath.h"
 bool ModeGame::DebugCinematicCameraControl()
 {
-	if (!_cinematicCamera)
+	if(!_cinematicCamera)
 	{
-		return false; // ‰‰oƒJƒƒ‰‚ª‘¶İ‚µ‚È‚¢ê‡‚Íˆ—‚µ‚È‚¢
+		return false; // æ¼”å‡ºã‚«ãƒ¡ãƒ©ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å‡¦ç†ã—ãªã„
 	}
 
-	if (!_originalCamera)
+	if(!_originalCamera)
 	{
 		return false;
 	}
 
-	if (!_camera)
+	if(!_camera)
 	{
-		return false; // Œ»İ‚ÌƒJƒƒ‰‚ª‘¶İ‚µ‚È‚¢ê‡‚Íˆ—‚µ‚È‚¢
+		return false; // ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å‡¦ç†ã—ãªã„
 	}
 
-	if (CheckHitKey(KEY_INPUT_F1))
+	if(CheckHitKey(KEY_INPUT_F1))
 	{
-		if (!_debugF1KeyPressed)
+		if(!_debugF1KeyPressed)
 		{
 			_debugF1KeyPressed = true;
-			if (!_debugZoomActive)
+			if(!_debugZoomActive)
 			{
 				_debugZoomActive = true;
-				// ‰‰oƒJƒƒ‰‚ÉŒ»İ‚ÌƒJƒƒ‰ˆÊ’u‚Æ’–Ú“_‚ğƒRƒs[‚µ‚ÄØ‚è‘Ö‚¦
-				if (_cinematicCamera && _camera)
+				// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã«ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ä½ç½®ã¨æ³¨ç›®ç‚¹ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦åˆ‡ã‚Šæ›¿ãˆ
+				if(_cinematicCamera && _camera)
 				{
-					// ‰‰oƒJƒƒ‰‚ÉŒ»İ‚ÌƒJƒƒ‰ˆÊ’u‚Æ’–Ú“_‚ğƒRƒs[‚µ‚ÄØ‚è‘Ö‚¦
+					// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã«ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ä½ç½®ã¨æ³¨ç›®ç‚¹ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦åˆ‡ã‚Šæ›¿ãˆ
 					_cinematicCamera->SetPos(_camera->GetPos());
 					_cinematicCamera->SetTarget(_camera->GetTarget());
 					_cinematicCamera->SetClipNear(_camera->GetClipNear());
@@ -40,51 +40,51 @@ bool ModeGame::DebugCinematicCameraControl()
 				}
 				else
 				{
-					// ƒJƒƒ‰‚ª–³Œø‚Èê‡‚Íˆ—‚ğƒXƒLƒbƒv
+					// ã‚«ãƒ¡ãƒ©ãŒç„¡åŠ¹ãªå ´åˆã¯å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
 					return false;
 				}
 
-				// Œ»İ‚ÌƒvƒŒƒCƒ„[ˆÊ’u‚ğæ“¾‚µ‚ÄƒY[ƒ€‰‰o
+				// ç¾åœ¨ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®ã‚’å–å¾—ã—ã¦ã‚ºãƒ¼ãƒ æ¼”å‡º
 				PlayerBase* targetPlayer = nullptr;
-				if (_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
+				if(_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
 				{
 					targetPlayer = _playerTanuki.get();
 				}
-				else if (_showMonoPlayer && _playerMono && _playerMono->IsAlive())
+				else if(_showMonoPlayer && _playerMono && _playerMono->IsAlive())
 				{
 					targetPlayer = _playerMono.get();
 				}
-				else if (_player && _player->IsAlive())
+				else if(_player && _player->IsAlive())
 				{
 					targetPlayer = _player.get();
 				}
-				if (targetPlayer && _cinematicCamera)
+				if(targetPlayer && _cinematicCamera)
 				{
 					vec::Vec3 target = targetPlayer->GetPos();
-					// Œ»İˆÊ’u‚ÌƒJƒƒ‰‚ÌˆÊ’u‚©‚çƒvƒŒƒCƒ„[‚ÌˆÊ’u‚Ö‚Ì‹——£‚ğŒvZ
+					// ç¾åœ¨ä½ç½®ã®ã‚«ãƒ¡ãƒ©ã®ä½ç½®ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã¸ã®è·é›¢ã‚’è¨ˆç®—
 					vec::Vec3 currentPos = _cinematicCamera->GetPos();
 					float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
-					float endDist = currentDist * 0.25f; // ÅI“I‚È‹——£i”¼•ª‚É‚·‚é—áj
-					if (endDist < 50.0f) endDist = 50.0f; // Å¬‹——£‚ğİ’èi‹ß‚·‚¬‚È‚¢‚æ‚¤‚Éj
+					float endDist = currentDist * 0.25f; // æœ€çµ‚çš„ãªè·é›¢ï¼ˆåŠåˆ†ã«ã™ã‚‹ä¾‹ï¼‰
+					if(endDist < 50.0f) endDist = 50.0f; // æœ€å°è·é›¢ã‚’è¨­å®šï¼ˆè¿‘ã™ããªã„ã‚ˆã†ã«ï¼‰
 
-					// ƒY[ƒ€‰‰oFŒ»İ‹——£‚©‚ç‹ß‹——£‚Ö
-					_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist); // ƒ^[ƒQƒbƒgˆÊ’uAƒY[ƒ€”{—¦AƒY[ƒ€‹——£AƒY[ƒ€ŠÔ
+					// ã‚ºãƒ¼ãƒ æ¼”å‡ºï¼šç¾åœ¨è·é›¢ã‹ã‚‰è¿‘è·é›¢ã¸
+					_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist); // ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä½ç½®ã€ã‚ºãƒ¼ãƒ å€ç‡ã€ã‚ºãƒ¼ãƒ è·é›¢ã€ã‚ºãƒ¼ãƒ æ™‚é–“
 				}
 			}
 			else
 			{
 
-				// ƒY[ƒ€‰ğœ
+				// ã‚ºãƒ¼ãƒ è§£é™¤
 				_debugZoomActive = false;
 				_useCinematicCamera = false;
 
-				if (_cinematicCamera)
+				if(_cinematicCamera)
 				{
 					_cinematicCamera->StopAll();
 				}
 
-				// Œ³‚ÌƒJƒƒ‰‚É–ß‚·‘O‚É—LŒø«‚ğƒ`ƒFƒbƒN
-				if (_originalCamera)
+				// å…ƒã®ã‚«ãƒ¡ãƒ©ã«æˆ»ã™å‰ã«æœ‰åŠ¹æ€§ã‚’ãƒã‚§ãƒƒã‚¯
+				if(_originalCamera)
 				{
 					_camera = _originalCamera;
 				}
@@ -100,28 +100,28 @@ bool ModeGame::DebugCinematicCameraControl()
 
 bool ModeGame::TreasureOpeningCameraControl()
 {
-	if (_isOpeningTreasure)
+	if(_isOpeningTreasure)
 	{
-		return false; // ‚Ü‚½‚Í‚·‚Å‚ÉŠJ‚¢‚Ä‚¢‚éê‡‚Íˆ—‚µ‚È‚¢
+		return false; // ã¾ãŸã¯ã™ã§ã«é–‹ã„ã¦ã„ã‚‹å ´åˆã¯å‡¦ç†ã—ãªã„
 	}
 
-	// ƒVƒlƒ}ƒeƒBƒbƒNƒJƒƒ‰‚ª‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íì¬
-	if (!_cinematicCamera)
+	// ã‚·ãƒãƒãƒ†ã‚£ãƒƒã‚¯ã‚«ãƒ¡ãƒ©ãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„å ´åˆã¯ä½œæˆ
+	if(!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
-		if (!_cinematicCamera->Initialize())
+		if(!_cinematicCamera->Initialize())
 		{
 			_cinematicCamera.reset();
 			return false;
 		}
 	}
 
-	// Œ³‚ÌƒJƒƒ‰‚ğ•Û‘¶
-	if (!_useCinematicCamera)
+	// å…ƒã®ã‚«ãƒ¡ãƒ©ã‚’ä¿å­˜
+	if(!_useCinematicCamera)
 	{
-		if (_cinematicCamera && _camera)
+		if(_cinematicCamera && _camera)
 		{
-			// ‰‰oƒJƒƒ‰‚ÉŒ»İ‚ÌƒJƒƒ‰ˆÊ’u‚Æ’–Ú“_‚ğƒRƒs[‚µ‚ÄØ‚è‘Ö‚¦
+			// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã«ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ä½ç½®ã¨æ³¨ç›®ç‚¹ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦åˆ‡ã‚Šæ›¿ãˆ
 			_cinematicCamera->SetPos(_camera->GetPos());
 			_cinematicCamera->SetTarget(_camera->GetTarget());
 			_cinematicCamera->SetClipNear(_camera->GetClipNear());
@@ -133,34 +133,34 @@ bool ModeGame::TreasureOpeningCameraControl()
 		}
 		else
 		{
-			// ƒJƒƒ‰‚ª‚È‚¢ê‡‚Íˆ—‚ğƒXƒLƒbƒv
+			// ã‚«ãƒ¡ãƒ©ãŒãªã„å ´åˆã¯å‡¦ç†ã‚’ã‚¹ã‚­ãƒƒãƒ—
 			return false;
 		}
 
-		// Œ»İ‚ÌƒvƒŒƒCƒ„[ˆÊ’u‚ğæ“¾
+		// ç¾åœ¨ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®ã‚’å–å¾—
 		PlayerBase* targetPlayer = nullptr;
-		if (_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
+		if(_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
 		{
 			targetPlayer = _playerTanuki.get();
 		}
-		else if (_showMonoPlayer && _playerMono && _playerMono->IsAlive())
+		else if(_showMonoPlayer && _playerMono && _playerMono->IsAlive())
 		{
 			targetPlayer = _playerMono.get();
 		}
-		else if (_player && _player->IsAlive())
+		else if(_player && _player->IsAlive())
 		{
 			targetPlayer = _player.get();
 		}
 
-		if (targetPlayer && _cinematicCamera)
+		if(targetPlayer && _cinematicCamera)
 		{
 			vec::Vec3 target = targetPlayer->GetPos();
 			vec::Vec3 currentPos = _cinematicCamera->GetPos();
 			float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
-			float endDist = currentDist * 0.5f; // ÅI“I‚È‹——£i”¼•ª‚É‚·‚é—áj
-			if (endDist < 50.0f) endDist = 50.0f; // Å¬‹——£‚ğİ’èi‹ß‚·‚¬‚È‚¢‚æ‚¤‚Éj
+			float endDist = currentDist * 0.5f; // æœ€çµ‚çš„ãªè·é›¢ï¼ˆåŠåˆ†ã«ã™ã‚‹ä¾‹ï¼‰
+			if(endDist < 50.0f) endDist = 50.0f; // æœ€å°è·é›¢ã‚’è¨­å®šï¼ˆè¿‘ã™ããªã„ã‚ˆã†ã«ï¼‰
 
-			// ƒY[ƒ€‰‰oFŒ»İ‹——£‚©‚ç‹ß‹——£‚Ö
+			// ã‚ºãƒ¼ãƒ æ¼”å‡ºï¼šç¾åœ¨è·é›¢ã‹ã‚‰è¿‘è·é›¢ã¸
 			_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist);
 		}
 	}
@@ -169,13 +169,13 @@ bool ModeGame::TreasureOpeningCameraControl()
 
 bool ModeGame::EndCinematicCamera()
 {
-	if (!_useCinematicCamera || !_cinematicCamera)
+	if(!_useCinematicCamera || !_cinematicCamera)
 	{
 		return false;
 	}
 
-	// Œ³‚ÌƒJƒƒ‰‚É–ß‚·
-	if (_originalCamera)
+	// å…ƒã®ã‚«ãƒ¡ãƒ©ã«æˆ»ã™
+	if(_originalCamera)
 	{
 		_camera = _originalCamera;
 		_originalCamera = nullptr;
@@ -183,22 +183,22 @@ bool ModeGame::EndCinematicCamera()
 
 	_useCinematicCamera = false;
 
-	//@ƒVƒlƒ}ƒeƒBƒbƒNƒJƒƒ‰‚ğƒŠƒZƒbƒg
+	//ã€€ã‚·ãƒãƒãƒ†ã‚£ãƒƒã‚¯ã‚«ãƒ¡ãƒ©ã‚’ãƒªã‚»ãƒƒãƒˆ
 	_cinematicCamera->StopAll();
 	return true;
 }
 
 
-// ƒCƒ“ƒgƒ‰‰oŠJnŠÖ”‚ğ’Ç‰Á
+// ã‚¤ãƒ³ãƒˆãƒ­æ¼”å‡ºé–‹å§‹é–¢æ•°ã‚’è¿½åŠ 
 bool ModeGame::StartIntroSequence()
 {
-	// ƒJƒƒ‰‚ª‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Í¸”s
+	// ã‚«ãƒ¡ãƒ©ãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã„å ´åˆã¯å¤±æ•—
 	if (!_camera)
 	{
 		return false;
 	}
 
-	// ‰‰oƒJƒƒ‰‚ª–¢ì¬‚Ìê‡‚Íì¬
+	// æ¼”å‡ºã‚«ãƒ¡ãƒ©ãŒæœªä½œæˆã®å ´åˆã¯ä½œæˆ
 	if (!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
@@ -209,7 +209,7 @@ bool ModeGame::StartIntroSequence()
 		}
 	}
 
-	// Œ³‚ÌƒJƒƒ‰‚ğ•Û‚µ‚Ä‰‰oƒJƒƒ‰‚ÉØ‚è‘Ö‚¦
+	// å…ƒã®ã‚«ãƒ¡ãƒ©ã‚’ä¿æŒã—ã¦æ¼”å‡ºã‚«ãƒ¡ãƒ©ã«åˆ‡ã‚Šæ›¿ãˆ
 	if (!_useCinematicCamera)
 	{
 		_originalCamera = _camera;
@@ -217,7 +217,7 @@ bool ModeGame::StartIntroSequence()
 		_useCinematicCamera = true;
 	}
 
-	// ƒvƒŒƒCƒ„[‚Ìæ“¾iƒ^ƒkƒL—Dæj
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å–å¾—ï¼ˆã‚¿ãƒŒã‚­å„ªå…ˆï¼‰
 	PlayerBase* targetPlayer = nullptr;
 	if (_bShowTanuki && _playerTanuki)
 	{
@@ -228,50 +228,57 @@ bool ModeGame::StartIntroSequence()
 		targetPlayer = _player.get();
 	}
 
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã¨å‘ãã‚’è€ƒæ…®ã—ã¦ã‚«ãƒ¡ãƒ©ã‚’é…ç½®
 	if (targetPlayer && _cinematicCamera)
 	{
-		vec::Vec3 playerPos = targetPlayer->GetPos();
-		vec::Vec3 playerDir = targetPlayer->GetDir();
+		vec::Vec3 playerPos = targetPlayer->GetPos(); // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’å–å¾—
 
-		// ƒvƒŒƒCƒ„[‚ÌŒü‚«‚ğ³‹K‰»
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å›è»¢è§’åº¦ã‚’å–å¾—
+		float playerRotY = targetPlayer->GetRotationY();
+
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—
+		vec::Vec3 playerDir;
+		playerDir.x = sinf(playerRotY);
+		playerDir.y = 0.0f;
+		playerDir.z = cosf(playerRotY);
+
+		// å¿µã®ãŸã‚æ­£è¦åŒ–
 		float dirLength = vec3::VSize(playerDir);
-		if (dirLength < 0.001f)
-		{
-			playerDir = vec3::VGet(0.0f, 0.0f, 1.0f);
-		}
-		else
+
+		if (dirLength > 0.001f)
 		{
 			playerDir = vec3::VNorm(playerDir);
 		}
 
-		// š’²®ƒpƒ‰ƒ[ƒ^i‚±‚±‚¾‚¯•ÏX‚·‚ê‚ÎOKjš
-		float cameraHeight = 500.0f; // ƒJƒƒ‰‚Ì‚‚³iY²‚Ì‚İj
-		float cameraDistance = 500.0f; // ƒvƒŒƒCƒ„[‚©‚ç‚Ì‹——£
-		float targetHeight = 300.0f; // ƒvƒŒƒCƒ„[‚ÌŠç‚Ì‚‚³
+		// èª¿æ•´ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ 
+		float cameraDistance = 300.0f;  // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ã‚«ãƒ¡ãƒ©ã¾ã§ã®è·é›¢
+		float cameraHeight = 500.0f;    // ã‚«ãƒ¡ãƒ©ã®é«˜ã•ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+		float targetHeight = 60.0f;     // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é¡”ã®é«˜ã•ï¼ˆæ³¨è¦–ç‚¹ï¼‰
 
-		// ƒJƒƒ‰ˆÊ’uiƒvƒŒƒCƒ„[‚Ì³–ÊAw’è‚µ‚½‚‚³‚Æ‹——£j
-		vec::Vec3 cameraPos = vec3::VGet(
-			playerPos.x + playerDir.x * cameraDistance,
-			playerPos.y + cameraHeight,
-			playerPos.z + playerDir.z * cameraDistance
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹ã«ã«ã‚«ãƒ¡ãƒ©ã‚’é…ç½®ï¼ˆæœ¬æ¥ã¯ã™ã¹ã¦ãƒ—ãƒ©ã‚¹ã ã¨æ€ã†ãŒDxlibã®ä½¿ç”¨ï¼ŸãŸã‚ãƒã‚¤ãƒŠã‚¹ï¼‰
+		vec::Vec3 cameraPos = vec3::VGet
+		(
+			playerPos.x - playerDir.x * cameraDistance,  // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‰æ–¹ã«é…ç½®
+			playerPos.y + cameraHeight,                  // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é«˜ã•ã«ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’åŠ ãˆã‚‹
+			playerPos.z - playerDir.z * cameraDistance 
 		);
 
-		// ƒJƒƒ‰ƒ^[ƒQƒbƒgiƒvƒŒƒCƒ„[‚ÌŠçj
+		// ã‚«ãƒ¡ãƒ©ã‚¿ãƒ¼ã‚²ãƒƒãƒˆï¼šãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®é¡”ã®ä½ç½®
 		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, targetHeight, 0.0f));
 
-		// ƒJƒƒ‰İ’è‚ğ“K—p
+		// ã‚«ãƒ¡ãƒ©è¨­å®šã‚’é©ç”¨
 		_cinematicCamera->SetPos(cameraPos);
 		_cinematicCamera->SetTarget(cameraTarget);
 		_cinematicCamera->SetClipNear(1.0f);
 		_cinematicCamera->SetClipFar(10000.0f);
 	}
 
-	// ƒCƒ“ƒgƒ‰‰o‚ğŠJn
+	// ã‚¤ãƒ³ãƒˆãƒ­æ¼”å‡ºã‚’é–‹å§‹
 	_isIntroActive = true;
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
 
-	// š’Ç‰Á: ƒvƒŒƒCƒ„[‚Ì‘€ì‚ğ–³Œø‰»
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œã‚’ç„¡åŠ¹åŒ–
 	if (_playerTanuki)
 	{
 		_playerTanuki->SetInputEnabled(false);
@@ -280,44 +287,44 @@ bool ModeGame::StartIntroSequence()
 	return true;
 }
 
-// ProcessIntroSequence()ŠÖ”‚ğ’Ç‰Á
+// ProcessIntroSequence()é–¢æ•°ã‚’è¿½åŠ 
 bool ModeGame::ProcessIntroSequence()
 {
-	if (!_isIntroActive)
+	if(!_isIntroActive)
 	{
 		return false;
 	}
 
 
 	PlayerTanuki* tanuki = _playerTanuki.get();
-	if (tanuki && tanuki->IsAlive())
+	if(tanuki && tanuki->IsAlive())
 	{
 		vec::Vec3 playerPos = tanuki->GetPos();
 
 		_cinematicCamera->SetTarget(playerPos);
 	}
 
-	// ššš ŠÔŒo‰ß‚ÅƒCƒ“ƒgƒI—¹ ššš
-	_introTimer += 1.0f / 60.0f; // 60FPS‘z’è
+	// æ™‚é–“çµŒéã§ã‚¤ãƒ³ãƒˆãƒ­çµ‚äº†
+	_introTimer += 1.0f / 60.0f; // 60FPSæƒ³å®š
 
-	// ƒCƒ“ƒgƒ‰‰o‚Ì‘ŠÔiINTRO_DURATIONj‚ğ’´‚¦‚½‚çI—¹
+	// ã‚¤ãƒ³ãƒˆãƒ­æ¼”å‡ºã®ç·æ™‚é–“ï¼ˆINTRO_DURATIONï¼‰ã‚’è¶…ãˆãŸã‚‰çµ‚äº†
 	if(_introTimer >= INTRO_DURATION)
 	{
 		EndIntroSequence();
 		return true;
 	}
 
-	// ƒ{ƒ^ƒ““ü—Í‚ÅƒCƒ“ƒgƒI—¹
+	// ãƒœã‚¿ãƒ³å…¥åŠ›ã§ã‚¤ãƒ³ãƒˆãƒ­çµ‚äº†
 	int trg = ApplicationBase::GetInstance()->GetTrg();
-	if (!_introButtonPressed)
+	if(!_introButtonPressed)
 	{
-		if (trg & PAD_INPUT_1)
+		if(trg & PAD_INPUT_1)
 		{
 			_introButtonPressed = true;
 		}
 	}
 
-	if (_introButtonPressed)
+	if(_introButtonPressed)
 	{
 		EndIntroSequence();
 		return true;
@@ -326,7 +333,7 @@ bool ModeGame::ProcessIntroSequence()
 	return true;
 }
 
-// EndIntroSequence()ŠÖ”‚ğ’Ç‰Á
+// EndIntroSequence()é–¢æ•°ã‚’è¿½åŠ 
 bool ModeGame::EndIntroSequence()
 {
 	if(!_isIntroActive)
@@ -338,38 +345,67 @@ bool ModeGame::EndIntroSequence()
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
 
-	// ƒvƒŒƒCƒ„[‚Ì‘€ì‚ğÄ“x—LŒø‰»
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œã‚’å†åº¦æœ‰åŠ¹åŒ–
 	if(_playerTanuki)
 	{
 		_playerTanuki->SetInputEnabled(true);
 	}
 
-	// ”Ä—pŠÖ”‚ÅƒJƒƒ‰‚ğ–ß‚·
-	return EndCinematicSequence(true); // true = ƒƒCƒ“ƒJƒƒ‰‚É–ß‚·
+	// æ±ç”¨é–¢æ•°ã§ã‚«ãƒ¡ãƒ©ã‚’æˆ»ã™
+	return EndCinematicSequence(true); // true = ãƒ¡ã‚¤ãƒ³ã‚«ãƒ¡ãƒ©ã«æˆ»ã™
 }
 
 bool ModeGame::StartClearSequence()
 {
 	_isGameClearCinematicActive = true;
 	_clearCinematicTimer = 0.0f;
+	_clearSequencePhase = 0; // 0: ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å›è»¢, 1: ã‚«ãƒ¡ãƒ©ã‚ºãƒ¼ãƒ 
 
-	// ƒVƒlƒ}ƒeƒBƒbƒNƒJƒƒ‰‚ª–¢ì¬‚Ìê‡‚Íì¬
-	if (!_cinematicCamera)
+	// ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢æ™‚ã¯å¼·åˆ¶çš„ã«ã‚¿ãƒŒã‚­ã«å¤‰èº« 
+	if(!_bShowTanuki)
+	{
+		// ç¾åœ¨è¡¨ç¤ºä¸­ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã¨å‘ãã‚’ä¿å­˜
+		PlayerBase* currentPlayer = nullptr;
+		if(_showMonoPlayer && _playerMono)
+		{
+			currentPlayer = _playerMono.get();
+		}
+		else if(_player)
+		{
+			currentPlayer = _player.get();
+		}
+
+		// ã‚¿ãƒŒã‚­ã«åˆ‡ã‚Šæ›¿ãˆ
+		_bShowTanuki = true;
+		_showMonoPlayer = false;
+
+		// ä½ç½®ã¨å‘ãã‚’å¼•ãç¶™ã
+		if(currentPlayer && _playerTanuki)
+		{
+			_playerTanuki->SetPos(currentPlayer->GetPos());
+			_playerTanuki->SetDir(currentPlayer->GetDir());
+			_playerTanuki->_status = CharaBase::STATUS::WAIT;
+			_playerTanuki->PlayAnimation("idle", true);
+		}
+	}
+
+	// ã‚·ãƒãƒãƒ†ã‚£ãƒƒã‚¯ã‚«ãƒ¡ãƒ©ãŒæœªä½œæˆã®å ´åˆã¯ä½œæˆ
+	if(!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
-		if (!_cinematicCamera->Initialize())
+		if(!_cinematicCamera->Initialize())
 		{
 			_cinematicCamera.reset();
 			return false;
 		}
 	}
 
-	// š ƒJƒƒ‰‚ÌØ‚è‘Ö‚¦ˆ—‚ğ’Ç‰ÁiƒCƒ“ƒgƒ‚Æ“¯—l‚Ìˆ—j
-	if (!_useCinematicCamera)
+	// ã‚«ãƒ¡ãƒ©ã®åˆ‡ã‚Šæ›¿ãˆå‡¦ç†
+	if(!_useCinematicCamera)
 	{
-		if (_cinematicCamera && _camera)
+		if(_cinematicCamera && _camera)
 		{
-			// ‰‰oƒJƒƒ‰‚ÉŒ»İ‚ÌƒJƒƒ‰ˆÊ’u‚Æ’–Ú“_‚ğƒRƒs[
+			// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã«ç¾åœ¨ã®ã‚«ãƒ¡ãƒ©ä½ç½®ã¨æ³¨ç›®ç‚¹ã‚’ã‚³ãƒ”ãƒ¼
 			_cinematicCamera->SetPos(_camera->GetPos());
 			_cinematicCamera->SetTarget(_camera->GetTarget());
 			_cinematicCamera->SetClipNear(_camera->GetClipNear());
@@ -385,81 +421,66 @@ bool ModeGame::StartClearSequence()
 		}
 	}
 
-	// ƒvƒŒƒCƒ„[‚ğæ“¾
-	PlayerBase* targetPlayer = nullptr;
-	if (_bShowTanuki && _playerTanuki)
-	{
-		targetPlayer = _playerTanuki.get();
-	}
-	else if (_showMonoPlayer && _playerMono)
-	{
-		targetPlayer = _playerMono.get();
-	}
-	else if (_player)
-	{
-		targetPlayer = _player.get();
-	}
-
-	if (targetPlayer && _cinematicCamera)
-	{
-		vec::Vec3 playerPos = targetPlayer->GetPos();
-
-		// Œ»İ‚ÌƒJƒƒ‰ˆÊ’u‚©‚çƒvƒŒƒCƒ„[‚Ü‚Å‚Ì‹——£‚ğŒvZ
-		vec::Vec3 currentPos = _cinematicCamera->GetPos();
-		float currentDist = vec3::VSize(vec3::VSub(currentPos, playerPos));
-
-		// ƒY[ƒ€Œã‚Ì‹——£iŒ»İ‚Ì‹——£‚Ì25%’ö“x‚Éİ’è‚µ‚Ä‚æ‚è‹ß‚Ã‚¯‚éj
-		float endDist = currentDist * 0.25f;
-		if (endDist < 150.0f) endDist = 150.0f; // Å¬‹——£‚ğİ’èi‹ß‚·‚¬‚È‚¢‚æ‚¤‚Éj
-
-		// š CinematicCamera::StartZoom() ‚ğg—p‚µ‚ÄƒY[ƒ€‰‰o‚ğŠJn
-		_cinematicCamera->StartZoom(playerPos, CLEAR_CINEMATIC_DURATION, currentDist, endDist);
-	}
+	// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å›è»¢æ¼”å‡ºã‚’é–‹å§‹
+	StartPlayerRotation();
 
 	return true;
 }
 
 bool ModeGame::ProcessClearSequence()
 {
-	if (!_isGameClearCinematicActive) 
+	if(!_isGameClearCinematicActive)
 	{
 		return true;
 	}
 
-	// š CinematicCamera::Process() ‚ğŒÄ‚Ño‚µ‚ÄƒY[ƒ€‰‰o‚ğXV
-	if (_cinematicCamera && _useCinematicCamera)
+	// ãƒ•ã‚§ãƒ¼ã‚º0: ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼å›è»¢
+	if(_clearSequencePhase == 0)
 	{
-		_cinematicCamera->Process();
+		bool rotationComplete = ProcessPlayerRotation();
 
-		// ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğ’ÇÕiƒvƒŒƒCƒ„[‚ª“®‚¢‚½ê‡‚É‘Î‰j
-		PlayerBase* targetPlayer = nullptr;
-		if (_bShowTanuki && _playerTanuki)
+		if(rotationComplete)
 		{
-			targetPlayer = _playerTanuki.get();
-		}
-		else if (_showMonoPlayer && _playerMono)
-		{
-			targetPlayer = _playerMono.get();
-		}
-		else if (_player)
-		{
-			targetPlayer = _player.get();
+			// å›è»¢çµ‚äº†å¾Œã€ã‚«ãƒ¡ãƒ©ã‚ºãƒ¼ãƒ æ¼”å‡ºã‚’é–‹å§‹
+			_clearSequencePhase = 1;
+
+			// â˜…â˜…â˜… ã‚¿ãƒŒã‚­ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã§ã‚ºãƒ¼ãƒ æ¼”å‡ºã‚’é–‹å§‹ â˜…â˜…â˜…
+			if(_playerTanuki && _cinematicCamera)
+			{
+				vec::Vec3 playerPos = _playerTanuki->GetPos();
+				vec::Vec3 currentPos = _cinematicCamera->GetPos();
+				float currentDist = vec3::VSize(vec3::VSub(currentPos, playerPos));
+				float endDist = currentDist * 0.25f;
+				if(endDist < 150.0f) endDist = 150.0f;
+
+				_cinematicCamera->StartZoom(playerPos, CLEAR_CINEMATIC_DURATION, currentDist, endDist);
+			}
 		}
 
-		// ƒ^[ƒQƒbƒgˆÊ’u‚ğXViƒvƒŒƒCƒ„[‚ÌŠç‚Ì‚‚³‚É‡‚í‚¹‚éj
-		if (targetPlayer)
-		{
-			vec::Vec3 targetPos = vec3::VAdd(targetPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			_cinematicCamera->SetTarget(targetPos);
-		}
+		return true;
 	}
 
-	_clearCinematicTimer += 1.0f / 60.0f;
-
-	// ‰‰o‚ªI—¹‚µ‚½‚ç
-	if (_clearCinematicTimer >= CLEAR_CINEMATIC_DURATION)
+	// ãƒ•ã‚§ãƒ¼ã‚º1: ã‚«ãƒ¡ãƒ©ã‚ºãƒ¼ãƒ 
+	if(_clearSequencePhase == 1)
 	{
-		return EndClearSequence();
+		if(_cinematicCamera && _useCinematicCamera)
+		{
+			_cinematicCamera->Process();
+
+			// â˜…â˜…â˜… ã‚¿ãƒŒã‚­ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’è¿½è·¡ â˜…â˜…â˜…
+			if(_playerTanuki)
+			{
+				vec::Vec3 targetPos = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+				_cinematicCamera->SetTarget(targetPos);
+			}
+		}
+
+		_clearCinematicTimer += 1.0f / 60.0f;
+
+		if(_clearCinematicTimer >= CLEAR_CINEMATIC_DURATION)
+		{
+			return EndClearSequence();
+		}
 	}
 
 	return true;
@@ -468,21 +489,21 @@ bool ModeGame::ProcessClearSequence()
 bool ModeGame::EndClearSequence()
 {
 	_isGameClearCinematicActive = false;
-	// ‰‰oƒJƒƒ‰‚ğ’â~
-	if (_cinematicCamera)
-	{
-		_cinematicCamera->StopAll();
-	}
+	//// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã‚’åœæ­¢
+	//if (_cinematicCamera)
+	//{
+	//	_cinematicCamera->StopAll();
+	//}
 
-	// Œ³‚ÌƒJƒƒ‰‚É–ß‚·
-	if (_useCinematicCamera && _originalCamera)
-	{
-		_camera = _originalCamera;
-		_originalCamera = nullptr;
-		_useCinematicCamera = false;
-	}
+	//// å…ƒã®ã‚«ãƒ¡ãƒ©ã«æˆ»ã™
+	//if (_useCinematicCamera && _originalCamera)
+	//{
+	//	_camera = _originalCamera;
+	//	_originalCamera = nullptr;
+	//	_useCinematicCamera = false;
+	//}
 
-	// ƒQ[ƒ€ƒNƒŠƒAƒ[ƒh‰æ–Ê‚Ö‘JˆÚ
+	// ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢ãƒ­ãƒ¼ãƒ‰ç”»é¢ã¸é·ç§»
 	ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");
 
 	return true;
@@ -490,19 +511,19 @@ bool ModeGame::EndClearSequence()
 
 bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 {
-	// ‰‰oƒJƒƒ‰‚ğg—p‚µ‚Ä‚¢‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã‚’ä½¿ç”¨ã—ã¦ã„ãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if(!_useCinematicCamera || !_cinematicCamera)
 	{
-		return false;	
+		return false;
 	}
 
-	// ‰‰oƒJƒƒ‰‚Ì’â~
+	// æ¼”å‡ºã‚«ãƒ¡ãƒ©ã®åœæ­¢
 	_cinematicCamera->StopAll();
 
-	// ƒƒCƒ“ƒJƒƒ‰‚É–ß‚·ˆ—
+	// ãƒ¡ã‚¤ãƒ³ã‚«ãƒ¡ãƒ©ã«æˆ»ã™å‡¦ç†
 	if(restoreToMainCamera && _originalCamera)
 	{
-		// ƒvƒŒƒCƒ„[ˆÊ’u‚ÉƒJƒƒ‰‚ğÄ“¯Šú
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä½ç½®ã«ã‚«ãƒ¡ãƒ©ã‚’å†åŒæœŸ
 		PlayerBase* startPlayer = nullptr;
 		if(_bShowTanuki && _playerTanuki)
 		{
@@ -517,20 +538,114 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 			startPlayer = _player.get();
 		}
 
-		// ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ÉƒJƒƒ‰‚ğÄ”z’ui•K—v‚É‰‚¶‚ÄƒIƒtƒZƒbƒg‚ğ’²®j
+		// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã«ã‚«ãƒ¡ãƒ©ã‚’å†é…ç½®ï¼ˆå¿…è¦ã«å¿œã˜ã¦ã‚ªãƒ•ã‚»ãƒƒãƒˆã‚’èª¿æ•´ï¼‰
 		if(startPlayer)
 		{
 			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, -662.0f); // Œ³‚ÌƒIƒtƒZƒbƒgi•K—v‚É‰‚¶‚Ä’²®j
+			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, -662.0f); // å…ƒã®ã‚ªãƒ•ã‚»ãƒƒãƒˆï¼ˆå¿…è¦ã«å¿œã˜ã¦èª¿æ•´ï¼‰
 			_originalCamera->SetTarget(target);
 			_originalCamera->SetPos(vec3::VAdd(target, camDelta));
 		}
 
-		// ƒƒCƒ“ƒJƒƒ‰‚ÉØ‚è‘Ö‚¦
+		// ãƒ¡ã‚¤ãƒ³ã‚«ãƒ¡ãƒ©ã«åˆ‡ã‚Šæ›¿ãˆ
 		_camera = _originalCamera;
-		
+
 	}
 	_useCinematicCamera = false;
 
 	return true;
+}
+
+bool ModeGame::StartPlayerRotation()
+{
+	// â˜…â˜…â˜… ã‚¿ãƒŒã‚­ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã¿ã‚’å¯¾è±¡ã«å›è»¢æ¼”å‡ºã‚’åˆæœŸåŒ– â˜…â˜…â˜…
+	PlayerTanuki* targetPlayer = _playerTanuki.get();
+
+	if(!targetPlayer)
+	{
+		return false; // ã‚¿ãƒŒã‚­ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å‡¦ç†ã—ãªã„
+	}
+
+	// å›è»¢æ¼”å‡ºã®åˆæœŸåŒ–
+	_isPlayerRotating = true;
+	_playerRotationTimer = 0.0f;
+	_playerRotationDuration = 2.0f; // å›è»¢æ¼”å‡ºã®ç·æ™‚é–“ï¼ˆç§’ï¼‰
+
+	// ç¾åœ¨ã®å›è»¢è§’åº¦ã‚’å–å¾—
+	_playerInitialRotation = targetPlayer->GetRotationY();
+
+	// ç›®æ¨™è§’åº¦: dir.z = 1 ã®æ–¹å‘ = 0åº¦ï¼ˆæ­£é¢ï¼‰
+	_playerTargetRotation = 0.0f;
+
+	// ã‚¿ãƒŒã‚­ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œã‚’ç„¡åŠ¹åŒ–
+	targetPlayer->SetInputEnabled(false);
+
+	return true;
+}
+
+bool ModeGame::ProcessPlayerRotation()
+{
+	if(!_isPlayerRotating)
+	{
+		return false;
+	}
+
+	PlayerTanuki* targetPlayer = _playerTanuki.get();
+
+	if(!targetPlayer)
+	{
+		_isPlayerRotating = false; // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå­˜åœ¨ã—ãªã„å ´åˆã¯å›è»¢æ¼”å‡ºã‚’çµ‚äº†
+		return true; // å›è»¢çµ‚äº†
+	}
+
+	// æ™‚é–“æ›´æ–°
+	_playerRotationTimer += 1.0f / 60.0f; // 60FPSæƒ³å®š
+
+	// å›è»¢é€²æ—åº¦ã‚’è¨ˆç®—ï¼ˆ0.0ã€œ1.0ï¼‰
+	float progress = _playerRotationTimer / _playerRotationDuration;
+
+	// å›è»¢ãŒå®Œäº†ã—ãŸã‹ãƒã‚§ãƒƒã‚¯
+	if(progress >= 1.0f)
+	{
+		// å›è»¢å®Œäº† - ç›®æ¨™è§’åº¦ã«æ­£ç¢ºã«ã‚»ãƒƒãƒˆ
+		targetPlayer->SetTargetRotationY(_playerTargetRotation);
+		targetPlayer->SetRotationY(_playerTargetRotation);
+		_isPlayerRotating = false;
+
+		// ç‹¸ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ“ä½œã‚’å†åº¦æœ‰åŠ¹åŒ–
+		targetPlayer->SetInputEnabled(true);
+		return true; // å›è»¢å®Œäº†
+	}
+
+	// æœ€çŸ­çµŒè·¯ã§å›è»¢ã™ã‚‹ãŸã‚è§’åº¦å·®ã‚’è¨ˆç®—
+	float angleDiff = _playerTargetRotation - _playerInitialRotation;
+
+	// è§’åº¦ã‚’-Ï€ã€œÏ€ã®ç¯„å›²ã«æ­£è¦åŒ–ï¼ˆæœ€çŸ­çµŒè·¯ã‚’é¸æŠï¼‰
+	while(angleDiff > DX_PI_F)
+	{
+		angleDiff -= DX_TWO_PI_F;
+	}
+	while(angleDiff < -DX_PI_F)
+	{
+		angleDiff += DX_TWO_PI_F;
+	}
+
+	// ã‚¤ãƒ¼ã‚¸ãƒ³ã‚°é–¢æ•°ã‚’é©ç”¨ï¼ˆæ»‘ã‚‰ã‹ãªå›è»¢ï¼‰
+	float easedProgress = mymath::EasingInCubic
+	(
+		progress, // ç¾åœ¨ã®é€²æ—åº¦ï¼ˆ0.0ã€œ1.0ï¼‰
+		0.0f,	  // é–‹å§‹å€¤ï¼ˆ0%ï¼‰
+		1.0f,	  // çµ‚äº†å€¤ï¼ˆ100%ï¼‰
+		1.0f	  // ç·æ™‚é–“ï¼ˆ1.0ã§æ­£è¦åŒ–ï¼‰
+
+	);
+
+	// ç¾åœ¨ã®å›è»¢è§’åº¦ã‚’è¨ˆç®—
+	float currentRotation = _playerInitialRotation + (angleDiff * easedProgress);
+
+	// å›è»¢è§’åº¦ã‚’è¨­å®š
+	targetPlayer->SetTargetRotationY(currentRotation);
+	targetPlayer->SetRotationY(currentRotation);
+
+	return false; // ã¾ã å›è»¢ä¸­
 }
