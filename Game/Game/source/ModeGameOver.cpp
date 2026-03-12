@@ -53,16 +53,16 @@ bool ModeGameOver::Process()
 			{
 				currentStageId = game->GetCurrentStageId();
 				// デバッグ出力：取得したステージID
-				DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Current Stage ID = %s", currentStageId.c_str());
+				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Current Stage ID = %s", currentStageId.c_str());
 			}
 			else
 			{
-				DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Failed to cast _ownerGame to ModeGame");
+				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Failed to cast _ownerGame to ModeGame");
 			}
 		}
 		else
 		{
-			DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: _ownerGame is null, using default Stage1");
+			//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: _ownerGame is null, using default Stage1");
 		}
 		// 2) 所有している ModeGame があれば削除予約（安全に予約する）
 		if(_ownerGame)
@@ -79,7 +79,7 @@ bool ModeGameOver::Process()
 		}
 
 		// デバッグ出力：最終的に使用するステージID
-		DrawFormatString(10, 140, GetColor(255, 255, 0), "DEBUG: Final Stage ID = %s", currentStageId.c_str());
+		//DrawFormatString(10, 140, GetColor(255, 255, 0), "DEBUG: Final Stage ID = %s", currentStageId.c_str());
 
 		// 4) オーバーレイを予約追加時に現在のステージIDを渡す
 		if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
@@ -104,8 +104,8 @@ bool ModeGameOver::Render()
 	base::Render();
 
 	// デバッグ情報の表示（Render内で行う）
-	DrawFormatString(10, 50, GetColor(255, 255, 0), "DEBUG: Detected Stage ID = %s", _debugCurrentStageId.c_str());
-	DrawFormatString(10, 70, GetColor(255, 255, 0), "DEBUG: _ownerGame = %s", _ownerGame ? "Valid" : "NULL");
+	//DrawFormatString(10, 50, GetColor(255, 255, 0), "DEBUG: Detected Stage ID = %s", _debugCurrentStageId.c_str());
+	//DrawFormatString(10, 70, GetColor(255, 255, 0), "DEBUG: _ownerGame = %s", _ownerGame ? "Valid" : "NULL");
 
 	// 背景(半透明に設定)
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BackgroundAlpha);
