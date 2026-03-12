@@ -103,6 +103,8 @@ namespace ui
   inline constexpr const char* UI_7 = "res/UI/UI_7.png";
   inline constexpr const char* UI_8 = "res/UI/UI_8.png";
   inline constexpr const char* UI_9 = "res/UI/UI_9.png";
+  inline constexpr const char* UI_Hito = "res/UI/UI_Hito.png";
+  inline constexpr const char* UI_Mono = "res/UI/UI_Mono.png";
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
   inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
   inline constexpr const char* UI_x = "res/UI/UI_x.png";
@@ -156,6 +158,7 @@ namespace mv1
   inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
+  inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
   inline constexpr const char* SM_stageDGR = "res/map/SM_stageDGR.mv1";
   inline constexpr const char* SM_stageTRY = "res/map/SM_stageTRY.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";

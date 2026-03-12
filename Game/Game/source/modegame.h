@@ -78,12 +78,14 @@ public:
 	bool GetDebugUseCollision() const { return _d_use_collision; }
 	bool GetDebugViewCameraInfo() const { return _d_view_camera_info; }
 	bool GetDebugViewShadowMap() const { return _d_view_shadow_map; }
+	bool GetDebugViewFps() const       { return _d_view_fps; }
 	void SetDebugViewCollsion(bool d) { this->_d_view_collision = d; }
 	void SetDebugUseCollision(bool d) { this->_d_use_collision = d; }
 	void SetDebugViewCameraInfo(bool d) { this->_d_view_camera_info = d; }
 	void SetDebugViewShadowMap(bool d) { this->_d_view_shadow_map = d; }
 	void SetCameraControlMode(bool b) {_bCameraControlMode = b;}
 	bool GetCameraControlMode() const { return _bCameraControlMode; }
+	void SetDebugViewFps(bool d) { this->_d_view_fps = d; }
 
 	// Effekseer 再生フラグ管理
 	bool GetEffekseerLaunched() const { return _effekseerLaunched; }
@@ -150,11 +152,11 @@ public:
 	void CameraZoomTowardsTarget(float amount);
 	bool DebugCameraControl();
 
+	/// 演出関連
 	//　演出カメラ
 	bool TreasureOpeningCameraControl(); // 宝箱オープン演出カメラ制御
 	bool EndCinematicCamera();           // 演出カメラ終了
 	bool EndCinematicSequence(bool restoreToMainCamera); // 汎用的な演出カメラ終了関数
-
 	bool DebugCinematicCameraControl();  // デバッグ用の演出カメラ制御
 	// イントロ演出関数
 	bool StartIntroSequence();   // イントロシーケンス開始
@@ -164,6 +166,8 @@ public:
 	bool StartClearSequence();   // クリアシーケンス開始
 	bool ProcessClearSequence(); // クリアシーケンスの更新
 	bool EndClearSequence();     // クリアシーケンス終了
+	bool StartPlayerRotation();  // プレイヤー回転演出開始
+	bool ProcessPlayerRotation(); // プレイヤー回転演出の更新
 
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();
@@ -296,7 +300,7 @@ protected:
 	bool _d_use_collision;
 	bool _d_view_camera_info;
 	bool _d_view_shadow_map;
-
+	bool _d_view_fps;
 	// メニューから切り替える「カメラ操作モード」フラグ
 	bool _bCameraControlMode;
 	
@@ -414,6 +418,14 @@ private:
 	float _clearCinematicTimer;         // クリア演出の経過時間
 	static constexpr float CLEAR_CINEMATIC_DURATION = 3.0f; // クリア演出の総時間（秒）
 	
+	// プレイヤー回転演出用
+	bool _isPlayerRotating = false;
+	float _playerRotationTimer = 0.0f;
+	float _playerRotationDuration = 2.0f; // プレイヤーが回転する演出の時間（秒）
+	float _playerInitialRotation = 0.0f;  // プレイヤー回転演出開始時のプレイヤーの向き（角度）
+	float _playerTargetRotation = 0.0f;   // プレイヤー回転演出の目標の向き（角度）
+	int _clearSequencePhase = 0; // クリア演出のフェーズ管理用変数
 	float progress;
+	
 };
 
