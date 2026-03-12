@@ -5,10 +5,10 @@ namespace henshin
 {
 	static constexpr auto MAKIMONO_X = 1559;
 	static constexpr auto MAKIMONO_Y = 16;
-	static constexpr auto TANUBITO_X = 1700;
-	static constexpr auto TANUBITO_Y = 1004;
-	static constexpr auto TANUMONO_X = 1850;
-	static constexpr auto TANUMONO_Y = 1005;
+	static constexpr auto TANUBITO_X = 1530;
+	static constexpr auto TANUBITO_Y = 847;
+	static constexpr auto TANUMONO_X = 1530;
+	static constexpr auto TANUMONO_Y = 847;
 }
 
 class HenshinUi : public UiBase
