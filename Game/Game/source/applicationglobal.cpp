@@ -298,26 +298,26 @@ bool ApplicationGlobal::Init()
 	SetUseASyncLoadFlag(TRUE);
 
 	// キャラクター関連モデル読み込み
-	ResourceServer::MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
-	ResourceServer::MV1LoadModel(mv1::SK_goepon_multimotion_4);
 	ResourceServer::MV1LoadModel(mv1::sigaraki);
-	ResourceServer::MV1LoadModel(mv1::busi_multimotion);
 	ResourceServer::MV1LoadModel(mv1::SK_Dog);
+	ResourceServer::MV1LoadModel(mv1::SK_busi_multimotion);
+	ResourceServer::MV1LoadModel(mv1::Game_clear);
+	ResourceServer::MV1LoadModel(mv1::SK_multimotionTanuHuman_06);
+	ResourceServer::MV1LoadModel(mv1::gamestart);
 
 								 	 
 	// マップ関連モデル読み込み	  	 
 	ResourceServer::MV1LoadModel(mv1::skysphere);
-	ResourceServer::MV1LoadModel(mv1::Ground);
-	ResourceServer::MV1LoadModel(mv1::fusama);
 	ResourceServer::MV1LoadModel(mv1::SM_stage1_0301);
 	ResourceServer::MV1LoadModel(mv1::SM_stage20303);
+	ResourceServer::MV1LoadModel(mv1::SM_stage3);
+	ResourceServer::MV1LoadModel(mv1::S_Marker_Event);
 
 	// その他
-	ResourceServer::MV1LoadModel(mv1::tuzura_02);
+	ResourceServer::MV1LoadModel(mv1::tuzura_05);
 	ResourceServer::MV1LoadModel(mv1::Goal);
-	ResourceServer::LoadGraph(img::work);
 	ResourceServer::LoadGraph(texture::makimono);
-	ResourceServer::LoadGraph(texture::TX_Tresure4);
+	ResourceServer::LoadGraph(texture::TX_Tresure5);
 	ResourceServer::LoadGraph(texture::TX_ase);
 	ResourceServer::LoadGraph(texture::TX_change);
 	ResourceServer::LoadGraph(texture::TX_doyax);
@@ -325,6 +325,8 @@ bool ApplicationGlobal::Init()
 	ResourceServer::LoadGraph(texture::TX_hatena);
 	ResourceServer::LoadGraph(texture::TX_nakix);
 	ResourceServer::LoadGraph(texture::TX_walk);
+	ResourceServer::LoadGraph(texture::TX_shirimochi);
+	ResourceServer::LoadGraph(texture::TX_kizetsu);
 	ResourceServer::LoadGraph(img::UI_Makimono);
 	ResourceServer::LoadGraph(img::UI_Tanubito);
 	ResourceServer::LoadGraph(img::UI_Tanumono);
