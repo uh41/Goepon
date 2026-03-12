@@ -20,8 +20,8 @@ bool UiMakimono::Initialize()
 	base::Initialize();
 	_handle = LoadGraph("res/Makimono/Makimono (1).png");
 
-	_handleMakimono = LoadGraph(ui::Item_Makimono);
-	_handleUiX = LoadGraph(ui::UI_x);
+	//_handleMakimono = LoadGraph(ui::Item_Makimono);
+	//_handleUiX = LoadGraph(ui::UI_x);
 	return true;
 }
 
