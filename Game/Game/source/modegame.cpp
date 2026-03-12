@@ -1042,7 +1042,6 @@ bool ModeGame::Process()
 			// エフェクト再設定
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_aseEffect->SetPlayer(_playerTanuki.get());
 
 			if(_soundFinish && !_soundFinish->IsPlay())
 			{

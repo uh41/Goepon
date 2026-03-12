@@ -76,6 +76,7 @@ namespace texture
   inline constexpr const char* explosion = "res/Texture/explosion.png";
   inline constexpr const char* makimono = "res/Texture/makimono.png";
   inline constexpr const char* tree = "res/Texture/tree.png";
+  inline constexpr const char* tutorial3 = "res/Texture/tutorial3.png";
 }
 
 namespace ui
