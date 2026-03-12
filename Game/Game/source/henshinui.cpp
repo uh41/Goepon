@@ -18,8 +18,8 @@ bool HenshinUi::Initialize()
 {
 	base::Initialize();
 	_handle = LoadGraph(img::UI_Makimono);
-	_handleTanubito = LoadGraph(img::UI_Tanubito);
-	_handleMono = LoadGraph(img::UI_Tanumono);
+	_handleTanubito = LoadGraph(ui::UI_Hito);
+	_handleMono = LoadGraph(ui::UI_Mono);
 	return true;
 }
 
@@ -175,14 +175,15 @@ bool HenshinUi::Render()
 {
 	base::Render();
 
-	if(_handle != -1)
-	{
-		DrawGraph(henshin::MAKIMONO_X, henshin::MAKIMONO_Y, _handle, TRUE);
-	}
+	//if(_handle != -1)
+	//{
+	//	DrawGraph(henshin::MAKIMONO_X, henshin::MAKIMONO_Y, _handle, TRUE);
+	//}
 
 	// ここで早期リターンしない：タヌビト/モノ画像は常時表示する
-	float selectScele = 1.25f;
-	float normalScele = 1.0f;
+	// 選択時は大きく、非選択時は小さく表示するためのスケール
+	float selectScele = 1.6f; // 選択時の拡大率（大きく）
+	float normalScele = 0.6f; // 非選択時の縮小率（小さく）
 
 	// オーナーが変身中かどうかをチェックし、変身中は選択表示を無効化する
 	ModeGame* mg = nullptr;
@@ -194,54 +195,18 @@ bool HenshinUi::Render()
 	bool effectivePad5 = _padInput5Active && !(mg && (mg->IsTransforming() || mg->IsTransformRequested()));
 
 	// タヌビト画像
-	if(_handleTanubito != -1)
+	if(_select == Select::TANUBITO)
 	{
-		int origW = 0;
-		int origH = 0;
-		GetGraphSize(_handleTanubito, &origW, &origH);
-
-		float scale = normalScele;
-		if(effectivePad5 && _select == Select::TANUBITO)
+		if(_handleTanubito != -1)
 		{
-			scale = selectScele;
-		}
-
-		int drawW = StCas<int>(origW * scale);
-		int drawH = StCas<int>(origH * scale);
-		int x = henshin::TANUBITO_X - drawW / 2;
-		int y = henshin::TANUBITO_Y - drawH / 2;
-		DrawExtendGraph(x, y, x + drawW, y + drawH, _handleTanubito, TRUE);
-
-		if(effectivePad5 && _select == Select::TANUBITO)
-		{
-			unsigned int color = GetColor(255, 255, 0); // 黄色
-			DrawBox(x - 6, y - 6, x + drawW + 6, y + drawH + 6, color, FALSE);
+			DrawGraph(henshin::TANUBITO_X, henshin::TANUBITO_Y, _handleTanubito, TRUE);
 		}
 	}
-
-	// モノ画像
-	if(_handleMono != -1)
+	else if(_select == Select::TANUMONO)
 	{
-		int origW = 0;
-		int origH = 0;
-		GetGraphSize(_handleMono, &origW, &origH);
-
-		float scale = normalScele;
-		if(effectivePad5 && _select == Select::TANUMONO)
+		if(_handleMono != -1)
 		{
-			scale = selectScele;
-		}
-
-		int drawW = StCas<int>(origW * scale);
-		int drawH = StCas<int>(origH * scale);
-		int x = henshin::TANUMONO_X - drawW / 2;
-		int y = henshin::TANUMONO_Y - drawH / 2;
-		DrawExtendGraph(x, y, x + drawW, y + drawH, _handleMono, TRUE);
-
-		if(effectivePad5 && _select == Select::TANUMONO)
-		{
-			unsigned int color = GetColor(255, 255, 0); // 黄色
-			DrawBox(x - 6, y - 6, x + drawW + 6, y + drawH + 6, color, FALSE);
+			DrawGraph(henshin::TANUMONO_X, henshin::TANUMONO_Y, _handleMono, TRUE);
 		}
 	}
 
