@@ -127,8 +127,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_findEffect);
 	_hatenaEffect = std::make_shared<HatenaEffect>();
 	_effectBase.emplace_back(_hatenaEffect);
-	_aseEffect = std::make_shared<AseEffect>();
-	_effectBase.emplace_back(_aseEffect);
+	//_aseEffect = std::make_shared<AseEffect>();
+	//_effectBase.emplace_back(_aseEffect);
 	_doyaEffect = std::make_shared<DoyaEffect>();
 	_effectBase.emplace_back(_doyaEffect);
 	_nakiEffect = std::make_shared<NakiEffect>();
@@ -194,9 +194,19 @@ bool ModeGame::ObjectInitialize()
 // 影の初期化
 bool ModeGame::ShadowInitialize()
 {
-	auto charaShadow = std::make_shared<CharaShadow>();
+	// 既存シャドウを安全に削除（再初期化対応）
+	for(auto& s : _charaShadow)
+	{
+		if(s)
+		{
+			s->Terminate();
+		}
+	}
+	_charaShadow.clear();
+
 	// プレイヤーに対するシャドウ
-	charaShadow->SetTargetChara([this]() -> CharaBase*
+	auto playerShadow = std::make_shared<CharaShadow>();
+	playerShadow->SetTargetChara([this]() -> CharaBase*
 		{
 			if(_showMonoPlayer)
 			{
@@ -211,9 +221,11 @@ bool ModeGame::ShadowInitialize()
 				return _player.get();
 			}
 		});
-	_charaShadow.emplace_back(charaShadow);
+	// 初期化を呼ぶ（LoadGraph 等を行う）
+	playerShadow->Initialize();
+	_charaShadow.emplace_back(playerShadow);
 
-	// 敵のシャドウは実際に処理されるコンテナ（_enemyBase）を参照するように変更
+	// 敵のシャドウは敵生成後のコンテナを参照する
 	for(auto& eb : _enemyBase)
 	{
 		if(!eb)
@@ -223,6 +235,8 @@ bool ModeGame::ShadowInitialize()
 		auto shadow = std::make_shared<CharaShadow>();
 		// eb をキャプチャして EnemyBase* を返すラムダを渡す
 		shadow->SetTargetChara([eb]() -> CharaBase* { return StCas<CharaBase*>(eb.get()); });
+		// 初期化を呼ぶ
+		shadow->Initialize();
 		_charaShadow.emplace_back(shadow);
 	}
 
@@ -309,8 +323,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_player.get());
 			_doyaEffect->SetTargetPlayer(_player.get());
 			_nakiEffect->SetTargetPlayer(_player.get());
-			_aseEffect->StopPlaying();
-			_aseEffect->SetPlayer(nullptr);
+			//_aseEffect->StopPlaying();
+			//_aseEffect->SetPlayer(nullptr);
 			_player->Process(); // 変身直後の一フレーム更新
 
 			// たぬ人間変身時の処理
@@ -350,8 +364,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_doyaEffect->SetTargetPlayer(_playerMono.get());
 			_nakiEffect->SetTargetPlayer(_playerMono.get());
-			_aseEffect->StopPlaying();
-			_aseEffect->SetPlayer(nullptr);
+			//_aseEffect->StopPlaying();
+			//_aseEffect->SetPlayer(nullptr);
 
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
@@ -511,7 +525,7 @@ bool ModeGame::PlayerTransform()
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_aseEffect->SetPlayer(_playerTanuki.get());
+			//_aseEffect->SetPlayer(_playerTanuki.get());
 
 			auto soundFinish = gGlobal._soundServer->Get("3");
 			if(soundFinish && !soundFinish->IsPlay())
@@ -1129,7 +1143,7 @@ bool ModeGame::CheckAllDetections()
 							{
 								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 								_walkEffect->SetPlayerPos(_playerTanuki.get());
-								_aseEffect->SetPlayer(_playerTanuki.get());
+								//_aseEffect->SetPlayer(_playerTanuki.get());
 							}
 
 							_changeTimeActive = false;

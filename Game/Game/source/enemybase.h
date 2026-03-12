@@ -119,18 +119,18 @@ protected:
 	float _returnSpeed;			// 初期位置に戻る速度
 
 	// 検知終了後の待機処理用
-	bool _waitingBeforeReturn;     // 帰還前の待機中フラグ
-	float _returnWaitTimer;        // 帰還前の待機タイマー
+	bool _waitingReturn;		// 帰還前の待機中フラグ
+	float _returnWaitTimer;     // 帰還前の待機タイマー
 	static constexpr float RETURN_WAIT_TIME = 3.0f; // 待機時間
 
 	// テレポート関連
-	bool _waitingForTeleport;		// テレポート待機中フラグ
+	bool _waitingTeleport;			// テレポート待機中フラグ
 	float _teleportTimer;			// テレポートまでの待機時間
 	static constexpr float TELEPORT_WAIT_TIME = 3.0f; // テレポートまでの待機時間
 
 	// 音検知による移動関連
 	bool _isMovingToSound;			// 音源に向かって移動中かどうか
-	vec::Vec3 _soundSourcePosition;	// 検知した音源の位置
+	vec::Vec3 _soundSourcePos;		// 検知した音源の位置
 	void UpdateMovingToSound();		// 音源に向かって移動する処理
 
 	// 音源到達後の待機処理
