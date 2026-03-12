@@ -823,6 +823,12 @@ bool ModeGame::Process()
 				if(enemy->IsPlayerChasing())
 				{
 
+					// 犬の場合はゲームオーバーにしない
+					if (dynamic_cast<EnemyDog*>(enemy.get()) != nullptr)
+					{
+						continue; // 犬の場合は次の敵へ
+					}
+
 					if(gGlobal._soundServer)
 					{
 						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);

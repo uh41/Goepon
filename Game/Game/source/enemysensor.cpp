@@ -599,7 +599,7 @@ void EnemySensor::RenderDetectionSector() const
 		return;
 	}
 
-	// ★ 静的なグローバルカウンタをインクリメント（全敵で共有）
+	// 静的なグローバルカウンタをインクリメント（全敵で共有）
 	static int s_globalUpdateFrame = 0;
 	s_globalUpdateFrame++;
 
