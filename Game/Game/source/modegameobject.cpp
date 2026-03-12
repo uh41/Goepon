@@ -92,12 +92,12 @@ bool ModeGame::ObjectInitialize()
 	_object.emplace_back(_goal);
 
 	// ui初期化
-	_uiMakimono = std::make_shared<UiMakimono>();
-	_uiMakimono->SetPlayer(_player.get());
-	_uiBase.emplace_back(_uiMakimono);
 	_henshinUi = std::make_shared<HenshinUi>();
 	_henshinUi->SetOwner(this);
 	_uiBase.emplace_back(_henshinUi);
+	_uiMakimono = std::make_shared<UiMakimono>();
+	_uiMakimono->SetPlayer(_player.get());
+	_uiBase.emplace_back(_uiMakimono);
 	_counterUi = std::make_shared<CounterUi>();
 	_uiBase.emplace_back(_counterUi);
 	_attackUi = std::make_shared<AttackUi>();
