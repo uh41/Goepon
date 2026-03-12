@@ -111,6 +111,7 @@ bool ModeGame::DebugProcess()
 		modemenu->Add(NEW MenuItemViewShadowMap(this, "ShadowMapView"));
 		// カメラ操作モード切替項目を追加
 		modemenu->Add(NEW MenuItemCameraControlMode(this, "CameraControlMode"));
+		modemenu->Add(NEW MenuItemViewFps(this, "ViewFps"));
 	}
 
 	//
@@ -135,6 +136,12 @@ bool ModeGame::DebugProcess()
 
 		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetHitCollisionFrame(), _d_view_collision ? TRUE : FALSE);
 		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetOpenCollisionFrame(), _d_view_collision ? TRUE : FALSE);
+	}
+
+	auto* app = ApplicationMain::GetInstance();
+	if(app && app->GetFrameRateController())
+	{
+		app->GetFrameRateController()->EnableFpsDisplay(_d_view_fps);
 	}
 
 	// デバック用タイマー（転ばせる）

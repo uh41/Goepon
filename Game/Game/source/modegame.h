@@ -78,12 +78,14 @@ public:
 	bool GetDebugUseCollision() const { return _d_use_collision; }
 	bool GetDebugViewCameraInfo() const { return _d_view_camera_info; }
 	bool GetDebugViewShadowMap() const { return _d_view_shadow_map; }
+	bool GetDebugViewFps() const       { return _d_view_fps; }
 	void SetDebugViewCollsion(bool d) { this->_d_view_collision = d; }
 	void SetDebugUseCollision(bool d) { this->_d_use_collision = d; }
 	void SetDebugViewCameraInfo(bool d) { this->_d_view_camera_info = d; }
 	void SetDebugViewShadowMap(bool d) { this->_d_view_shadow_map = d; }
 	void SetCameraControlMode(bool b) {_bCameraControlMode = b;}
 	bool GetCameraControlMode() const { return _bCameraControlMode; }
+	void SetDebugViewFps(bool d) { this->_d_view_fps = d; }
 
 	// Effekseer 再生フラグ管理
 	bool GetEffekseerLaunched() const { return _effekseerLaunched; }
@@ -298,7 +300,7 @@ protected:
 	bool _d_use_collision;
 	bool _d_view_camera_info;
 	bool _d_view_shadow_map;
-
+	bool _d_view_fps;
 	// メニューから切り替える「カメラ操作モード」フラグ
 	bool _bCameraControlMode;
 	
