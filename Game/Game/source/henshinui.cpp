@@ -18,8 +18,8 @@ bool HenshinUi::Initialize()
 {
 	base::Initialize();
 	_handle = LoadGraph(img::UI_Makimono);
-	_handleTanubito = LoadGraph(img::UI_Tanubito);
-	_handleMono = LoadGraph(img::UI_Tanumono);
+	_handleTanubito = LoadGraph(ui::UI_Hito);
+	_handleMono = LoadGraph(ui::UI_Mono);
 	return true;
 }
 
@@ -175,10 +175,10 @@ bool HenshinUi::Render()
 {
 	base::Render();
 
-	if(_handle != -1)
-	{
-		DrawGraph(henshin::MAKIMONO_X, henshin::MAKIMONO_Y, _handle, TRUE);
-	}
+	//if(_handle != -1)
+	//{
+	//	DrawGraph(henshin::MAKIMONO_X, henshin::MAKIMONO_Y, _handle, TRUE);
+	//}
 
 	// ここで早期リターンしない：タヌビト/モノ画像は常時表示する
 	// 選択時は大きく、非選択時は小さく表示するためのスケール
@@ -195,81 +195,18 @@ bool HenshinUi::Render()
 	bool effectivePad5 = _padInput5Active && !(mg && (mg->IsTransforming() || mg->IsTransformRequested()));
 
 	// タヌビト画像
-	if(_handleTanubito != -1)
+	if(_select == Select::TANUBITO)
 	{
-		int origW = 0;
-		int origH = 0;
-		GetGraphSize(_handleTanubito, &origW, &origH);
-
-		float scale = normalScele;
-		if(effectivePad5 && _select == Select::TANUBITO)
+		if(_handleTanubito != -1)
 		{
-			scale = selectScele;
-		}
-
-		int drawW = StCas<int>(origW * scale);
-		int drawH = StCas<int>(origH * scale);
-
-		// 選択時は大きい位置（巻物中央寄せ）、非選択時は小さいアイコン位置
-		int x, y;
-		if(effectivePad5 && _select == Select::TANUBITO)
-		{
-			// 大きく表示するときは巻物中心付近に表示（調整可）
-			x = henshin::MAKIMONO_X + 48 - drawW / 2;
-			y = henshin::MAKIMONO_Y + 36 - drawH / 2;
-		}
-		else
-		{
-			// 小アイコンは既定の位置
-			x = henshin::TANUBITO_X - drawW / 2;
-			y = henshin::TANUBITO_Y - drawH / 2;
-		}
-
-		DrawExtendGraph(x, y, x + drawW, y + drawH, _handleTanubito, TRUE);
-
-		if(effectivePad5 && _select == Select::TANUBITO)
-		{
-			unsigned int color = GetColor(255, 255, 0); // 黄色
-			DrawBox(x - 6, y - 6, x + drawW + 6, y + drawH + 6, color, FALSE);
+			DrawGraph(henshin::TANUBITO_X, henshin::TANUBITO_Y, _handleTanubito, TRUE);
 		}
 	}
-
-	// モノ画像
-	if(_handleMono != -1)
+	else if(_select == Select::TANUMONO)
 	{
-		int origW = 0;
-		int origH = 0;
-		GetGraphSize(_handleMono, &origW, &origH);
-
-		float scale = normalScele;
-		if(effectivePad5 && _select == Select::TANUMONO)
+		if(_handleMono != -1)
 		{
-			scale = selectScele;
-		}
-
-		int drawW = StCas<int>(origW * scale);
-		int drawH = StCas<int>(origH * scale);
-
-		// 選択時は大きい位置（巻物中央寄せ）、非選択時は小さいアイコン位置。
-		// 非選択時はヒトの小アイコンと被らないよう右に少しずらす。
-		int x, y;
-		if(effectivePad5 && _select == Select::TANUMONO)
-		{
-			x = henshin::MAKIMONO_X + 48 - drawW / 2;
-			y = henshin::MAKIMONO_Y + 36 - drawH / 2;
-		}
-		else
-		{
-			x = henshin::TANUMONO_X - drawW / 2 + 20; // ずらし量は必要に応じて調整
-			y = henshin::TANUMONO_Y - drawH / 2;
-		}
-
-		DrawExtendGraph(x, y, x + drawW, y + drawH, _handleMono, TRUE);
-
-		if(effectivePad5 && _select == Select::TANUMONO)
-		{
-			unsigned int color = GetColor(255, 255, 0); // 黄色
-			DrawBox(x - 6, y - 6, x + drawW + 6, y + drawH + 6, color, FALSE);
+			DrawGraph(henshin::TANUMONO_X, henshin::TANUMONO_Y, _handleMono, TRUE);
 		}
 	}
 
