@@ -81,8 +81,8 @@ bool ModeLoading::Terminate()
 bool ModeLoading::Process()
 {
 	// 下位レイヤーをスキップ
-	ModeServer::GetInstance()->SkipProcessUnderLayer();
-	ModeServer::GetInstance()->SkipRenderUnderLayer();
+	//ModeServer::GetInstance()->SkipProcessUnderLayer();
+	//ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
