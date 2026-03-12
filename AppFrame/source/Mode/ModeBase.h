@@ -41,7 +41,7 @@ namespace
 	constexpr int BgBottom = BgTop + boxH;
 
 	// 文字の位置
-	constexpr int TitlePosX = 500;
+	constexpr int TitlePosX = 230;
 	constexpr int TitlePosY = BgTop + 40;
 	constexpr int HintPosX = 500;
 	constexpr int HintPosY = 400;
@@ -69,7 +69,7 @@ namespace
 	//constexpr const char* HintMessage = "決定ボタンで閉じる";
 
 	// ゲームオーバーのメッセージ
-	constexpr const char* GameOverMessage = "いただきます";
+	constexpr const char* GameOverMessage = "本来ここにアニメーションの追加";
 	constexpr const char* HintMessage = "決定ボタンで閉じる";
 }
 

@@ -154,3 +154,32 @@ public:
 	}
 	virtual bool IsCameraControlItem() override { return true; }
 };
+
+class MenuItemViewFps : public MenuItemBase
+{
+public:
+	MenuItemViewFps(void* param, std::string text) : MenuItemBase(param, text) {}
+	virtual ~MenuItemViewFps() {}
+
+	// 項目を決定したらこの関数が呼ばれる
+	// return int : 0 = メニュー継続, 1 = メニュー終了
+	virtual int Selected()
+	{
+		ModeGame* game = StCas<ModeGame*>(_param);
+		if(!game) return 0;
+
+		// FPS表示の切り替え
+		game->SetDebugViewFps(!game->GetDebugViewFps());
+
+		// FrameRateControllerに設定を反映
+		auto* app = ApplicationMain::GetInstance();
+		if(app && app->GetFrameRateController())
+		{
+			app->GetFrameRateController()->EnableFpsDisplay(game->GetDebugViewFps());
+		}
+
+		return 0; // メニュー継続
+	}
+
+};
+
