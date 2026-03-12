@@ -645,6 +645,26 @@ bool EnemyMove::Process()
 		UpdateRotationToPlayer(); // 徐々に回転
 		// または即座に向きたい場合は LookAtPlayer(); を使用
 	}
+	else if (_isReturning && !_waitingTeleport)
+	{
+		// 帰還中は目標方向へ徐々に向きを変える
+		vec::Vec3 target = _initialPos;
+		vec::Vec3 toTarget = vec3::VSub(target, _vPos);
+		toTarget.y = 0.0f;
+
+		if (toTarget.LengthSquare() > 0.01f)
+		{
+			vec::Vec3 targetDir = vec3::VNorm(toTarget);
+			float rotSpeed = _rotationSpeed * 0.5f; // 帰還時は回転速度を少し遅めに
+			_vDir.x += (targetDir.x - _vDir.x) * rotSpeed;
+			_vDir.z += (targetDir.z - _vDir.z) * rotSpeed;
+			_vDir.y = 0.0f;
+			if (_vDir.LengthSquare() > 0.01f)
+			{
+				_vDir = vec3::VNorm(_vDir);
+			}
+		}
+	}
 
 	// ステータスが変わっていないか？
 	if (old_status == _status)
