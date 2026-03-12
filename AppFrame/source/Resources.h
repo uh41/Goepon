@@ -158,6 +158,7 @@ namespace mv1
   inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
+  inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
   inline constexpr const char* SM_stageDGR = "res/map/SM_stageDGR.mv1";
   inline constexpr const char* SM_stageTRY = "res/map/SM_stageTRY.mv1";
   inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
