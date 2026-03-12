@@ -465,6 +465,17 @@ void EnemySensor::RenderDetectionUI() const
 // キャッシュを再計算する実装
 void EnemySensor::RecalculateDetectionSector() const
 {
+	// ★ 静的なグローバルカウンタ：全敵で共有
+	static int s_globalUpdateFrame = 0;
+
+	// ★ 今回の敵が更新対象かどうかを判定
+	// _enemyId を使って「このフレームで自分の番か？」をチェック
+	if (s_globalUpdateFrame % CacheInterval != (_enemyId % CacheInterval))
+	{
+		// まだこの敵の更新タイミングではない → キャッシュ再計算をスキップ
+		return;
+	}
+
 	_CachedPolygons.clear();
 
 	// 索敵範囲が設定されていない場合は何もしない
@@ -562,11 +573,6 @@ void EnemySensor::RecalculateDetectionSector() const
 				initVertex(verts[4], outerPos);
 				initVertex(verts[5], innerPos);
 
-				//// キャッシュに追加（地面）
-				//std::array<VERTEX3D, 6> poly{};
-				//for (int vi = 0; vi < 6; ++vi) poly[vi] = verts[vi];
-				//_CachedPolygons.push_back(poly);
-
 				// 少し上にも描画する分もキャッシュ（視認性向上）
 				for (int vi = 0; vi < 6; ++vi)
 				{
@@ -592,6 +598,10 @@ void EnemySensor::RenderDetectionSector() const
 	{
 		return;
 	}
+
+	// ★ 静的なグローバルカウンタをインクリメント（全敵で共有）
+	static int s_globalUpdateFrame = 0;
+	s_globalUpdateFrame++;
 
 	// キャッシュの更新タイミング制御
 	if (_CacheCounter <= 0 || _CachedPolygons.empty())
