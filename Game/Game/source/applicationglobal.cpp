@@ -347,9 +347,9 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk, soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("50", std::make_shared<soundserver::SoundItemSE>(mp3::okimono_move));
 	_soundServer->Add("60", std::make_shared<soundserver::SoundItemSE>(mp3::UI_charin, soundserver::SoundItemBase::FLG_LOOP));
-	_soundServer->Add("33", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_sight_off));
-	_soundServer->Add("32", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_tail_hit));
-	_soundServer->Add("34", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_stunfinish));
+	_soundServer->Add("33", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_sight_off, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("32", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_tail_hit, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("34", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_stunfinish, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("61", std::make_shared<soundserver::SoundItemSE>(mp3::UI_no_makimono));
 	_soundServer->Add("120", std::make_shared<soundserver::SoundItemBGM>(mp3::Ending));
 	_soundServer->Add("110", std::make_shared<soundserver::SoundItemBGM>(mp3::Prologe));
