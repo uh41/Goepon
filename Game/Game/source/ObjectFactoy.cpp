@@ -7,7 +7,7 @@
 // * \作業内容: 新規作成 鈴木裕稀　2026/03/13
 /*********************************************************************/
 
-#include "ObjectFactory.h"
+#include "ObjectFactoy.h"
 #include "player.h"
 #include "playertanuki.h"
 #include "playermono.h"
@@ -171,7 +171,7 @@ at::spc<UiBase> ObjectFactory::CreateAndInitializeDashUi(PlayerBase* player)
 {
 	auto ui = std::make_shared<DashUi>();
 	ui->Initialize();
-	ui->SetPlayer(player);
+	ui->SetPlayer(dynamic_cast<PlayerTanuki*>(player));
 	return ui;
 }
 
@@ -179,7 +179,19 @@ at::spc<UiBase> ObjectFactory::CreateAndInitializeTreasureUi(const at::vec<at::s
 {
 	auto ui = std::make_shared<TreasureUi>();
 	ui->Initialize();
-	ui->SetTreasureList(treasures);
+
+	// TreasureBase から Treasure へのダウンキャストを行い、リストを作成
+	at::vspc<Treasure> treasureList;
+	treasureList.reserve(treasures.size());
+	for(const auto& t : treasures)
+	{
+		if(auto casted = std::dynamic_pointer_cast<Treasure>(t))
+		{
+			treasureList.push_back(casted);
+		}
+	}
+	ui->SetTreasureList(treasureList);
+	return ui;
 	return ui;
 }
 
