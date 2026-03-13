@@ -51,11 +51,11 @@ bool UiMakimono::Render()
 {
 	base::Render();
 
-	// 画像が未ロードなら描画しない
-	if(_handleMakimono == -1 || _handleUiX == -1)
-	{
-		return false;
-	}
+	//// 画像が未ロードなら描画しない
+	//if(_handleMakimono == -1 || _handleUiX == -1 || _handle == -1)
+	//{
+	//	return false;
+	//}
 
 	DrawGraph(makimono::MAKIMONO_X, makimono::MAKIMONO_Y, _handleMakimono, TRUE);
 	DrawGraph(makimono::KAKERU_X, makimono::KAKERU_Y, _handleUiX, TRUE);
