@@ -35,6 +35,8 @@ bool PlayerTanuki::Initialize()
 	_bLand = true;
 
 	_inputEnabled = true;
+
+	_clearModelHandle = -1;
 	return true;
 }
 
@@ -425,4 +427,61 @@ bool PlayerTanuki::Render()
 #endif
 
 	return true;
+}
+
+bool PlayerTanuki::SetClearHandle(const std::string& animName, bool loop)
+{
+	// すでに切り替え済みなら何もしない
+	if(_clearModelHandle >= 0 && _handle == _clearModelHandle)
+	{
+		return true;
+	}
+
+	// クリア用モデルを末ロードなら取得
+	if(_clearModelHandle < 0)
+	{
+		_clearModelHandle = ResourceServer::MV1LoadModel(mv1::Game_clear);
+		if(_clearModelHandle < 0)
+		{
+			return false;
+		}
+	}
+	// 今のモデルに紐づくアニメが残っている可能性があるので止める
+	StopAnimation();
+
+	// 今のモデルを破棄して差し替え
+	if(_handle >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_handle);
+		_handle = -1;
+	}
+	_handle = _clearModelHandle;
+
+	// 切替後にアニメを再生
+	if(!animName.empty())
+	{
+		PlayGameClearAnimation(animName, loop);
+	}
+	return true;
+}
+
+int PlayerTanuki::PlayGameClearAnimation(std::string name, bool loop)
+{
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->Stop(_animId);
+		_animId = -1;
+	}
+
+	if(_clearModelHandle == -1 || name.empty())
+	{
+		return -1;
+	}
+
+	_animId = AnimationManager::GetInstance()->Play(_clearModelHandle, name, loop);
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->SetTime(_animId, 0.0f);
+	}
+	return _animId;
 }

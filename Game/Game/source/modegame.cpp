@@ -660,6 +660,7 @@ bool ModeGame::Process()
 	if (_isGameClearCinematicActive)
 	{
 		ProcessClearSequence();
+		AnimationManager::GetInstance()->Update(1.0f);
 		return true;
 	}
 
@@ -674,12 +675,11 @@ bool ModeGame::Process()
 	// カメラ処理
 	_camera->Process();
 
+	// デバック処理
 	DebugProcess();
 	DebugCameraControl();
 
-	//_soundServer->Update();
 	// アニメーション処理
-
 	AnimationManager::GetInstance()->Update(1.0f);
 
 	// Effekseer 更新

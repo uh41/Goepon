@@ -386,6 +386,7 @@ bool Player::Process()
 		case STATUS::WALK:
 			anim_name = "walk";
 			break;
+
 		default:
 			anim_name.clear();
 		}

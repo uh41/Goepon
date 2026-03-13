@@ -45,19 +45,19 @@ bool Map1::Initialize()
 	_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 	// �V���h�E�}�b�v�̐���
-	_iHandleShadowMap = MakeShadowMap(2048, 2048);
+	_iHandleShadowMap = MakeShadowMap(8192, 8192);
 
-	
-	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
+	// ライトの方向と色味（暖かめ・控えめ）
+	_mainLight.SetDir(VGet(0.6f, -1.0f, 0.4f)); // 斜め上からの暖かい光（方向は必要に応じ調整）
 
-	// �����i��߁j
-	_mainLight.SetAmbient(VGet(0.05f, 0.03f, 0.02f), 1.0f);
+	// アンビエント（低め・暖色）
+	_mainLight.SetAmbient(VGet(0.02f, 0.015f, 0.01f), 1.0f); // 暖かい弱めの環境光
 
-	// �g�U���i�I�����W���j
-	_mainLight.SetDiffuse(VGet(1.0f, 0.75f, 0.45f), 1.0f);
+	// 拡散光（暖色寄りだが強すぎない）
+	_mainLight.SetDiffuse(VGet(0.98f, 0.74f, 0.48f), 1.0f); // 明るさを抑えつつ暖色を強調
 
-	// ���ʔ��ˁi�����ɏ����j
-	_mainLight.SetSpecular(VGet(0.8f, 0.8f, 0.8f), 1.0f);
+	// 鏡面反射（控えめで柔らかく）
+	_mainLight.SetSpecular(VGet(0.35f, 0.30f, 0.25f), 1.0f);
 
 	_mainLight.SetCastShadow(true);
 
@@ -197,10 +197,10 @@ bool Map1::Render()
 	SetUseBackCulling(true);
 
 	// ライト方向を固定
-	VECTOR lightdir = VGet(1.0f, -2.0f, 1.0f); // より自然な斜め上からの光
+	VECTOR lightdir = VGet(1.0f, -10.0f, 1.0f); // より自然な斜め上からの光
 
 #if 1 // 平行ライト
-	SetGlobalAmbientLight(GetColorF(0.2f, 0.2f, 0.2f, 1.0f)); // 少し明るく
+	SetGlobalAmbientLight(GetColorF(0.03f, 0.025f, 0.02f, 1.0f)); // 少し明るく
 	ChangeLightTypeDir(lightdir);
 #endif
 #if 0 // ポイントライト
