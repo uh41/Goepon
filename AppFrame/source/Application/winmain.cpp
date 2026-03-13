@@ -35,6 +35,9 @@ int WINAPI WinMain(
 ) {
 	// メモリリークチェック開始
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	//_CrtSetBreakAlloc(104432);
+
 	ApplicationBase *appBase = ApplicationBase::GetInstance();
 	if(!appBase) { return 0; }
 

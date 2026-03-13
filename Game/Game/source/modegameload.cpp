@@ -80,7 +80,7 @@ bool ModeGameLoad::Process()
 	{
 		if(GetASyncLoadNum() == 0)
 		{
-			ModeServer::GetInstance()->Add(new ModeGame(), 0, "game");
+			ModeServer::GetInstance()->Add(new ModeGame(), 1, "game");
 		}
 		return true;
 	}

@@ -288,36 +288,36 @@ bool ApplicationGlobal::Init()
 	// マップ用
 	LoadMapData("Map1", "stage1_0311.json", "stage");	// 1ステージ目
 	LoadMapData("Map2", "stage2_0311.json", "stage");	// 2ステージ目
-	LoadMapData("Map3", "stage2_0304.json", "stage");	// 3ステージ目
+	LoadMapData("Map3", "stage3_0312.json", "stage");	// 3ステージ目
 
 	//マーカー用
 	LoadStageData("Stage1", "stage1_0311.json", "stage"); // 1ステージ目
 	LoadStageData("Stage2", "stage2_0311.json", "stage");     // 2ステージ目
-	LoadStageData("Stage3", "stage2_0304.json", "stage");     // 3ステージ目
+	LoadStageData("Stage3", "stage3_0312.json", "stage");     // 3ステージ目
 
 	SetUseASyncLoadFlag(TRUE);
 
 	// キャラクター関連モデル読み込み
-	ResourceServer::MV1LoadModel(mv1::SK_tanuhuman_multimotion_02);
-	ResourceServer::MV1LoadModel(mv1::SK_goepon_multimotion_4);
 	ResourceServer::MV1LoadModel(mv1::sigaraki);
-	ResourceServer::MV1LoadModel(mv1::busi_multimotion);
 	ResourceServer::MV1LoadModel(mv1::SK_Dog);
+	ResourceServer::MV1LoadModel(mv1::SK_busi_multimotion);
+	ResourceServer::MV1LoadModel(mv1::Game_clear);
+	ResourceServer::MV1LoadModel(mv1::SK_multimotionTanuHuman_06);
+	ResourceServer::MV1LoadModel(mv1::gamestart);
 
 								 	 
 	// マップ関連モデル読み込み	  	 
 	ResourceServer::MV1LoadModel(mv1::skysphere);
-	ResourceServer::MV1LoadModel(mv1::Ground);
-	ResourceServer::MV1LoadModel(mv1::fusama);
 	ResourceServer::MV1LoadModel(mv1::SM_stage1_0301);
 	ResourceServer::MV1LoadModel(mv1::SM_stage20303);
+	ResourceServer::MV1LoadModel(mv1::SM_stage3);
+	ResourceServer::MV1LoadModel(mv1::S_Marker_Event);
 
 	// その他
-	ResourceServer::MV1LoadModel(mv1::tuzura_02);
+	ResourceServer::MV1LoadModel(mv1::tuzura_05);
 	ResourceServer::MV1LoadModel(mv1::Goal);
-	ResourceServer::LoadGraph(img::work);
 	ResourceServer::LoadGraph(texture::makimono);
-	ResourceServer::LoadGraph(texture::TX_Tresure4);
+	ResourceServer::LoadGraph(texture::TX_Tresure5);
 	ResourceServer::LoadGraph(texture::TX_ase);
 	ResourceServer::LoadGraph(texture::TX_change);
 	ResourceServer::LoadGraph(texture::TX_doyax);
@@ -325,6 +325,8 @@ bool ApplicationGlobal::Init()
 	ResourceServer::LoadGraph(texture::TX_hatena);
 	ResourceServer::LoadGraph(texture::TX_nakix);
 	ResourceServer::LoadGraph(texture::TX_walk);
+	ResourceServer::LoadGraph(texture::TX_shirimochi);
+	ResourceServer::LoadGraph(texture::TX_kizetsu);
 	ResourceServer::LoadGraph(img::UI_Makimono);
 	ResourceServer::LoadGraph(img::UI_Tanubito);
 	ResourceServer::LoadGraph(img::UI_Tanumono);
@@ -347,9 +349,9 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("11", std::make_shared<soundserver::SoundItemSE>(mp3::tanubito_walk, soundserver::SoundItemBase::FLG_LOOP));
 	_soundServer->Add("50", std::make_shared<soundserver::SoundItemSE>(mp3::okimono_move));
 	_soundServer->Add("60", std::make_shared<soundserver::SoundItemSE>(mp3::UI_charin, soundserver::SoundItemBase::FLG_LOOP));
-	_soundServer->Add("33", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_sight_off));
-	_soundServer->Add("32", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_tail_hit));
-	_soundServer->Add("34", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_stunfinish));
+	_soundServer->Add("33", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_sight_off, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("32", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_tail_hit, soundserver::SoundItemBase::FLG_3D));
+	_soundServer->Add("34", std::make_shared<soundserver::SoundItemVoice>(mp3::bushi_stunfinish, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("61", std::make_shared<soundserver::SoundItemSE>(mp3::UI_no_makimono));
 	_soundServer->Add("120", std::make_shared<soundserver::SoundItemBGM>(mp3::Ending));
 	_soundServer->Add("110", std::make_shared<soundserver::SoundItemBGM>(mp3::Prologe));

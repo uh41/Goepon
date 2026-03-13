@@ -7,45 +7,23 @@ namespace img
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stageclear = "res/BG_stageclear.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
-  inline constexpr const char* L_UI = "res/L_UI.png";
   inline constexpr const char* Loading_1start = "res/Loading_1start.png";
   inline constexpr const char* Loading_2start = "res/Loading_2start.png";
   inline constexpr const char* Loading_3gameover = "res/Loading_3gameover.png";
   inline constexpr const char* Loading_4gameover = "res/Loading_4gameover.png";
-  inline constexpr const char* Logo = "res/Logo.png";
-  inline constexpr const char* Op1 = "res/Op1.png";
-  inline constexpr const char* Op10 = "res/Op10.png";
-  inline constexpr const char* Op2 = "res/Op2.png";
-  inline constexpr const char* Op3 = "res/Op3.png";
-  inline constexpr const char* Op4 = "res/Op4.png";
-  inline constexpr const char* Op5 = "res/Op5.png";
-  inline constexpr const char* Op6 = "res/Op6.png";
-  inline constexpr const char* Op7 = "res/Op7.png";
-  inline constexpr const char* Op8 = "res/Op8.png";
-  inline constexpr const char* Op9 = "res/Op9.png";
   inline constexpr const char* Title_kari = "res/Title_kari.png";
   inline constexpr const char* UI_Makimono = "res/UI_Makimono.png";
   inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
   inline constexpr const char* UI_Tanumono = "res/UI_Tanumono.png";
-  inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* gameoverload = "res/gameoverload.png";
-  inline constexpr const char* scenario1 = "res/scenario1.png";
-  inline constexpr const char* scenario2 = "res/scenario2.png";
-  inline constexpr const char* scenario3 = "res/scenario3.png";
-  inline constexpr const char* scenario4 = "res/scenario4.png";
-  inline constexpr const char* scenario5 = "res/scenario5.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* split_0_0 = "res/split_0_0.png";
   inline constexpr const char* teamlogo = "res/teamlogo.png";
-  inline constexpr const char* title = "res/title.png";
-  inline constexpr const char* work = "res/work.png";
 }
 
 namespace texture
 {
   inline constexpr const char* Background = "res/Texture/Background.png";
-  inline constexpr const char* ChangeSheet = "res/Texture/ChangeSheet.png";
-  inline constexpr const char* EF_Tresure = "res/Texture/EF_Tresure.png";
   inline constexpr const char* Front = "res/Texture/Front.png";
   inline constexpr const char* LaserMain01 = "res/Texture/LaserMain01.png";
   inline constexpr const char* Particle01 = "res/Texture/Particle01.png";
@@ -58,8 +36,6 @@ namespace texture
   inline constexpr const char* TR_6 = "res/Texture/TR_6.png";
   inline constexpr const char* TR_7 = "res/Texture/TR_7.png";
   inline constexpr const char* TR_8 = "res/Texture/TR_8.png";
-  inline constexpr const char* TX_Tresure3 = "res/Texture/TX_Tresure3.png";
-  inline constexpr const char* TX_Tresure4 = "res/Texture/TX_Tresure4.png";
   inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
   inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
   inline constexpr const char* TX_change = "res/Texture/TX_change.png";
@@ -73,14 +49,13 @@ namespace texture
   inline constexpr const char* TX_shirimochi = "res/Texture/TX_shirimochi.png";
   inline constexpr const char* TX_walk = "res/Texture/TX_walk.png";
   inline constexpr const char* earth = "res/Texture/earth.png";
-  inline constexpr const char* explosion = "res/Texture/explosion.png";
   inline constexpr const char* makimono = "res/Texture/makimono.png";
   inline constexpr const char* tree = "res/Texture/tree.png";
+  inline constexpr const char* tutorial3 = "res/Texture/tutorial3.png";
 }
 
 namespace ui
 {
-  inline constexpr const char* Light = "res/Object/building/Light.png";
   inline constexpr const char* B_gamestart = "res/UI/B_gamestart.png";
   inline constexpr const char* B_gamestart_1 = "res/UI/B_gamestart_1.png";
   inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
@@ -133,78 +108,21 @@ namespace ef
 
 namespace mv1
 {
-  inline constexpr const char* Blood = "res/Blood/Blood.mv1";
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
-  inline constexpr const char* Dungeon = "res/Dungeon/Dungeon.mv1";
-  inline constexpr const char* Bridge = "res/FloatingIsland/Bridge.mv1";
-  inline constexpr const char* FloatingIsland = "res/FloatingIsland/FloatingIsland.mv1";
-  inline constexpr const char* Sky = "res/FloatingIsland/Sky.mv1";
-  inline constexpr const char* Wood = "res/FloatingIsland/Wood.mv1";
   inline constexpr const char* Game_clear = "res/Gameclear/Game_clear.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
-  inline constexpr const char* Ground = "res/Ground/Ground.mv1";
-  inline constexpr const char* S_Barrel = "res/IslandJson/S_Barrel.mv1";
-  inline constexpr const char* S_Cocotree = "res/IslandJson/S_Cocotree.mv1";
-  inline constexpr const char* S_FenceA = "res/IslandJson/S_FenceA.mv1";
-  inline constexpr const char* S_FenceB = "res/IslandJson/S_FenceB.mv1";
-  inline constexpr const char* S_Island = "res/IslandJson/S_Island.mv1";
-  inline constexpr const char* S_Sea = "res/IslandJson/S_Sea.mv1";
-  inline constexpr const char* S_Sky = "res/IslandJson/S_Sky.mv1";
-  inline constexpr const char* S_Stairs = "res/IslandJson/S_Stairs.mv1";
-  inline constexpr const char* S_TreasureBox = "res/IslandJson/S_TreasureBox.mv1";
-  inline constexpr const char* S_Well = "res/IslandJson/S_Well.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
-  inline constexpr const char* SM_map = "res/map/SM_map.mv1";
-  inline constexpr const char* SM_stage1 = "res/map/SM_stage1.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
-  inline constexpr const char* SM_stageDGR = "res/map/SM_stageDGR.mv1";
-  inline constexpr const char* SM_stageTRY = "res/map/SM_stageTRY.mv1";
-  inline constexpr const char* SM_stage_arufa = "res/map/SM_stage_arufa.mv1";
-  inline constexpr const char* SM_stage_arufa1 = "res/map/SM_stage_arufa1.mv1";
-  inline constexpr const char* SM_stage_arufa2 = "res/map/SM_stage_arufa2.mv1";
-  inline constexpr const char* SM_stagebeta = "res/map/SM_stagebeta.mv1";
-  inline constexpr const char* SM_tatami = "res/map/SM_tatami.mv1";
-  inline constexpr const char* SM_wallcheck = "res/map/SM_wallcheck.mv1";
-  inline constexpr const char* SM_yuka_wood = "res/map/SM_yuka_wood.mv1";
   inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";
-  inline constexpr const char* fusama = "res/map/fusama.mv1";
-  inline constexpr const char* bil1 = "res/Object/bil1/bil1.mv1";
-  inline constexpr const char* Board = "res/Object/Board/Board.mv1";
-  inline constexpr const char* building = "res/Object/building/building.mv1";
-  inline constexpr const char* Concretefloor = "res/Object/Concretefloor/Concretefloor.mv1";
-  inline constexpr const char* IronBones = "res/Object/IronBones/IronBones.mv1";
-  inline constexpr const char* LargeScreen = "res/Object/LargeScreen/LargeScreen.mv1";
-  inline constexpr const char* Pillar = "res/Object/Pillar/Pillar.mv1";
-  inline constexpr const char* SignBoard = "res/Object/SignBoard/SignBoard.mv1";
-  inline constexpr const char* Player = "res/Player/Player.mv1";
-  inline constexpr const char* PoorEnemy = "res/PoorEnemyMelee/PoorEnemy.mv1";
+  inline constexpr const char* S_Savepoint = "res/map/S_Savepoint.mv1";
   inline constexpr const char* SK_busi_multimotion = "res/PoorEnemyMelee/SK_busi_multimotion.mv1";
-  inline constexpr const char* bushi_0114taiki = "res/PoorEnemyMelee/bushi_0114taiki.mv1";
-  inline constexpr const char* bushi_karitaiki = "res/PoorEnemyMelee/bushi_karitaiki.mv1";
-  inline constexpr const char* busi_multimotion = "res/PoorEnemyMelee/busi_multimotion.mv1";
-  inline constexpr const char* busi_tesuto = "res/PoorEnemyMelee/busi_tesuto.mv1";
-  inline constexpr const char* goepon_busi_03 = "res/PoorEnemyMelee/goepon_busi_03.mv1";
-  inline constexpr const char* SDChar = "res/SDChar/SDChar.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_multimotionTanuHuman_06 = "res/Tanuhuman/SK_multimotionTanuHuman_06.mv1";
-  inline constexpr const char* SK_tanuhuman_multimotion = "res/Tanuhuman/SK_tanuhuman_multimotion.mv1";
-  inline constexpr const char* SK_tanuhuman_multimotion_01 = "res/Tanuhuman/SK_tanuhuman_multimotion_01.mv1";
-  inline constexpr const char* SK_tanuhuman_multimotion_02 = "res/Tanuhuman/SK_tanuhuman_multimotion_02.mv1";
-  inline constexpr const char* TanuHuman = "res/Tanuhuman/TanuHuman.mv1";
-  inline constexpr const char* TanuHuman_Base = "res/Tanuhuman/TanuHuman_Base.mv1";
-  inline constexpr const char* TanuHuman_Base2 = "res/Tanuhuman/TanuHuman_Base2.mv1";
-  inline constexpr const char* tanuhuman0304 = "res/Tanuhuman/tanuhuman0304.mv1";
-  inline constexpr const char* tanuhuman0304_2 = "res/Tanuhuman/tanuhuman0304_2.mv1";
-  inline constexpr const char* SK_goepon_multimotion = "res/Tanuki/SK_goepon_multimotion.mv1";
   inline constexpr const char* SK_goepon_multimotion_4 = "res/Tanuki/SK_goepon_multimotion_4.mv1";
-  inline constexpr const char* anime_goepon_walk = "res/Tanuki/anime_goepon_walk.mv1";
-  inline constexpr const char* goepon = "res/Tanuki/goepon.mv1";
-  inline constexpr const char* Kagurayaki = "res/tanumono/Kagurayaki.mv1";
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
   inline constexpr const char* gamestart = "res/Titleanimation/gamestart.mv1";
-  inline constexpr const char* tuzura_02 = "res/Treasure/tuzura_02.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
 }
 

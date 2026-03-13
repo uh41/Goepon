@@ -22,8 +22,6 @@ namespace dash
 	static constexpr auto DASH_COOLDOWN_SPEED = 0.8f; // クールダウン中の移動量
 }
 
-
-
 class PlayerTanuki : public PlayerBase
 {
 	typedef PlayerBase base;
@@ -45,6 +43,11 @@ public:
 	// 入力が有効かどうかのゲッターとセッター
 	bool GetInputEnabled() const { return _inputEnabled; }
 	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
+
+	// クリア演出用のモデルへ切り替え
+	bool SetClearHandle(const std::string& animName, bool loop);
+	int  PlayGameClearAnimation(std::string name, bool loop);
+
 protected:
 	Camera* _cam;
 
@@ -67,5 +70,7 @@ protected:
 	bool _inputEnabled; // 入力が有効かどうか
 
 	float _target_Rotation_Y;
+private:
+	int _clearModelHandle; // クリア後のモデルハンドル
 };
 

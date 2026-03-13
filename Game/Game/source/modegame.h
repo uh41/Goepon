@@ -44,7 +44,6 @@
 #include "walkeffect.h"
 #include "findeffect.h"
 #include "hatenaeffect.h"
-#include "aseeffect.h"
 #include "doyaeffect.h"
 #include "nakieffect.h"
 #include "shirimochieffect.h"
@@ -285,7 +284,6 @@ protected:
 	at::spc<WalkEffect> _walkEffect;
 	at::spc<FindEffect> _findEffect;
 	at::spc<HatenaEffect> _hatenaEffect;
-	at::spc<AseEffect> _aseEffect;
 	at::spc<DoyaEffect> _doyaEffect;
 	at::spc<NakiEffect> _nakiEffect;
 	at::spc<ShirimochiEffect> _shirimochiEffect;

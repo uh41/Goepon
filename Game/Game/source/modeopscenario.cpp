@@ -42,6 +42,7 @@ bool ModeOpScenario::Initialize()
 		{ LoadGraph("res/Prologue/8.png"), ""},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/9.png"), ""},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/10.png"), ""},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/11.png"), ""},// �摜�ǂݍ���, �����t�@�C��
 	};
 
 	// �y�[�W�̕\���f�[�^��ݒ�
@@ -56,7 +57,8 @@ bool ModeOpScenario::Initialize()
 		{ 550,  50, 300, 300, 0.0f },   // �y�[�W7
 		{ 550, 340, 350, 350, 0.0f },   // �y�[�W8
 		{ 900,  50, 400, 400, 0.0f },   // �y�[�W9
-		{ 920, 450, 300, 300, 0.0f },   // �y�[�W10
+		{ 920,  450, 300, 300, 0.0f },   // �y�[�W10
+		{ 1250, 450, 550, 550, 0.0f },   // �y�[�W11
 	};
 	_pageNo = 0;
 	_fadeTimer = 0;

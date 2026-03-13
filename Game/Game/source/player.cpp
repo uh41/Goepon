@@ -314,13 +314,16 @@ bool Player::Process()
 			_vDir = _v;
 		}
 
-		UpdateRotation(); // 向きを更新
-
 		_status = STATUS::WALK;
 	}
 	else
 	{
 		_status = STATUS::WAIT;
+	}
+
+	if(_status == STATUS::WALK && !(key & PAD_INPUT_6))
+	{
+		UpdateRotation();
 	}
 
 	if(old_status != _status)
@@ -383,6 +386,7 @@ bool Player::Process()
 		case STATUS::WALK:
 			anim_name = "walk";
 			break;
+
 		default:
 			anim_name.clear();
 		}

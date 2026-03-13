@@ -392,7 +392,7 @@ void ModeGame::CreateEnemy
 	if(name == "Dog")
 	{
 		auto sensor = CreateEnemySensor(900.0f, map);
-		sensor->SetDetectionSector(400.0f, 120.0f);
+		sensor->SetDetectionSector(380.0f, 80.0f);
 
 		auto dog = std::make_shared<EnemyDog>();
 		dog->Initialize();
@@ -660,6 +660,7 @@ bool ModeGame::Process()
 	if (_isGameClearCinematicActive)
 	{
 		ProcessClearSequence();
+		AnimationManager::GetInstance()->Update(1.0f);
 		return true;
 	}
 
@@ -674,12 +675,11 @@ bool ModeGame::Process()
 	// カメラ処理
 	_camera->Process();
 
+	// デバック処理
 	DebugProcess();
 	DebugCameraControl();
 
-	//_soundServer->Update();
 	// アニメーション処理
-
 	AnimationManager::GetInstance()->Update(1.0f);
 
 	// Effekseer 更新
@@ -822,6 +822,12 @@ bool ModeGame::Process()
 				// プレイヤーが敵に見つかっていなかったら捕まらない
 				if(enemy->IsPlayerChasing())
 				{
+
+					// 犬の場合はゲームオーバーにしない
+					if (dynamic_cast<EnemyDog*>(enemy.get()) != nullptr)
+					{
+						continue; // 犬の場合は次の敵へ
+					}
 
 					if(gGlobal._soundServer)
 					{
@@ -1042,7 +1048,6 @@ bool ModeGame::Process()
 			// エフェクト再設定
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_aseEffect->SetPlayer(_playerTanuki.get());
 
 			if(_soundFinish && !_soundFinish->IsPlay())
 			{

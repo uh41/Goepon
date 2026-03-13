@@ -9,7 +9,7 @@ namespace treasure
 	static constexpr auto NOKORI_X = 1600; // 残りのX座標
 	static constexpr auto NOKORI_Y = 48; // 残りのY座標
 	static constexpr auto KAKERU_X = 1600; // 掛けるのX座標
-	static constexpr auto KAKERU_Y = 48; // 掛けるのY座標
+	static constexpr auto KAKERU_Y = 0; // 掛けるのY座標
 	static constexpr auto MAKIMONO_X = 1560; // 巻物のX座標
 	static constexpr auto MAKIMONO_Y = 15; // 巻物のY座標
 }
