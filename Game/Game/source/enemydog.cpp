@@ -20,12 +20,12 @@ bool EnemyDog::Initialize()
 	_fCollisionWeight = 10.0f;
 	_fHp = 30.0f;
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
-	_rotationSpeed = 0.5f;                     // 回転速度（調整可能）
+	_rotationSpeed = 0.2f;                     // 回転速度（調整可能）
 	_moveSpeed = 2.0f;
 
 	// ランダムウォーク用の初期化
 	_rmWalkTimer = 0.0f;
-	_rmWalkInterval = 3.0f;
+	_rmWalkInterval = 3.5f;
 	_rmWalkDir = vec3::VGet(0.0f, 0.0f, 0.0f);
 	_bRmWalking = false;
 	_rmWalkDistance = 0.0f;
@@ -322,7 +322,7 @@ bool EnemyDog::Process()
 	{
 		_status = STATUS::FOUND;
 		// 追跡時の移動速度を確保（他の処理で変更されている可能性に対応）
-		_moveSpeed = 4.0f; // 追跡時の速度
+		_moveSpeed = 7.2f; // 追跡時の速度
 
 		// 追跡中の音波発生処理（一定間隔で発生）
 		const float dt = 1.0f / 60.0f; // 60FPS想定
