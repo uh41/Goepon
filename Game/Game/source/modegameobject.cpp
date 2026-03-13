@@ -55,87 +55,61 @@ bool ModeGame::IsTransformRequested() const
 
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
-{
-	//// マップ初期化
-	//_map = std::make_shared<Map>();
-	//_object.emplace_back(_map);
-	
-	// カメラ初期化
+{// カメラ初期化
 	_camera = new Camera();
 	_camera->Initialize();
-	// メインカメラ
 	_originalCamera = _camera;
-	// 演出カメラの初期化
 	_cinematicCamera = std::make_unique<CinematicCamera>();
 	_cinematicCamera->Initialize();
-	
 
-	//// マップ初期化
-	//_map = std::make_shared<Map>();
-	//_object.emplace_back(_map);
-
-	//auto makimono = std::make_shared<Makimono>();
-	//makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
-	//makimono->SetCamera(_camera);
-	//_makimono.emplace_back(makimono);
-
-	// プレイヤー初期化
-	_player = std::make_shared<Player>();
+	// プレイヤー初期化（ObjectFactoryを使用）
+	_player = _objectFactory.CreateAndInitializePlayer();
 	_playerBase.emplace_back(_player);
-	_playerTanuki = std::make_shared<PlayerTanuki>();
+	_playerTanuki = _objectFactory.CreateAndInitializePlayerTanuki();
 	_playerBase.emplace_back(_playerTanuki);
-	_playerMono = std::make_shared<PlayerMono>();
+	_playerMono = _objectFactory.CreateAndInitializePlayerMono();
 	_playerBase.emplace_back(_playerMono);
 
 	// ゴール初期化
-	_goal = std::make_shared<Goal>();
+	_goal = _objectFactory.CreateAndInitializeGoal(_camera);
 	_object.emplace_back(_goal);
 
-	// ui初期化
-	_henshinUi = std::make_shared<HenshinUi>();
-	_henshinUi->SetOwner(this);
+	// UI初期化（ObjectFactoryを使用）
+	_henshinUi = _objectFactory.CreateAndInitializeHenshinUi(this);
 	_uiBase.emplace_back(_henshinUi);
-	_uiMakimono = std::make_shared<UiMakimono>();
-	_uiMakimono->SetPlayer(_player.get());
+	_uiMakimono = _objectFactory.CreateAndInitializeUiMakimono(_player.get());
 	_uiBase.emplace_back(_uiMakimono);
-	_counterUi = std::make_shared<CounterUi>();
+	_counterUi = _objectFactory.CreateAndInitializeCounterUi();
 	_uiBase.emplace_back(_counterUi);
-	_attackUi = std::make_shared<AttackUi>();
-	_attackUi->Show(_player.get()->GetPos());
+	_attackUi = _objectFactory.CreateAndInitializeAttackUi(_player.get()->GetPos());
 	_uiBase.emplace_back(_attackUi);
-	_treasureOpenUi = std::make_shared<TreasureOpenUi>();
+	_treasureOpenUi = _objectFactory.CreateAndInitializeTreasureOpenUi();
 	_uiBase.emplace_back(_treasureOpenUi);
-	_dashUi = std::make_shared<DashUi>();
-	_dashUi->SetPlayer(_playerTanuki.get());
+	_dashUi = _objectFactory.CreateAndInitializeDashUi(_playerTanuki.get());
 	_uiBase.emplace_back(_dashUi);
-	_treasureUi = std::make_shared<TreasureUi>();
-	_treasureUi->SetTreasureList(_treasure);
+	_treasureUi = _objectFactory.CreateAndInitializeTreasureUi(_treasure);
 	_uiBase.emplace_back(_treasureUi);
-	_configUi = std::make_shared<ConfigUi>();
-	_configUi->SetVisible(true);
+	_configUi = _objectFactory.CreateAndInitializeConfigUi();
 	_uiBase.emplace_back(_configUi);
 
-
-	// エフェクト初期化
-	_treasureEffect = std::make_shared<TreasureEffect>();
+	// エフェクト初期化（ObjectFactoryを使用）
+	_treasureEffect = _objectFactory.CreateAndInitializeTreasureEffect();
 	_effectBase.emplace_back(_treasureEffect);
-	_hensinEffect = std::make_shared<HensinEffect>();
+	_hensinEffect = _objectFactory.CreateAndInitializeHensinEffect();
 	_effectBase.emplace_back(_hensinEffect);
-	_walkEffect = std::make_shared<WalkEffect>();
+	_walkEffect = _objectFactory.CreateAndInitializeWalkEffect();
 	_effectBase.emplace_back(_walkEffect);
-	_findEffect = std::make_shared<FindEffect>();
+	_findEffect = _objectFactory.CreateAndInitializeFindEffect();
 	_effectBase.emplace_back(_findEffect);
-	_hatenaEffect = std::make_shared<HatenaEffect>();
+	_hatenaEffect = _objectFactory.CreateAndInitializeHatenaEffect();
 	_effectBase.emplace_back(_hatenaEffect);
-	//_aseEffect = std::make_shared<AseEffect>();
-	//_effectBase.emplace_back(_aseEffect);
-	_doyaEffect = std::make_shared<DoyaEffect>();
+	_doyaEffect = _objectFactory.CreateAndInitializeDoyaEffect(_playerTanuki.get());
 	_effectBase.emplace_back(_doyaEffect);
-	_nakiEffect = std::make_shared<NakiEffect>();
+	_nakiEffect = _objectFactory.CreateAndInitializeNakiEffect(_playerTanuki.get());
 	_effectBase.emplace_back(_nakiEffect);
-	_shirimochiEffect = std::make_shared<ShirimochiEffect>();
+	_shirimochiEffect = _objectFactory.CreateAndInitializeShirimochiEffect();
 	_effectBase.emplace_back(_shirimochiEffect);
-	_stunEffect = std::make_shared<StunEffect>();
+	_stunEffect = _objectFactory.CreateAndInitializeStunEffect();
 	_effectBase.emplace_back(_stunEffect);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
@@ -148,36 +122,6 @@ bool ModeGame::ObjectInitialize()
 	for(auto& chara : _chara)
 	{
 		chara->Initialize();
-	}
-
-	// プレイヤー
-	for(auto& player_base : _playerBase)
-	{
-		player_base->Initialize();
-	}
-
-	// オブジェクトの初期化
-	for(auto& object : _object)
-	{
-		object->Initialize();
-	}
-
-	// UI
-	for(auto& ui_base : _uiBase)
-	{
-		ui_base->Initialize();
-	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Initialize();
-	}
-
-	// シャドウ初期化
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
 	}
 
 	// 点滅間隔の初期化（秒） — 明示的に初期化しておく
