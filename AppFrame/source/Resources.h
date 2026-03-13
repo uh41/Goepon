@@ -15,6 +15,7 @@ namespace img
   inline constexpr const char* UI_Makimono = "res/UI_Makimono.png";
   inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
   inline constexpr const char* UI_Tanumono = "res/UI_Tanumono.png";
+  inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* gameoverload = "res/gameoverload.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* split_0_0 = "res/split_0_0.png";
