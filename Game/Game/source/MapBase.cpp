@@ -5,12 +5,16 @@ bool MapBase::Initialize()
 {
 	if(!base::Initialize()) { return false; }
 	_mapName.clear();
+
+	// シャドウマップ追従の初期化
 	return true;
 }
 
 // 終了
 bool MapBase::Terminate()
 {
+	base::Terminate();
+
 	// スカイスフィアモデルの削除
 	if(_iHandleSkySphere >= 0)
 	{
@@ -37,19 +41,21 @@ bool MapBase::Terminate()
 	_ground_index.clear();
 	_vBlockPos.clear();
 
-	return base::Terminate();
+	return true;
 }
 
 // 更新
 bool MapBase::Process()
 {
-	return base::Process();
+	base::Process();
+	return true;
 }
 
 // 描画
 bool MapBase::Render()
 {
-	return base::Render();
+	base::Render();
+	return true;
 }
 
 // モデルの読み込み

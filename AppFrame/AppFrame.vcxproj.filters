@@ -28,15 +28,6 @@
     <Filter Include="ソース ファイル\モード\モードサーバー">
       <UniqueIdentifier>{d5b2de4d-c8ca-4a17-ad82-39492e225b7e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\ナビメッシュ">
-      <UniqueIdentifier>{ff75a0d5-43d3-487e-a960-20de75391638}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\ナビメッシュ\ナビ">
-      <UniqueIdentifier>{b1c1aee0-20fb-4a16-a049-61bdeb5cd098}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\ナビメッシュ\ナビゲーションメッシュ">
-      <UniqueIdentifier>{5292ef52-9311-4905-ba53-f04df5ed92c0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\サウンド">
       <UniqueIdentifier>{4d3a87eb-df74-418f-bce1-ef2672155791}</UniqueIdentifier>
     </Filter>
@@ -61,9 +52,6 @@
     <Filter Include="ヘッダー ファイル\ファイルの読み込み">
       <UniqueIdentifier>{1e619d52-62eb-414c-ae66-88cb4729197a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\当たり判定用">
-      <UniqueIdentifier>{e361989e-a3a8-4026-b3fa-32de2a17ef42}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\C++コンテナ">
       <UniqueIdentifier>{eaf85d9e-56cd-4fea-ba22-b648e337ef2d}</UniqueIdentifier>
     </Filter>
@@ -78,21 +66,6 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\数学">
       <UniqueIdentifier>{9b994b43-8639-4665-ab95-7aa6191f9e53}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\当たり判定用\線分">
-      <UniqueIdentifier>{aad9ce3f-f433-4efb-b802-b1d27d16de12}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\ナビメッシュ">
-      <UniqueIdentifier>{c5b2d881-ddd2-4f0b-9841-d2e5eb426758}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\ナビメッシュ\ナビ">
-      <UniqueIdentifier>{c8910679-e473-4ab7-a1e7-3872bc9859db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\ナビメッシュ\ナビゲーションメッシュ">
-      <UniqueIdentifier>{967d1623-2caa-4aea-b93c-62d1a6b0274e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\当たり判定用\ポリゴン">
-      <UniqueIdentifier>{2fe761fa-ba3d-4a26-995c-0b11156608f7}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダー ファイル\サウンド">
       <UniqueIdentifier>{fb93dc72-759e-4e75-b4f2-0fd72691857d}</UniqueIdentifier>
@@ -180,12 +153,6 @@
     <ClCompile Include="source\Mode\modeserver.cpp">
       <Filter>ソース ファイル\モード\モードサーバー</Filter>
     </ClCompile>
-    <ClCompile Include="source\navi\navi.cpp">
-      <Filter>ソース ファイル\ナビメッシュ\ナビ</Filter>
-    </ClCompile>
-    <ClCompile Include="source\navi\navigationmesh.cpp">
-      <Filter>ソース ファイル\ナビメッシュ\ナビゲーションメッシュ</Filter>
-    </ClCompile>
     <ClCompile Include="source\Sound\sounditembase.cpp">
       <Filter>ソース ファイル\サウンド\サウンドベース</Filter>
     </ClCompile>
@@ -233,9 +200,6 @@
     <ClInclude Include="source\CFile\cfile.h">
       <Filter>ヘッダー ファイル\ファイルの読み込み</Filter>
     </ClInclude>
-    <ClInclude Include="source\mymath\collision.h">
-      <Filter>ヘッダー ファイル\当たり判定用</Filter>
-    </ClInclude>
     <ClInclude Include="source\container.h">
       <Filter>ヘッダー ファイル\C++コンテナ</Filter>
     </ClInclude>
@@ -247,18 +211,6 @@
     </ClInclude>
     <ClInclude Include="source\mymath.h">
       <Filter>ヘッダー ファイル\数学</Filter>
-    </ClInclude>
-    <ClInclude Include="source\mymath\mysegment.h">
-      <Filter>ヘッダー ファイル\当たり判定用\線分</Filter>
-    </ClInclude>
-    <ClInclude Include="source\navi\navi.h">
-      <Filter>ヘッダー ファイル\ナビメッシュ\ナビ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\navi\navigationmesh.h">
-      <Filter>ヘッダー ファイル\ナビメッシュ\ナビゲーションメッシュ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\mymath\polygon3D.h">
-      <Filter>ヘッダー ファイル\当たり判定用\ポリゴン</Filter>
     </ClInclude>
     <ClInclude Include="source\Application\utilmacro.h">
       <Filter>ヘッダー ファイル\マクロ</Filter>

@@ -941,6 +941,11 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			continue;
 		}
 
+		if(dynamic_cast<EnemyDog*>(enemy.get()) != nullptr)
+		{
+			continue;
+		}
+
 		bool hit = CollisionManager::GetInstance()->CheckSectorToPosition(
 			enemy->GetPos(),
 			vec3::VScale(enemy->GetDir(), -1.0f),

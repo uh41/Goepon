@@ -823,6 +823,12 @@ bool ModeGame::Process()
 				if(enemy->IsPlayerChasing())
 				{
 
+					// 犬の場合はゲームオーバーにしない
+					if (dynamic_cast<EnemyDog*>(enemy.get()) != nullptr)
+					{
+						continue; // 犬の場合は次の敵へ
+					}
+
 					if(gGlobal._soundServer)
 					{
 						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
@@ -1042,7 +1048,6 @@ bool ModeGame::Process()
 			// エフェクト再設定
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_aseEffect->SetPlayer(_playerTanuki.get());
 
 			if(_soundFinish && !_soundFinish->IsPlay())
 			{

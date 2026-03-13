@@ -7,7 +7,7 @@
 bool PlayerTanuki::Initialize()
 {
 	if(!base::Initialize()) { return false; }
-	LoadModel(mv1::SK_goepon_multimotion_4);
+	if(!gGlobal.IsLoading()) SetHandle(ResourceServer::MV1LoadModel(mv1::SK_goepon_multimotion_4));
 	_iAttachIndex = -1;
 
 	_status = STATUS::NONE;
