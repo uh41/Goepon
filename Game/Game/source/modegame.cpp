@@ -392,7 +392,7 @@ void ModeGame::CreateEnemy
 	if(name == "Dog")
 	{
 		auto sensor = CreateEnemySensor(900.0f, map);
-		sensor->SetDetectionSector(400.0f, 120.0f);
+		sensor->SetDetectionSector(380.0f, 80.0f);
 
 		auto dog = std::make_shared<EnemyDog>();
 		dog->Initialize();
