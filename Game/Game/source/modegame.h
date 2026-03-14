@@ -26,6 +26,7 @@
 #include "modegameload.h"
 #include "StageManager.h"
 #include "ObjectFactoy.h"
+#include "henshinui.h"
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -334,9 +335,23 @@ protected:
 	// 敵の方向グループ
 	at::vec<EnemyBase*> _enemiesInAttackRange;
 
-	void RequestTransformToMono();
-	void RequestTransformToHuman();
-	void RequestReturnToTanukiFromHuman();
-	bool IsTransforming() const;
-	bool IsTransformRequested() const;
+	// イントロ演出用
+	bool  _isIntroActive;	   // イントロ演出が有効か
+	bool  _introButtonPressed; // イントロ中にボタンが押されたか
+	float _introTimer;		   // イントロの経過時間
+	static constexpr float INTRO_DURATION = 3.0f; // イントロの総時間（秒）
+
+	// ゲームクリア演出用
+	bool _isGameClearCinematicActive; // ゲームクリア演出が有効か
+	float _clearCinematicTimer;         // クリア演出の経過時間
+	static constexpr float CLEAR_CINEMATIC_DURATION = 3.0f; // クリア演出の総時間（秒）
+
+	// プレイヤー回転演出用
+	bool _isPlayerRotating = false;
+	float _playerRotationTimer = 0.0f;
+	float _playerRotationDuration = 2.0f; // プレイヤーが回転する演出の時間（秒）
+	float _playerInitialRotation = 0.0f;  // プレイヤー回転演出開始時のプレイヤーの向き（角度）
+	float _playerTargetRotation = 0.0f;   // プレイヤー回転演出の目標の向き（角度）
+	int _clearSequencePhase = 0; // クリア演出のフェーズ管理用変数
+	float progress;
 };
