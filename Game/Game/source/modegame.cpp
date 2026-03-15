@@ -17,6 +17,60 @@
 #include "ModeGameOver.h"
 #include "ModeTitle.h"
 #include "ModeAffterScenario.h"
+#include "objectfactory.h"
+#include "appframe.h"
+#include "modemenu.h"
+#include "charabase.h"
+#include "objectbase.h"
+#include "camera.h"
+#include "CinematicCamera.h"
+#include "playerbase.h"
+#include "player.h"
+#include "playertanuki.h"
+#include "enemybase.h"
+#include "enemy.h"
+#include "enemymove.h"
+#include "enemydog.h"
+#include "treasure.h"
+#include "TreasureRapidFire.h"
+#include "TreasureBase.h"
+#include "map.h"
+#include "cube.h"
+#include "enemysensor.h"
+#include "uibase.h"
+#include "uihp.h"
+#include "UiMakimono.h"	
+#include "charashadow.h"
+#include "playermono.h"
+#include "effectbase.h"
+#include "treasureeffect.h"
+#include "MapBase.h"
+#include "Map1.h"
+#include "ObjectServer.h"
+#include "Goal.h"
+#include "soundserver3D.h"
+#include "ModeGoalConfirm.h"
+#include "hensineffect.h"
+#include "walkeffect.h"
+#include "findeffect.h"
+#include "hatenaeffect.h"
+#include "doyaeffect.h"
+#include "nakieffect.h"
+#include "shirimochieffect.h"
+#include "stuneffect.h"
+#include "Makimono.h"
+#include "enemysoundmanager.h"
+#include "modegameload.h"
+#include "StageManager.h"
+#include "henshinui.h"
+#include "counterui.h"
+#include "treasureui.h"
+#include "attackui.h"
+#include "treasureopenui.h"
+#include "dashui.h"
+#include "tutorial.h"
+#include "configui.h"
+
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -317,100 +371,18 @@ void ModeGame::CreateEnemy
 	MapBase* map
 )
 {
-	const std::string& name = object.at("objectName");
+	ObjectFactory::EnemyCreateContext context{};
+	context.map = map;
+	context.stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
+	context.hensinEffect = _hensinEffect;
+	context.shirimochiEffect = _shirimochiEffect;
+	context.stunEffect = _stunEffect;
+	context.enemyBase = &_enemyBase;
+	context.nextEnemyId = &nextEnemyId;
+	context.patrolGroup = &patrolGroup;
+	context.dogMovementArea = &dogMovementArea;
 
-	std::string gid;
-	if(object.contains("customId"))
-	{
-		object.at("customId").get_to(gid);
-	}
-
-	// 動かない敵
-	if(name == "S_MarkerRX")
-	{
-		auto sensor = CreateEnemySensor(300.0f, map);
-		sensor->SetDetectionSector(400.0f, 120.0f);
-
-		auto enemy = std::make_shared<Enemy>();
-		enemy->Initialize();
-		enemy->SetJsonDataUE(object);
-		enemy->SetEnemySensor(sensor);
-		enemy->SetEffect(_hensinEffect);
-		enemy->SetEffect(_shirimochiEffect);
-		enemy->SetStunEffect(_stunEffect);
-		enemy->SetEnemyId(nextEnemyId++);
-		enemy->SetDirSequenceFromJson(object);
-
-		_enemyBase.emplace_back(std::move(enemy));
-		return;
-	}
-
-	// 動く敵
-	if(name == "S_MarkerB")
-	{
-		auto sensor = CreateEnemySensor(300.0f, map);
-		sensor->SetDetectionSector(400.0f, 120.0f);
-
-		auto enemyMove = std::make_shared<EnemyMove>();
-		enemyMove->Initialize();
-		enemyMove->SetJsonDataUE(object);
-		enemyMove->SetEnemySensor(sensor);
-		enemyMove->SetEffect(_hensinEffect);
-		enemyMove->SetEffect(_shirimochiEffect);
-		enemyMove->SetStunEffect(_stunEffect);
-		enemyMove->SetEnemyId(nextEnemyId++);
-		enemyMove->SetDirSequenceFromJson(object);
-
-		// 巡回グループの割り当て
-		const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
-		if(stageData)
-		{
-			auto itInfo = stageData->patrolPointInfo.find(gid);
-			if(itInfo != stageData->patrolPointInfo.end() && !itInfo->second.empty())
-			{
-				enemyMove->SetPatrolPointInfo(itInfo->second);
-				enemyMove->CaptureInitialTransform();
-				_enemyBase.emplace_back(std::move(enemyMove));
-				return;
-			}
-		}
-
-		// フォールバック（従来の座標のみ）
-		auto it = patrolGroup.find(gid);
-		if(it != patrolGroup.end() && !it->second.empty())
-		{
-			enemyMove->SetPatrolPoint(it->second);
-			enemyMove->CaptureInitialTransform();
-		}
-
-		_enemyBase.emplace_back(std::move(enemyMove));
-		return;
-	}
-
-
-	// 犬
-	if(name == "Dog")
-	{
-		auto sensor = CreateEnemySensor(900.0f, map);
-		sensor->SetDetectionSector(380.0f, 80.0f);
-
-		auto dog = std::make_shared<EnemyDog>();
-		dog->Initialize();
-		dog->SetJsonDataUE(object);
-		dog->SetEnemySensor(sensor);
-		dog->SetEffect(_hensinEffect);
-		dog->SetEnemyId(nextEnemyId++);
-
-		// 犬の移動範囲の割り当て
-		auto it = dogMovementArea.find(gid);
-		if(it != dogMovementArea.end() && !it->second.empty())
-		{
-			dog->SetMovementArea(it->second);// 犬の移動範囲を設定
-		}
-
-		_enemyBase.emplace_back(std::move(dog));
-		return;
-	}
+	ObjectFactory::CreateEnemyFromJson(object, context);
 }
 
 bool ModeGame::LoadStageData()
@@ -421,139 +393,36 @@ bool ModeGame::LoadStageData()
 		return false;
 	}
 
-	auto& patrolGroup = stageData->patrolGroup;
-	const auto& objectList = stageData->object;
+	at::vet<nlohmann::json> enemyJsonList;
+	enemygroup dogMovementAreas;
+	uint32_t nextEnemyId = 1;
 
-	// 敵の JSON を一時保存して後で巡回グループを割り当てる
-	std::vector<nlohmann::json> enemyObjects;
+	ObjectFactory::StageLoadCollectContext collectContext{};
+	collectContext.playerTanuki = _playerTanuki.get();
+	collectContext.goal = _goal.get();
+	collectContext.camera = _camera;
+	collectContext.treasureBase = &_treasureBase;
+	collectContext.treasureRapidFire = &_treasureRapidFire;
+	collectContext.makimono = &_makimono;
+	collectContext.tutorial = &_tutorial;
+	collectContext.enemyJsonList = &enemyJsonList;
+	collectContext.dogMovementAreas = &dogMovementAreas;
+	collectContext.stageData = stageData;
 
-	static const at::ust<std::string> skipObject = { "S_MarkerR" };
-	static const at::ust<std::string> enemyObject = { "S_MarkerB", "S_MarkerRX", "Dog" };
-
-	at::vet<nlohmann::json> enemyJsonList; // 敵オブジェクトの JSON を一時保存するリスト
-
-	// 犬用の移動範囲を保持
-	std::unordered_map<std::string, std::vector<vec::Vec3>> dogMovementAreas;
-
-	uint32_t nextEnemyId = 1; // 敵IDのカウンタ（1からスタート）
-
-	// **修正: 二重ループを削除し、1回のループで全オブジェクトを処理**
-	for(auto&& objData : stageData->object)
+	if(!ObjectFactory::CollectStageObjects(*stageData, collectContext))
 	{
-		const std::string& name = objData.objectName;
-
-		// スキップ対象のオブジェクトは処理しない
-		if(skipObject.find(name) != skipObject.end())
-		{
-			continue; // スキップ対象のオブジェクトは処理しない
-		}
-
-		const nlohmann::json& object = objData.json;
-
-		// ★ S_MarkerDGR を検出 — 犬の移動範囲
-		if (name == "S_MarkerDGR")
-		{
-			vec::Vec3 pos;
-			object.at("translate").at("x").get_to(pos.x);
-			object.at("translate").at("y").get_to(pos.z);
-			object.at("translate").at("z").get_to(pos.y);
-			pos.z *= -1.0f;
-
-			std::string gid = "";
-			if (object.contains("customId"))
-			{
-				object.at("customId").get_to(gid);
-			}
-			dogMovementAreas[gid].push_back(pos);
-			continue;
-		}
-
-		//プレイヤー開始位置の設定
-		if(name == "S_MarkerA")
-		{
-			_playerTanuki->SetJsonDataUE(object);
-			continue;
-		}
-
-		// 敵オブジェクト
-		if(enemyObject.count(name))
-		{
-			enemyJsonList.push_back(object);
-			continue;
-		}
-
-		if(name == "Goal")
-		{
-			_goal->SetJsonDataUE(object);
-			continue;
-		}
-
-		if(name == "Treasure")
-		{
-			auto treasure = std::make_shared<Treasure>();
-			treasure->Initialize();
-			treasure->SetJsonDataUE(object);
-			_treasureBase.emplace_back(treasure);
-			continue;
-		}
-
-		if (name == "TreasureX")
-		{
-			auto treasure = std::make_shared<TreasureRapidFire>();
-			treasure->Initialize();
-			treasure->SetJsonDataUE(object);
-			_treasureBase.emplace_back(treasure);
-			_treasureRapidFire.emplace_back(treasure);
-			continue;
-		}
-
-		if(name == "Item")
-		{
-			auto makimono = std::make_shared<Makimono>();
-			makimono->Initialize();
-			makimono->SetJsonDataUE(object);
-			makimono->SetCamera(_camera);
-			_makimono.emplace_back(makimono);
-			continue;
-		}
-
-		if(name == "S_Marker_Event")
-		{
-			auto tutorial = std::make_shared<Tutorial>();
-			tutorial->Initialize();
-			tutorial->SetJsonDataUE(object);
-
-			std::string customId;
-			if(object.contains("customId"))
-			{
-				object.at("customId").get_to(customId);
-
-				if(!customId.empty())
-				{
-					tutorial->SetEventId(std::stoi(customId));
-				}
-			}
-			else
-			{
-				tutorial->SetEventId(0); // デフォルトのイベントIDを設定
-			}
-
-			_tutorial.emplace_back(tutorial);
-			continue;
-		}
+		return false;
 	}
 
 	if(_counterUi)
 	{
 		_counterUi->SetTreasureCount(static_cast<int>(_treasure.size()));
 	}
-	
 
-	// **最適化: センサー生成を共通化するヘルパー関数**
 	auto* map = _objectServer->GetMap();
 	for(auto&& object : enemyJsonList)
 	{
-		CreateEnemy(object, patrolGroup, dogMovementAreas, nextEnemyId, map);
+		CreateEnemy(object, stageData->patrolGroup, dogMovementAreas, nextEnemyId, map);
 	}
 
 	// 互換のため全敵に初期トランスフォームを確実にキャプチャ

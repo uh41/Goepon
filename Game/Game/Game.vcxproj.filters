@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="source\applicationmain.cpp" />
-    <ClCompile Include="source\aseeffect.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\charashadow.cpp" />
@@ -288,11 +287,11 @@
     <ClCompile Include="source\modecredit.cpp" />
     <ClCompile Include="source\ModeGameCinematicCamera.cpp" />
     <ClCompile Include="source\configui.cpp" />
+    <ClCompile Include="source\objectfactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
     <ClInclude Include="source\applicationmain.h" />
-    <ClInclude Include="source\aseeffect.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\charashadow.h" />
@@ -378,6 +377,7 @@
     </ClInclude>
     <ClInclude Include="source\modecredit.h" />
     <ClInclude Include="source\configui.h" />
+    <ClInclude Include="source\objectfactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

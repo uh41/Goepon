@@ -8,58 +8,83 @@
 /*********************************************************************/
 
 #pragma once
+
 #include "appframe.h"
 #include "modemenu.h"
 #include "charabase.h"
 #include "objectbase.h"
-#include "camera.h"
-#include "CinematicCamera.h"
-#include "playerbase.h"
+#include "StageManager.h"       // 値保持のため実インクルード
+#include "ModeGoalConfirm.h"   // 値保持のため実インクルード
+
+#include "henshinui.h"
 #include "player.h"
 #include "playertanuki.h"
-#include "enemybase.h"
-#include "enemy.h"
-#include "enemymove.h"
-#include "enemydog.h"
-#include "treasure.h"
-#include "TreasureRapidFire.h"
-#include "TreasureBase.h"
-#include "map.h"
-#include "cube.h"
-#include "enemysensor.h"
-#include "uibase.h"
-#include "uihp.h"
-#include "UiMakimono.h"	
-#include "charashadow.h"
 #include "playermono.h"
-#include "effectbase.h"
-#include "treasureeffect.h"
+#include "playerbase.h"
+#include "CinematicCamera.h"
 #include "MapBase.h"
-#include "Map1.h"
-#include "ObjectServer.h"
-#include "Goal.h"
-#include "soundserver3D.h"
-#include "ModeGoalConfirm.h"
-#include "hensineffect.h"
-#include "walkeffect.h"
-#include "findeffect.h"
-#include "hatenaeffect.h"
-#include "doyaeffect.h"
-#include "nakieffect.h"
-#include "shirimochieffect.h"
-#include "stuneffect.h"
+#include "CharaShadow.h"
+#include "Treasure.h"
+#include "TreasureBase.h"
 #include "Makimono.h"
-#include "enemysoundmanager.h"
-#include "modegameload.h"
-#include "StageManager.h"
-#include "henshinui.h"
-#include "counterui.h"
-#include "treasureui.h"
-#include "attackui.h"
-#include "treasureopenui.h"
-#include "dashui.h"
-#include "tutorial.h"
-#include "configui.h"
+#include "UiHp.h"
+#include "ObjectServer.h"
+#include "DoyaEffect.h"
+#include "CounterUi.h"
+#include "TreasureOpenUi.h"
+#include "EnemyBase.h"
+
+// 前方宣言（ヘッダに大きなインクルードを置かない）
+class Camera;
+class CinematicCamera;
+class PlayerBase;
+class Player;
+class PlayerTanuki;
+class PlayerMono;
+class Treasure;
+class TreasureRapidFire;
+class TreasureBase;
+class Makimono;
+class MapBase;
+class Map1;
+class Cube;
+class Goal;
+class EnemyBase;
+class Enemy;
+class EnemyMove;
+class EnemyDog;
+class UiBase;
+class UiHp;
+class UiMakimono;
+class CounterUi;
+class TreasureUi;
+class AttackUi;
+class TreasureOpenUi;
+class DashUi;
+class CharaShadow;
+class EffectBase;
+class TreasureEffect;
+class HensinEffect;
+class WalkEffect;
+class FindEffect;
+class HatenaEffect;
+class DoyaEffect;
+class NakiEffect;
+class ShirimochiEffect;
+class StunEffect;
+class SoundServer3D;
+class EnemySensor;
+class Tutorial;
+class ObjectServer;
+class ModeGameLoad;
+class ConfigUi;
+
+// soundserver::SoundItemBase をヘッダで使うので名前空間内で前方宣言
+namespace soundserver
+{
+	class SoundServer;
+	class SoundItemBase;
+}
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）

@@ -1,6 +1,7 @@
 ﻿#include "modegame.h"
 #include "ModeGameClear.h"
 #include "mymath.h"
+#include "playertanuki.h"
 bool ModeGame::DebugCinematicCameraControl()
 {
 	if(!_cinematicCamera)

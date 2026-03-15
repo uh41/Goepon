@@ -9,6 +9,8 @@
 
 #include "modegame.h"
 #include "menuitembase.h"
+#include "enemybase.h"
+#include "enemysoundmanager.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>

@@ -10,6 +10,14 @@
 
 #include "modegame.h"
 #include "appframe.h"
+#include "applicationglobal.h"
+#include "TreasureRapidFire.h"
+#include "enemysoundmanager.h"
+#include "attackui.h"
+#include "enemydog.h"
+#include "tutorial.h"
+#include "Goal.h"
+
 
 bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 {

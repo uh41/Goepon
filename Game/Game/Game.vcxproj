@@ -72,6 +72,7 @@
     <ClInclude Include="source\movepointcontroll.h" />
     <ClInclude Include="source\nakieffect.h" />
     <ClInclude Include="source\objectbase.h" />
+    <ClInclude Include="source\objectfactory.h" />
     <ClInclude Include="source\ObjectServer.h" />
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
@@ -154,6 +155,7 @@
     <ClCompile Include="source\movepointcontroll.cpp" />
     <ClCompile Include="source\nakieffect.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
+    <ClCompile Include="source\objectfactory.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
