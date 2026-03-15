@@ -3,33 +3,40 @@
 #include "mymath.h"
 bool ModeGame::DebugCinematicCameraControl()
 {
-	if(!_cinematicCamera)
-	{
-		return false; // 演出カメラが存在しない場合は処理しない
-	}
-
-	if(!_originalCamera)
+	// 現在のカメラがないなら処理しない
+	if (!_camera)
 	{
 		return false;
 	}
 
-	if(!_camera)
+	// 演出カメラがないなら処理しない
+	if(!_cinematicCamera)
 	{
-		return false; // 現在のカメラが存在しない場合は処理しない
+		return false; 
 	}
 
+	// 元のカメラが保存されていないなら処理しない
+	if(!_savedCamera)
+	{
+		return false;
+	}
+
+	// F1キーが押されたらズーム処理を開始
 	if(CheckHitKey(KEY_INPUT_F1))
 	{
+		// F1キーが押された瞬間に処理を行うためのフラグ管理
 		if(!_debugF1KeyPressed)
 		{
-			_debugF1KeyPressed = true;
+			_debugF1KeyPressed = true; // 押された瞬間の処理
+			// ズーム開始
 			if(!_debugZoomActive)
 			{
-				_debugZoomActive = true;
+				_debugZoomActive = true; // ズーム開始の処理
+				
 				// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
 				if(_cinematicCamera && _camera)
 				{
-					// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
+					
 					_cinematicCamera->SetPos(_camera->GetPos());
 					_cinematicCamera->SetTarget(_camera->GetTarget());
 					_cinematicCamera->SetClipNear(_camera->GetClipNear());
@@ -38,13 +45,13 @@ bool ModeGame::DebugCinematicCameraControl()
 					_useCinematicCamera = true;
 					_camera = _cinematicCamera.get();
 				}
+				// カメラがない場合は処理をスキップ
 				else
 				{
-					// カメラが無効な場合は処理をスキップ
 					return false;
 				}
 
-				// 現在のプレイヤー位置を取得してズーム演出
+				// 現在のプレイヤーの位置を取得
 				PlayerBase* targetPlayer = nullptr;
 				if(_bShowTanuki && _playerTanuki && _playerTanuki->IsAlive())
 				{
@@ -58,17 +65,19 @@ bool ModeGame::DebugCinematicCameraControl()
 				{
 					targetPlayer = _player.get();
 				}
+
+				// ターゲットプレイヤーが存在する場合にズーム演出を開始
 				if(targetPlayer && _cinematicCamera)
 				{
 					vec::Vec3 target = targetPlayer->GetPos();
-					// 現在位置のカメラの位置からプレイヤーの位置への距離を計算
-					vec::Vec3 currentPos = _cinematicCamera->GetPos();
-					float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
-					float endDist = currentDist * 0.25f; // 最終的な距離（半分にする例）
-					if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
+					
+					vec::Vec3 targetPos = _cinematicCamera->GetPos();
+					float targetDist = vec3::VSize(vec3::VSub(targetPos, target));
+					float endDist = targetDist * 0.25f;
+					if(endDist < 50.0f) endDist = 50.0f;
 
-					// ズーム演出：現在距離から近距離へ
-					_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
+				
+					_cinematicCamera->StartZoom(target, 0.5f, targetDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
 				}
 			}
 			else
@@ -84,9 +93,9 @@ bool ModeGame::DebugCinematicCameraControl()
 				}
 
 				// 元のカメラに戻す前に有効性をチェック
-				if(_originalCamera)
+				if(_savedCamera)
 				{
-					_camera = _originalCamera;
+					_camera = _savedCamera;
 				}
 			}
 		}
@@ -127,7 +136,7 @@ bool ModeGame::TreasureOpeningCameraControl()
 			_cinematicCamera->SetClipNear(_camera->GetClipNear());
 			_cinematicCamera->SetClipFar(_camera->GetClipFar());
 
-			_originalCamera = _camera;
+			_savedCamera = _camera;
 			_useCinematicCamera = true;
 			_camera = _cinematicCamera.get();
 		}
@@ -169,16 +178,17 @@ bool ModeGame::TreasureOpeningCameraControl()
 
 bool ModeGame::EndCinematicCamera()
 {
+	// シネマティックカメラが使用されていない場合は処理しない
 	if(!_useCinematicCamera || !_cinematicCamera)
 	{
 		return false;
 	}
 
 	// 元のカメラに戻す
-	if(_originalCamera)
+	if(_savedCamera)
 	{
-		_camera = _originalCamera;
-		_originalCamera = nullptr;
+		_camera = _savedCamera;
+		_savedCamera = nullptr;
 	}
 
 	_useCinematicCamera = false;
@@ -212,7 +222,7 @@ bool ModeGame::StartIntroSequence()
 	// 元のカメラを保持して演出カメラに切り替え
 	if (!_useCinematicCamera)
 	{
-		_originalCamera = _camera;
+		_savedCamera = _camera;
 		_camera = _cinematicCamera.get();
 		_useCinematicCamera = true;
 	}
@@ -411,7 +421,7 @@ bool ModeGame::StartClearSequence()
 			_cinematicCamera->SetClipNear(_camera->GetClipNear());
 			_cinematicCamera->SetClipFar(_camera->GetClipFar());
 
-			_originalCamera = _camera;
+			_savedCamera = _camera;
 			_useCinematicCamera = true;
 			_camera = _cinematicCamera.get();
 		}
@@ -527,7 +537,7 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 	_cinematicCamera->StopAll();
 
 	// メインカメラに戻す処理
-	if(restoreToMainCamera && _originalCamera)
+	if(restoreToMainCamera && _savedCamera)
 	{
 		// プレイヤー位置にカメラを再同期
 		PlayerBase* startPlayer = nullptr;
@@ -549,12 +559,12 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 		{
 			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, -662.0f); // 元のオフセット（必要に応じて調整）
-			_originalCamera->SetTarget(target);
-			_originalCamera->SetPos(vec3::VAdd(target, camDelta));
+			_savedCamera->SetTarget(target);
+			_savedCamera->SetPos(vec3::VAdd(target, camDelta));
 		}
 
 		// メインカメラに切り替え
-		_camera = _originalCamera;
+		_camera = _savedCamera;
 
 	}
 	_useCinematicCamera = false;

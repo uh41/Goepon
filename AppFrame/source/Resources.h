@@ -15,6 +15,7 @@ namespace img
   inline constexpr const char* UI_Makimono = "res/UI_Makimono.png";
   inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
   inline constexpr const char* UI_Tanumono = "res/UI_Tanumono.png";
+  inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* gameoverload = "res/gameoverload.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* split_0_0 = "res/split_0_0.png";
@@ -68,6 +69,10 @@ namespace ui
   inline constexpr const char* Tanubito_config = "res/UI/Tanubito_config.png";
   inline constexpr const char* Tanuki_config = "res/UI/Tanuki_config.png";
   inline constexpr const char* Tanumono_config = "res/UI/Tanumono_config.png";
+  inline constexpr const char* Title_gamefinish = "res/UI/Title_gamefinish.png";
+  inline constexpr const char* Title_gamefinish_small = "res/UI/Title_gamefinish_small.png";
+  inline constexpr const char* Title_gamestart = "res/UI/Title_gamestart.png";
+  inline constexpr const char* Title_gamestart_small = "res/UI/Title_gamestart_small.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";

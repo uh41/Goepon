@@ -55,12 +55,12 @@ bool ModeGameOver::Process()
 				// �f�o�b�O�o�́F�擾�����X�e�[�WID
 				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Current Stage ID = %s", currentStageId.c_str());
 			}
-			/*else
+			else
 			{
 				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Failed to cast _ownerGame to ModeGame");
 			}
 		}
-		/*else
+		else
 		{
 			//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: _ownerGame is null, using default Stage1");
 		}
