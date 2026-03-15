@@ -441,6 +441,12 @@ bool ModeGame::ProcessClearSequence()
 
 		if(rotationComplete)
 		{
+			// 回転終了後にクリア用モデルへ切り替え
+			if(_playerTanuki)
+			{
+				_playerTanuki->SetClearHandle("clear", true); // ← ここを使いたいアニメ名に
+			}
+
 			// 回転終了後、カメラズーム演出を開始
 			_clearSequencePhase = 1;
 

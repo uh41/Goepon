@@ -51,18 +51,28 @@ bool EnemyMove::Initialize()
 	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
 
+	// 巡回ルート関連の初期化
 	_patrol = std::make_shared<MovePointControll>();
 	_isPatrol = false;
 	_patrolSpeed = 4.0f;
 	_patrolIndex = 0;
 	_savePatrolIndex = 0;
 
+	// 音検知から戻るための地点保存関連の初期化
 	_hasSavePoint = false;
 
+	// 巡回ポイント到着後の待機関連の初期化
 	_bPatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 	_patrolWaitDuration = 2.0f; // 到着時にその場で視線を変える時間（秒）
 	_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+
+	// 音検知関連の初期化
+	_isMovingToSound = false;
+	_waitingAtSound = false;
+	_soundWaitTimer = 0.0f;
+	_soundDetectionActive = false;
+	_soundDetectionTimer = 0.0f;
 
 	return true;
 }
@@ -522,26 +532,26 @@ bool EnemyMove::Process()
 	CharaBase::STATUS old_status = _status;
 
 	// ステータスがNONEの場合、WAITに設定
-	if(_status == STATUS::NONE)
+	if (_status == STATUS::NONE)
 	{
 		_status = STATUS::WAIT;
 	}
 
 	// EnemySensorがあれば、そのセンサーの位置と向きを自分の位置に同期
-	if(_enemySensor)
+	if (_enemySensor)
 	{
 		_enemySensor->SetPos(_vPos);
 		_enemySensor->SetDir(_vDir);
 	}
 
 	// 音検知タイマーの更新（音検知が有効な場合）
-	if(_soundDetectionActive)
+	if (_soundDetectionActive)
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
 		// 指定時間を越えたら初期位置への帰還を開始
-		if(_soundDetectionTimer >= SOUND_RETURN_TIME)
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
 		{
 			_soundDetectionActive = false;
 			_soundDetectionTimer = 0.0f;
@@ -553,12 +563,12 @@ bool EnemyMove::Process()
 	}
 
 	// 音源到達後の待機中はWAITステータス（プレイヤー検知で割り込み可）
-	if(_waitingAtSound)
+	if (_waitingAtSound)
 	{
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundWaitTimer -= dt;
 
-		if(_soundWaitTimer <= 0.0f)
+		if (_soundWaitTimer <= 0.0f)
 		{
 			_waitingAtSound = false;
 			_soundWaitTimer = 0.0f;
@@ -569,7 +579,7 @@ bool EnemyMove::Process()
 
 			// 保存してある巡回ルート（ターゲット座標）へ一旦戻してから巡回再開
 			// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
-			if(_hasSavePoint)
+			if (_hasSavePoint)
 			{
 				_isReturning = true;
 				_isPatrol = false;
@@ -581,21 +591,17 @@ bool EnemyMove::Process()
 				ReturnInitialPos();
 			}
 		}
+		// 待機中は必ずWAITステータスを設定して、他の処理をスキップ
+		_status = STATUS::WAIT;
 	}
-
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
-	if(_isMovingToSound || _waitingAtSound)
+	else if (_isMovingToSound)
 	{
-		if(_waitingAtSound)
-		{
-			_status = STATUS::WAIT;
-		}
-		else
-		{
-			_status = STATUS::WALK;
-			UpdateMovingToSound();
-		}
+		// 音源へ移動中
+		_status = STATUS::WALK;
+		UpdateMovingToSound();
 
+		// 他の状態フラグを確実にオフにする
 		_isReturning = false;
 		_isPatrol = false;
 	}
@@ -608,7 +614,7 @@ bool EnemyMove::Process()
 	}
 	else if (_isReturning)	// 初期位置に戻り中
 	{
-		if(_waitingTeleport)
+		if (_waitingTeleport)
 		{
 			_status = STATUS::WAIT;
 		}
@@ -618,7 +624,7 @@ bool EnemyMove::Process()
 		}
 		ProcessReturnToPatrolPoint();	// 初期位置への帰還処理
 	}
-	else if (_isPatrol )		// 巡回中
+	else if (_isPatrol)		// 巡回中
 	{
 		_status = STATUS::WALK;
 		ProcessPatrol();
@@ -627,26 +633,46 @@ bool EnemyMove::Process()
 	{
 		_status = STATUS::WAIT;
 
-		if(_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
+		if (_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
 			ReturnInitialPos();
 		}
 	}
 
 	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
-	if(_detectedPlayer)
+	if (_detectedPlayer)
 	{
 		UpdateRotationToPlayer(); // 徐々に回転
 		// または即座に向きたい場合は LookAtPlayer(); を使用
 	}
+	else if (_isReturning && !_waitingTeleport)
+	{
+		// 帰還中は目標方向へ徐々に向きを変える
+		vec::Vec3 target = _initialPos;
+		vec::Vec3 toTarget = vec3::VSub(target, _vPos);
+		toTarget.y = 0.0f;
+
+		if (toTarget.LengthSquare() > 0.01f)
+		{
+			vec::Vec3 targetDir = vec3::VNorm(toTarget);
+			float rotSpeed = _rotationSpeed * 0.5f; // 帰還時は回転速度を少し遅めに
+			_vDir.x += (targetDir.x - _vDir.x) * rotSpeed;
+			_vDir.z += (targetDir.z - _vDir.z) * rotSpeed;
+			_vDir.y = 0.0f;
+			if (_vDir.LengthSquare() > 0.01f)
+			{
+				_vDir = vec3::VNorm(_vDir);
+			}
+		}
+	}
 
 	// ステータスが変わっていないか？
-	if(old_status == _status)
+	if (old_status == _status)
 	{
 		//再生時間を進める
 		_fPlayTime += 0.5f;
 		// 再生時間をランダムに揺らがせる
-		switch(_status)
+		switch (_status)
 		{
 		case STATUS::WAIT:
 		{
@@ -658,21 +684,21 @@ bool EnemyMove::Process()
 	else
 	{
 		// アニメーションがアタッチされていたら、デタッチする
-		if(_iAttachIndex != -1)
+		if (_iAttachIndex != -1)
 		{
 			MV1DetachAnim(_handle, StCas<int>(_iAttachIndex));
 			_iAttachIndex = -1;
 		}
 		// ステータスに応じたアニメーションをアタッチする
-		switch(_status)
+		switch (_status)
 		{
 		case STATUS::WAIT:
 		{
 			int animIndex = MV1GetAnimIndex(_handle, "idle");
-			if(animIndex != -1)
+			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
-				if(_iAttachIndex != -1)
+				if (_iAttachIndex != -1)
 				{
 					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
@@ -683,10 +709,10 @@ bool EnemyMove::Process()
 		case STATUS::WALK:
 		{
 			int animIndex = MV1GetAnimIndex(_handle, "walk");
-			if(animIndex != -1)
+			if (animIndex != -1)
 			{
 				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
-				if(_iAttachIndex != -1)
+				if (_iAttachIndex != -1)
 				{
 					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 					_fPlayTime = (float)(rand() % 30); // 少しずらす
@@ -710,14 +736,14 @@ bool EnemyMove::Process()
 		}
 		}
 		// アタッチしたアニメーションの総再生時間を取得する
-		if(_iAttachIndex != -1)
+		if (_iAttachIndex != -1)
 		{
 			_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;
 		// 再生時間をランダムにずらす
-		switch(_status)
+		switch (_status)
 		{
 		case STATUS::WAIT:
 		{
@@ -728,7 +754,7 @@ bool EnemyMove::Process()
 	}
 
 	// 再生時間がアニメーションの総再生時間に達したら再生時間を0に戻す
-	if(_fPlayTime >= _fTotalTime)
+	if (_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
 	}

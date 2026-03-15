@@ -65,6 +65,8 @@ int CharaBase::PlayAnimation(std::string name, bool loop)
 	return _animId;
 }
 
+
+
 void CharaBase::StopAnimation()
 {
 	if(_animId != -1)
