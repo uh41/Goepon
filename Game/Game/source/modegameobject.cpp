@@ -622,7 +622,32 @@ bool ModeGame::ObjectProcess()
 	{
 		if(enemy->IsAlive())
 		{
-			enemy->Process();
+			// プレイヤーからの距離が遠すぎる敵は思考・移動・アニメーション更新を止める
+			PlayerBase* player = nullptr;
+			if (_bShowTanuki)
+			{
+				player = _playerTanuki.get();
+			}
+			else if (_showMonoPlayer)
+			{
+				player = _playerMono.get();
+			}
+			else
+			{
+				player = _player.get();
+			}
+			if (player)
+			{
+				vec::Vec3 vecToEnemy = vec3::VSub(enemy->GetPos(), player->GetPos());
+				if (vec3::VSize(vecToEnemy) < 1600.0f) 
+				{ // 復帰が不自然にならないように描画より少し広め
+					enemy->Process();
+				}
+			}
+			else 
+			{
+				enemy->Process();
+			}
 		}
 	}
 
@@ -664,6 +689,8 @@ bool ModeGame::ObjectProcess()
 // BGMチェンジ処理
 bool ModeGame::ObjectRender()
 {
+	PlayerBase* currentPlayer = nullptr;
+
 	for(auto& chara : _chara)
 	{
 		if(chara->IsAlive())
@@ -782,7 +809,7 @@ bool ModeGame::ObjectRender()
 	}
 
 	// UIが参照するプレイヤーを「現在表示中」に合わせる
-	PlayerBase* currentPlayer = nullptr;
+	
 	if (_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
 	else if (_showMonoPlayer) { currentPlayer = _playerMono.get(); }
 	else { currentPlayer = _player.get(); }
@@ -963,26 +990,63 @@ bool ModeGame::CheckAllDetections()
 	// Mono の「動いたか」を判定する閾値（ワールド単位）
 	constexpr float kMonoMoveDetectThreshold = 0.1f;
 
+	// 分散処理用の開始インデックスを保持
+	static size_t s_nextProcessIndex = 0;
+
 	auto processContainer = [&](auto& container) -> bool
-	{
-			for(auto& item : container)
+		{
+			if (container.empty()) return false;
+
+			int nonChasingProcessedCount = 0;
+			const int kMaxNormalChecksPerFrame = 1; // 1フレームに視覚判定する未発見状態の敵の数
+
+			for (size_t i = 0; i < container.size(); ++i)
 			{
+				// ラウンドロビン方式で順番にアクセスする
+				size_t currentIndex = (s_nextProcessIndex + i) % container.size();
+				auto& item = container[currentIndex];
+
 				EnemyBase* eb = StCas<EnemyBase*>(item.get());
-				if(!eb || !eb->IsAlive())
+				if (!eb || !eb->IsAlive())
 				{
 					continue;
 				}
 
 				auto sensor = eb->GetEnemySensor();
-				if(!sensor)
+				if (!sensor)
 				{
 					continue;
 				}
 
-				// センサーに必要な情報をセット
+				// センサーに必要な情報を確実にセット（全員同期）
 				sensor->SetPos(eb->GetPos());
 				sensor->SetDir(eb->GetDir());
 				sensor->SetMap(_objectServer->GetMap());
+
+				bool isChasing = sensor->IsChasing();
+
+				// 追跡中ではない敵の場合の時分割・距離スキップ判定
+				if (!isChasing)
+				{
+					// --- 負荷軽減のための距離判定 ---
+					const float activeRadius = 1000.0f;
+					vec::Vec3 vecToEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
+					vecToEnemy.y = 0.0f;
+					if (vec3::VSize(vecToEnemy) > activeRadius)
+					{
+						continue; // 遠すぎる場合は検知処理をスキップ
+					}
+
+					// 既にこのフレームで判定人数の上限に達している場合はスキップ
+					if (nonChasingProcessedCount >= kMaxNormalChecksPerFrame)
+					{
+						continue;
+					}
+
+					// 回数を消費し、次回のフレームで「この敵の次」から判定を始めるように記憶する
+					nonChasingProcessedCount++;
+					s_nextProcessIndex = (currentIndex + 1) % container.size();
+				}
 
 				// センサー処理（追跡タイマー更新など）
 				sensor->Process();
@@ -1074,10 +1138,10 @@ bool ModeGame::CheckAllDetections()
 				}
 
 				// 検出結果に応じた処理
-				if(detected)
+				if (detected)
 				{
 					anyDetected = true;
-					if(player != nullptr)
+					if (player != nullptr)
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
@@ -1086,13 +1150,13 @@ bool ModeGame::CheckAllDetections()
 							_nakiEffect->SetTargetPlayer(player);
 							_nakiEffect->PlayEffect(player->GetPos());
 						}
-						
+
 					}
 
 					// PlayerMono が検知されたら即時モノ->タヌキに切替 
-					if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+					if (_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
 					{
-						if(_playerTanuki && player != _playerTanuki.get())
+						if (_playerTanuki && player != _playerTanuki.get())
 						{
 							_showMonoPlayer = false;
 							_bShowTanuki = true;
@@ -1114,7 +1178,7 @@ bool ModeGame::CheckAllDetections()
 							_changeBlinkVisible = true;
 
 							auto soundFinish = gGlobal._soundServer->Get("3");
-							if(soundFinish && !soundFinish->IsPlay())
+							if (soundFinish && !soundFinish->IsPlay())
 							{
 								soundFinish->Play();
 							}
@@ -1122,9 +1186,9 @@ bool ModeGame::CheckAllDetections()
 					}
 
 					// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
-					if(isHumanForm)
+					if (isHumanForm)
 					{
-						if(_playerTanuki && player != _playerTanuki.get())
+						if (_playerTanuki && player != _playerTanuki.get())
 						{
 							_showMonoPlayer = false;
 							_bShowTanuki = true;
@@ -1137,7 +1201,7 @@ bool ModeGame::CheckAllDetections()
 							_playerTanuki->Process();
 							reEffect = true;
 
-							if(reEffect)
+							if (reEffect)
 							{
 								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 								_walkEffect->SetPlayerPos(_playerTanuki.get());
@@ -1150,7 +1214,7 @@ bool ModeGame::CheckAllDetections()
 							_changeBlinkVisible = true;
 
 							auto soundFinish = gGlobal._soundServer->Get("3");
-							if(soundFinish && !soundFinish->IsPlay())
+							if (soundFinish && !soundFinish->IsPlay())
 							{
 								soundFinish->Play();
 							}
@@ -1160,9 +1224,9 @@ bool ModeGame::CheckAllDetections()
 				else
 				{
 					// センサーが追跡状態でなければ失見処理
-					if(!sensor->IsChasing())
+					if (!sensor->IsChasing())
 					{
-						if(eb->IsDetectPlayer())
+						if (eb->IsDetectPlayer())
 						{
 							_hatenaEffect->PlayOnce(eb);
 						}

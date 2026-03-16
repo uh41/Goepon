@@ -74,6 +74,11 @@ bool EnemyMove::Initialize()
 	_soundDetectionActive = false;
 	_soundDetectionTimer = 0.0f;
 
+	// ダメージアニメーション名（空だと StartDamage で何も再生されない）
+	_attachAnimDamage = "okkake";
+	_attachAnimStan = "bushi_tentou";
+	_attachAnimGetUp = "idle";
+
 	return true;
 }
 
@@ -456,6 +461,36 @@ void EnemyMove::OnDamageStart()
 	_savePatrolIndex = _patrolIndex;
 	_isPatrol = false;
 	_hasSavePoint = true;
+
+	// スタン開始時の向きを4方向（上下左右）へスナップして、
+	// 巡回中の斜め向きでスタン再生されるのを防ぐ
+	vec::Vec3 dir = _vDir;
+	dir.y = 0.0f;
+
+	if (dir.LengthSquare() > 0.0001f)
+	{
+		dir = vec3::VNorm(dir);
+
+		if (std::abs(dir.x) >= std::abs(dir.z))
+		{
+			_vDir = vec3::VGet((dir.x >= 0.0f) ? 1.0f : -1.0f, 0.0f, 0.0f);
+		}
+		else
+		{
+			_vDir = vec3::VGet(0.0f, 0.0f, (dir.z >= 0.0f) ? 1.0f : -1.0f);
+		}
+	}
+	else
+	{
+		_vDir = _initialDir;
+		_vDir.y = 0.0f;
+		if (_vDir.LengthSquare() > 0.0001f)
+		{
+			_vDir = vec3::VNorm(_vDir);
+		}
+	}
+
+	_patrolWaitDir = _vDir;
 }
 
 void EnemyMove::OnDamageEnd()
@@ -530,6 +565,12 @@ bool EnemyMove::Process()
 	base::Process();
 
 	CharaBase::STATUS old_status = _status;
+
+	// ダメージ中は EnemyMove 側の通常状態遷移・通常アニメ更新を止める
+	if (_isInvincible)
+	{
+		return true;
+	}
 
 	// ステータスがNONEの場合、WAITに設定
 	if (_status == STATUS::NONE)
