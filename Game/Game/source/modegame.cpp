@@ -403,6 +403,7 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_playerTanuki->_status = PlayerBase::STATUS::WAIT; // ロード後は待機状態にする
 		_playerTanuki->PlayAnimation("idle", true); // ロード後はアイドルアニメーションをループ再生する)
 		_playerTanuki->Process(); // 状態を更新して位置を反映させる
+		_playerTanuki->ResetDash();
 	}
 
 	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)

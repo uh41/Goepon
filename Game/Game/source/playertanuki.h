@@ -48,6 +48,8 @@ public:
 	bool SetClearHandle(const std::string& animName, bool loop);
 	int  PlayGameClearAnimation(std::string name, bool loop);
 
+	void ResetDash();// ダッシュ状態をリセットする関数
+
 protected:
 	Camera* _cam;
 
