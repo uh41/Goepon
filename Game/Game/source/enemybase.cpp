@@ -464,6 +464,13 @@ void EnemyBase::UpdateReturnInitialPos()
 	// 初期位置に戻り中は常に検出状態をfalseに保つ
 	_detectedPlayer = false;
 
+	// スタン中は帰還移動を停止（位置を進めない）
+	if (IsStun())
+	{
+		_status = STATUS::WAIT;
+		return;
+	}
+
 	// テレポート待機中の場合
 	if(_waitingTeleport)
 	{

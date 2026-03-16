@@ -63,6 +63,13 @@ bool Enemy::Process()
 	// - 基本は立ち止まって向きを変える（検知／追跡時は追跡処理を呼ぶ）
 	// ※ 具体的なアニメや描画制御はここで行う
 
+	// ダメージ中は Enemy 側の通常状態遷移・移動・通常アニメ更新を止める
+	if (_isInvincible)
+	{
+		_status = STATUS::WAIT;
+		return true;
+	}
+
 	CharaBase::STATUS old_status = _status;
 
 	// ステータスがNONEの場合、WAITに設定
