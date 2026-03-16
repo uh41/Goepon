@@ -4,52 +4,47 @@
 bool ModeGame::DebugCinematicCameraControl()
 {
 	// 現在のカメラがないなら処理しない
-	if (!_camera)
+	if(!_camera)
 	{
 		return false;
 	}
 
-	// 演出カメラがないなら処理しない
+	// シネマティックカメラが無ければ作成（デバッグ用）
 	if(!_cinematicCamera)
 	{
-		return false; 
+		_cinematicCamera = std::make_unique<CinematicCamera>();
+		if(!_cinematicCamera->Initialize())
+		{
+			_cinematicCamera.reset();
+			return false;
+		}
 	}
 
-	// 元のカメラが保存されていないなら処理しない
-	if(!_savedCamera)
+	// 元のカメラ保存が無ければ保存（演出開始時に戻すため）
+	if(!_savedCamera && !_useCinematicCamera)
 	{
-		return false;
+		_savedCamera = _camera;
 	}
 
-	// F1キーが押されたらズーム処理を開始
+	// --- F1 : Zoom（既存）---
 	if(CheckHitKey(KEY_INPUT_F1))
 	{
-		// F1キーが押された瞬間に処理を行うためのフラグ管理
 		if(!_debugF1KeyPressed)
 		{
-			_debugF1KeyPressed = true; // 押された瞬間の処理
-			// ズーム開始
+			_debugF1KeyPressed = true;
+
 			if(!_debugZoomActive)
 			{
-				_debugZoomActive = true; // ズーム開始の処理
-				
-				// 演出カメラに現在のカメラ位置と注目点をコピーして切り替え
-				if(_cinematicCamera && _camera)
-				{
-					
-					_cinematicCamera->SetPos(_camera->GetPos());
-					_cinematicCamera->SetTarget(_camera->GetTarget());
-					_cinematicCamera->SetClipNear(_camera->GetClipNear());
-					_cinematicCamera->SetClipFar(_camera->GetClipFar());
+				_debugZoomActive = true;
 
-					_useCinematicCamera = true;
-					_camera = _cinematicCamera.get();
-				}
-				// カメラがない場合は処理をスキップ
-				else
-				{
-					return false;
-				}
+				// 演出カメラに現在のカメラ状態をコピーして切り替え
+				_cinematicCamera->SetPos(_camera->GetPos());
+				_cinematicCamera->SetTarget(_camera->GetTarget());
+				_cinematicCamera->SetClipNear(_camera->GetClipNear());
+				_cinematicCamera->SetClipFar(_camera->GetClipFar());
+
+				_useCinematicCamera = true;
+				_camera = _cinematicCamera.get();
 
 				// 現在のプレイヤーの位置を取得
 				PlayerBase* targetPlayer = nullptr;
@@ -66,37 +61,33 @@ bool ModeGame::DebugCinematicCameraControl()
 					targetPlayer = _player.get();
 				}
 
-				// ターゲットプレイヤーが存在する場合にズーム演出を開始
-				if(targetPlayer && _cinematicCamera)
+				if(targetPlayer)
 				{
 					vec::Vec3 target = targetPlayer->GetPos();
-					
+
 					vec::Vec3 targetPos = _cinematicCamera->GetPos();
 					float targetDist = vec3::VSize(vec3::VSub(targetPos, target));
 					float endDist = targetDist * 0.25f;
 					if(endDist < 50.0f) endDist = 50.0f;
 
-				
-					_cinematicCamera->StartZoom(target, 0.5f, targetDist, endDist); // ターゲット位置、ズーム倍率、ズーム距離、ズーム時間
+					_cinematicCamera->StartZoom(target, 0.5f, targetDist, endDist);
 				}
 			}
 			else
 			{
-
 				// ズーム解除
 				_debugZoomActive = false;
-				_useCinematicCamera = false;
 
 				if(_cinematicCamera)
 				{
 					_cinematicCamera->StopAll();
 				}
 
-				// 元のカメラに戻す前に有効性をチェック
 				if(_savedCamera)
 				{
 					_camera = _savedCamera;
 				}
+				_useCinematicCamera = false;
 			}
 		}
 	}
@@ -104,6 +95,70 @@ bool ModeGame::DebugCinematicCameraControl()
 	{
 		_debugF1KeyPressed = false;
 	}
+
+	// --- F2 : Shake（追加）---
+	if(CheckHitKey(KEY_INPUT_F2))
+	{
+		if(!_debugF2KeyPressed)
+		{
+			_debugF2KeyPressed = true;
+
+			if(!_debugShakeActive)
+			{
+				_debugShakeActive = true;
+
+				// 演出カメラに現在のカメラ状態をコピーして切り替え
+				_cinematicCamera->SetPos(_camera->GetPos());
+				_cinematicCamera->SetTarget(_camera->GetTarget());
+				_cinematicCamera->SetClipNear(_camera->GetClipNear());
+				_cinematicCamera->SetClipFar(_camera->GetClipFar());
+
+				_useCinematicCamera = true;
+				_camera = _cinematicCamera.get();
+
+				// 揺れ開始（既存APIを利用）
+				const float intensity = 50.0f;   // 揺れ幅（適宜調整）
+				const float durationSec = 0.50f; // 揺れ時間（適宜調整）
+				_cinematicCamera->StartShake(intensity, durationSec);
+			}
+			else
+			{
+				// 手動で揺れ解除
+				_debugShakeActive = false;
+
+				if(_cinematicCamera)
+				{
+					_cinematicCamera->StopAll();
+				}
+
+				if(_savedCamera)
+				{
+					_camera = _savedCamera;
+				}
+				_useCinematicCamera = false;
+			}
+		}
+	}
+	else
+	{
+		_debugF2KeyPressed = false;
+	}
+
+	// 揺れが自然終了したら元カメラに戻す
+	if(_debugShakeActive && _useCinematicCamera && _cinematicCamera)
+	{
+		if(_cinematicCamera->GetState() == CinematicCamera::State::Idle)
+		{
+			_debugShakeActive = false;
+
+			if(_savedCamera)
+			{
+				_camera = _savedCamera;
+			}
+			_useCinematicCamera = false;
+		}
+	}
+
 	return true;
 }
 
@@ -199,105 +254,243 @@ bool ModeGame::EndCinematicCamera()
 }
 
 
-// イントロ演出開始関数を追加
+//// イントロ演出開始関数を追加
+//bool ModeGame::StartIntroSequence()
+//{
+//	// カメラが初期化されていない場合は失敗
+//	if (!_camera)
+//	{
+//		return false;
+//	}
+//
+//	// 演出カメラが未作成の場合は作成
+//	if (!_cinematicCamera)
+//	{
+//		_cinematicCamera = std::make_unique<CinematicCamera>();
+//		if (!_cinematicCamera->Initialize())
+//		{
+//			_cinematicCamera.reset();
+//			return false;
+//		}
+//	}
+//
+//	// 元のカメラを保持して演出カメラに切り替え
+//	if (!_useCinematicCamera)
+//	{
+//		_savedCamera = _camera;
+//		_camera = _cinematicCamera.get();
+//		_useCinematicCamera = true;
+//	}
+//
+//	// プレイヤーの取得（タヌキ優先）
+//	PlayerBase* targetPlayer = nullptr;
+//	if (_bShowTanuki && _playerTanuki)
+//	{
+//		targetPlayer = _playerTanuki.get();
+//	}
+//	else if (_player)
+//	{
+//		targetPlayer = _player.get();
+//	}
+//
+//	// プレイヤーの位置と向きを考慮してカメラを配置
+//	if (targetPlayer && _cinematicCamera)
+//	{
+//		vec::Vec3 playerPos = targetPlayer->GetPos(); // プレイヤーの位置を取得
+//
+//		// プレイヤーの回転角度を取得
+//		float playerRotY = targetPlayer->GetRotationY();
+//
+//		// プレイヤーの前方向ベクトルを計算
+//		vec::Vec3 playerDir;
+//		playerDir.x = sinf(playerRotY);
+//		playerDir.y = 0.0f;
+//		playerDir.z = cosf(playerRotY);
+//
+//		// 念のため正規化
+//		float dirLength = vec3::VSize(playerDir);
+//
+//		if (dirLength > 0.001f)
+//		{
+//			playerDir = vec3::VNorm(playerDir);
+//		}
+//
+//		// 調整パラメータ 
+//		float cameraDistance = 300.0f;  // プレイヤーからカメラまでの距離
+//		float cameraHeight = 500.0f;    // カメラの高さオフセット
+//		float targetHeight = 60.0f;     // プレイヤーの顔の高さ（注視点）
+//
+//		// プレイヤーの前方ににカメラを配置（本来はすべてプラスだと思うがDxlibの使用？ためマイナス）
+//		vec::Vec3 cameraPos = vec3::VGet
+//		(
+//			playerPos.x - playerDir.x * cameraDistance,  // プレイヤーの前方に配置
+//			playerPos.y + cameraHeight,                  // プレイヤーの高さにオフセットを加える
+//			playerPos.z - playerDir.z * cameraDistance 
+//		);
+//
+//		// カメラターゲット：プレイヤーの顔の位置
+//		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, targetHeight, 0.0f));
+//
+//		// カメラ設定を適用
+//		_cinematicCamera->SetPos(cameraPos);
+//		_cinematicCamera->SetTarget(cameraTarget);
+//		_cinematicCamera->SetClipNear(1.0f);
+//		_cinematicCamera->SetClipFar(10000.0f);
+//	}
+//
+//	// イントロ演出を開始
+//	_isIntroActive = true;
+//	_introButtonPressed = false;
+//	_introTimer = 0.0f;
+//
+//	// プレイヤーの操作を無効化
+//	if (_playerTanuki)
+//	{
+//		_playerTanuki->SetInputEnabled(false);
+//	}
+//
+//	return true;
+//}
+//
+//
+//// ProcessIntroSequence()関数を追加
+//bool ModeGame::ProcessIntroSequence()
+//{
+//	if(!_isIntroActive)
+//	{
+//		return false;
+//	}
+//
+//
+//	PlayerTanuki* tanuki = _playerTanuki.get();
+//	if(tanuki && tanuki->IsAlive())
+//	{
+//		vec::Vec3 playerPos = tanuki->GetPos();
+//
+//		_cinematicCamera->SetTarget(playerPos);
+//	}
+//
+//	// 時間経過でイントロ終了
+//	_introTimer += 1.0f / 60.0f; // 60FPS想定
+//
+//	// イントロ演出の総時間（INTRO_DURATION）を超えたら終了
+//	if(_introTimer >= INTRO_DURATION)
+//	{
+//		EndIntroSequence();
+//		return true;
+//	}
+//
+//	// ボタン入力でイントロ終了
+//	int trg = ApplicationBase::GetInstance()->GetTrg();
+//	if(!_introButtonPressed)
+//	{
+//		if(trg & PAD_INPUT_1)
+//		{
+//			_introButtonPressed = true;
+//		}
+//	}
+//
+//	if(_introButtonPressed)
+//	{
+//		EndIntroSequence();
+//		return true;
+//	}
+//
+//	return true;
+//}
+
 bool ModeGame::StartIntroSequence()
 {
-	// カメラが初期化されていない場合は失敗
-	if (!_camera)
+	// カメラがない時は処理をしない
+	if(!_camera)
 	{
 		return false;
 	}
 
-	// 演出カメラが未作成の場合は作成
-	if (!_cinematicCamera)
+	// 演出カメラが無かったら用意する
+	if(!_cinematicCamera)
 	{
 		_cinematicCamera = std::make_unique<CinematicCamera>();
-		if (!_cinematicCamera->Initialize())
+		if(!_cinematicCamera->Initialize())
 		{
 			_cinematicCamera.reset();
 			return false;
 		}
 	}
-
+	
 	// 元のカメラを保持して演出カメラに切り替え
-	if (!_useCinematicCamera)
+	if(!_useCinematicCamera)
 	{
 		_savedCamera = _camera;
-		_camera = _cinematicCamera.get();
+
+		// 元のカメラ状態をコピー
+		_cinematicCamera->SetPos(_savedCamera->GetPos());
+		_cinematicCamera->SetTarget(_savedCamera->GetTarget());
+		_cinematicCamera->SetClipNear(_savedCamera->GetClipNear());
+		_cinematicCamera->SetClipFar(_savedCamera->GetClipFar());
+
+		_camera = _cinematicCamera.get(); // カメラ切り替え
 		_useCinematicCamera = true;
 	}
 
-	// プレイヤーの取得（タヌキ優先）
-	PlayerBase* targetPlayer = nullptr;
-	if (_bShowTanuki && _playerTanuki)
+	// イントロ開始
+	_isIntroActive      = true;
+	_introButtonPressed = false;
+	_introTimer         = 0.0f;
+
+	PlayerTanuki* targetPlayer = nullptr;
+	if(_playerTanuki && _playerTanuki->IsAlive())
 	{
 		targetPlayer = _playerTanuki.get();
 	}
-	else if (_player)
+
+	if(targetPlayer)
 	{
-		targetPlayer = _player.get();
-	}
+		const vec::Vec3 playerPos = targetPlayer->GetPos();
+		const float playerRotY = targetPlayer->GetRotationY(); // プレイヤーの向きを取得するために必要
 
-	// プレイヤーの位置と向きを考慮してカメラを配置
-	if (targetPlayer && _cinematicCamera)
-	{
-		vec::Vec3 playerPos = targetPlayer->GetPos(); // プレイヤーの位置を取得
-
-		// プレイヤーの回転角度を取得
-		float playerRotY = targetPlayer->GetRotationY();
-
-		// プレイヤーの前方向ベクトルを計算
-		vec::Vec3 playerDir;
+		vec::Vec3 playerDir{};
 		playerDir.x = sinf(playerRotY);
-		playerDir.y = 0.0f;
 		playerDir.z = cosf(playerRotY);
 
-		// 念のため正規化
-		float dirLength = vec3::VSize(playerDir);
-
-		if (dirLength > 0.001f)
+		if(vec3::VSize(playerDir) > 0.001f)
 		{
 			playerDir = vec3::VNorm(playerDir);
 		}
 
-		// 調整パラメータ 
-		float cameraDistance = 300.0f;  // プレイヤーからカメラまでの距離
-		float cameraHeight = 500.0f;    // カメラの高さオフセット
-		float targetHeight = 60.0f;     // プレイヤーの顔の高さ（注視点）
+		const float cameraDistance = 300.0f;
+		const float cameraHeight   = 500.0f;
+		const float targetHeight   = 60.0f;
 
-		// プレイヤーの前方ににカメラを配置（本来はすべてプラスだと思うがDxlibの使用？ためマイナス）
-		vec::Vec3 cameraPos = vec3::VGet
+		// DXLibの仕様に合わせて前方はマイナスに合わす
+		const vec::Vec3 cameraPos = vec3::VGet
 		(
-			playerPos.x - playerDir.x * cameraDistance,  // プレイヤーの前方に配置
-			playerPos.y + cameraHeight,                  // プレイヤーの高さにオフセットを加える
-			playerPos.z - playerDir.z * cameraDistance 
+			playerPos.x - playerDir.x * cameraDistance,
+			playerPos.y + cameraHeight,
+			playerPos.z - playerDir.z * cameraDistance
 		);
 
-		// カメラターゲット：プレイヤーの顔の位置
-		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, targetHeight, 0.0f));
+		const vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, targetHeight, 0.0f));
 
-		// カメラ設定を適用
 		_cinematicCamera->SetPos(cameraPos);
 		_cinematicCamera->SetTarget(cameraTarget);
-		_cinematicCamera->SetClipNear(1.0f);
-		_cinematicCamera->SetClipFar(10000.0f);
 	}
+	_introPhase = IntroPhase::RotateForward;
 
-	// イントロ演出を開始
-	_isIntroActive = true;
-	_introButtonPressed = false;
-	_introTimer = 0.0f;
+	// Rotate は _vTarget 周りに回る＝ここで SetTarget 済みの「顔位置」中心になる
+	const float rotateAngleRad = DX_PI_F * (35.0f / 180.0f);
+	const float rotateDurationSec = 1.5f;
+	const float rotateSpeed = rotateAngleRad / rotateDurationSec;
+	_cinematicCamera->StartRotateSpeed(rotateSpeed, rotateDurationSec);
 
-	// プレイヤーの操作を無効化
-	if (_playerTanuki)
+	// プレイヤーの操作を止める
+	if(_playerTanuki)
 	{
 		_playerTanuki->SetInputEnabled(false);
 	}
-
 	return true;
 }
 
-// ProcessIntroSequence()関数を追加
 bool ModeGame::ProcessIntroSequence()
 {
 	if(!_isIntroActive)
@@ -305,44 +498,97 @@ bool ModeGame::ProcessIntroSequence()
 		return false;
 	}
 
+	if(!_cinematicCamera)
+	{
+		return false;
+	}
 
+	// イントロ中は演出カメラの更新を回す
+	_cinematicCamera->Process();
+
+	// イントロ中はプレイヤー位置を追従（ただし回転中心が動くと軌道が乱れるので注意）
+	// ここは「回転フェーズ中は固定 / ズーム中だけ追従」がおすすめ
 	PlayerTanuki* tanuki = _playerTanuki.get();
 	if(tanuki && tanuki->IsAlive())
 	{
 		vec::Vec3 playerPos = tanuki->GetPos();
 
-		_cinematicCamera->SetTarget(playerPos);
+		if(_introPhase == IntroPhase::Zoom)
+		{
+			_cinematicCamera->SetTarget(playerPos);
+		}
 	}
 
-	// 時間経過でイントロ終了
-	_introTimer += 1.0f / 60.0f; // 60FPS想定
+	// 演出が1フェーズ終わったら次へ
+	if(_cinematicCamera->GetState() == CinematicCamera::State::Idle)
+	{
+		switch(_introPhase)
+		{
+			case IntroPhase::RotateForward:
+			{
+				_introPhase = IntroPhase::RotateBackward;
 
-	// イントロ演出の総時間（INTRO_DURATION）を超えたら終了
+				const float rotateAngleRad = DX_PI_F * (35.0f / 180.0f);
+				const float rotateDurationSec = 1.5f;
+				const float rotateSpeed = rotateAngleRad / rotateDurationSec;
+
+				_cinematicCamera->StartRotateSpeed(-rotateSpeed, rotateDurationSec);
+				break;
+			}
+
+			case IntroPhase::RotateBackward:
+			{
+				_introPhase = IntroPhase::Zoom;
+
+				// ズーム（現在距離→少し寄る）
+				vec::Vec3 target = _cinematicCamera->GetTarget();
+				vec::Vec3 currentPos = _cinematicCamera->GetPos();
+				float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
+				float endDist = currentDist * 0.70f;
+				if(endDist < 80.0f)
+				{
+					endDist = 80.0f;
+				}
+
+				_cinematicCamera->StartZoom(target, 0.70f, currentDist, endDist);
+				break;
+			}
+
+			case IntroPhase::Zoom:
+			default:
+			{
+				_introPhase = IntroPhase::Done;
+				EndIntroSequence();
+				return true;
+			}
+		}
+	}
+
+	// 時間経過でイントロ終了（保険）
+	_introTimer += 1.0f / 60.0f;
 	if(_introTimer >= INTRO_DURATION)
 	{
+		_introPhase = IntroPhase::Done;
 		EndIntroSequence();
 		return true;
 	}
 
 	// ボタン入力でイントロ終了
 	int trg = ApplicationBase::GetInstance()->GetTrg();
-	if(!_introButtonPressed)
+	if(!_introButtonPressed && (trg & PAD_INPUT_1))
 	{
-		if(trg & PAD_INPUT_1)
-		{
-			_introButtonPressed = true;
-		}
+		_introButtonPressed = true;
 	}
 
 	if(_introButtonPressed)
 	{
+		_introPhase = IntroPhase::Done;
 		EndIntroSequence();
 		return true;
 	}
 
 	return true;
 }
-
 // EndIntroSequence()関数を追加
 bool ModeGame::EndIntroSequence()
 {

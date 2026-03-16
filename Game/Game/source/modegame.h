@@ -227,7 +227,9 @@ protected:
 	bool _useCinematicCamera;  // 演出カメラ切り替えフラグ
 	// デバッグ用演出カメラ制御用変数
 	bool _debugF1KeyPressed = false; // F1キーの連続入力防止用
-	bool _debugZoomActive = false;   // ズーム演出が実行中かどうか
+	bool _debugZoomActive   = false; // ズーム演出が実行中かどうか
+	bool _debugF2KeyPressed = false; // F2キーの連続入力防止用
+	bool _debugShakeActive  = false; // カメラシェイク演出が実行中かどうか
 
 	bool _hasRenderOnce;
 	bool _requestResetStage; // ステージリセット要求フラグ
@@ -410,6 +412,15 @@ private:
 	bool  _introButtonPressed; // イントロ中にボタンが押されたか
 	float _introTimer;		   // イントロの経過時間
 	static constexpr float INTRO_DURATION = 3.0f; // イントロの総時間（秒）
+
+	enum class IntroPhase
+	{
+		RotateForward,
+		RotateBackward,
+		Zoom,
+		Done
+	};
+	IntroPhase _introPhase; // イントロのフェーズ管理用変数
 
 	// ゲームクリア演出用
 	bool _isGameClearCinematicActive; // ゲームクリア演出が有効か

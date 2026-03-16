@@ -71,6 +71,7 @@ bool CinematicCamera::Process()
 			_vTarget = _targetPos;
 			break;
 		}
+		// 回転速度一定
 		case State::Rotate:
 		{
 			// そのまま一定速度回転（不要なら角度も mymath でイージング可能）
@@ -86,6 +87,7 @@ bool CinematicCamera::Process()
 			}
 			break;
 		}
+		// 調整中
 		case State::Shake:
 		{
 			float progress = (_duration > 0.0f) ? (_timer / _duration) : 1.0f;

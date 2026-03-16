@@ -35,12 +35,15 @@ bool ModeGame::Initialize()
 
 	if(!base::Initialize()) { return false; }
 
-	_savedCamera = nullptr;
-	_cinematicCamera = nullptr;
-	_camera = nullptr;
+	// カメラ変数の初期化
+	_savedCamera        = nullptr;
+	_cinematicCamera    = nullptr;
+	_camera             = nullptr;
 	_useCinematicCamera = false;
-	_debugZoomActive = false;
-	_debugF1KeyPressed = false;
+	_debugZoomActive    = false;
+	_debugF1KeyPressed  = false;
+	_debugF2KeyPressed  = false;
+	_debugShakeActive   = false;
 
 	// ステージマネージャーにステージを登録
 	_stageManager.SetStages(gGlobal.GetStageList());
@@ -57,8 +60,10 @@ bool ModeGame::Initialize()
 		}
 	}
 
-	ObjectInitialize();	// オブジェクト初期化
+	// オブジェクト初期化
+	ObjectInitialize();
 
+	// オブジェクトサーバーの初期化（applicationmain から取得）
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	// オブジェクトサーバーでマップデータを読み込み
