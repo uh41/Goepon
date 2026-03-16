@@ -64,7 +64,7 @@ bool ModeGame::ObjectInitialize()
 	_camera = new Camera();
 	_camera->Initialize();
 	// メインカメラ
-	_originalCamera = _camera;
+	_savedCamera = _camera;
 	// 演出カメラの初期化
 	_cinematicCamera = std::make_unique<CinematicCamera>();
 	_cinematicCamera->Initialize();

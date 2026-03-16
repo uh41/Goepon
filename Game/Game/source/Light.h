@@ -77,7 +77,5 @@ private:
 
 	// ‰e‚ð—Ž‚Æ‚·‚©‚Ç‚¤‚©
 	bool castShadow = true; 
-
-
 };
 

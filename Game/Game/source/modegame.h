@@ -217,14 +217,14 @@ public:
 	auto GetPlayerMono() const { return _playerMono; }
 
 protected:
-	Camera* _camera;
-	Camera* _originalCamera;
+	Camera* _camera;      // メインカメラ
+	Camera* _savedCamera; // メニューから戻ったときにカメラ状態を復元するための一時的な保存用
 	std::unique_ptr<CinematicCamera> _cinematicCamera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
-    vec::Vec3 _savedCamPos;
-    vec::Vec3 _savedCamTarget;
-    bool _hasSavedCameraState;
-	bool _useCinematicCamera; // 演出カメラ切り替えフラグ
+	vec::Vec3 _savedCamPos;    // カメラ位置
+	vec::Vec3 _savedCamTarget; // カメラターゲット 
+	bool _hasSavedCameraState;  
+	bool _useCinematicCamera;  // 演出カメラ切り替えフラグ
 	// デバッグ用演出カメラ制御用変数
 	bool _debugF1KeyPressed = false; // F1キーの連続入力防止用
 	bool _debugZoomActive = false;   // ズーム演出が実行中かどうか

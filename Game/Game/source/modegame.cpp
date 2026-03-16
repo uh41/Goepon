@@ -35,7 +35,7 @@ bool ModeGame::Initialize()
 
 	if(!base::Initialize()) { return false; }
 
-	_originalCamera = nullptr;
+	_savedCamera = nullptr;
 	_cinematicCamera = nullptr;
 	_camera = nullptr;
 	_useCinematicCamera = false;
@@ -205,7 +205,7 @@ bool ModeGame::Terminate()
 		// _cameraが_cinematicCamera.get()を指している場合、元のカメラに戻す
 		if(_camera == _cinematicCamera.get())
 		{
-			_camera = _originalCamera; // nullptrではなく元のカメラを設定
+			_camera = _savedCamera; // nullptrではなく元のカメラを設定
 		}
 
 		_cinematicCamera.reset();
@@ -256,17 +256,17 @@ bool ModeGame::Terminate()
 	_tutorial.clear();
 
 	// カメラの削除を最後に行う
-	if(_camera && _camera != _originalCamera)
+	if(_camera && _camera != _savedCamera)
 	{
 		// _cameraが_originalCameraと同じでない場合のみ削除
 		delete _camera;
 	}
 	_camera = nullptr;
 
-	if(_originalCamera)
+	if(_savedCamera)
 	{
-		delete _originalCamera;
-		_originalCamera = nullptr;
+		delete _savedCamera;
+		_savedCamera = nullptr;
 	}
 
 	// 索敵システムの終了処理
