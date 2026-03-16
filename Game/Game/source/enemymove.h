@@ -40,6 +40,15 @@ public:
 	virtual float GetHearingRadius() const override { return 300.0f; } // 音検知の半径をオーバーライド
 	void StartMoveToSound(const vec::Vec3& soundPos, int soundLevel);
 
+	// 初期巡回位置関連（外部から復元するためのAPI）
+	bool HasInitialPatrolIndex() const { return _hasInitialPatrolIndex; }
+	int GetInitialPatrolIndex() const { return _initialPatrolIndex; }
+	// 初期インデックスへ patrol コントローラと位置を復元する（Reset 後に呼ぶ）
+	void RestoreInitialPatrolPosition();
+
+	// CaptureInitialTransform は基底で virtual なので override して初期巡回インデックスをキャプチャする
+	virtual void CaptureInitialTransform() override;
+
 protected:
 	// 巡回ルート関連
 	at::spc<MovePointControll> _patrol;// 巡回ポイント管理クラス
@@ -49,6 +58,10 @@ protected:
 	int _savePatrolIndex;				// 戻る前の巡回ポイントのインデックス
 
 	vec::Vec3 _savePoint;				// 戻る前の位置を保存
+
+	// 初期巡回インデックス保存
+	int _initialPatrolIndex = 0;
+	bool _hasInitialPatrolIndex = false;
 
 	// 初期位置に戻る処理を開始
 	void ReturnInitialPos();		

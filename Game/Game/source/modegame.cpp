@@ -17,6 +17,7 @@
 #include "ModeGameOver.h"
 #include "ModeTitle.h"
 #include "ModeAffterScenario.h"
+#include "savemanager.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -180,6 +181,8 @@ bool ModeGame::Initialize()
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
 	_bgmInitialize->Play();
 
+	SavePlayer(nullptr); // プレイヤーの状態をセーブする（必要に応じて引数でセーブスロットを指定できるようにする）
+
 	_isLoadComplete = true; // ロード完了フラグを立てる
 
 	// イントロ演出の初期化を追加
@@ -255,6 +258,12 @@ bool ModeGame::Terminate()
 	}
 	_tutorial.clear();
 
+	for(auto& sp : _savePoint)
+	{
+		if(sp) sp->Terminate();
+	}
+	_savePoint.clear();
+
 	// カメラの削除を最後に行う
 	if(_camera && _camera != _originalCamera)
 	{
@@ -296,6 +305,311 @@ bool ModeGame::Terminate()
 	_bgmChenge = nullptr;
 
 	return true;
+}
+
+void ModeGame::SavePlayer(PlayerBase* player)
+{
+	PlayerBase* p;
+	if(player)
+	{
+		p = player;
+	}
+	else
+	{
+		p = _playerTanuki.get();
+	}
+
+	SaveData saveData{};
+	saveData.version = 1;
+	saveData.stageId = _stageManager.GetCurrentStageId();
+
+	if(_playerTanuki)
+	{
+		saveData.playerPos = p->GetPos();
+		saveData.playerDir = p->GetDir();
+		saveData.makimonoCount = p->GetMakimonoCount();
+	}
+
+	saveData.openTreasureIds.clear();
+	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)
+	{
+		auto& treasure = _treasureBase[i];
+		if(!treasure) { continue; }
+
+		if(treasure->IsOpen())
+		{
+			saveData.openTreasureIds.push_back(i);
+		}
+	}
+
+	saveData.enemies.clear();
+	for(auto& e : _enemyBase)
+	{
+		if(!e) continue;
+		SaveData::EnemyInitial ei{};
+		ei.enemyId = e->GetEnemyId();
+		// 型判定（簡易）
+		if(dynamic_cast<EnemyDog*>(e.get())) ei.type = "Dog";
+		else if(dynamic_cast<EnemyMove*>(e.get())) ei.type = "EnemyMove";
+		else ei.type = "Enemy";
+
+		ei.pos = e->GetPos();
+		ei.dir = e->GetDir();
+		saveData.enemies.push_back(std::move(ei));
+	}
+
+	// --- 追加: ステージ側の patrolGroup を保存（gid -> ポイント列） ---
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
+	if(stageData)
+	{
+		saveData.patrolGroups.clear();
+		for(auto& kv : stageData->patrolGroup)
+		{
+			const std::string& gid = kv.first;
+			const auto& points = kv.second; // at::vet<vec::Vec3>
+			at::vet<SaveData::PatrolPoint> pts;
+			int idx = 0;
+			for(auto& ppos : points)
+			{
+				SaveData::PatrolPoint pp{};
+				pp.pos = ppos;
+				pp.id = idx++;
+				pp.waitTime = 0.0f;
+				pts.push_back(std::move(pp));
+			}
+			saveData.patrolGroups[gid] = std::move(pts);
+		}
+	}
+
+	// 最終的にファイルへ保存
+	SaveManager::Save(saveData, SaveManager::GetDefaultPath());
+}
+
+void ModeGame::ApplySaveData(const SaveData& saveData)
+{
+	_bShowTanuki = true; // タヌキ状態でロードする
+	_showMonoPlayer = false; // モノプレイヤーは非表示にする
+
+	if(!saveData.stageId.empty() && saveData.stageId != _stageManager.GetCurrentStageId())
+	{
+		_initialStageId = saveData.stageId;
+	}
+
+	if(_playerTanuki)
+	{
+		_playerTanuki->SetPos(saveData.playerPos);
+		_playerTanuki->SetDir(saveData.playerDir);
+		_playerTanuki->SetMakimonoCount(saveData.makimonoCount);
+		_playerTanuki->_status = PlayerBase::STATUS::WAIT; // ロード後は待機状態にする
+		_playerTanuki->PlayAnimation("idle", true); // ロード後はアイドルアニメーションをループ再生する)
+		_playerTanuki->Process(); // 状態を更新して位置を反映させる
+	}
+
+	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)
+	{
+		auto& t = _treasureBase[i];
+		if(!t) continue;
+		bool shouldOpen = false;
+		for(const auto& id : saveData.openTreasureIds)
+		{
+			if(id == i) { shouldOpen = true; break; }
+		}
+		t->SetOpen(shouldOpen);
+	}
+
+
+	// メモリ上にも保存しておく（必要に応じて参照可能）
+	_saveData = saveData;
+
+	// カメラをタヌキに合わせる（即時表示性確保）
+	if(_camera && _playerTanuki)
+	{
+		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
+		vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+		_camera->SetTarget(target);
+		_camera->SetPos(vec3::VAdd(target, camDelta));
+	}
+
+	for(auto& enemyPtr : _enemyBase)
+	{
+		if(!enemyPtr) continue;
+
+		// 非巡回の敵（従来どおり初期位置へ戻す）
+		enemyPtr->SetPos(enemyPtr->GetInitialPos());
+		enemyPtr->SetOldPos(enemyPtr->GetInitialPos());
+
+		// 初期向きベクトルを取得して角度を即時反映
+		vec::Vec3 initDir = enemyPtr->GetInitialDir();
+		if(vec3::VSize(initDir) > 0.0f)
+		{
+			float angle = atan2f(initDir.x * -1.0f, initDir.z * -1.0f);
+			enemyPtr->SetRotationY(angle);
+			enemyPtr->SetTargetRotationY(angle);
+			enemyPtr->SetDir(initDir);
+		}
+		else
+		{
+			enemyPtr->SetTargetRotationFromDirection(enemyPtr->GetInitialDir());
+			enemyPtr->UpdateRotation();
+		}
+
+		enemyPtr->OnPlayerLost();
+		enemyPtr->ResetTeleport();
+		enemyPtr->_status = CharaBase::STATUS::WAIT;
+		enemyPtr->SetAlive(true);
+		enemyPtr->CaptureInitialTransform();
+
+		// 巡回中の EnemyMove は初期位置へ戻さず現在の巡回を継続させる
+		if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
+		{
+			if(em->IsPatrolling())
+			{
+				// 状態だけリセットして巡回継続（位置は変更しない）
+				em->OnPlayerLost();
+				em->SetAlive(true);
+				continue;
+			}
+		}
+	}
+
+	_isLoadComplete = true; // ロード完了フラグを立てる
+}
+
+void ModeGame::ResetEnemyRoot()
+{
+	// まず保存されたセーブデータ側の patrolGroups があればそれを優先して再割当て
+	if(!_saveData.patrolGroups.empty())
+	{
+		for(const auto& kv : _saveData.patrolGroups)
+		{
+			const std::string& gid = kv.first;
+			const auto& points = kv.second; // at::vet<SaveData::PatrolPoint>
+
+			// SaveData -> ApplicationGlobal::PatrolPointInfo に変換
+			at::vec<ApplicationGlobal::PatrolPointInfo> ppInfos;
+			ppInfos.reserve(points.size());
+			for(const auto& sp : points)
+			{
+				ApplicationGlobal::PatrolPointInfo info;
+				info.pos = sp.pos;
+				info.id = sp.id;
+				info.waitTime = sp.waitTime;
+				ppInfos.push_back(std::move(info));
+			}
+
+			// gid と一致する EnemyMove に割り当て
+			for(auto& enemyPtr : _enemyBase)
+			{
+				if(!enemyPtr) continue;
+				if(enemyPtr->GetCustomId() != gid) continue;
+				if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
+				{
+					em->SetPatrolPointInfo(ppInfos);
+					// CaptureInitialTransform は内部で初期インデックスをキャプチャするようにした
+					em->CaptureInitialTransform();
+
+					// 追加：保存しておいた「初期巡回インデックス」から位置とインデックスを復元する
+					em->RestoreInitialPatrolPosition();
+
+					em->OnPlayerLost();
+					em->_status = CharaBase::STATUS::WAIT;
+					em->SetAlive(true);
+				}
+			}
+		}
+		return;
+	}
+
+	// 以下同様に各分岐で SetPatrolPointInfo / SetPatrolPoint の後に RestoreInitialPatrolPosition() を呼ぶ
+	// （patrolPointInfo 側のループ）
+	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
+	if(!stageData) return;
+
+	for(const auto& kv : stageData->patrolPointInfo)
+	{
+		const std::string& gid = kv.first;
+		const auto& infos = kv.second; // at::vec<ApplicationGlobal::PatrolPointInfo>
+
+		for(auto& enemyPtr : _enemyBase)
+		{
+			if(!enemyPtr) continue;
+			if(enemyPtr->GetCustomId() != gid) continue;
+			if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
+			{
+				em->SetPatrolPointInfo(infos);
+				em->CaptureInitialTransform();
+				em->RestoreInitialPatrolPosition();
+				em->OnPlayerLost();
+				em->_status = CharaBase::STATUS::WAIT;
+				em->SetAlive(true);
+			}
+		}
+	}
+
+	// フォールバック：古い patrolGroup (vec<vec::Vec3>)
+	for(const auto& kv : stageData->patrolGroup)
+	{
+		const std::string& gid = kv.first;
+		const auto& pts = kv.second;
+
+		for(auto& enemyPtr : _enemyBase)
+		{
+			if(!enemyPtr) continue;
+			if(enemyPtr->GetCustomId() != gid) continue;
+			if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
+			{
+				em->SetPatrolPoint(pts);
+				em->CaptureInitialTransform();
+				em->RestoreInitialPatrolPosition();
+				em->OnPlayerLost();
+				em->_status = CharaBase::STATUS::WAIT;
+				em->SetAlive(true);
+			}
+		}
+	}
+
+}
+
+void ModeGame::ResetEnemiesToInitialPositions()
+{
+	// 敵ポインタ配列が空なら何もしない
+	if(_enemyBase.empty()) return;
+
+	for(auto& enemyPtr : _enemyBase)
+	{
+		if(!enemyPtr) continue;
+
+		// EnemyMove（巡回敵）の扱い
+		if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
+		{
+			// すでに巡回中なら位置/向きを変更せず巡回を継続させる
+			if(em->IsPatrolling())
+			{
+				em->SetAlive(true);
+				continue;
+			}
+
+			// フォールバック：初期位置へ戻してから CaptureInitialTransform() で巡回情報を有効化する
+			em->SetPos(em->GetInitialPos());
+			em->SetOldPos(em->GetInitialPos());
+
+			// Capture によって巡回が設定されるなら再開される
+			em->CaptureInitialTransform();
+
+			em->OnPlayerLost();
+			em->SetAlive(true);
+			continue;
+		}
+
+		// EnemyMove 以外（従来どおり初期位置へ戻す）
+		enemyPtr->SetPos(enemyPtr->GetInitialPos());
+		enemyPtr->SetOldPos(enemyPtr->GetInitialPos());
+
+		enemyPtr->OnPlayerLost();
+		enemyPtr->ResetTeleport();
+		enemyPtr->SetAlive(true);
+		enemyPtr->CaptureInitialTransform();
+	}
 }
 
 // 敵センサーの生成を共通化するヘルパー関数
@@ -541,7 +855,30 @@ bool ModeGame::LoadStageData()
 			_tutorial.emplace_back(tutorial);
 			continue;
 		}
+
+
+		if(name == "S_Savepoint")
+		{
+			auto sp = std::make_shared<SavePoint>();
+			sp->Initialize();
+
+			// JSON から位置等設定する関数が無ければ SetPos 等で設定
+			if(object.contains("translate"))
+			{
+				vec::Vec3 pos;
+				object.at("translate").at("x").get_to(pos.x);
+				object.at("translate").at("y").get_to(pos.z);
+				object.at("translate").at("z").get_to(pos.y);
+				pos.z *= -1.0f;
+				sp->SetPos(pos); // SavePoint が SetPos を持っている前提
+			}
+			// 必要なら回転/スケールも設定
+
+			_savePoint.emplace_back(sp);
+			continue;
+		}
 	}
+
 
 	if(_counterUi)
 	{
@@ -804,6 +1141,8 @@ bool ModeGame::Process()
 
 	PlayerToTutorialCollision(playerBase, _tutorial);
 
+	PlayerToSavePointCollision(playerBase);
+
 	bool hasCollision = false;
 
 	// プレイヤーと敵の接触処理
@@ -871,6 +1210,8 @@ bool ModeGame::Process()
 					}
 
 					_hasRenderOnce = false;
+
+					//ResetEnemyRoot();
 
 					//ここでゲームオーバー処理へ移行
 					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");

@@ -329,30 +329,42 @@ bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& e
 // 床の存在を確認する関数
 bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 {
-	// マップが設定されていない場合は床があるものとして処理
+	// マップが設定されていない場合は視線が通るものとして処理
 	if(!_map)
 	{
 		return true;
 	}
 
+	// 以前の実装はマップ内の全ブロックを逐一 CheckPositionToMV1Collision していたため重い。
+	// ここではまず水平距離で候補ブロックを絞り込み、衝突判定を行うようにして負荷を大幅に軽減する。
+
+	// しきい距離（水平距離）。必要に応じて調整してください。
+	// 索敵扇形が設定されている場合はそれを考慮して少し余裕を持たせる。
+	float searchRadius = 800.0f;
+	if(_bDetectionSector)
+	{
+		// 索敵半径 + マージンを採用（索敵半径が大きければそれに合わせる）
+		searchRadius = std::max<float>(searchRadius, _detectSector.radius + 200.0f);
+	}
+	const float searchRadius2 = searchRadius * searchRadius;
+
 	// 「乗れるか」判定なので、真下へのレイ開始高さは最低限必要
-	// （position.y が床より下の場合でも拾えるように余裕を持たせる）
 	constexpr float kColSubY = 100.0f;
 
 	vec::Vec3 hitPos{};
-	for(const auto& block : _map->GetBlockPosList())
+	const auto& blocks = _map->GetBlockPosList();
+
+	// ブロック位置は BLOCKPOS の x,y,z を使ってまず水平距離で絞る
+	for(const auto& block : blocks)
 	{
-		if(block.modelHandle < 0)
-		{
-			continue;
-		}
+		if(block.modelHandle < 0) continue;
 
-		//const int frame = block.collisionFrame;
-		//if(frame < 0)
-		//{
-		//	continue;
-		//}
+		// 水平方向の距離二乗で簡易に絞る（yは無視）
+		float dx = block.x - position.x;
+		float dz = block.z - position.z;
+		if((dx * dx + dz * dz) > searchRadius2) continue;
 
+		// 絞り込んだブロックに対してのみ重い当たり判定を行う
 		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
 			position,
 			block.modelHandle,

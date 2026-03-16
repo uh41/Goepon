@@ -77,6 +77,8 @@
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
+    <ClInclude Include="source\savemanager.h" />
+    <ClInclude Include="source\savepoint.h" />
     <ClInclude Include="source\shirimochieffect.h" />
     <ClInclude Include="source\soundserver3D.h" />
     <ClInclude Include="source\StageManager.h" />
@@ -159,6 +161,8 @@
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\playermono.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
+    <ClCompile Include="source\savemanager.cpp" />
+    <ClCompile Include="source\savepoint.cpp" />
     <ClCompile Include="source\shirimochieffect.cpp" />
     <ClCompile Include="source\soundserver3D.cpp" />
     <ClCompile Include="source\stuneffect.cpp" />
