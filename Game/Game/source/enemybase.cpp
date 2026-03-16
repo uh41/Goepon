@@ -886,7 +886,6 @@ bool EnemyBase::Render()
 {
 	base::Render();
 
-	RenderDamageTime();
 	return true;
 }
 

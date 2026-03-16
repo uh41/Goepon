@@ -450,6 +450,7 @@ bool ModeGame::DebugRender()
 		if (enemy->IsAlive() && enemy->GetEnemySensor())
 		{
 			enemy->GetEnemySensor()->RenderDetectionUI();
+			enemy->RenderDamageTime();
 		}
 	}
 

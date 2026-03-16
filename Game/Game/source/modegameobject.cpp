@@ -959,6 +959,7 @@ bool ModeGame::ChangeBGM()
 	return true;
 }
 
+// すべての敵のセンサーをチェックして、プレイヤーが検知されているかどうかを判定する
 bool ModeGame::CheckAllDetections()
 {
 	// 表示中のプレイヤーを選択（タヌキ / Mono / 通常）
@@ -1023,10 +1024,11 @@ bool ModeGame::CheckAllDetections()
 				sensor->SetDir(eb->GetDir());
 				sensor->SetMap(_objectServer->GetMap());
 
-				bool isChasing = sensor->IsChasing();
+				// 現在の追跡状態を記憶しておく（これからの処理で更新される可能性があるため）
+				const bool wasChasing = sensor->IsChasing();
 
 				// 追跡中ではない敵の場合の時分割・距離スキップ判定
-				if (!isChasing)
+				if (!wasChasing)
 				{
 					// --- 負荷軽減のための距離判定 ---
 					const float activeRadius = 1000.0f;
@@ -1053,6 +1055,7 @@ bool ModeGame::CheckAllDetections()
 
 				// 視覚検知判定
 				bool detected = false;
+				bool chaseStarted = false;
 
 				// --- 犬の場合は人間形態でも全方向から検知可能 ---
 				bool isEnemyDog = (dynamic_cast<EnemyDog*>(eb) != nullptr);
@@ -1145,6 +1148,10 @@ bool ModeGame::CheckAllDetections()
 					{
 						eb->OnPlayerDetected(player->GetPos());
 						_hatenaEffect->ResetEnemyEffect(eb);
+
+						const bool isChasingNow = sensor->IsChasing();
+						chaseStarted = (!wasChasing && isChasingNow);
+
 						if (eb->GetEnemySensor() && eb->GetEnemySensor()->IsChasing())
 						{
 							_nakiEffect->SetTargetPlayer(player);
@@ -1154,7 +1161,7 @@ bool ModeGame::CheckAllDetections()
 					}
 
 					// PlayerMono が検知されたら即時モノ->タヌキに切替 
-					if (_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+					if (chaseStarted && _showMonoPlayer && dynamic_cast<PlayerMono*>(player))
 					{
 						if (_playerTanuki && player != _playerTanuki.get())
 						{
@@ -1186,7 +1193,7 @@ bool ModeGame::CheckAllDetections()
 					}
 
 					// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
-					if (isHumanForm)
+					if (chaseStarted && isHumanForm)
 					{
 						if (_playerTanuki && player != _playerTanuki.get())
 						{
@@ -1231,6 +1238,7 @@ bool ModeGame::CheckAllDetections()
 							_hatenaEffect->PlayOnce(eb);
 						}
 						eb->OnPlayerLost();
+						chaseStarted = false;
 					}
 				}
 			}
