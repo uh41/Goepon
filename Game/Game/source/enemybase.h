@@ -47,8 +47,8 @@ public:
 	void UpdateRotationToPlayer();	// 徐々にプレイヤーの方向を向く
 
 	// 移動処理
-	void MoveTowardsTarget(const vec::Vec3& target);	// 目標位置に向かって移動
-	void UpdateChasing();								// 追跡処理
+	void MoveToTarget(const vec::Vec3& target);	// 目標位置に向かって移動
+	void UpdateChasing();						// 追跡処理
 
 	// 床の存在を確認する関数
 	bool CheckFloorExistence(const vec::Vec3& position);

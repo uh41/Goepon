@@ -21,9 +21,9 @@ public:
 	void OnPlayerLost();										// プレイヤー見失い時の処理
 
 	// 巡回ルートの設定
-	void SetPatrolPoint(const at::vet<vec::Vec3>& point);
-	void ProcessPatrol();
-	void ProcessReturnToPatrolPoint();
+	void SetPatrolPoint(const at::vet<vec::Vec3>& point);	// 巡回ポイントの位置を設定
+	void ProcessPatrol();									// 巡回処理
+	void ReturnToPatrolPoint();								// 戻る処理の更新
 
 	// 巡回ポイントに到着したときの処理
 	void SetPatrolWaitDirection(int id);
@@ -56,11 +56,11 @@ protected:
 	// テレポート状態のリセット
 	void ResetTeleport();
 
-	// 音見地から保存した地点があるか
+	// 音検知から保存した地点があるか
 	bool _hasSavePoint;
 
 	// 巡回ポイント到着後の待機
-	bool _bPatrolWaiting;		// 到着後の待機中フラグ
+	bool _PatrolWaiting;		// 到着後の待機中フラグ
 	float _patrolWaitTimer;		// 待機カウントダウン
 	float _patrolWaitDuration;	// 待機時間（秒）
 	vec::Vec3 _patrolWaitDir;	// 待機中に向く方向

@@ -136,7 +136,7 @@ bool Enemy::Process()
 			_enemySensor->SetPos(_vPos);
 			_enemySensor->SetDir(_vDir);
 
-			// UpdateChasing は EnemyBase 側で定義され、MoveTowardsTarget を呼びます。
+			// UpdateChasing は EnemyBase 側で定義され、MoveToTarget を呼びます。
 			UpdateChasing();
 
 			// センサーの状態に応じてステータスを設定

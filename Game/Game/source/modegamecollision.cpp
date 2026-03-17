@@ -583,7 +583,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				);
 
 				// 必要回数に達したら開く
-				if (rapidFire->GetCurrentCount() >= rapidFire->GetRequiredCount())
+				if (rapidFire->GetNowCount() >= rapidFire->GetMaxCount())
 				{
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);

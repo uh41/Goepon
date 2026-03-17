@@ -265,11 +265,11 @@ bool ModeGame::DebugRender()
 		}
 	}
 
-	//// markerDGR範囲の描画（customIdごとにグループ化して描画）
+	//// 犬の移動範囲の描画（customIdごとにグループ化して描画）
 	//if (_d_view_collision)
 	//{
 	//	std::string path = "res/map/";
-	//	std::string jsonFile = "markerDGR.json";
+	//	std::string jsonFile = ".json";
 	//	std::string jsonObjectName = "stage";
 
 	//	std::ifstream ifs(path + jsonFile);
@@ -279,14 +279,11 @@ bool ModeGame::DebugRender()
 
 	//		ifs >> jsonData;
 
-	//		// JSONが正しく読み込めたかデバッグ表示
-	//		DrawFormatString(10, 200, GetColor(255, 255, 0), "JSON loaded success");
-
 	//		if (jsonData.contains(jsonObjectName))
 	//		{
 	//			nlohmann::json stage = jsonData.at(jsonObjectName);
 
-	//			// customIdごとのmarkerDGRポイントをグループ化
+	//			// customIdごとのポイントをグループ化
 	//			std::unordered_map<std::string, std::vector<vec::Vec3>> rangeGroups;
 
 	//			for (auto& object : stage)
@@ -295,7 +292,7 @@ bool ModeGame::DebugRender()
 
 	//				const std::string& name = object.at("objectName");
 
-	//				if (name == "S_MarkerDGR")
+	//				if (name == "")
 	//				{
 	//					vec::Vec3 pos;
 

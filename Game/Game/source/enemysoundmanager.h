@@ -13,39 +13,39 @@ class EnemySoundManager
 public:
 	struct Wave
 	{
-		uint32_t id;										// 音波のID
-		vec::Vec3 pos = vec::Vec3(0.0f, 0.0f, 0.0f);		// 音波の位置
-		float rad = 0.0f;									// 音波の半径
-		float maxRad = 0.0f;								// 音波の最大半径
-		float speed = 0.0f;									// 音波の拡散速度
-		int soundLevel = 0;									// 音の大きさレベル
-		bool isActive = false;								// 音波が有効かどうか
+		uint32_t id;									// 音波のID
+		vec::Vec3 pos = vec::Vec3(0.0f, 0.0f, 0.0f);	// 音波の位置
+		float rad = 0.0f;								// 音波の半径
+		float maxRad = 0.0f;							// 音波の最大半径
+		float speed = 0.0f;								// 音波の拡散速度
+		int soundLevel = 0;								// 音の大きさレベル
+		bool isActive = false;							// 音波が有効かどうか
 		uint32_t emitterId = 0;
 	};
 
 	struct DetectionInfo
 	{
-		bool isDetected = false;										// 音が検出されたかどうか
-		float timer = 0.0f;												// 検出状態のタイマー
-		vec::Vec3 soundSourcePos = vec::Vec3(0.0f, 0.0f, 0.0f);			// 音源の位置
-		int detectedSoundLevel = 0;										// 検出された音の大きさレベル
+		bool isDetected = false;								// 音が検出されたかどうか
+		float timer = 0.0f;										// 検出状態のタイマー
+		vec::Vec3 soundSourcePos = vec::Vec3(0.0f, 0.0f, 0.0f);	// 音源の位置
+		int detectedSoundLevel = 0;								// 検出された音の大きさレベル
 	};
 
 	static EnemySoundManager* GetInstance();
 
 	EnemySoundManager() = default;
 
-	// 音を発生させる関数。必要に応じて、音の大きさレベルや最大半径、拡散速度などを引数で指定できるようにする。
+	// 音を発生させる関数
 	void EmitSound(const vec::Vec3& pos, int soundLevel, float maxRad, float speed, uint32_t emitterId = 0);
 
-	// 音波の更新関数。時間経過で波が広がる処理を行う。必要に応じて、波の寿命や減衰などの追加処理もここで行う。
+	// 音波の更新関数
 	void Update(float deltaTime);
 
-	// 敵が音を検知できるか試す関数。敵が音を検知できる場合は、inoutInfoに検知情報をセットしてtrueを返す。そうでない場合はfalseを返す。
+	// 敵が音を検知できるか試す関数
 	bool TryDetectForEnemy(const EnemyBase& enemy, DetectionInfo& inoutInfo);
 
-	void RenderDebug(); // デバッグ用の描画関数（必要に応じて実装）
-	void RenderDebugEnemyHearing(const at::vspc<EnemyBase>& enemies) const; // 敵の聴覚範囲を描画する関数（必要に応じて実装）
+	void RenderDebug(); // デバッグ用の描画関数
+	void RenderDebugEnemyHearing(const at::vspc<EnemyBase>& enemies) const; // 敵の聴覚範囲を描画する関数
 
 protected:
 	at::vet<Wave> _wave;					// 現在存在する音波のリスト
@@ -54,6 +54,7 @@ protected:
 	// waveId->検知済みの敵IDのセット
 	at::umtt<uint32_t, at::ust<uint32_t>> _waveDetectionMap;// 音波IDと、その音波を検知した敵のIDのセット
 
+	// デバッグ用の情報を管理する変数
 	bool IsAudible(const Wave& wave, const EnemyBase& enemy) const;
 
 private:

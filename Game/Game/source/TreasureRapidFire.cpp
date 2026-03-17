@@ -42,9 +42,9 @@ bool TreasureRapidFire::Initialize()
 	_isVisible = true;
 
 	// 連打型のパラメータ初期化
-	_requiredCount = 5;
-	_currentCount = 0;
-	_buttonResetTimer = 0.0f;
+	_maxCount = 15;
+	_nowCount = 0;
+	//_buttonResetTimer = 0.0f;
 
 	// ゲージ描画用のパラメータ初期化（長方形）
 	_gaugeWidth = 150;                      // 横幅
@@ -72,7 +72,7 @@ bool TreasureRapidFire::Process()
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
 
 	//// 連打リセットタイマー処理
-	//if (_currentCount > 0 && !_isOpen)
+	//if (_nowCount > 0 && !_isOpen)
 	//{
 	//	const float dt = 1.0f / 60.0f; // 60FPS想定
 	//	_buttonResetTimer += dt;
@@ -115,14 +115,14 @@ void TreasureRapidFire::AddCount()
 {
 	if (!_isOpen)
 	{
-		_currentCount++;
+		_nowCount++;
 		//_buttonResetTimer = 0.0f; // タイマーリセット
 	}
 }
 
 void TreasureRapidFire::ResetCount()
 {
-	_currentCount = 0;
+	_nowCount = 0;
 	//_buttonResetTimer = 0.0f;
 }
 
@@ -135,7 +135,7 @@ void TreasureRapidFire::RenderGaugeRF(const vec::Vec3& playerPos, float progress
 	}
 
 	// 進行度を計算（引数のprogressは無視し、連打カウントから計算）
-	float calculatedProgress = static_cast<float>(_currentCount) / static_cast<float>(_requiredCount);
+	float calculatedProgress = static_cast<float>(_nowCount) / static_cast<float>(_maxCount);
 	if (calculatedProgress > 1.0f) calculatedProgress = 1.0f;
 
 	// 宝箱の中心位置の3D座標を2D座標に変換
@@ -210,7 +210,7 @@ void TreasureRapidFire::DrawRectGauge(int centerX, int centerY, float progress)
 
 	// カウント数をゲージの中央に表示
 	char text[32];
-	sprintf_s(text, "%d/%d", _currentCount, _requiredCount);
+	sprintf_s(text, "%d/%d", _nowCount, _maxCount);
 
 	const int textWidth = GetDrawStringWidth(text, static_cast<int>(strlen(text)));
 	const int textX = gaugeX + (_gaugeWidth - textWidth) / 2; // ゲージ内で中央揃え

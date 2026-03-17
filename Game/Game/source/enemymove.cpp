@@ -62,7 +62,7 @@ bool EnemyMove::Initialize()
 	_hasSavePoint = false;
 
 	// 巡回ポイント到着後の待機関連の初期化
-	_bPatrolWaiting = false;
+	_PatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 	_patrolWaitDuration = 2.0f; // 到着時にその場で視線を変える時間（秒）
 	_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
@@ -151,7 +151,7 @@ void EnemyMove::ProcessPatrol()
 	}
 
 	// 待機中
-	if(_bPatrolWaiting)
+	if(_PatrolWaiting)
 	{
 		const float dt = 1.0f / 60.0f;
 		_patrolWaitTimer -= dt;
@@ -164,7 +164,7 @@ void EnemyMove::ProcessPatrol()
 
 		if(_patrolWaitTimer <= 0.0f)
 		{
-			_bPatrolWaiting = false;
+			_PatrolWaiting = false;
 			_patrol->MoveToNextPoint();
 			_patrolIndex = _patrol->GetMovePointIndex();
 
@@ -268,7 +268,7 @@ void EnemyMove::ProcessPatrol()
 		// 待機開始
 		_status = STATUS::WAIT;
 		_patrolWaitTimer = _patrolWaitDuration;
-		_bPatrolWaiting = true;
+		_PatrolWaiting = true;
 		return;
 	}
 
@@ -292,7 +292,7 @@ void EnemyMove::ProcessPatrol()
 		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
 		{
 			_patrolWaitTimer = _patrolWaitDuration;
-			_bPatrolWaiting = true;
+			_PatrolWaiting = true;
 		}
 	}
 }
@@ -346,7 +346,7 @@ void EnemyMove::OnPlayerLost()
 }
 
 // 初期位置に戻る処理の更新
-void EnemyMove::ProcessReturnToPatrolPoint()
+void EnemyMove::ReturnToPatrolPoint()
 {
 	if(!_isReturning)
 	{
@@ -500,7 +500,7 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 	_isPatrol = false;
 
 	// 巡回待機状態をリセット
-	_bPatrolWaiting = false;
+	_PatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 
 	// 巡回ターゲット座標を保存（復帰時に使う）
@@ -633,7 +633,7 @@ bool EnemyMove::Process()
 		{
 			_status = STATUS::WALK;
 		}
-		ProcessReturnToPatrolPoint();	// 初期位置への帰還処理
+		ReturnToPatrolPoint();	// 初期位置への帰還処理
 	}
 	else if (_isPatrol)		// 巡回中
 	{
@@ -644,6 +644,7 @@ bool EnemyMove::Process()
 	{
 		_status = STATUS::WAIT;
 
+		// プレイヤーを見失っていて、かつ初期位置にいない場合は初期位置に戻る
 		if (_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
 			ReturnInitialPos();

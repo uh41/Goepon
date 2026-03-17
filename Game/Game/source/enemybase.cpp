@@ -743,7 +743,7 @@ bool EnemyBase::Process()
 
 // 目標位置に向かって移動するメソッド（壁回避機能付き）
 // もともと Enemy に入っていた長めの実装を共通化して EnemyBase に移しました。
-void EnemyBase::MoveTowardsTarget(const vec::Vec3& target)
+void EnemyBase::MoveToTarget(const vec::Vec3& target)
 {
 	// 目標位置への方向ベクトルを計算
 	vec::Vec3 toTarget = vec3::VSub(target, _vPos);
@@ -857,7 +857,7 @@ void EnemyBase::UpdateChasing()
 	{
 		// 追跡中の場合、最後に確認されたプレイヤーの位置に向かって移動
 		vec::Vec3 targetPos = _enemySensor->GetLastPlayerPos();
-		MoveTowardsTarget(targetPos);
+		MoveToTarget(targetPos);
 
 		// プレイヤーの方向に徐々に向く
 		UpdateRotationToPlayer();

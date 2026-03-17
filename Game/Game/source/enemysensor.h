@@ -15,9 +15,9 @@ struct DetectionSector
 // プレイヤーの検出情報を表す構造体
 struct DetectionInfo
 {
-	bool bDetected;				// プレイヤーが検出されたかどうか
-	bool bChasing;				// 追跡状態かどうか
-	bool bDelay;				// 遅延中フラグ
+	bool isDetected;			// プレイヤーが検出されたかどうか
+	bool isChasing;				// 追跡状態かどうか
+	bool isDelay;				// 遅延中フラグ
 	vec::Vec3 lastPlayerPos;	// 最後に検出されたプレイヤーの位置
 	float timer;				// プレイヤーが検出されてからの経過時間
 	float chaseTimer;			// 追跡状態の経過時間
@@ -47,7 +47,7 @@ public:
 	void ResetDetection();
 
 	// 追跡状態のセッターとゲッター
-	bool IsChasing() const { return _detect.bChasing; } 
+	bool IsChasing() const { return _detect.isChasing; } 
 	vec::Vec3 GetLastPlayerPos() const { return _detect.lastPlayerPos; }
 	float GetChaseTimer() const { return _detect.chaseTimer; }
 
@@ -58,8 +58,8 @@ public:
 	void RenderDetectionUI() const;
 
 	// センサーの有効/無効を切り替えるセッターとゲッター
-	void SetSensorEnabled(bool enabled) { _bSensorEnabled = enabled; }
-	bool IsSensorEnabled() const { return _bSensorEnabled; }
+	void SetSensorEnabled(bool enabled) { _isSensorEnabled = enabled; }
+	bool IsSensorEnabled() const { return _isSensorEnabled; }
 
 	// マップ情報を設定するためのセッター
 	void SetMap(MapBase* map) { _map = map; }
@@ -85,8 +85,8 @@ protected:
 	DetectionSector _detectSector;	// 索敵範囲の情報
 	DetectionInfo _detect;			// プレイヤーの検出情報
 
-	bool _bDetectionSector;			// 索敵範囲が設定されているかどうかのフラグ
-	bool _bSensorEnabled;			// センサーが有効かどうかのフラグ   
+	bool _isDetectionSector;		// 索敵範囲が設定されているかどうかのフラグ
+	bool _isSensorEnabled;			// センサーが有効かどうかのフラグ   
 
 	// 索敵結果の表示時間（秒）
 	static constexpr float DETECTION_DISPLAY_TIME = 0.1f;
