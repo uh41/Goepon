@@ -297,7 +297,11 @@ bool ModeGame::Terminate()
 
 	if(gGlobal._soundServer)
 	{
-		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+		using TYPE = soundserver::SoundItemBase::TYPE;
+		gGlobal._soundServer->StopType(TYPE::BGM);
+		gGlobal._soundServer->StopType(TYPE::SE);
+		gGlobal._soundServer->StopType(TYPE::VOICE);
+		gGlobal._soundServer->StopType(TYPE::ONESHOT);
 	}
 
 	// BGM ハンドル参照をクリア（安全のため）
