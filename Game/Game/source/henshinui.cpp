@@ -96,75 +96,8 @@ bool HenshinUi::Process()
 		_select = Select::TANUBITO;
 	}
 
-	// 最優先: PAD_INPUT_4 を押したら UI を開かずにすぐ TANUBITO を選択（変身要求を送る）
-	// PAD_INPUT_5 の処理より前に配置することで即座に反応させる
-	if(trg & PAD_INPUT_4)
-	{
-		if(_owner)
-		{
-			ModeGame* mg2 = StCas<ModeGame*>(_owner);
-			if(mg2)
-			{
-				// 変身中/保留中なら無視
-				if(!(mg2->IsTransforming() || mg2->IsTransformRequested()))
-				{
-					// UI が開いている場合は選択に応じて変身
-					if(_padInput5Active)
-					{
-						if(_select == Select::TANUBITO)
-						{
-							mg2->RequestTransformToHuman();	// タヌキ -> 人間（アニメあり）の要求
-						}
-						else if(_select == Select::TANUMONO)
-						{
-							mg2->RequestTransformToMono();	// タヌキ -> モノ（巻物消費）の要求
-						}
-						_padInput5Active = false;
-					}
-					else
-					{
-						// UI が開いていない場合は直接 TANUBITO 変身
-						_padInput5Active = true;
-						_select = Select::TANUBITO;
-						mg2->RequestTransformToHuman();
-					}
-					return true;
-				}
-			}
-		}
-	}
-
-	// PAD_INPUT_5 の立ち上がり（トリガー）で選択を開始／切替する
-	if(trg & PAD_INPUT_5)
-	{
-		// まだ選択中でなければ開いて最初は TANUBITO にする
-		if(!_padInput5Active)
-		{
-			_padInput5Active = true;
-			_select = Select::TANUBITO;
-		}
-		else
-		{
-			// 既に選択中なら TANUBITO <-> TANUMONO をトグルする
-			if(_select == Select::TANUBITO)
-			{
-				_select = Select::TANUMONO;
-			}
-			else
-			{
-				_select = Select::TANUBITO;
-			}
-		}
-
-		if(gGlobal._soundServer)
-		{
-			auto ui = gGlobal._soundServer->Get("63"); // "63" は UI_Henshin_pon
-			if(ui)
-			{
-				ui->Play();
-			}
-		}
-	}
+	// 以降：UI 側での PAD による「変身要求送信」は廃止しました。
+	// 変身要求は PlayerTanuki 側の入力処理で行います。
 
 	return true;
 }
