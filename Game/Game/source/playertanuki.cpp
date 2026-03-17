@@ -48,6 +48,27 @@ bool PlayerTanuki::Terminate()
 	return true;
 }
 
+void PlayerTanuki::ResetDash()
+{
+	_dash = false;
+	_dashTimer = 0.0f;
+	_dashCount = 0;
+	_dashCoolDownTime = 0.0f;
+	_dashRecoverTime = 0.0f;
+	_dashRecoverActive = false;
+	_fMvSpeed = _normalSpeed;
+
+	// ダッシュ用の効果音が再生中なら停止しておく
+	if(gGlobal._soundServer)
+	{
+		auto s = gGlobal._soundServer->Get("5"); // 既存のダッシュ音キー
+		if(s && s->IsPlay())
+		{
+			s->Stop();
+		}
+	}
+}
+
 bool PlayerTanuki::SoundWalk()
 {
 	if(gGlobal._soundServer)

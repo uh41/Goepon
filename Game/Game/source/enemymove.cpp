@@ -62,7 +62,7 @@ bool EnemyMove::Initialize()
 	_hasSavePoint = false;
 
 	// 巡回ポイント到着後の待機関連の初期化
-	_bPatrolWaiting = false;
+	_PatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 	_patrolWaitDuration = 2.0f; // 到着時にその場で視線を変える時間（秒）
 	_patrolWaitDir = vec3::VGet(0.0f, 0.0f, 0.0f);
@@ -73,6 +73,11 @@ bool EnemyMove::Initialize()
 	_soundWaitTimer = 0.0f;
 	_soundDetectionActive = false;
 	_soundDetectionTimer = 0.0f;
+
+	// ダメージアニメーション名（空だと StartDamage で何も再生されない）
+	_attachAnimDamage = "okkake";
+	_attachAnimStan = "bushi_tentou";
+	_attachAnimGetUp = "idle";
 
 	return true;
 }
@@ -118,6 +123,48 @@ void EnemyMove::SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointI
 	SetPatrolPoint(posList);
 }
 
+void EnemyMove::CaptureInitialTransform()
+{
+	// 基底処理で初期位置/向きをキャプチャ
+	base::CaptureInitialTransform();
+
+	// 初期巡回インデックスが未保存でかつ巡回が有効なら保存する
+	if(!_hasInitialPatrolIndex && _patrol && _patrol->IsValid())
+	{
+		// 現在の位置（_vPos）に最も近い巡回ポイントを初期とみなす
+		int nearIdx = _patrol->FindNearPointIndex(_vPos);
+		_initialPatrolIndex = nearIdx;
+		_hasInitialPatrolIndex = true;
+
+		// 巡回コントローラ側もそのインデックスに合わせておく（敵生成後の初期化用）
+		_patrol->SetMovePointIndex(_initialPatrolIndex);
+		_patrolIndex = _initialPatrolIndex;
+		_isPatrol = true; // 初期状態は巡回可能にしておく
+	}
+}
+
+void EnemyMove::RestoreInitialPatrolPosition()
+{
+	if(!_hasInitialPatrolIndex) return;
+	if(!_patrol || !_patrol->IsValid()) return;
+
+	// コントローラ側のインデックスを設定
+	_patrol->SetMovePointIndex(_initialPatrolIndex);
+	_patrolIndex = _initialPatrolIndex;
+
+	// そのインデックスのターゲット座標を取得して敵を配置する
+	vec::Vec3 target = _patrol->GetTargetPoint();
+
+	// 敵をその位置に移動（OldPos も更新して瞬間移動のように振る舞わせる）
+	SetPos(target);
+	SetOldPos(target);
+	_vPos = target; // 念のため内部位置も確実に反映
+	_isPatrol = true;
+	_hasSavePoint = false; // 不要な戻り処理を消す
+	// 復元直後は待機状態にすることでアニメ等を安定させる
+	_status = STATUS::WAIT;
+}
+
 // 巡回処理
 void EnemyMove::ProcessPatrol()
 {
@@ -146,7 +193,7 @@ void EnemyMove::ProcessPatrol()
 	}
 
 	// 待機中
-	if(_bPatrolWaiting)
+	if(_PatrolWaiting)
 	{
 		const float dt = 1.0f / 60.0f;
 		_patrolWaitTimer -= dt;
@@ -159,7 +206,7 @@ void EnemyMove::ProcessPatrol()
 
 		if(_patrolWaitTimer <= 0.0f)
 		{
-			_bPatrolWaiting = false;
+			_PatrolWaiting = false;
 			_patrol->MoveToNextPoint();
 			_patrolIndex = _patrol->GetMovePointIndex();
 
@@ -263,7 +310,7 @@ void EnemyMove::ProcessPatrol()
 		// 待機開始
 		_status = STATUS::WAIT;
 		_patrolWaitTimer = _patrolWaitDuration;
-		_bPatrolWaiting = true;
+		_PatrolWaiting = true;
 		return;
 	}
 
@@ -287,7 +334,7 @@ void EnemyMove::ProcessPatrol()
 		if(afterToTarget.LengthSquare() <= (reachThreshold * reachThreshold))
 		{
 			_patrolWaitTimer = _patrolWaitDuration;
-			_bPatrolWaiting = true;
+			_PatrolWaiting = true;
 		}
 	}
 }
@@ -341,7 +388,7 @@ void EnemyMove::OnPlayerLost()
 }
 
 // 初期位置に戻る処理の更新
-void EnemyMove::ProcessReturnToPatrolPoint()
+void EnemyMove::ReturnToPatrolPoint()
 {
 	if(!_isReturning)
 	{
@@ -495,7 +542,7 @@ void EnemyMove::StartMoveToSound(const vec::Vec3& soundPos, int soundLevel)
 	_isPatrol = false;
 
 	// 巡回待機状態をリセット
-	_bPatrolWaiting = false;
+	_PatrolWaiting = false;
 	_patrolWaitTimer = 0.0f;
 
 	// 巡回ターゲット座標を保存（復帰時に使う）
@@ -530,6 +577,12 @@ bool EnemyMove::Process()
 	base::Process();
 
 	CharaBase::STATUS old_status = _status;
+
+	// ダメージ中は EnemyMove 側の通常状態遷移・通常アニメ更新を止める
+	if (_isInvincible)
+	{
+		return true;
+	}
 
 	// ステータスがNONEの場合、WAITに設定
 	if (_status == STATUS::NONE)
@@ -622,7 +675,7 @@ bool EnemyMove::Process()
 		{
 			_status = STATUS::WALK;
 		}
-		ProcessReturnToPatrolPoint();	// 初期位置への帰還処理
+		ReturnToPatrolPoint();	// 初期位置への帰還処理
 	}
 	else if (_isPatrol)		// 巡回中
 	{
@@ -633,6 +686,7 @@ bool EnemyMove::Process()
 	{
 		_status = STATUS::WAIT;
 
+		// プレイヤーを見失っていて、かつ初期位置にいない場合は初期位置に戻る
 		if (_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
 			ReturnInitialPos();

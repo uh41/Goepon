@@ -47,8 +47,8 @@ public:
 	void UpdateRotationToPlayer();	// 徐々にプレイヤーの方向を向く
 
 	// 移動処理
-	void MoveTowardsTarget(const vec::Vec3& target);	// 目標位置に向かって移動
-	void UpdateChasing();								// 追跡処理
+	void MoveToTarget(const vec::Vec3& target);	// 目標位置に向かって移動
+	void UpdateChasing();						// 追跡処理
 
 	// 床の存在を確認する関数
 	bool CheckFloorExistence(const vec::Vec3& position);
@@ -97,6 +97,9 @@ public:
 	void StartMoveToSoundFromManager(const vec::Vec3& soundPos, int soundLevel);// 敵サウンドマネージャーから音源に向かって移動する処理を開始
 
 	static vec::Vec3 DirIdToVec3(int id);	// 方向IDをベクトルに変換するヘルパー関数
+
+	const std::string& GetCustomId() const { return _customId; }
+	void SetCustomId(const std::string& id) { _customId = id; }
 protected:
 	uint32_t _enemyId; // 敵のID
 
@@ -164,4 +167,6 @@ protected:
 	bool _dirSeqActive;				// 向き変更のシーケンスがアクティブかどうか
 
 	bool _playSightOffOnReturn;// 初期位置に戻るときにvoiceをオフにするかどうか
+
+	std::string _customId;
 };

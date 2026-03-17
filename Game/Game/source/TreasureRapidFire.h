@@ -22,10 +22,10 @@ public:
 	bool Render()     override; // 描画
 
 	// 連打カウント関連
-	int GetRequiredCount() const { return _requiredCount; }
-	int GetCurrentCount() const { return _currentCount; }
-	void AddCount();  // ボタンを1回押した時に呼ぶ
-	void ResetCount(); // 範囲外に出た時などにリセット
+	int GetMaxCount() const { return _maxCount; }	// 開けるのに必要な連打回数を取得
+	int GetNowCount() const { return _nowCount; }	// 現在の連打回数を取得
+	void AddCount();	// ボタンを1回押した時に呼ぶ
+	void ResetCount();	// 範囲外に出た時などにリセット
 
 	void RenderGaugeRF(const vec::Vec3& playerPos, float progress) override;
 
@@ -33,10 +33,10 @@ protected:
 	int _attachIndex;
 
 	// 連打型用のパラメータ
-	int _requiredCount; // 開けるのに必要な連打回数
-	int _currentCount;  // 現在の連打回数
+	int _maxCount;	// 開けるのに必要な連打回数
+	int _nowCount;  // 現在の連打回数
 	float _buttonResetTimer;  // 連打リセットタイマー（入力がない時間）
-	static constexpr float BUTTON_RESET_TIME = 2.0f; // 2秒間入力がないとリセット
+	static constexpr float BUTTON_RESET_TIME = 2.0f; // 入力がないとリセット
 
 	// ゲージ描画用のパラメータ
 	int _gaugeWidth;          // 長方形の幅

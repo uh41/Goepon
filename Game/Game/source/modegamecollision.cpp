@@ -583,7 +583,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				);
 
 				// 必要回数に達したら開く
-				if (rapidFire->GetCurrentCount() >= rapidFire->GetRequiredCount())
+				if (rapidFire->GetNowCount() >= rapidFire->GetMaxCount())
 				{
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
@@ -1075,6 +1075,64 @@ bool ModeGame::PlayerToTutorialCollision(PlayerBase* player, at::vspc<Tutorial> 
 		))
 		{
 			tutorial->PlayTutorial();
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
+{
+	if(_savePoint.empty())
+	{
+		return false;
+	}
+
+	PlayerBase* checkPlayer;
+	if(player)
+	{
+		checkPlayer = player;
+	}
+	else
+	{
+		checkPlayer = _player.get();
+	}
+
+	if(!checkPlayer)
+	{
+		return false;
+	}
+
+	for(auto& sp : _savePoint)
+	{
+		auto* savePoint = sp.get();
+		if(!savePoint)
+		{
+			continue;
+		}
+
+		int h = savePoint->GetHandle();
+		int f = savePoint->GetSavePointCollisionFrame();
+		if(h < 0 || f < 0)
+		{
+			continue;
+		}
+
+		MATRIX model = savePoint->MakeModelMatrix();
+		MV1SetMatrix(h, model);
+		MV1RefreshCollInfo(h, f);
+
+		vec::Vec3 hitPos;
+		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+			checkPlayer->GetPos(),
+			h,
+			f,
+			checkPlayer->GetColSubY(),
+			hitPos
+		))
+		{
+			SavePlayer(checkPlayer);
 			return true;
 		}
 	}

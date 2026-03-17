@@ -44,55 +44,58 @@ bool ModeGameOver::Process()
 
 	if(trg & PAD_INPUT_1)
 	{
-		// 1) ���݂̃X�e�[�WID��ۑ��i�폜�O�Ɏ擾�j
-		std::string currentStageId = "Stage1"; // �f�t�H���g�l
-		if(_ownerGame)
+		// �Z�[�u�����݂���Γǂݍ���Ŋ����� ModeGame �ɓK�p�i������ "game" �͍폜���Ȃ��j
+		SaveData sd{};
+		if(SaveManager::TryLoad(sd, SaveManager::GetDefaultPath()))
 		{
-			auto* game = dynamic_cast<ModeGame*>(_ownerGame);
-			if(game)
+			ModeBase* existing = ModeServer::GetInstance()->Get("game");
+			if(existing)
 			{
-				currentStageId = game->GetCurrentStageId();
-				// �f�o�b�O�o�́F�擾�����X�e�[�WID
-				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Current Stage ID = %s", currentStageId.c_str());
+				auto* game = dynamic_cast<ModeGame*>(existing);
+				if(game)
+				{
+					game->ApplySaveData(sd);
+					game->ResetEnemiesToInitialPositions(); // �G������ʒu�ɖ߂��i�Z�[�u�f�[�^�̈ʒu�ɍ��킹�邽�߁j
+					// GameOver ���[�h��������i������ game ����̂܂܎c���j
+
+					//game->ResetEnemyRoot(); // �G�̃��[�g����Z�b�g���ăZ�[�u�f�[�^�̈ʒu�ɍ��킹��
+					ModeServer::GetInstance()->Del(this);
+					return true;
+				}
 			}
-			else
+
+			// ������ game ��������ΐV�K�������ăZ�[�u�̃X�e�[�W�ŋN��
+			auto* newGame = new ModeGame();
+			newGame->SetInitialStageId(sd.stageId);
+			ModeServer::GetInstance()->Add(newGame, 0, "game");
+			ModeServer::GetInstance()->ProcessInit();
+
+			// Initialize ��Ɏ擾���ăZ�[�u��e��K�p�iApplySaveData �̓^�k�L�J�n�ɌŒ肷��j
 			{
-				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Failed to cast _ownerGame to ModeGame");
+				ModeBase* gm = ModeServer::GetInstance()->Get("game");
+				if(gm)
+				{
+					auto* game = dynamic_cast<ModeGame*>(gm);
+					if(game)
+					{
+						game->ApplySaveData(sd);
+						game->ResetEnemiesToInitialPositions();
+						//game->ResetEnemyRoot();
+					}
+				}
 			}
-		}
-		else
-		{
-			//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: _ownerGame is null, using default Stage1");
-		}
-		// 2) ���L���Ă��� ModeGame ������΍폜�\��i���S�ɗ\�񂷂�j
-		if(_ownerGame)
-		{
-			ModeServer::GetInstance()->Del(_ownerGame);
-			_ownerGame = nullptr; // ���L�Q�Ƃ�؂�
+
+			ModeServer::GetInstance()->Del(this);
+			return true;
 		}
 
-		// 3) ���O "game" �œo�^����Ă��郂�[�h������΍폜�\��
-		ModeBase* existing = ModeServer::GetInstance()->Get("game");
-		if(existing)
-		{
-			ModeServer::GetInstance()->Del(existing);
-		}
-
-		// �f�o�b�O�o�́F�ŏI�I�Ɏg�p����X�e�[�WID
-		//DrawFormatString(10, 140, GetColor(255, 255, 0), "DEBUG: Final Stage ID = %s", currentStageId.c_str());
-
-		// 4) �I�[�o�[���C��\��ǉ����Ɍ��݂̃X�e�[�WID��n��
+		// �Z�[�u��������Ώ]���̋����փt�H�[���o�b�N�i������ game ��폜���Ȃ��j
 		if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
 		{
-			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, currentStageId), 300, "gameoverload");
+			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, _debugCurrentStageId), 300, "gameoverload");
 			ModeServer::GetInstance()->ProcessInit();
 		}
-
-		// 5) �������g��폜�\��
 		ModeServer::GetInstance()->Del(this);
-
-		// �폜�E�ǉ��͎��t���[���� ModeServer::ProcessInit() �Ŏ��s����邽�߁A
-		// �����ł͑������^�[�����Ĉ��S�ɏI������B
 		return true;
 	}
 
