@@ -60,6 +60,7 @@ namespace ui
   inline constexpr const char* B_gamestart = "res/UI/B_gamestart.png";
   inline constexpr const char* B_gamestart_1 = "res/UI/B_gamestart_1.png";
   inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
+  inline constexpr const char* Dash_Icon_Batu = "res/UI/Dash_Icon_Batu.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
@@ -68,6 +69,7 @@ namespace ui
   inline constexpr const char* TailAtacck = "res/UI/TailAtacck.png";
   inline constexpr const char* Tanubito_config = "res/UI/Tanubito_config.png";
   inline constexpr const char* Tanuki_config = "res/UI/Tanuki_config.png";
+  inline constexpr const char* Tanuki_config_2 = "res/UI/Tanuki_config_2.png";
   inline constexpr const char* Tanumono_config = "res/UI/Tanumono_config.png";
   inline constexpr const char* Title_gamefinish = "res/UI/Title_gamefinish.png";
   inline constexpr const char* Title_gamefinish_small = "res/UI/Title_gamefinish_small.png";
@@ -89,6 +91,16 @@ namespace ui
   inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
   inline constexpr const char* UI_x = "res/UI/UI_x.png";
   inline constexpr const char* prologe_config = "res/UI/prologe_config.png";
+  inline constexpr const char* MUI_0 = "res/UI/Makimono_Num/MUI_0.png";
+  inline constexpr const char* MUI_1 = "res/UI/Makimono_Num/MUI_1.png";
+  inline constexpr const char* MUI_2 = "res/UI/Makimono_Num/MUI_2.png";
+  inline constexpr const char* MUI_3 = "res/UI/Makimono_Num/MUI_3.png";
+  inline constexpr const char* MUI_4 = "res/UI/Makimono_Num/MUI_4.png";
+  inline constexpr const char* MUI_5 = "res/UI/Makimono_Num/MUI_5.png";
+  inline constexpr const char* MUI_6 = "res/UI/Makimono_Num/MUI_6.png";
+  inline constexpr const char* MUI_7 = "res/UI/Makimono_Num/MUI_7.png";
+  inline constexpr const char* MUI_8 = "res/UI/Makimono_Num/MUI_8.png";
+  inline constexpr const char* MUI_9 = "res/UI/Makimono_Num/MUI_9.png";
 }
 
 namespace ef
@@ -126,6 +138,7 @@ namespace mv1
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_multimotionTanuHuman_06 = "res/Tanuhuman/SK_multimotionTanuHuman_06.mv1";
   inline constexpr const char* SK_goepon_multimotion_4 = "res/Tanuki/SK_goepon_multimotion_4.mv1";
+  inline constexpr const char* SK_goepon_multimotion_4BK = "res/Tanuki/SK_goepon_multimotion_4BK.mv1";
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
   inline constexpr const char* gamestart = "res/Titleanimation/gamestart.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
