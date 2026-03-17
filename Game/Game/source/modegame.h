@@ -217,6 +217,7 @@ public:
 	auto GetPlayer() const { return _player; }
 	auto GetPlayerTanuki() const { return _playerTanuki; }
 	auto GetPlayerMono() const { return _playerMono; }
+	void CancelRequestedTransform();
 
 	void SavePlayer(PlayerBase* player);
 	void ApplySaveData(const SaveData& data);

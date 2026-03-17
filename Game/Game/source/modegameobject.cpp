@@ -15,6 +15,10 @@
 
 void ModeGame::RequestTransformToMono()
 {
+	if(_bTransCancel)
+	{
+		return;
+	}
 	// 要求フラグを立てるだけ。実際の消費/変身は PlayerTransform() 内で行う
 	_requestedTransformToMono = true;
 
@@ -26,6 +30,11 @@ void ModeGame::RequestTransformToMono()
 
 void ModeGame::RequestTransformToHuman()
 {
+	if(_bTransCancel)
+	{
+		return;
+	}
+
 	_requestedTransformToHuman = true;
 
 	if(_configUi)
@@ -51,6 +60,18 @@ bool ModeGame::IsTransforming() const
 bool ModeGame::IsTransformRequested() const
 {
 	return _requestedTransformToMono || _requestedTransformToHuman || _requestedReturnToTanuki;
+}
+
+void ModeGame::CancelRequestedTransform()
+{
+	if(IsTransforming())
+	{
+		return;
+	}
+
+	_requestedTransformToMono = false;
+	_requestedTransformToHuman = false;
+	_requestedReturnToTanuki = false;
 }
 
 // オブジェクトの初期化

@@ -1458,7 +1458,7 @@ bool ModeGame::Render()
 	//DebugRender(); // デバック描画処理
 
 	int key = ApplicationBase::GetInstance()->GetKey();
-	if (key & PAD_INPUT_3)
+	if (key & PAD_INPUT_12)
 	{
 		DebugRender();
 	}
