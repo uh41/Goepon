@@ -153,6 +153,7 @@ namespace mymath
 	float EasingOutBounce(float cnt, float start, float end, float frames);
 	float EasingInOutBounce(float cnt, float start, float end, float frames);
 
+	float EasingInBack(float cnt, float start, float end, float frames);
 	void TestEasing();
 	template<typename T>
 	static T Clamp(T min, T max, T n)

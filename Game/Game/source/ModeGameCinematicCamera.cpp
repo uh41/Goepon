@@ -544,13 +544,14 @@ bool ModeGame::ProcessIntroSequence()
 				vec::Vec3 target = _cinematicCamera->GetTarget();
 				vec::Vec3 currentPos = _cinematicCamera->GetPos();
 				float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
-				float endDist = currentDist * 0.70f;
+				float endDist = currentDist * 0.50f;
+				// あまり近すぎないように最低距離を設定
 				if(endDist < 80.0f)
 				{
 					endDist = 80.0f;
 				}
 
-				_cinematicCamera->StartZoom(target, 0.70f, currentDist, endDist);
+				_cinematicCamera->StartZoom(target, 1.0f, currentDist, endDist, &mymath::EasingInBack);
 				break;
 			}
 
