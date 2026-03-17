@@ -71,6 +71,13 @@ protected:
 
 	bool _inputEnabled; // 入力が有効かどうか
 
+	bool _transformPlayerButtonDown; // 変身ボタンが押されているかどうか
+	bool _transformPlayerMove; // 変身中に移動しているかどうか
+	bool _transformPlayerCandidate; // 変身可能な状態かどうか
+	bool _transformPlayerMonoButtonDown; // 変身モードのボタンが押されているかどうか
+	bool _transformPlayerMonoMove; // 変身モード中に移動しているかどうか
+	bool _transformPlayerMonoCandidate; // 変身モード可能な状態かどうか
+
 	float _target_Rotation_Y;
 private:
 	int _clearModelHandle; // クリア後のモデルハンドル

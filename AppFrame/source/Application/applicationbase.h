@@ -33,6 +33,7 @@ public:
 	static	ApplicationBase	*GetInstance() { return _lp_instance; }
 	virtual int GetKey() { return _gKey; }
 	virtual int GetTrg() { return _gTrg; }
+	virtual int GetRel() { return _gRel; }
 
 	FrameRateController* GetFrameRateController() { return _frameRateController.get(); }
 protected:
@@ -41,6 +42,7 @@ protected:
 
 	int		_gKey;
 	int		_gTrg;
+	int		_gRel;
 
 	ModeServer* _serverMode;
 	at::upc<FrameRateController> _frameRateController;

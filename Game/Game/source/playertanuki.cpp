@@ -2,7 +2,7 @@
 #include "playertanuki.h"
 #include "appframe.h"
 #include "applicationglobal.h"
-
+#include "modegame.h"
 
 bool PlayerTanuki::Initialize()
 {
@@ -35,6 +35,14 @@ bool PlayerTanuki::Initialize()
 	_bLand = true;
 
 	_inputEnabled = true;
+
+	_transformPlayerButtonDown = false;
+	_transformPlayerMove = false;
+	_transformPlayerCandidate = false;
+	_transformPlayerMonoButtonDown = false;
+	_transformPlayerMonoMove = false;
+	_transformPlayerMonoCandidate = false;
+
 
 	_clearModelHandle = -1;
 	return true;
@@ -115,12 +123,32 @@ bool PlayerTanuki::Process()
 
 	int key = ApplicationBase::GetInstance()->GetKey();
 	int trg = ApplicationBase::GetInstance()->GetTrg();
+	int rel = ApplicationBase::GetInstance()->GetRel();
 
 	_vOldPos = _vPos;
 
 	CharaBase::STATUS old_status = _status;
 
 	_v = { 0,0,0 };
+
+	// 押している状態を記録する
+
+	float pressStickLen = sqrtf(fLx * fLx + fLz * fLz);
+	bool pressPadDir = (key & (PAD_INPUT_LEFT | PAD_INPUT_RIGHT | PAD_INPUT_UP | PAD_INPUT_DOWN)) != 0;
+	if(trg & PAD_INPUT_4)
+	{
+		_transformPlayerButtonDown = true;
+		_transformPlayerMove = false;
+		_transformPlayerCandidate = !(pressPadDir || pressStickLen >= _fAnalogDeadZone);
+
+	}
+
+	if(trg & PAD_INPUT_3)
+	{
+		_transformPlayerMonoButtonDown = true;
+		_transformPlayerMonoMove = false;
+		_transformPlayerMonoCandidate = !(pressPadDir || pressStickLen >= _fAnalogDeadZone);
+	}
 
 	if(!_inputEnabled)
 	{
@@ -165,6 +193,27 @@ bool PlayerTanuki::Process()
 			lStickZ = inputLocal.z;
 
 			length = sqrtf(lStickX * lStickX + lStickZ * lStickZ);
+		}
+
+		// 移動検知
+		bool padPress = (key & (PAD_INPUT_LEFT | PAD_INPUT_RIGHT | PAD_INPUT_UP | PAD_INPUT_DOWN)) != 0;
+		bool moving = (length >= _fAnalogDeadZone) || padPress;
+		if(_transformPlayerButtonDown)
+		{
+			if(moving)
+			{
+				_transformPlayerMove = true;
+				_transformPlayerCandidate = false;
+			}
+			
+		}
+		if(_transformPlayerMonoButtonDown)
+		{
+			if(moving)
+			{
+				_transformPlayerMonoMove = true;
+				_transformPlayerMonoCandidate = false;
+			}
 		}
 
 		// ローカル角度
@@ -403,6 +452,68 @@ bool PlayerTanuki::Process()
 	{
 		_fPlayTime = 0.0f;
 	}
+
+	if(rel & PAD_INPUT_4)
+	{
+		if(_transformPlayerButtonDown && !_transformPlayerMove)
+		{
+			ModeBase* base = ModeServer::GetInstance()->Get("game");
+			if(base)
+			{
+				auto* game = dynamic_cast<ModeGame*>(base);
+				if(!game->IsTransformRequested() && !game->IsTransforming())
+				{
+					game->RequestTransformToHuman();
+				}
+				else
+				{
+					if(game->IsTransformRequested() && !game->IsTransforming())
+					{
+						game->CancelRequestedTransform();
+					}
+					else if(game->IsTransforming())
+					{
+						game->RequestReturnToTanukiFromHuman();
+					}
+				}
+			}
+		}
+
+		_transformPlayerButtonDown = false;
+		_transformPlayerMove = false;
+		_transformPlayerCandidate = false;
+	}
+
+	if(rel & PAD_INPUT_3)
+	{
+		if(_transformPlayerMonoButtonDown && !_transformPlayerMonoMove)
+		{
+			ModeBase* base = ModeServer::GetInstance()->Get("game");
+			if(base)
+			{
+				auto* game = dynamic_cast<ModeGame*>(base);
+				if(!game->IsTransformRequested() && !game->IsTransforming())
+				{
+					game->RequestTransformToMono();
+				}
+				else
+				{
+					if(game->IsTransformRequested() && !game->IsTransforming())
+					{
+						game->CancelRequestedTransform();
+					}
+					else if(game->IsTransforming())
+					{
+						game->RequestReturnToTanukiFromHuman();
+					}
+				}
+			}
+		}
+		_transformPlayerMonoButtonDown = false;
+		_transformPlayerMonoMove = false;
+		_transformPlayerMonoCandidate = false;
+	}
+
 	return true;
 }
 
