@@ -85,7 +85,7 @@ bool ModeGame::ObjectInitialize()
 	_camera = new Camera();
 	_camera->Initialize();
 	// メインカメラ
-	_originalCamera = _camera;
+	_savedCamera = _camera;
 	// 演出カメラの初期化
 	_cinematicCamera = std::make_unique<CinematicCamera>();
 	_cinematicCamera->Initialize();
@@ -573,7 +573,7 @@ bool ModeGame::PlayerTransform()
 			{
 				// 巻物消費して変身開始
 				_playerTanuki->SubMakimono(1);
-				if(PlayerTransformToTanuki(false))
+				if(PlayerTransformToTanuki(true))
 				{
 					return true;
 				}
@@ -595,11 +595,23 @@ bool ModeGame::PlayerTransform()
 		// タヌキ表示中のみ開始
 		if(_bShowTanuki)
 		{
-			// 人間へ変身（アニメあり）
-			_playerTanuki->SubMakimono(1);
-			if(PlayerTransformToTanuki(true))
+			// 巻物がある時だけ人間へ変身（巻物消費）
+			if(_playerTanuki && _playerTanuki->GetMakimonoCount() > 0)
 			{
-				return true;
+				_playerTanuki->SubMakimono(1);
+				if(PlayerTransformToTanuki(true))
+				{
+					return true;
+				}
+			}
+			else
+			{
+				// 巻物がない場合は効果音のみ
+				auto soundNoMakimono = gGlobal._soundServer->Get("61");
+				if(soundNoMakimono && !soundNoMakimono->IsPlay())
+				{
+					soundNoMakimono->Play();
+				}
 			}
 		}
 	}

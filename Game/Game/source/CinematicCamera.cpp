@@ -9,6 +9,7 @@ CinematicCamera::CinematicCamera()
 	_targetPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
 	_orbitStartRadius = _orbitEndRadius = _orbitRevolutions = _orbitStartAngle = 0.0f;
 	_zoomStartDist = _zoomEndDist = 0.0f;
+	_zoomEasing = &mymath::EasingOutBounce;
 	_rotateSpeed = 0.0f;
 	_shakeIntensity = 0.0f;
 }
@@ -56,21 +57,25 @@ bool CinematicCamera::Process()
 		}
 		case State::Zoom:
 		{
-			// 距離を mymath で補間
-			float dist = mymath::EasingOutBounce(cnt, _zoomStartDist, _zoomEndDist, frames);
+			const auto easing = (_zoomEasing != nullptr) ? _zoomEasing : &mymath::EasingOutBounce;
+			float dist = easing(cnt, _zoomStartDist, _zoomEndDist, frames);
 
-			// target からの方向ベクトル（現在位置を基準）
+			// Back等で負になるのを防ぐ
+			if(dist < 0.0f)
+			{
+				dist = 0.0f;
+			}
 			vec::Vec3 dir = vec3::VSub(_vPos, _targetPos);
 			float len = vec3::VSize(dir);
-			// 長さが十分あれば正規化して距離をかける
-			if (len > 1e-6f)
+			if(len > 1e-6f)
 			{
-				vec::Vec3 nd = vec3::VScale(dir, 1.0f / len); 
+				vec::Vec3 nd = vec3::VScale(dir, 1.0f / len); // 正規化	
 				_vPos = vec3::VAdd(_targetPos, vec::Vec3{ nd.x * dist, nd.y * dist, nd.z * dist });
 			}
 			_vTarget = _targetPos;
 			break;
 		}
+		// 回転速度一定
 		case State::Rotate:
 		{
 			// そのまま一定速度回転（不要なら角度も mymath でイージング可能）
@@ -86,6 +91,7 @@ bool CinematicCamera::Process()
 			}
 			break;
 		}
+		// 調整中
 		case State::Shake:
 		{
 			float progress = (_duration > 0.0f) ? (_timer / _duration) : 1.0f;
@@ -135,7 +141,7 @@ void CinematicCamera::StartOrbit(const vec::Vec3& target, float durationSeconds,
 
 }
 
-void CinematicCamera::StartZoom(const vec::Vec3& target, float durationSeconds, float startDist, float endDist)
+void CinematicCamera::StartZoom(const vec::Vec3& target, float durationSeconds, float startDist, float endDist, EasingFunc easing)
 {
 	_state = State::Zoom;
 	_timer = 0.0f;
@@ -143,6 +149,7 @@ void CinematicCamera::StartZoom(const vec::Vec3& target, float durationSeconds, 
 	_targetPos = target;
 	_zoomStartDist = startDist;
 	_zoomEndDist = endDist;
+	_zoomEasing = (easing != nullptr) ? easing : &mymath::EasingOutBounce; // デフォルトはバウンス
 }
 
 void CinematicCamera::StartRotateSpeed(float radiansPerSec, float durationSeconds)

@@ -14,12 +14,12 @@
 
 namespace dash
 {
-	static constexpr auto DASH_MAX = 5.0f; // 最大ダッシュ回数
+	static constexpr auto DASH_MAX = 5.0f;               // 最大ダッシュ回数
 	static constexpr auto DASH_COOL_DOWN_DURATION = 5.0f;// ダッシュクールダウンの持続時間（秒）
-	static constexpr auto DASH_RECOVER_INTERVAL = 5.0f;// ダッシュ回復のインターバル（秒）
-	static constexpr auto DASH_SPEED = 5.0f; // ダッシュ中の移動速度
-	static constexpr auto DASH_DURATION = 0.3f; // ダッシュ状態の持続時間
-	static constexpr auto DASH_COOLDOWN_SPEED = 0.8f; // クールダウン中の移動量
+	static constexpr auto DASH_RECOVER_INTERVAL = 5.0f;  // ダッシュ回復のインターバル（秒）
+	static constexpr auto DASH_SPEED = 5.0f;			 // ダッシュ中の移動速度
+	static constexpr auto DASH_DURATION = 0.3f;			 // ダッシュ状態の持続時間
+	static constexpr auto DASH_COOLDOWN_SPEED = 0.8f;	 // クールダウン中の移動量
 }
 
 class PlayerTanuki : public PlayerBase
@@ -45,7 +45,7 @@ public:
 	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
 
 	// クリア演出用のモデルへ切り替え
-	bool SetClearHandle(const std::string& animName, bool loop);
+	bool SetClearHandle(const std::string& animName, bool loop); //引数でアニメーション名とループするかどうかを指定
 	int  PlayGameClearAnimation(std::string name, bool loop);
 
 	void ResetDash();// ダッシュ状態をリセットする関数

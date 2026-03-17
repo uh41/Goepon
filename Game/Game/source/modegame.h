@@ -226,17 +226,19 @@ public:
 	void ResetEnemyRoot();
 
 protected:
-	Camera* _camera;
-	Camera* _originalCamera;
+	Camera* _camera;      // メインカメラ
+	Camera* _savedCamera; // メニューから戻ったときにカメラ状態を復元するための一時的な保存用
 	std::unique_ptr<CinematicCamera> _cinematicCamera;
     // メニュー開始前のカメラ状態を保存するためのメンバ
-    vec::Vec3 _savedCamPos;
-    vec::Vec3 _savedCamTarget;
-    bool _hasSavedCameraState;
-	bool _useCinematicCamera; // 演出カメラ切り替えフラグ
+	vec::Vec3 _savedCamPos;    // カメラ位置
+	vec::Vec3 _savedCamTarget; // カメラターゲット 
+	bool _hasSavedCameraState;  
+	bool _useCinematicCamera;  // 演出カメラ切り替えフラグ
 	// デバッグ用演出カメラ制御用変数
 	bool _debugF1KeyPressed = false; // F1キーの連続入力防止用
-	bool _debugZoomActive = false;   // ズーム演出が実行中かどうか
+	bool _debugZoomActive   = false; // ズーム演出が実行中かどうか
+	bool _debugF2KeyPressed = false; // F2キーの連続入力防止用
+	bool _debugShakeActive  = false; // カメラシェイク演出が実行中かどうか
 
 	bool _hasRenderOnce;
 	bool _requestResetStage; // ステージリセット要求フラグ
@@ -421,6 +423,15 @@ private:
 	bool  _introButtonPressed; // イントロ中にボタンが押されたか
 	float _introTimer;		   // イントロの経過時間
 	static constexpr float INTRO_DURATION = 3.0f; // イントロの総時間（秒）
+
+	enum class IntroPhase
+	{
+		RotateForward,
+		RotateBackward,
+		Zoom,
+		Done
+	};
+	IntroPhase _introPhase; // イントロのフェーズ管理用変数
 
 	// ゲームクリア演出用
 	bool _isGameClearCinematicActive; // ゲームクリア演出が有効か

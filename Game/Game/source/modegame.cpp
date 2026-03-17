@@ -36,12 +36,15 @@ bool ModeGame::Initialize()
 
 	if(!base::Initialize()) { return false; }
 
-	_originalCamera = nullptr;
-	_cinematicCamera = nullptr;
-	_camera = nullptr;
+	// カメラ変数の初期化
+	_savedCamera        = nullptr;
+	_cinematicCamera    = nullptr;
+	_camera             = nullptr;
 	_useCinematicCamera = false;
-	_debugZoomActive = false;
-	_debugF1KeyPressed = false;
+	_debugZoomActive    = false;
+	_debugF1KeyPressed  = false;
+	_debugF2KeyPressed  = false;
+	_debugShakeActive   = false;
 
 	// ステージマネージャーにステージを登録
 	_stageManager.SetStages(gGlobal.GetStageList());
@@ -58,8 +61,10 @@ bool ModeGame::Initialize()
 		}
 	}
 
-	ObjectInitialize();	// オブジェクト初期化
+	// オブジェクト初期化
+	ObjectInitialize();
 
+	// オブジェクトサーバーの初期化（applicationmain から取得）
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	// オブジェクトサーバーでマップデータを読み込み
@@ -208,7 +213,7 @@ bool ModeGame::Terminate()
 		// _cameraが_cinematicCamera.get()を指している場合、元のカメラに戻す
 		if(_camera == _cinematicCamera.get())
 		{
-			_camera = _originalCamera; // nullptrではなく元のカメラを設定
+			_camera = _savedCamera; // nullptrではなく元のカメラを設定
 		}
 
 		_cinematicCamera.reset();
@@ -265,17 +270,17 @@ bool ModeGame::Terminate()
 	_savePoint.clear();
 
 	// カメラの削除を最後に行う
-	if(_camera && _camera != _originalCamera)
+	if(_camera && _camera != _savedCamera)
 	{
 		// _cameraが_originalCameraと同じでない場合のみ削除
 		delete _camera;
 	}
 	_camera = nullptr;
 
-	if(_originalCamera)
+	if(_savedCamera)
 	{
-		delete _originalCamera;
-		_originalCamera = nullptr;
+		delete _savedCamera;
+		_savedCamera = nullptr;
 	}
 
 	// 索敵システムの終了処理

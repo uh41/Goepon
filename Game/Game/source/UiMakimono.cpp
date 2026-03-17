@@ -1,3 +1,4 @@
+
 #include "UiMakimono.h"
 #include "playerbase.h"
 #include "applicationglobal.h"

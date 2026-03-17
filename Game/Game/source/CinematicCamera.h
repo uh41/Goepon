@@ -20,10 +20,11 @@ public:
 		Shake,
 	};
 
+	using EasingFunc = float(*)(float cnt, float start, float end, float frames);
 	// ターゲットを中心に、指定した半径で円軌道を描いて回る（ターゲットは固定）
 	void StartOrbit(const vec::Vec3& target, float durationSeconds, float startRadius, float endRadius, float revolutions = 1.0f);
 	// ターゲットに向かって、指定した距離を移動する（ターゲットは固定）
-	void StartZoom(const vec::Vec3& target, float durationSeconds, float startDist, float endDist);
+	void StartZoom(const vec::Vec3& target, float durationSeconds, float startDist, float endDist, EasingFunc easing = nullptr);
 	//　ターゲットを中心に、指定した半径で円軌道を描いて回る（ターゲットは固定）。回転速度は一定。
 	void StartRotateSpeed(float radiansPerSec, float durationSeconds); // 回転速度（ラジアン/秒）と継続時間を指定
 	// 揺れの強さと継続時間を指定
@@ -52,7 +53,7 @@ protected:
 	// Zoom用パラメータ
 	float _zoomStartDist = 0.0f; // ターゲットからの距離の開始値
 	float _zoomEndDist = 0.0f; // ターゲットからの距離の終了値
-
+	EasingFunc _zoomEasing = nullptr; // ズームのイージング関数（nullptrなら線形）
 	// Rotate用パラメータ
 	float _rotateSpeed = 0.0f; // 回転速度（ラジアン/秒）
 
@@ -66,10 +67,4 @@ private:
 	int _debugTrailCount = 0;
 	int _debugTrailHead = 0;
 	vec::Vec3 _debugTrail[kDebugTrailMax]{};
-
-	void DebugPushTrail(const vec::Vec3& pos);
-	void DebugDraw3D() const;
-	void DebugDrawText2D(int x, int y, int line) const;
-	static const char* DebugStateName(State s);
-
 };

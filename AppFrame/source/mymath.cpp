@@ -280,6 +280,15 @@ namespace mymath
         }
     }
 
+    float EasingInBack(float cnt, float start, float end, float frame)
+    {
+		const float change = end  - start;
+		const float s = 7.0f; // オーバーシュートの量を調整する定数
+
+		cnt /= frame;
+		return StCas<float>(change * cnt * cnt * ((s + 1) * cnt - s) + start);
+    }
+
 	// テスト用関数
     void TestEasing()
     {
