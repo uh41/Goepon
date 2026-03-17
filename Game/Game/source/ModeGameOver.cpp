@@ -44,55 +44,58 @@ bool ModeGameOver::Process()
 
 	if(trg & PAD_INPUT_1)
 	{
-		// 1) 現在のステージIDを保存（削除前に取得）
-		std::string currentStageId = "Stage1"; // デフォルト値
-		if(_ownerGame)
+		// セーブが存在すれば読み込んで既存の ModeGame に適用（既存の "game" は削除しない）
+		SaveData sd{};
+		if(SaveManager::TryLoad(sd, SaveManager::GetDefaultPath()))
 		{
-			auto* game = dynamic_cast<ModeGame*>(_ownerGame);
-			if(game)
+			ModeBase* existing = ModeServer::GetInstance()->Get("game");
+			if(existing)
 			{
-				currentStageId = game->GetCurrentStageId();
-				// デバッグ出力：取得したステージID
-				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Current Stage ID = %s", currentStageId.c_str());
+				auto* game = dynamic_cast<ModeGame*>(existing);
+				if(game)
+				{
+					game->ApplySaveData(sd);
+					game->ResetEnemiesToInitialPositions(); // 敵を初期位置に戻す（セーブデータの位置に合わせるため）
+					// GameOver モードだけ閉じる（既存の game をそのまま残す）
+
+					//game->ResetEnemyRoot(); // 敵のルートをリセットしてセーブデータの位置に合わせる
+					ModeServer::GetInstance()->Del(this);
+					return true;
+				}
 			}
-			else
+
+			// 既存の game が無ければ新規生成してセーブのステージで起動
+			auto* newGame = new ModeGame();
+			newGame->SetInitialStageId(sd.stageId);
+			ModeServer::GetInstance()->Add(newGame, 0, "game");
+			ModeServer::GetInstance()->ProcessInit();
+
+			// Initialize 後に取得してセーブ内容を適用（ApplySaveData はタヌキ開始に固定する）
 			{
-				//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: Failed to cast _ownerGame to ModeGame");
+				ModeBase* gm = ModeServer::GetInstance()->Get("game");
+				if(gm)
+				{
+					auto* game = dynamic_cast<ModeGame*>(gm);
+					if(game)
+					{
+						game->ApplySaveData(sd);
+						game->ResetEnemiesToInitialPositions();
+						//game->ResetEnemyRoot();
+					}
+				}
 			}
-		}
-		else
-		{
-			//DrawFormatString(10, 100, GetColor(255, 0, 0), "DEBUG: _ownerGame is null, using default Stage1");
-		}
-		// 2) 所有している ModeGame があれば削除予約（安全に予約する）
-		if(_ownerGame)
-		{
-			ModeServer::GetInstance()->Del(_ownerGame);
-			_ownerGame = nullptr; // 所有参照を切る
+
+			ModeServer::GetInstance()->Del(this);
+			return true;
 		}
 
-		// 3) 名前 "game" で登録されているモードがあれば削除予約
-		ModeBase* existing = ModeServer::GetInstance()->Get("game");
-		if(existing)
-		{
-			ModeServer::GetInstance()->Del(existing);
-		}
-
-		// デバッグ出力：最終的に使用するステージID
-		//DrawFormatString(10, 140, GetColor(255, 255, 0), "DEBUG: Final Stage ID = %s", currentStageId.c_str());
-
-		// 4) オーバーレイを予約追加時に現在のステージIDを渡す
+		// セーブが無ければ従来の挙動へフォールバック（既存の game を削除しない）
 		if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
 		{
-			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, currentStageId), 300, "gameoverload");
+			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, _debugCurrentStageId), 300, "gameoverload");
 			ModeServer::GetInstance()->ProcessInit();
 		}
-
-		// 5) 自分自身を削除予約
 		ModeServer::GetInstance()->Del(this);
-
-		// 削除・追加は次フレームの ModeServer::ProcessInit() で実行されるため、
-		// ここでは早期リターンして安全に終了する。
 		return true;
 	}
 

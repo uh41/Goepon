@@ -123,6 +123,48 @@ void EnemyMove::SetPatrolPointInfo(const at::vec<ApplicationGlobal::PatrolPointI
 	SetPatrolPoint(posList);
 }
 
+void EnemyMove::CaptureInitialTransform()
+{
+	// 基底処理で初期位置/向きをキャプチャ
+	base::CaptureInitialTransform();
+
+	// 初期巡回インデックスが未保存でかつ巡回が有効なら保存する
+	if(!_hasInitialPatrolIndex && _patrol && _patrol->IsValid())
+	{
+		// 現在の位置（_vPos）に最も近い巡回ポイントを初期とみなす
+		int nearIdx = _patrol->FindNearPointIndex(_vPos);
+		_initialPatrolIndex = nearIdx;
+		_hasInitialPatrolIndex = true;
+
+		// 巡回コントローラ側もそのインデックスに合わせておく（敵生成後の初期化用）
+		_patrol->SetMovePointIndex(_initialPatrolIndex);
+		_patrolIndex = _initialPatrolIndex;
+		_isPatrol = true; // 初期状態は巡回可能にしておく
+	}
+}
+
+void EnemyMove::RestoreInitialPatrolPosition()
+{
+	if(!_hasInitialPatrolIndex) return;
+	if(!_patrol || !_patrol->IsValid()) return;
+
+	// コントローラ側のインデックスを設定
+	_patrol->SetMovePointIndex(_initialPatrolIndex);
+	_patrolIndex = _initialPatrolIndex;
+
+	// そのインデックスのターゲット座標を取得して敵を配置する
+	vec::Vec3 target = _patrol->GetTargetPoint();
+
+	// 敵をその位置に移動（OldPos も更新して瞬間移動のように振る舞わせる）
+	SetPos(target);
+	SetOldPos(target);
+	_vPos = target; // 念のため内部位置も確実に反映
+	_isPatrol = true;
+	_hasSavePoint = false; // 不要な戻り処理を消す
+	// 復元直後は待機状態にすることでアニメ等を安定させる
+	_status = STATUS::WAIT;
+}
+
 // 巡回処理
 void EnemyMove::ProcessPatrol()
 {

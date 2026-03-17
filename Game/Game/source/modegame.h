@@ -60,6 +60,8 @@
 #include "dashui.h"
 #include "tutorial.h"
 #include "configui.h"
+#include "savemanager.h"
+#include "savepoint.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -216,6 +218,12 @@ public:
 	auto GetPlayerTanuki() const { return _playerTanuki; }
 	auto GetPlayerMono() const { return _playerMono; }
 
+	void SavePlayer(PlayerBase* player);
+	void ApplySaveData(const SaveData& data);
+	bool PlayerToSavePointCollision(PlayerBase* player);
+	void ResetEnemiesToInitialPositions();
+	void ResetEnemyRoot();
+
 protected:
 	Camera* _camera;
 	Camera* _originalCamera;
@@ -290,6 +298,8 @@ protected:
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
+
+	at::vspc<SavePoint> _savePoint;
 
 	// チュートリアル
 	at::vspc<Tutorial> _tutorial;
@@ -425,5 +435,6 @@ private:
 	int _clearSequencePhase = 0; // クリア演出のフェーズ管理用変数
 	float progress;
 	
+	SaveData _saveData; // セーブデータのインスタンス
 };
 

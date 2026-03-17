@@ -327,6 +327,7 @@ bool EnemySensor::CheckLineOfSight(const vec::Vec3& startPos, const vec::Vec3& e
 }
 
 // 床の存在を確認する関数
+// 床の存在を確認する関数
 bool EnemySensor::CheckFloorExistence(const vec::Vec3& position) const
 {
 	// マップが設定されていない場合は床があるものとして処理
