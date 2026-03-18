@@ -30,7 +30,6 @@
 #include "uibase.h"
 #include "uihp.h"
 #include "UiMakimono.h"	
-#include "charashadow.h"
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
@@ -59,11 +58,11 @@
 #include "treasureopenui.h"
 #include "dashui.h"
 #include "tutorial.h"
-#include "configui.h"
 #include "savemanager.h"
 #include "savepoint.h"
 #include "savepointeffect.h"
 #include "makimonogeteffect.h"
+#include "goaleffect.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -146,9 +145,6 @@ public:
 	void SetLoadComplete(bool b) { _isLoadComplete = b; }
 	bool IsTransformRequested() const;
 	bool IsShowingTanuki() const { return _bShowTanuki; }
-
-	// 影関数
-	bool ShadowInitialize();
 
 	// カメラ操作公開API（メニューから呼び出すため）
 	void CameraMoveBy(const vec::Vec3& delta);
@@ -283,10 +279,6 @@ protected:
 	at::spc<TreasureOpenUi> _treasureOpenUi;
 	at::spc<DashUi> _dashUi;
 	at::spc<StunEffect> _stunEffect;
-	at::spc<ConfigUi> _configUi;
-
-	// シャドウ
-	at::vspc<CharaShadow> _charaShadow;
 
 	// エフェクト
 	at::vspc<EffectBase> _effectBase;
@@ -303,6 +295,7 @@ protected:
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
 	at::spc<MakimonoGetEffect> _makimonoGetEffect;
+	at::spc<GoalEffect> _goalEffect;
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;

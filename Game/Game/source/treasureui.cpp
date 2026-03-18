@@ -11,7 +11,6 @@ bool TreasureUi::Initialize()
 	base::Initialize();
 	_handleDeguti = LoadGraph(ui::Deguti);
 	_handleNokori = LoadGraph(ui::UI_nokori);
-	//_handleMakimono = LoadGraph(ui::Makimono);
 
 	_remainCount = 0;
 
@@ -30,12 +29,6 @@ bool TreasureUi::Terminate()
 	{
 		DeleteGraph(_handleNokori);
 		_handleNokori = -1;
-	}
-
-	if(_handleMakimono != -1)
-	{
-		DeleteGraph(_handleMakimono);
-		_handleMakimono = -1;
 	}
 
 	return true;
