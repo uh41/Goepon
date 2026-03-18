@@ -100,6 +100,8 @@ public:
 
 	const std::string& GetCustomId() const { return _customId; }
 	void SetCustomId(const std::string& id) { _customId = id; }
+
+	bool IsSearchingAtLastPlayerPos() const { return _isSearching; }
 protected:
 	uint32_t _enemyId; // 敵のID
 
@@ -169,4 +171,14 @@ protected:
 	bool _playSightOffOnReturn;// 初期位置に戻るときにvoiceをオフにするかどうか
 
 	std::string _customId;
+
+	// 最終目撃地点での見渡し処理
+	void ResetChasedSearch();
+	void ChasedSearch();
+
+	bool _isSearching;	// 最終目撃地点で見渡し中か
+	vec::Vec3 _searchBaseDir;	// 見渡しの基準向き
+	float _searchTimer;			// 見渡し時間
+	float _searchSweepSpeed;	// 見渡し速度
+	float _searchSweepAngleDeg;	// 見渡し角度（片側）
 };
