@@ -1,6 +1,6 @@
 #pragma once
 #include "counterui.h"
-#include "Treasure.h"
+#include "TreasureBase.h"
 
 namespace treasure
 {
@@ -25,7 +25,7 @@ typedef CounterUi base;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasureList(const at::vspc<Treasure>& treasure) { _treasure = treasure; }
+	void SetTreasureList(const at::vspc<TreasureBase>& treasure) { _treasure = treasure; }
 
 	bool GetHandleMakimono();
 
@@ -36,6 +36,6 @@ protected:
 
 	int _remainCount; // 残りの宝箱の数
 
-	at::vspc<Treasure> _treasure; // 宝箱のリスト
+	at::vspc<TreasureBase> _treasure; // 宝箱のリスト
 };
 

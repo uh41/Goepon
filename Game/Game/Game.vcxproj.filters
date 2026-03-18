@@ -283,11 +283,11 @@
     </ClCompile>
     <ClCompile Include="source\modecredit.cpp" />
     <ClCompile Include="source\ModeGameCinematicCamera.cpp" />
-    <ClCompile Include="source\configui.cpp" />
     <ClCompile Include="source\savepoint.cpp" />
     <ClCompile Include="source\savemanager.cpp" />
     <ClCompile Include="source\savepointeffect.cpp" />
     <ClCompile Include="source\makimonogeteffect.cpp" />
+    <ClCompile Include="source\goaleffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -376,11 +376,11 @@
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\modecredit.h" />
-    <ClInclude Include="source\configui.h" />
     <ClInclude Include="source\savepoint.h" />
     <ClInclude Include="source\savemanager.h" />
     <ClInclude Include="source\savepointeffect.h" />
     <ClInclude Include="source\makimonogeteffect.h" />
+    <ClInclude Include="source\goaleffect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

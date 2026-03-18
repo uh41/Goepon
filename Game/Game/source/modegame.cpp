@@ -103,7 +103,7 @@ bool ModeGame::Initialize()
 
 	if(_treasureUi)
 	{
-		_treasureUi->SetTreasureList(_treasure);
+		_treasureUi->SetTreasureList(_treasureBase);
 	}
 
 	// ゴール初期化
@@ -111,7 +111,6 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化をここで行う
 	DebugInitialize();// デバック初期化
-	ShadowInitialize();// シャドウ生成
 	CameraInfoInitialize();// カメラ情報初期化 ← ここで_cameraが作成される
 
 	//  カメラが正常に作成されたことを確認 
@@ -247,12 +246,6 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Terminate();
-	}
-	_charaShadow.clear();
 	// エフェクト
 	for(auto& effectBase : _effectBase)
 	{
@@ -1384,11 +1377,6 @@ bool ModeGame::Process()
 			// タヌキ表示へ切替
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
-
-			if(_configUi)
-			{
-				_configUi->SetTransForm(ConfigUi::FormType::TANUKI);
-			}
 
 			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
 			if(prevActive && _playerTanuki)

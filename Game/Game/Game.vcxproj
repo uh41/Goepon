@@ -24,9 +24,7 @@
     <ClInclude Include="source\attackui.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
-    <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\CinematicCamera.h" />
-    <ClInclude Include="source\configui.h" />
     <ClInclude Include="source\counterui.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\dashui.h" />
@@ -38,6 +36,7 @@
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\enemysoundmanager.h" />
     <ClInclude Include="source\Goal.h" />
+    <ClInclude Include="source\goaleffect.h" />
     <ClInclude Include="source\henshinui.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\makimonogeteffect.h" />
@@ -106,9 +105,7 @@
     <ClCompile Include="source\attackui.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
-    <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
-    <ClCompile Include="source\configui.cpp" />
     <ClCompile Include="source\counterui.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\dashui.cpp" />
@@ -120,6 +117,7 @@
     <ClCompile Include="source\enemysensor.cpp" />
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\Goal.cpp" />
+    <ClCompile Include="source\goaleffect.cpp" />
     <ClCompile Include="source\henshinui.cpp" />
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\makimonogeteffect.cpp" />
