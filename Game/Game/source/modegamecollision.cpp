@@ -1143,10 +1143,17 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 			hitPos
 		))
 		{
-			SavePlayer(checkPlayer);
+			// 初回接触のみセーブを実行する（同じセーブポイントなら2回目以降はスキップ）
+			if(_lastSavedPoint != savePoint)
+			{
+				SavePlayer(checkPlayer);
+				_lastSavedPoint = savePoint;
+			}
 			return true;
 		}
 	}
 
+	// どのセーブポイントにも触れていない場合は、再度同じポイントでセーブできるようリセット
+	_lastSavedPoint = nullptr;
 	return false;
 }
