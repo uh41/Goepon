@@ -1021,6 +1021,13 @@ bool ModeGame::Process()
 		return true;
 	}
 
+	if(_isGameOverCinematicActive)
+	{
+		ProcessGameOverSequence();
+		AnimationManager::GetInstance()->Update(1.0f);
+		return true;
+	}
+
 	if (_isIntroActive)
 	{
 		ProcessIntroSequence();
@@ -1234,7 +1241,7 @@ bool ModeGame::Process()
 					//ResetEnemyRoot();
 
 					//ここでゲームオーバー処理へ移行
-					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
+					StartGameOverSequence();
 
 					break;
 				}

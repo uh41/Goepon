@@ -93,8 +93,12 @@ public:
 	// 生存フラグ
 	void SetAlive(bool alive) { _bIsAlive = alive; }
 
-	int PlayAnimation(std::string name, bool loop = false);
-	void StopAnimation();
+	// アニメーション関連
+	int PlayAnimation(std::string name, bool loop = false); // アニメーション再生。
+	void StopAnimation();									// アニメーション停止。
+	int GetAnimId() const { return _animId; }				// 現在のアニメーションIDを取得
+	bool IsAnimationPlaying() const;						// アニメーションが再生中かどうかを確認
+	void ClearAnimIdIfStopped();							// アニメーションが停止している場合、アニメーションIDをクリアする
 
 	const vec::Vec3& GetInputVector() const
 	{

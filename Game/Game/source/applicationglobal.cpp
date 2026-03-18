@@ -301,7 +301,7 @@ bool ApplicationGlobal::Init()
 	ResourceServer::MV1LoadModel(mv1::sigaraki);
 	ResourceServer::MV1LoadModel(mv1::SK_Dog);
 	ResourceServer::MV1LoadModel(mv1::SK_busi_multimotion);
-	ResourceServer::MV1LoadModel(mv1::Game_clear);
+	ResourceServer::MV1LoadModel(mv1::GameClear_Tanuki);
 	ResourceServer::MV1LoadModel(mv1::SK_multimotionTanuHuman_06);
 	ResourceServer::MV1LoadModel(mv1::gamestart);
 

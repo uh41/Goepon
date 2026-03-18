@@ -85,5 +85,6 @@ protected:
 private:
 	int _gameClearModelHandle; // クリア後のモデルハンドル
 	int _gameOverModelHandle; // ゲームオーバー時のモデルハンドル
+
 };
 

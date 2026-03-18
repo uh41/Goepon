@@ -64,6 +64,19 @@
 #include "savepoint.h"
 #include "savepointeffect.h"
 
+// 定数定義
+
+// ゲームクリア関連
+namespace GAMECLEAR
+{
+	static constexpr float CLEAR_CINEMATIC_DURATION = 3.0f; // クリア演出の総時間（秒）
+}
+
+// ゲームオーバー関連
+namespace GAMEOVER
+{
+	static constexpr float GAMEOVER_CINEMATIC_DURATION = 3.0f; // ゲームオーバー演出の総時間（秒）
+}
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
@@ -155,21 +168,25 @@ public:
 	bool DebugCameraControl();
 
 	/// 演出関連
-	//　演出カメラ
 	bool TreasureOpeningCameraControl(); // 宝箱オープン演出カメラ制御
 	bool EndCinematicCamera();           // 演出カメラ終了
 	bool EndCinematicSequence(bool restoreToMainCamera); // 汎用的な演出カメラ終了関数
 	bool DebugCinematicCameraControl();  // デバッグ用の演出カメラ制御
 	// イントロ演出関数
-	bool StartIntroSequence();   // イントロシーケンス開始
-	bool ProcessIntroSequence(); // イントロシーケンスの更新
-	bool EndIntroSequence();     // イントロシーケンス終了
-	// ゲームクリア演出用の関数を追加
-	bool StartClearSequence();   // クリアシーケンス開始
-	bool ProcessClearSequence(); // クリアシーケンスの更新
-	bool EndClearSequence();     // クリアシーケンス終了
-	bool StartPlayerRotation();  // プレイヤー回転演出開始
-	bool ProcessPlayerRotation(); // プレイヤー回転演出の更新
+	bool StartIntroSequence();      // イントロシーケンス開始
+	bool ProcessIntroSequence();    // イントロシーケンスの更新
+	bool EndIntroSequence();        // イントロシーケンス終了
+	// ゲームクリア演出			    
+	bool StartClearSequence();      // クリアシーケンス開始
+	bool ProcessClearSequence();    // クリアシーケンスの更新
+	bool EndClearSequence();        // クリアシーケンス終了
+	bool StartPlayerRotation();     // プレイヤー回転演出開始
+	bool ProcessPlayerRotation();   // プレイヤー回転演出の更新
+	// ゲームオーバー演出
+	bool StartGameOverSequence();   // ゲームオーバーシーケンス開始
+	bool ProcessGameOverSequence(); // ゲームオーバーシーケンスの更新
+	bool EndGameOverSequence();     // ゲームオーバーシーケンス終了
+
 
 	// メニューから開始/終了されるカメラ編集（現在のカメラ状態を保存・復元）
 	void StartCameraControlAndSave();
@@ -438,11 +455,15 @@ private:
 	};
 	IntroPhase _introPhase; // イントロのフェーズ管理用変数
 
-	// ゲームクリア演出用
-	bool _isGameClearCinematicActive; // ゲームクリア演出が有効か
-	float _clearCinematicTimer;         // クリア演出の経過時間
-	static constexpr float CLEAR_CINEMATIC_DURATION = 3.0f; // クリア演出の総時間（秒）
+	// ゲームクリア演出
+	bool _isGameClearCinematicActive;					    // ゲームクリア演出が有効か
+	float _clearCinematicTimer;							    // クリア演出の経過時間
 	
+	// ゲームオーバー演出
+	bool  _isGameOverCinematicActive; // ゲームオーバー演出が有効か
+	float _gameOverCinematicTimer;    // ゲームオーバー演出の経過時間
+	int   _gameOverSequencePhase;     // ゲームオーバー演出のフェーズ管理用変数
+
 	// プレイヤー回転演出用
 	bool _isPlayerRotating = false;
 	float _playerRotationTimer = 0.0f;

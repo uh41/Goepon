@@ -317,67 +317,66 @@ bool PlayerTanuki::Process()
 			}
 		}
 	}
-		if(_dash)
+	if(_dash)
+	{
+		_dashTimer -= 1.0f / 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
+		if(_dashTimer <= 0.0f)
 		{
-			_dashTimer -= 1.0f / 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
-			if(_dashTimer <= 0.0f)
+			_dash = false;
+			_dashTimer = 0.0f;
+			_fMvSpeed = _normalSpeed;
+			_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
+			_dashRecoverTime = 0.0f;
+			_dashRecoverActive = false;
+		}
+	}
+
+	// ダッシュ時のクールタイム
+	if(_dashCoolDownTime > 0.0f)
+	{
+		_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
+		if(_dashCoolDownTime < 0.0f)
+		{
+			_dashCoolDownTime = 0.0f;
+			if(_dashCount > 0 && !_dashRecoverActive)
 			{
-				_dash = false;
-				_dashTimer = 0.0f;
-				_fMvSpeed = _normalSpeed;
-				_dashCoolDownTime = dash::DASH_COOL_DOWN_DURATION; // ダッシュ終了後にクールダウン開始
+				_dashRecoverActive = true; // クールダウンが終わったら回復開始
+				_dashRecoverTime = dash::DASH_RECOVER_INTERVAL;
+			}
+		}
+	}
+
+	// ダッシュ回復処理
+	if(_dashRecoverActive)
+	{
+		_dashRecoverTime -= 1.0f / 60.0f; // 回復タイマーも進める
+		if(_dashRecoverTime <= 0.0f)
+		{
+			if(_dashCount > 0)
+			{
+				_dashCount = _dashCount - 1;
+			}
+			else
+			{
+				_dashCount = 0;
+			}
+
+			if(_dashCount > 0)
+			{
+				_dashRecoverTime = dash::DASH_RECOVER_INTERVAL; // 回復インターバルをリセットして次の回復まで待つ
+			}
+			else
+			{
+				_dashRecoverActive = false; // 全て回復したら回復終了
 				_dashRecoverTime = 0.0f;
-				_dashRecoverActive = false;
 			}
 		}
+	}
 
-		// ダッシュ時のクールタイム
-		if(_dashCoolDownTime > 0.0f)
-		{
-			_dashCoolDownTime -= 1.0f / 60.0f; // クールダウンタイマーも進める
-			if(_dashCoolDownTime < 0.0f)
-			{
-				_dashCoolDownTime = 0.0f;
-				if(_dashCount > 0 && !_dashRecoverActive)
-				{
-					_dashRecoverActive = true; // クールダウンが終わったら回復開始
-					_dashRecoverTime = dash::DASH_RECOVER_INTERVAL;
-				}
-			}
-		}
-
-		// ダッシュ回復処理
-		if(_dashRecoverActive)
-		{
-			_dashRecoverTime -= 1.0f / 60.0f; // 回復タイマーも進める
-			if(_dashRecoverTime <= 0.0f)
-			{
-				if(_dashCount > 0)
-				{
-					_dashCount = _dashCount - 1;
-				}
-				else
-				{
-					_dashCount = 0;
-				}
-
-				if(_dashCount > 0)
-				{
-					_dashRecoverTime = dash::DASH_RECOVER_INTERVAL; // 回復インターバルをリセットして次の回復まで待つ
-				}
-				else
-				{
-					_dashRecoverActive = false; // 全て回復したら回復終了
-					_dashRecoverTime = 0.0f;
-				}
-			}
-		}
-
-		if(old_status != _status)
-		{
-			SoundWalk();
-		}
-	
+	if(old_status != _status)
+	{
+		SoundWalk();
+	}
 	
 	// アニメーションの名前取得
 	auto GetAnimName = [this](STATUS name) -> std::string
@@ -572,7 +571,7 @@ bool PlayerTanuki::SetGameClearHandle(const std::string& animName, bool loop)
 	// クリア用モデルを末ロードなら取得
 	if(_gameClearModelHandle < 0)
 	{
-		_gameClearModelHandle = ResourceServer::MV1LoadModel(mv1::Game_clear);
+		_gameClearModelHandle = ResourceServer::MV1LoadModel(mv1::GameClear_Tanuki);
 		if(_gameClearModelHandle < 0)
 		{
 			return false;
@@ -627,8 +626,28 @@ bool PlayerTanuki::SetGameOverHandle(const std::string& animName, bool loop)
 
 	if(_gameOverModelHandle < 0)
 	{
-		//_gameOverModelHandle = ResourceServer::MV1LoadModel(mv1::Game_over);
+		_gameOverModelHandle = ResourceServer::MV1LoadModel(mv1::GameOver_Tanuki);
+		if(_gameOverModelHandle < 0)
+		{
+			return false;
+		}
 	}
+
+	StopAnimation();
+
+	if(_handle >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_handle);
+		_handle = -1;
+	}
+	_handle = _gameOverModelHandle;
+
+	// 切り替え後にアニメーション再生
+	if(!animName.empty())
+	{
+		PlayGameOverAnimation(animName, loop);
+	}
+	return true;
 }
 
 int PlayerTanuki::PlayGameOverAnimation(std::string name, bool loop)

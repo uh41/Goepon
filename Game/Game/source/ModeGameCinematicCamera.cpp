@@ -1,5 +1,6 @@
 ﻿#include "modegame.h"
 #include "ModeGameClear.h"
+#include "ModeGameOver.h"
 #include "mymath.h"
 bool ModeGame::DebugCinematicCameraControl()
 {
@@ -716,7 +717,7 @@ bool ModeGame::ProcessClearSequence()
 				float endDist = currentDist * 0.25f;
 				if(endDist < 150.0f) endDist = 150.0f;
 
-				_cinematicCamera->StartZoom(playerPos, CLEAR_CINEMATIC_DURATION, currentDist, endDist);
+				_cinematicCamera->StartZoom(playerPos, GAMECLEAR::CLEAR_CINEMATIC_DURATION, currentDist, endDist);
 			}
 		}
 
@@ -740,7 +741,7 @@ bool ModeGame::ProcessClearSequence()
 
 		_clearCinematicTimer += 1.0f / 60.0f;
 
-		if(_clearCinematicTimer >= CLEAR_CINEMATIC_DURATION)
+		if(_clearCinematicTimer >= GAMECLEAR::CLEAR_CINEMATIC_DURATION)
 		{
 			return EndClearSequence();
 		}
@@ -752,23 +753,8 @@ bool ModeGame::ProcessClearSequence()
 bool ModeGame::EndClearSequence()
 {
 	_isGameClearCinematicActive = false;
-	//// 演出カメラを停止
-	//if (_cinematicCamera)
-	//{
-	//	_cinematicCamera->StopAll();
-	//}
-
-	//// 元のカメラに戻す
-	//if (_useCinematicCamera && _originalCamera)
-	//{
-	//	_camera = _originalCamera;
-	//	_originalCamera = nullptr;
-	//	_useCinematicCamera = false;
-	//}
-
 	// ゲームクリアロード画面へ遷移
 	ModeServer::GetInstance()->Add(new ModeGameClear(this), 255, "ModeGameClear");
-
 	return true;
 }
 
@@ -911,4 +897,156 @@ bool ModeGame::ProcessPlayerRotation()
 	targetPlayer->SetRotationY(currentRotation);
 
 	return false; // まだ回転中
+}
+
+bool ModeGame::StartGameOverSequence()
+{
+	if(_isGameOverCinematicActive)
+	{
+		return true;
+	}
+	
+	_isGameOverCinematicActive = true;
+	_gameOverCinematicTimer		= 0.0f;
+
+	// 0: ズーム中, 1: モデル切替＆アニメ, 2: 余韻
+	_gameOverSequencePhase		= 0;
+
+	// 操作している表示しているプレイヤーを取得
+	PlayerBase* targetPlayer = nullptr;
+	if     (_bShowTanuki && _playerTanuki) targetPlayer  = _playerTanuki.get();
+	else if(_showMonoPlayer && _playerMono) targetPlayer = _playerMono.get();
+	else if(_player) targetPlayer						 = _player.get();
+
+	_bShowTanuki = true;
+	_showMonoPlayer = false;
+
+	if(_playerTanuki && targetPlayer && targetPlayer != _playerTanuki.get())
+	{
+		_playerTanuki->SetPos(targetPlayer->GetPos());
+		_playerTanuki->SetDir(targetPlayer->GetDir());
+		_playerTanuki->_status = CharaBase::STATUS::WAIT;
+		_playerTanuki->PlayAnimation("idle", true);
+		_playerTanuki->Process();
+	}
+
+	// 演出はタヌキ
+	PlayerTanuki* tanuki = _playerTanuki.get();
+	if(!tanuki)
+	{
+		_isGameOverCinematicActive = false;
+		return false;
+	}
+
+	// 入力停止
+	tanuki->SetInputEnabled(false);
+
+	// シネマティックカメラ作成/切り替え
+	if(!_cinematicCamera)
+	{
+		_cinematicCamera = std::make_unique<CinematicCamera>();
+		if(!_cinematicCamera->Initialize())
+		{
+			_cinematicCamera.reset();
+			_isGameOverCinematicActive = false;
+			return false;
+		}
+	}
+
+	if(!_useCinematicCamera)
+	{
+		if(!_camera)
+		{
+			_isGameOverCinematicActive = false;
+			return false;
+		}
+		_cinematicCamera->SetPos(_camera->GetPos());	
+		_cinematicCamera->SetTarget(_camera->GetTarget());
+		_cinematicCamera->SetClipNear(_camera->GetClipNear());
+		_cinematicCamera->SetClipFar(_camera->GetClipFar());
+
+		_savedCamera = _camera;
+		_useCinematicCamera = true;
+		_camera = _cinematicCamera.get();
+	}
+
+	// ここで「ズーム開始」
+	vec::Vec3 target = vec3::VAdd(tanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+	vec::Vec3 camPos = _cinematicCamera->GetPos();
+
+	float startDist = vec3::VSize(vec3::VSub(camPos, target));
+	float endDist = startDist * 0.25f;
+	if(endDist < 180.0f)endDist = 180.0f;
+
+	_cinematicCamera->StartZoom(target, 0.8f, startDist, endDist);
+
+	// ここでズーム開始
+	return true;
+}
+
+bool ModeGame::ProcessGameOverSequence()
+{
+	if(!_isGameOverCinematicActive)
+	{
+		return false;
+	}
+
+	if(_useCinematicCamera && _cinematicCamera)
+	{
+		_cinematicCamera->Process();
+
+		// ターゲット追尾（ズームの中心がズレないようにする）
+		if(_playerTanuki)
+		{
+			vec::Vec3 t = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			_cinematicCamera->SetTarget(t);
+		}
+	}
+
+	_gameOverCinematicTimer += 1.0f / 60.0f;
+
+	// フェーズ0：ズームが終わったら、モデル切替＋アニメ開始
+	if(_gameOverSequencePhase == 0 && _cinematicCamera && _cinematicCamera->GetState() == CinematicCamera::State::Idle)
+	{
+		_gameOverSequencePhase = 1;
+
+		if(_playerTanuki)
+		{
+			_playerTanuki->SetGameOverHandle("tanuki_gameover", false);
+		}
+	}
+
+	// フェーズ1：ゲームオーバーアニメが終わったら、ゲームオーバー画面へ
+	if(_gameOverSequencePhase == 1 && _playerTanuki)
+	{
+		if(!_playerTanuki->IsAnimationPlaying())
+		{
+			return EndGameOverSequence();
+		}
+	}
+
+	// 全体時間で終了
+	if(_tanukiAttackAnimId != -1 && !AnimationManager::GetInstance()->IsPlaying(_tanukiAttackAnimId))
+	{
+		return EndGameOverSequence();
+	}
+
+	return true;
+}
+
+bool ModeGame::EndGameOverSequence()
+{
+	if(!_isGameOverCinematicActive)
+	{
+		return false;
+	}
+
+	_isGameOverCinematicActive = false;
+
+	// 演出カメラは戻さずに、ゲームオーバーUIへ遷移する（好み）
+	// ここで戻したいなら EndCinematicSequence(true) を呼ぶ
+	EndCinematicSequence(false);
+
+	ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
+	return true;
 }
