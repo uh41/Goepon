@@ -40,10 +40,13 @@ namespace texture
   inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
   inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
   inline constexpr const char* TX_change = "res/Texture/TX_change.png";
+  inline constexpr const char* TX_deguchi3 = "res/Texture/TX_deguchi3.png";
   inline constexpr const char* TX_doya = "res/Texture/TX_doya.png";
   inline constexpr const char* TX_doyax = "res/Texture/TX_doyax.png";
   inline constexpr const char* TX_find = "res/Texture/TX_find.png";
   inline constexpr const char* TX_hatena = "res/Texture/TX_hatena.png";
+  inline constexpr const char* TX_howtoplay = "res/Texture/TX_howtoplay.png";
+  inline constexpr const char* TX_kiroku = "res/Texture/TX_kiroku.png";
   inline constexpr const char* TX_kizetsu = "res/Texture/TX_kizetsu.png";
   inline constexpr const char* TX_naki = "res/Texture/TX_naki.png";
   inline constexpr const char* TX_nakix = "res/Texture/TX_nakix.png";
@@ -115,7 +118,10 @@ namespace ef
   inline constexpr const char* EF_load_1 = "res/Effect/EF_load_1.efkefc";
   inline constexpr const char* EF_naki = "res/Effect/EF_naki.efkefc";
   inline constexpr const char* EF_walk = "res/Effect/EF_walk.efkefc";
+  inline constexpr const char* Escapepoint = "res/Effect/Escapepoint.efkefc";
+  inline constexpr const char* Howtoplay = "res/Effect/Howtoplay.efkefc";
   inline constexpr const char* IT_makimono = "res/Effect/IT_makimono.efkefc";
+  inline constexpr const char* Savepoint = "res/Effect/Savepoint.efkefc";
   inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
   inline constexpr const char* tutorial_1 = "res/Effect/tutorial_1.efkefc";
   inline constexpr const char* tutorial_2 = "res/Effect/tutorial_2.efkefc";
@@ -127,6 +133,7 @@ namespace mv1
 {
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
   inline constexpr const char* Game_clear = "res/Gameclear/Game_clear.mv1";
+  inline constexpr const char* anime_tanuki_gameover = "res/Gameover/anime_tanuki_gameover.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
@@ -141,6 +148,7 @@ namespace mv1
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
   inline constexpr const char* gamestart = "res/Titleanimation/gamestart.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
+  inline constexpr const char* tuzura_open = "res/Treasure/Treasureopen/tuzura_open.mv1";
 }
 
 namespace mp3
