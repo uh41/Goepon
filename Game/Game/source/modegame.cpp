@@ -289,7 +289,8 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-	if(_sound3D) {
+	if(_sound3D)
+	{
 		_sound3D->StopAll();
 		_sound3D.reset();
 	}
@@ -302,7 +303,11 @@ bool ModeGame::Terminate()
 
 	if(gGlobal._soundServer)
 	{
-		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+		using TYPE = soundserver::SoundItemBase::TYPE;
+		gGlobal._soundServer->StopType(TYPE::BGM);
+		gGlobal._soundServer->StopType(TYPE::SE);
+		gGlobal._soundServer->StopType(TYPE::VOICE);
+		gGlobal._soundServer->StopType(TYPE::ONESHOT);
 	}
 
 	// BGM ハンドル参照をクリア（安全のため）
