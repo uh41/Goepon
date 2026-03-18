@@ -284,7 +284,8 @@ bool ModeGame::Terminate()
 		_enemySensor->Terminate();
 		_enemySensor.reset();
 	}
-	if(_sound3D) {
+	if(_sound3D)
+	{
 		_sound3D->StopAll();
 		_sound3D.reset();
 	}
