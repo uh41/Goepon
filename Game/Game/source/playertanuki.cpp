@@ -248,7 +248,7 @@ bool PlayerTanuki::Process()
 			_vDir = _v;
 			_status = STATUS::WALK;
 
-			if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+			if(!_dash && (trg & PAD_INPUT_2) && moving && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
 			{
 				_dash = true;
 				_dashTimer = dash::DASH_DURATION;
@@ -267,7 +267,7 @@ bool PlayerTanuki::Process()
 			_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
 			_status = STATUS::WAIT;
 		}
-		if(!_dash && (trg & PAD_INPUT_2) && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+		if(!_dash && (trg & PAD_INPUT_2) && moving && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
 		{
 			_dash = true;
 			_dashTimer = dash::DASH_DURATION;

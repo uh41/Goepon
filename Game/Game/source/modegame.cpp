@@ -166,6 +166,7 @@ bool ModeGame::Initialize()
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasureBase);
+	_savePointEffect->SetSavePoint(_savePoint);
 	_walkEffect->SetPlayerPos(_playerTanuki.get());
 	_findEffect->SetEnemy(_enemyBase);
 	_hatenaEffect->Enemy(_enemyBase);
@@ -182,6 +183,13 @@ bool ModeGame::Initialize()
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
+	if(_bgmChenge)
+	{
+		_bgmChenge->SetVolume(0); // 再生時は無音にする
+		_bgmChenge->Play();       // StreamLoad とハンドル作成を行う
+		_bgmChenge->Stop();       // 再生は止めてハンドルを保持する
+	}
+
 	_bgmInitialize->Play();
 
 	SavePlayer(nullptr); // プレイヤーの状態をセーブする（必要に応じて引数でセーブスロットを指定できるようにする）
@@ -479,6 +487,9 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 				continue;
 			}
 		}
+
+		enemyPtr->StopAnimation();
+		enemyPtr->PlayAnimation("idle", true);
 	}
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
