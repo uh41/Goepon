@@ -488,8 +488,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 			}
 		}
 
-		enemyPtr->StopAnimation();
-		enemyPtr->PlayAnimation("idle", true);
+		if(auto* e = dynamic_cast<Enemy*>(enemyPtr.get()))
+		{
+			e->StopAnimation();
+			e->PlayAnimation("idle", true);
+		}
 	}
 
 	_isLoadComplete = true; // ロード完了フラグを立てる

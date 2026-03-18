@@ -11,7 +11,7 @@ bool TreasureUi::Initialize()
 	base::Initialize();
 	_handleDeguti = LoadGraph(ui::Deguti);
 	_handleNokori = LoadGraph(ui::UI_nokori);
-	_handleMakimono = LoadGraph(ui::Makimono);
+	//_handleMakimono = LoadGraph(ui::Makimono);
 
 	_remainCount = 0;
 

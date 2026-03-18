@@ -148,8 +148,6 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_findEffect);
 	_hatenaEffect = std::make_shared<HatenaEffect>();
 	_effectBase.emplace_back(_hatenaEffect);
-	//_aseEffect = std::make_shared<AseEffect>();
-	//_effectBase.emplace_back(_aseEffect);
 	_doyaEffect = std::make_shared<DoyaEffect>();
 	_effectBase.emplace_back(_doyaEffect);
 	_nakiEffect = std::make_shared<NakiEffect>();
@@ -160,6 +158,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_stunEffect);
 	_savePointEffect = std::make_shared<SavePointEffect>();
 	_effectBase.emplace_back(_savePointEffect);
+	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
+	_effectBase.emplace_back(_makimonoGetEffect);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
