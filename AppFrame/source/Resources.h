@@ -75,9 +75,9 @@ namespace ui
   inline constexpr const char* Tanuki_config_2 = "res/UI/Tanuki_config_2.png";
   inline constexpr const char* Tanumono_config = "res/UI/Tanumono_config.png";
   inline constexpr const char* Title_gamefinish = "res/UI/Title_gamefinish.png";
-  inline constexpr const char* Title_gamefinish_small = "res/UI/Title_gamefinish_small.png";
+  inline constexpr const char* Title_gamefinish_no = "res/UI/Title_gamefinish_no.png";
   inline constexpr const char* Title_gamestart = "res/UI/Title_gamestart.png";
-  inline constexpr const char* Title_gamestart_small = "res/UI/Title_gamestart_small.png";
+  inline constexpr const char* Title_gamestart_no = "res/UI/Title_gamestart_no.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";
@@ -94,6 +94,7 @@ namespace ui
   inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
   inline constexpr const char* UI_x = "res/UI/UI_x.png";
   inline constexpr const char* prologe_config = "res/UI/prologe_config.png";
+  inline constexpr const char* prologe_configaa = "res/UI/prologe_configaa.png";
   inline constexpr const char* MUI_0 = "res/UI/Makimono_Num/MUI_0.png";
   inline constexpr const char* MUI_1 = "res/UI/Makimono_Num/MUI_1.png";
   inline constexpr const char* MUI_2 = "res/UI/Makimono_Num/MUI_2.png";
