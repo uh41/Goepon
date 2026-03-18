@@ -384,7 +384,17 @@ void EnemyMove::OnPlayerLost()
 		_hasSavePoint = true;
 	}
 
-	ReturnInitialPos();	// 初期位置に戻る処理を開始
+	// 待機してから初期位置へ戻す
+	_isPatrol = false;
+	_isReturning = false;
+	_waitingReturn = true;
+	_returnWaitTimer = RETURN_WAIT_TIME;
+	ResetTeleport();
+
+	if (_enemySensor)
+	{
+		_enemySensor->ResetDetection();
+	}
 }
 
 // 初期位置に戻る処理の更新
@@ -647,6 +657,17 @@ bool EnemyMove::Process()
 		// 待機中は必ずWAITステータスを設定して、他の処理をスキップ
 		_status = STATUS::WAIT;
 	}
+	else if (_waitingReturn)
+	{
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+		_returnWaitTimer -= dt;
+		if (_returnWaitTimer <= 0.0f)
+		{
+			_waitingReturn = false;
+			ReturnInitialPos();
+		}
+		_status = STATUS::WAIT;
+	}
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
 	else if (_isMovingToSound)
 	{
@@ -689,7 +710,7 @@ bool EnemyMove::Process()
 		// プレイヤーを見失っていて、かつ初期位置にいない場合は初期位置に戻る
 		if (_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
-			ReturnInitialPos();
+			_waitingReturn = true;
 		}
 	}
 

@@ -78,10 +78,18 @@ bool Enemy::Process()
 		_status = STATUS::WAIT;
 	}
 
+	float dt = 1.0f / 60.0f;
+	if (auto* app = ApplicationMain::GetInstance())
+	{
+		if (auto* frameRate = app->GetFrameRateController())
+		{
+			dt = StCas<float>(frameRate->GetDeltaTime());
+		}
+	}
+
 	// 音検知タイマーの更新（音検知が有効な場合）
 	if (_soundDetectionActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
 		// 10秒経過したら初期位置への帰還を開始
@@ -115,15 +123,12 @@ bool Enemy::Process()
 	// 検知終了後の待機処理（共通フラグを参照）
 	if(_waitingReturn)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_returnWaitTimer -= dt;
 
 		if(_returnWaitTimer <= 0.0f)
 		{
 			_waitingReturn = false;
-
-			// 初期位置へ戻る処理は base 実装を使う
-			ReturnInitialPos();
+			ReturnInitialPos();	// 初期位置へ戻る処理は base 実装を使う
 		}
 
 		_status = STATUS::WAIT;
@@ -153,21 +158,6 @@ bool Enemy::Process()
 				// 音検知タイマーをリセット
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
-			}
-			else if (_waitingReturn)	// 検知終了後の待機処理
-			{
-				const float dt = 1.0f / 60.0f; // 60FPS想定
-				_returnWaitTimer -= dt;
-
-				if (_returnWaitTimer <= 0.0f)
-				{
-					_waitingReturn = false;
-
-					// 初期位置へ戻る処理は base 実装を使う
-					ReturnInitialPos();
-				}
-
-				_status = STATUS::WAIT;
 			}
 			else if (_isReturning)	// 初期位置に戻り中
 			{
