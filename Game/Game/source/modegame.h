@@ -211,6 +211,7 @@ public:
 		MapBase* map);
 
 	at::spc<EnemySensor> CreateEnemySensor(float soundArea, MapBase* map);
+	bool ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase* player, bool isHumanForm, bool& anyDetected, bool& reEffect);
 
 	const at::vec<EnemyBase*>& GetEnemiesInAttackRangees() const { return _enemiesInAttackRange; }
 

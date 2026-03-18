@@ -877,6 +877,17 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 			move->SetPos(tmpPos);
 		}
 	}
+
+	vec::Vec3 actualDelta = vec3::VSub(move->GetPos(), oldpos);
+
+	// move が現在表示されているプレイヤーインスタンスのいずれかであればカメラを移動
+	bool isDisplayedPlayer = (move == _player.get() || move == _playerTanuki.get() || move == _playerMono.get());
+
+	// 演出カメラ使用中は追従させない
+	if(isDisplayedPlayer && _camera && !_useCinematicCamera)
+	{
+		_camera->MoveBy(actualDelta);
+	}
 	return true;
 }
 

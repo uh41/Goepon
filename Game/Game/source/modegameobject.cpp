@@ -992,6 +992,262 @@ bool ModeGame::ChangeBGM()
 	return true;
 }
 
+bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase* player, bool isHumanForm, bool& anyDetected, bool& reEffect)
+{
+	if(container.empty() || !player) return false;
+
+	// Mono の「動いたか」を判定する閾値（ワールド単位）
+	constexpr float kMonoMoveDetectThreshold = 0.1f;
+
+	// 分散処理用の開始インデックスを保持（関数内で static にする）
+	static size_t s_nextProcessIndex = 0;
+
+	int nonChasingProcessedCount = 0;
+	const int kMaxNormalChecksPerFrame = 1; // 1フレームに視覚判定する未発見状態の敵の数
+
+	for(size_t i = 0; i < container.size(); ++i)
+	{
+		// ラウンドロビン方式で順番にアクセスする
+		size_t currentIndex = (s_nextProcessIndex + i) % container.size();
+		auto& item = container[currentIndex];
+
+		EnemyBase* eb = StCas<EnemyBase*>(item.get());
+		if(!eb || !eb->IsAlive())
+		{
+			continue;
+		}
+
+		auto sensor = eb->GetEnemySensor();
+		if(!sensor)
+		{
+			continue;
+		}
+
+		// センサーに必要な情報を確実にセット（全員同期）
+		sensor->SetPos(eb->GetPos());
+		sensor->SetDir(eb->GetDir());
+		sensor->SetMap(_objectServer->GetMap());
+
+		// 現在の追跡状態を記憶しておく（これからの処理で更新される可能性があるため）
+		const bool wasChasing = sensor->IsChasing();
+
+		// 追跡中ではない敵の場合の時分割・距離スキップ判定
+		if(!wasChasing)
+		{
+			// --- 負荷軽減のための距離判定 ---
+			const float activeRadius = 1000.0f;
+			vec::Vec3 vecToEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
+			vecToEnemy.y = 0.0f;
+			if(vec3::VSize(vecToEnemy) > activeRadius)
+			{
+				continue; // 遠すぎる場合は検知処理をスキップ
+			}
+
+			// 既にこのフレームで判定人数の上限に達している場合はスキップ
+			if(nonChasingProcessedCount >= kMaxNormalChecksPerFrame)
+			{
+				continue;
+			}
+
+			// 回数を消費し、次回のフレームで「この敵の次」から判定を始めるように記憶する
+			nonChasingProcessedCount++;
+			s_nextProcessIndex = (currentIndex + 1) % container.size();
+		}
+
+		// センサー処理（追跡タイマー更新など）
+		sensor->Process();
+
+		// 視覚検知判定
+		bool detected = false;
+		bool chaseStarted = false;
+
+		// --- 犬の場合は人間形態でも全方向から検知可能 ---
+		bool isEnemyDog = (dynamic_cast<EnemyDog*>(eb) != nullptr);
+
+		// --- PlayerMono 表示時の特別処理 ---
+		if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+		{
+			// PlayerMono のときは「扇形内にいて、かつプレイヤーが動いた場合のみ」検知させる
+			vec::Vec3 playerPos = player->GetPos();
+			vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
+			vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
+			float capsuleRadius = player->GetCollisionR();
+
+			if(sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
+			{
+				// プレイヤーの移動量をチェック（座標差だけでなく入力でも判定）
+				vec::Vec3 delta = vec3::VSub(player->GetPos(), player->GetOldPos());
+				float moved = vec3::VSize(delta);
+
+				// 入力ベクトルがあるか（アナログ/十字キー）を判定
+				bool inputMoving = (vec3::VSize(player->GetInputVector()) > 0.001f);
+
+				// 座標差が閾値超過、もしくは入力があるなら「動いた」とみなす
+				if(moved > kMonoMoveDetectThreshold || inputMoving)
+				{
+					detected = sensor->CheckPlayerDetection(player);
+				}
+				else
+				{
+					// 静止しているので検知しない（ただしセンサー追跡中は維持）
+					detected = false;
+				}
+			}
+			else
+			{
+				detected = false;
+			}
+		}
+		else if(!isHumanForm || isEnemyDog)
+		{
+			// 非人状態 または 犬の場合：既存の通常判定をそのまま使用
+			detected = sensor->CheckPlayerDetection(player);
+		}
+		else
+		{
+			if(player != nullptr && sensor != nullptr)
+			{
+				// 人状態（犬以外）：プレイヤーの尻尾(後方)を見られたときのみ検知する
+				vec::Vec3 playerPos = player->GetPos();
+				vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
+				vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
+				float capsuleRadius = player->GetCollisionR();
+
+				if(sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
+				{
+					vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
+					toEnemy.y = 0.0f;
+					if(vec3::VSize(toEnemy) > 0.0001f)
+					{
+						vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
+
+						vec::Vec3 playerForward = player->GetDir();
+						playerForward.y = 0.0f;
+						if(vec3::VSize(playerForward) > 0.0001f)
+						{
+							playerForward = vec3::VNorm(playerForward);
+
+							const float backDotThreshold = 0.0f;
+							float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
+							if(dot <= backDotThreshold)
+							{
+								detected = sensor->CheckPlayerDetection(player);
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				detected = false;
+			}
+		}
+
+		// 検出結果に応じた処理
+		if(detected)
+		{
+			anyDetected = true;
+			if(player != nullptr)
+			{
+				eb->OnPlayerDetected(player->GetPos());
+				_hatenaEffect->ResetEnemyEffect(eb);
+
+				const bool isChasingNow = sensor->IsChasing();
+				chaseStarted = (!wasChasing && isChasingNow);
+
+				if(eb->GetEnemySensor() && eb->GetEnemySensor()->IsChasing())
+				{
+					_nakiEffect->SetTargetPlayer(player);
+					_nakiEffect->PlayEffect(player->GetPos());
+				}
+			}
+
+			// PlayerMono が検知されたら即時モノ->タヌキに切替 
+			if(chaseStarted && _showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+			{
+				if(_playerTanuki && player != _playerTanuki.get())
+				{
+					_showMonoPlayer = false;
+					_bShowTanuki = true;
+
+					_playerTanuki->SetPos(player->GetPos());
+					_playerTanuki->SetDir(player->GetDir());
+					_playerTanuki->_status = CharaBase::STATUS::WAIT;
+					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
+					_playerTanuki->PlayAnimation("goepon_idle", true);
+					_playerTanuki->Process();
+
+					_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+					_walkEffect->SetPlayerPos(_playerTanuki.get());
+
+					// タイマー等リセット（モノ表示からの即時戻しは時間制限を扱わない）
+					_changeTimeActive = false;
+					_changeTimeLimit = 0.0f;
+					_changeBlinkTimer = 0.0f;
+					_changeBlinkVisible = true;
+
+					auto soundFinish = gGlobal._soundServer->Get("3");
+					if(soundFinish && !soundFinish->IsPlay())
+					{
+						soundFinish->Play();
+					}
+				}
+			}
+
+			// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
+			if(chaseStarted && isHumanForm)
+			{
+				if(_playerTanuki && player != _playerTanuki.get())
+				{
+					_showMonoPlayer = false;
+					_bShowTanuki = true;
+
+					_playerTanuki->SetPos(player->GetPos());
+					_playerTanuki->SetDir(player->GetDir());
+					_playerTanuki->_status = CharaBase::STATUS::WAIT;
+					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
+					_playerTanuki->PlayAnimation("idle", true);
+					_playerTanuki->Process();
+					reEffect = true;
+
+					if(reEffect)
+					{
+						_hensinEffect->PlayEffect(_playerTanuki->GetPos());
+						_walkEffect->SetPlayerPos(_playerTanuki.get());
+						//_aseEffect->SetPlayer(_playerTanuki.get());
+					}
+
+					_changeTimeActive = false;
+					_changeTimeLimit = 0.0f;
+					_changeBlinkTimer = 0.0f;
+					_changeBlinkVisible = true;
+
+					auto soundFinish = gGlobal._soundServer->Get("3");
+					if(soundFinish && !soundFinish->IsPlay())
+					{
+						soundFinish->Play();
+					}
+				}
+			}
+		}
+		else
+		{
+			// センサーが追跡状態でなければ失見処理
+			if(!sensor->IsChasing())
+			{
+				if(eb->IsDetectPlayer())
+				{
+					_hatenaEffect->PlayOnce(eb);
+				}
+				eb->OnPlayerLost();
+				chaseStarted = false;
+			}
+		}
+	}
+	return false;
+}
+
+
 // すべての敵のセンサーをチェックして、プレイヤーが検知されているかどうかを判定する
 bool ModeGame::CheckAllDetections()
 {
@@ -1021,264 +1277,7 @@ bool ModeGame::CheckAllDetections()
 	bool anyDetected = false;	// いずれかの敵が検知したかどうか
 	bool reEffect;				// エフェクト再設定フラグ
 
-	// Mono の「動いたか」を判定する閾値（ワールド単位）
-	constexpr float kMonoMoveDetectThreshold = 0.1f;
-
-	// 分散処理用の開始インデックスを保持
-	static size_t s_nextProcessIndex = 0;
-
-	auto processContainer = [&](auto& container) -> bool
-		{
-			if (container.empty()) return false;
-
-			int nonChasingProcessedCount = 0;
-			const int kMaxNormalChecksPerFrame = 1; // 1フレームに視覚判定する未発見状態の敵の数
-
-			for (size_t i = 0; i < container.size(); ++i)
-			{
-				// ラウンドロビン方式で順番にアクセスする
-				size_t currentIndex = (s_nextProcessIndex + i) % container.size();
-				auto& item = container[currentIndex];
-
-				EnemyBase* eb = StCas<EnemyBase*>(item.get());
-				if (!eb || !eb->IsAlive())
-				{
-					continue;
-				}
-
-				auto sensor = eb->GetEnemySensor();
-				if (!sensor)
-				{
-					continue;
-				}
-
-				// センサーに必要な情報を確実にセット（全員同期）
-				sensor->SetPos(eb->GetPos());
-				sensor->SetDir(eb->GetDir());
-				sensor->SetMap(_objectServer->GetMap());
-
-				// 現在の追跡状態を記憶しておく（これからの処理で更新される可能性があるため）
-				const bool wasChasing = sensor->IsChasing();
-
-				// 追跡中ではない敵の場合の時分割・距離スキップ判定
-				if (!wasChasing)
-				{
-					// --- 負荷軽減のための距離判定 ---
-					const float activeRadius = 1000.0f;
-					vec::Vec3 vecToEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
-					vecToEnemy.y = 0.0f;
-					if (vec3::VSize(vecToEnemy) > activeRadius)
-					{
-						continue; // 遠すぎる場合は検知処理をスキップ
-					}
-
-					// 既にこのフレームで判定人数の上限に達している場合はスキップ
-					if (nonChasingProcessedCount >= kMaxNormalChecksPerFrame)
-					{
-						continue;
-					}
-
-					// 回数を消費し、次回のフレームで「この敵の次」から判定を始めるように記憶する
-					nonChasingProcessedCount++;
-					s_nextProcessIndex = (currentIndex + 1) % container.size();
-				}
-
-				// センサー処理（追跡タイマー更新など）
-				sensor->Process();
-
-				// 視覚検知判定
-				bool detected = false;
-				bool chaseStarted = false;
-
-				// --- 犬の場合は人間形態でも全方向から検知可能 ---
-				bool isEnemyDog = (dynamic_cast<EnemyDog*>(eb) != nullptr);
-
-				// --- PlayerMono 表示時の特別処理 ---
-				if (_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
-				{
-					// PlayerMono のときは「扇形内にいて、かつプレイヤーが動いた場合のみ」検知させる
-					// プレイヤーのカプセル情報を取得
-					vec::Vec3 playerPos = player->GetPos();
-					vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
-					vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
-					float capsuleRadius = player->GetCollisionR();
-
-					if (sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
-					{
-						// プレイヤーの移動量をチェック（座標差だけでなく入力でも判定）
-						vec::Vec3 delta = vec3::VSub(player->GetPos(), player->GetOldPos());
-						float moved = vec3::VSize(delta);
-
-						// 入力ベクトルがあるか（アナログ/十字キー）を判定
-						bool inputMoving = (vec3::VSize(player->GetInputVector()) > 0.001f);
-
-						// 座標差が閾値超過、もしくは入力があるなら「動いた」とみなす
-						if (moved > kMonoMoveDetectThreshold || inputMoving)
-						{
-							detected = sensor->CheckPlayerDetection(player);
-						}
-						else
-						{
-							// 静止しているので検知しない（ただしセンサー追跡中は維持）
-							detected = false;
-						}
-					}
-					else
-					{
-						detected = false;
-					}
-				}
-				else if (!isHumanForm || isEnemyDog)
-				{
-					// 非人状態 または 犬の場合：既存の通常判定をそのまま使用
-					detected = sensor->CheckPlayerDetection(player);
-				}
-				else
-				{
-					if (player != nullptr && sensor != nullptr)
-					{
-						// 人状態（犬以外）：プレイヤーの尻尾(後方)を見られたときのみ検知する
-						vec::Vec3 playerPos = player->GetPos();
-						vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
-						vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
-						float capsuleRadius = player->GetCollisionR();
-
-						if (sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
-						{
-							vec::Vec3 toEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
-							toEnemy.y = 0.0f;
-							if (vec3::VSize(toEnemy) > 0.0001f)
-							{
-								vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
-
-								vec::Vec3 playerForward = player->GetDir();
-								playerForward.y = 0.0f;
-								if (vec3::VSize(playerForward) > 0.0001f)
-								{
-									playerForward = vec3::VNorm(playerForward);
-
-									const float backDotThreshold = 0.0f;
-									float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
-									if (dot <= backDotThreshold)
-									{
-										detected = sensor->CheckPlayerDetection(player);
-									}
-								}
-							}
-						}
-					}
-					else
-					{
-						detected = false;
-					}
-				}
-
-				// 検出結果に応じた処理
-				if (detected)
-				{
-					anyDetected = true;
-					if (player != nullptr)
-					{
-						eb->OnPlayerDetected(player->GetPos());
-						_hatenaEffect->ResetEnemyEffect(eb);
-
-						const bool isChasingNow = sensor->IsChasing();
-						chaseStarted = (!wasChasing && isChasingNow);
-
-						if (eb->GetEnemySensor() && eb->GetEnemySensor()->IsChasing())
-						{
-							_nakiEffect->SetTargetPlayer(player);
-							_nakiEffect->PlayEffect(player->GetPos());
-						}
-
-					}
-
-					// PlayerMono が検知されたら即時モノ->タヌキに切替 
-					if (chaseStarted && _showMonoPlayer && dynamic_cast<PlayerMono*>(player))
-					{
-						if (_playerTanuki && player != _playerTanuki.get())
-						{
-							_showMonoPlayer = false;
-							_bShowTanuki = true;
-
-							_playerTanuki->SetPos(player->GetPos());
-							_playerTanuki->SetDir(player->GetDir());
-							_playerTanuki->_status = CharaBase::STATUS::WAIT;
-							_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
-							_playerTanuki->PlayAnimation("goepon_idle", true);
-							_playerTanuki->Process();
-
-							_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-							_walkEffect->SetPlayerPos(_playerTanuki.get());
-
-							// タイマー等リセット（モノ表示からの即時戻しは時間制限を扱わない）
-							_changeTimeActive = false;
-							_changeTimeLimit = 0.0f;
-							_changeBlinkTimer = 0.0f;
-							_changeBlinkVisible = true;
-
-							auto soundFinish = gGlobal._soundServer->Get("3");
-							if (soundFinish && !soundFinish->IsPlay())
-							{
-								soundFinish->Play();
-							}
-						}
-					}
-
-					// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
-					if (chaseStarted && isHumanForm)
-					{
-						if (_playerTanuki && player != _playerTanuki.get())
-						{
-							_showMonoPlayer = false;
-							_bShowTanuki = true;
-
-							_playerTanuki->SetPos(player->GetPos());
-							_playerTanuki->SetDir(player->GetDir());
-							_playerTanuki->_status = CharaBase::STATUS::WAIT;
-							_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
-							_playerTanuki->PlayAnimation("idle", true);
-							_playerTanuki->Process();
-							reEffect = true;
-
-							if (reEffect)
-							{
-								_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-								_walkEffect->SetPlayerPos(_playerTanuki.get());
-								//_aseEffect->SetPlayer(_playerTanuki.get());
-							}
-
-							_changeTimeActive = false;
-							_changeTimeLimit = 0.0f;
-							_changeBlinkTimer = 0.0f;
-							_changeBlinkVisible = true;
-
-							auto soundFinish = gGlobal._soundServer->Get("3");
-							if (soundFinish && !soundFinish->IsPlay())
-							{
-								soundFinish->Play();
-							}
-						}
-					}
-				}
-				else
-				{
-					// センサーが追跡状態でなければ失見処理
-					if (!sensor->IsChasing())
-					{
-						if (eb->IsDetectPlayer())
-						{
-							_hatenaEffect->PlayOnce(eb);
-						}
-						eb->OnPlayerLost();
-						chaseStarted = false;
-					}
-				}
-			}
-			return false;
-		};
-
-	processContainer(_enemyBase);
+	ProcessEnemyContainer(_enemyBase, player, isHumanForm, anyDetected, reEffect);
 
 	if(!anyDetected && _nakiEffect)
 	{
