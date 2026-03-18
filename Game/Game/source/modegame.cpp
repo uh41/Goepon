@@ -182,6 +182,13 @@ bool ModeGame::Initialize()
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
 	_bgmChenge = gGlobal._soundServer->Get("bgmChenge");
+	if(_bgmChenge)
+	{
+		_bgmChenge->SetVolume(0); // 再生時は無音にする
+		_bgmChenge->Play();       // StreamLoad とハンドル作成を行う
+		_bgmChenge->Stop();       // 再生は止めてハンドルを保持する
+	}
+
 	_bgmInitialize->Play();
 
 	SavePlayer(nullptr); // プレイヤーの状態をセーブする（必要に応じて引数でセーブスロットを指定できるようにする）

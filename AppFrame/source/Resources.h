@@ -150,7 +150,6 @@ namespace mp3
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
   inline constexpr const char* Prologe = "res/BGM/Prologe.mp3";
   inline constexpr const char* Title = "res/BGM/Title.mp3";
-  inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
   inline constexpr const char* Dog_walk = "res/SE/Dog_walk.mp3";
   inline constexpr const char* UI_Henshin_pon = "res/SE/UI_Henshin_pon.mp3";
@@ -179,10 +178,5 @@ namespace mp3
 namespace mp4
 {
   inline constexpr const char* EndCredits = "res/movie/EndCredits.mp4";
-}
-
-namespace wav
-{
-  inline constexpr const char* ks010 = "res/BGM/ks010.wav";
 }
 

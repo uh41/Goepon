@@ -970,9 +970,14 @@ bool ModeGame::ChangeBGM()
 		{
 			_bgmInitialize->Stop();
 		}
-		if(_bgmChenge && !_bgmChenge->IsPlay())
+		if(_bgmChenge)
 		{
-			_bgmChenge->Play();
+			// 音量を上げてから再生（既にハンドルがあるならロードは発生しない）
+			_bgmChenge->SetVolume(250);
+			if(!_bgmChenge->IsPlay())
+			{
+				_bgmChenge->Play();
+			}
 		}
 		_isChengeBgm = true;
 	}
