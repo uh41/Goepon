@@ -17,7 +17,7 @@ HenshinUi::HenshinUi()
 bool HenshinUi::Initialize()
 {
 	base::Initialize();
-	_handle = LoadGraph(img::UI_Makimono);
+	//_handle = LoadGraph(img::UI_Makimono);
 	_handleTanubito = LoadGraph(ui::UI_Hito);
 	return true;
 }

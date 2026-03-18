@@ -10,7 +10,7 @@ SavePointEffect::SavePointEffect()
 bool SavePointEffect::Initialize()
 {
 	base::Initialize();
-	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::EF_Tresure);
+	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::Savepoint);
 	_playHandle = -1;
 	return true;
 }

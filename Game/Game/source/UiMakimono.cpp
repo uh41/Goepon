@@ -21,6 +21,30 @@ bool UiMakimono::Initialize()
 	base::Initialize();
 	_handle = LoadGraph("res/Makimono/Makimono (1).png");
 
+	const char* makiNumPath[10] =
+	{
+		ui::MUI_0,
+		ui::MUI_1,
+		ui::MUI_2,
+		ui::MUI_3,
+		ui::MUI_4,
+		ui::MUI_5,
+		ui::MUI_6,
+		ui::MUI_7,
+		ui::MUI_8,
+		ui::MUI_9
+	};
+	for(int i = 0; i < 10; i++)
+	{
+		// 既に読み込まれているハンドル（UI_0..UI_9）を解放して置き換え
+		if(_handleNum[i] != -1)
+		{
+			DeleteGraph(_handleNum[i]);
+			_handleNum[i] = -1;
+		}
+		_handleNum[i] = LoadGraph(makiNumPath[i]);
+	}
+
 	//_handleMakimono = LoadGraph(ui::Item_Makimono);
 	//_handleUiX = LoadGraph(ui::UI_x);
 	return true;
