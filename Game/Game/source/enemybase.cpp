@@ -85,6 +85,13 @@ bool EnemyBase::Initialize()
 	_dirSeqWaitTime = 0.0f;
 	_dirSeqActive = false;
 
+	// 最後の位置でプレイヤーを探す処理の初期化
+	_isSearching = false;
+	_searchBaseDir = vec3::VGet(0.0f, 0.0f, -1.0f);
+	_searchTimer = 0.0f;
+	_searchSweepSpeed = 1.8f;
+	_searchSweepAngleDeg = 60.0f;
+
 	_playSightOffOnReturn = false;
 
 	return true;
@@ -153,6 +160,7 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 			}
 		}
 	}
+	ResetChasedSearch();
 }
 
 // EnemySensorを設定
@@ -180,6 +188,7 @@ void EnemyBase::OnPlayerLost()
 			_enemySensor->ResetDetection();
 		}
 	}
+	ResetChasedSearch();
 }
 
 // 初期位置に戻る処理を開始
@@ -214,6 +223,7 @@ void EnemyBase::ReturnInitialPos()
 
 		_effect->PlayEffect(_vPos); // 戻り始める位置でエフェクトを再生
 	}
+	ResetChasedSearch();
 }
 
 // 床の存在を確認する関数
@@ -321,6 +331,98 @@ bool EnemyBase::IsAtInitialPos() const
 	return distance < 30.0f; // 30.0f以内なら初期位置とみなす
 }
 
+void EnemyBase::ResetChasedSearch()
+{
+	_isSearching = false;
+	_searchTimer = 0.0f;
+}
+
+void EnemyBase::ChasedSearch()
+{
+	if (!_isSearching || IsStun())
+	{
+		return;
+	}
+
+	_searchTimer += 1.0f / 60.0f;
+
+	const float baseAngle = atan2f(_searchBaseDir.x, _searchBaseDir.z);
+	const float sweepRad = DEG2RAD(_searchSweepAngleDeg) * sinf(_searchTimer * _searchSweepSpeed);
+	const float targetAngle = baseAngle + sweepRad;
+
+	vec::Vec3 targetDir = vec3::VGet(sinf(targetAngle), 0.0f, cosf(targetAngle));
+
+	// 徐々に向きを補間
+	_vDir.x += (targetDir.x - _vDir.x) * _rotationSpeed;
+	_vDir.z += (targetDir.z - _vDir.z) * _rotationSpeed;
+	_vDir.y = 0.0f;
+
+	if (_vDir.LengthSquare() > 0.0001f)
+	{
+		_vDir = vec3::VNorm(_vDir);
+	}
+}
+
+void EnemyBase::UpdateChasing()
+{
+	if (_enemySensor && _enemySensor->IsChasing())
+	{
+		vec::Vec3 targetPos = _enemySensor->GetLastPlayerPos();
+		vec::Vec3 toTarget = vec3::VSub(targetPos, _vPos);
+		toTarget.y = 0.0f;
+
+		const float arriveDistance = 20.0f;
+		const float arriveDistSq = arriveDistance * arriveDistance;
+
+		if (toTarget.LengthSquare() > arriveDistSq)
+		{
+			// まだ到達していないので通常追跡
+			ResetChasedSearch();
+			MoveToTarget(targetPos);
+			UpdateRotationToPlayer();
+			_status = STATUS::FOUND;
+		}
+		else
+		{
+			// 最終目撃地点に到達したら見渡し
+			_isMoving = false;
+
+			if (!_isSearching)
+			{
+				_isSearching = true;
+				_searchTimer = 0.0f;
+
+				if (_vDir.LengthSquare() > 0.0001f)
+				{
+					_searchBaseDir = vec3::VNorm(_vDir);
+				}
+				else if (_initialDir.LengthSquare() > 0.0001f)
+				{
+					_searchBaseDir = vec3::VNorm(_initialDir);
+				}
+				else
+				{
+					_searchBaseDir = vec3::VGet(0.0f, 0.0f, -1.0f);
+				}
+				_searchBaseDir.y = 0.0f;
+			}
+
+			ChasedSearch();
+			_status = STATUS::WAIT;
+		}
+
+		_isReturning = false;
+		_isMovingToSound = false;
+		_waitingAtSound = false;
+		_soundWaitTimer = 0.0f;
+	}
+	else
+	{
+		_isMoving = false;
+		ResetChasedSearch();
+	}
+}
+
 void EnemyBase::StartDamage()
 {
 	// 既に無敵状態なら何もしない
@@ -352,6 +454,7 @@ void EnemyBase::StartDamage()
 		_animId = PlayAnimation(_attachAnimDamage, false);
 		_fPlayTime = 0.0f;
 	}
+	ResetChasedSearch();
 }
 
 // ダメージアニメーションの更新
@@ -848,38 +951,6 @@ void EnemyBase::MoveToTarget(const vec::Vec3& target)
 	// 目標位置を更新
 	_targetPos = target;
 }
-
-// 追跡処理のメソッド
-void EnemyBase::UpdateChasing()
-{
-	// 追跡中かどうかをチェック
-	if(_enemySensor && _enemySensor->IsChasing())
-	{
-		// 追跡中の場合、最後に確認されたプレイヤーの位置に向かって移動
-		vec::Vec3 targetPos = _enemySensor->GetLastPlayerPos();
-		MoveToTarget(targetPos);
-
-		// プレイヤーの方向に徐々に向く
-		UpdateRotationToPlayer();
-
-		// 初期位置に戻るのを停止
-		_isReturning = false;
-
-		// 音源への移動を中断
-		_isMovingToSound = false;
-
-		// 音源への移動と待機を中断
-		_isMovingToSound = false;
-		_waitingAtSound = false;
-		_soundWaitTimer = 0.0f;
-	}
-	else
-	{
-		// 追跡していない場合は停止
-		_isMoving = false;
-	}
-}
-
 
 // 描画処理
 bool EnemyBase::Render()

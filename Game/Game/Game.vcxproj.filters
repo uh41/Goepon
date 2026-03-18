@@ -287,6 +287,7 @@
     <ClCompile Include="source\savepoint.cpp" />
     <ClCompile Include="source\savemanager.cpp" />
     <ClCompile Include="source\savepointeffect.cpp" />
+    <ClCompile Include="source\makimonogeteffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -379,6 +380,7 @@
     <ClInclude Include="source\savepoint.h" />
     <ClInclude Include="source\savemanager.h" />
     <ClInclude Include="source\savepointeffect.h" />
+    <ClInclude Include="source\makimonogeteffect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

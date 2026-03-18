@@ -488,8 +488,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 			}
 		}
 
-		enemyPtr->StopAnimation();
-		enemyPtr->PlayAnimation("idle", true);
+		if(auto* e = dynamic_cast<Enemy*>(enemyPtr.get()))
+		{
+			e->StopAnimation();
+			e->PlayAnimation("idle", true);
+		}
 	}
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
@@ -1250,7 +1253,7 @@ bool ModeGame::Process()
 	{
 		EnemySoundManager::GetInstance()->EmitSound(
 			playerBase->GetPos(),  // 位置
-			1,					// 音の大きさレベル（1-3で調整）
+			1,					// 音の大きさレベル
 			400.0f,				// 音波の最大半径
 			10.0f				// 音波の速度
 		);

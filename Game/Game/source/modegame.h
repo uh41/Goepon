@@ -63,6 +63,7 @@
 #include "savemanager.h"
 #include "savepoint.h"
 #include "savepointeffect.h"
+#include "makimonogeteffect.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -301,6 +302,7 @@ protected:
 	at::spc<NakiEffect> _nakiEffect;
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
+	at::spc<MakimonoGetEffect> _makimonoGetEffect;
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
