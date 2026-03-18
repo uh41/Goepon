@@ -62,6 +62,7 @@
 #include "configui.h"
 #include "savemanager.h"
 #include "savepoint.h"
+#include "savepointeffect.h"
 
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
@@ -299,11 +300,13 @@ protected:
 	at::spc<DoyaEffect> _doyaEffect;
 	at::spc<NakiEffect> _nakiEffect;
 	at::spc<ShirimochiEffect> _shirimochiEffect;
+	at::spc<SavePointEffect> _savePointEffect;
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
 
 	at::vspc<SavePoint> _savePoint;
+	SavePoint* _lastSavedPoint;
 
 	// チュートリアル
 	at::vspc<Tutorial> _tutorial;

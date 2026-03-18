@@ -107,9 +107,6 @@
     <ClCompile Include="source\applicationmain.cpp">
       <Filter>ソースファイル\アプリケーションメイン</Filter>
     </ClCompile>
-    <ClCompile Include="source\aseeffect.cpp">
-      <Filter>ソースファイル\モードゲーム\エフェクトベース\汗エフェクト</Filter>
-    </ClCompile>
     <ClCompile Include="source\camera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ</Filter>
     </ClCompile>
@@ -289,6 +286,7 @@
     <ClCompile Include="source\configui.cpp" />
     <ClCompile Include="source\savepoint.cpp" />
     <ClCompile Include="source\savemanager.cpp" />
+    <ClCompile Include="source\savepointeffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -380,6 +378,7 @@
     <ClInclude Include="source\configui.h" />
     <ClInclude Include="source\savepoint.h" />
     <ClInclude Include="source\savemanager.h" />
+    <ClInclude Include="source\savepointeffect.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -428,9 +427,6 @@
     </ClInclude>
     <ClInclude Include="source\applicationmain.h">
       <Filter>ヘッダーファイル\アプリケーションメイン</Filter>
-    </ClInclude>
-    <ClInclude Include="source\aseeffect.h">
-      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\汗エフェクト</Filter>
     </ClInclude>
     <ClInclude Include="source\camera.h">
       <Filter>ヘッダーファイル\モードゲーム\カメラ</Filter>

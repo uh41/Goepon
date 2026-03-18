@@ -158,6 +158,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_shirimochiEffect);
 	_stunEffect = std::make_shared<StunEffect>();
 	_effectBase.emplace_back(_stunEffect);
+	_savePointEffect = std::make_shared<SavePointEffect>();
+	_effectBase.emplace_back(_savePointEffect);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
@@ -573,7 +575,7 @@ bool ModeGame::PlayerTransform()
 			{
 				// 巻物消費して変身開始
 				_playerTanuki->SubMakimono(1);
-				if(PlayerTransformToTanuki(true))
+				if(PlayerTransformToTanuki(false))
 				{
 					return true;
 				}

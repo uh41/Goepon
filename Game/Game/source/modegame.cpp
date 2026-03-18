@@ -166,6 +166,7 @@ bool ModeGame::Initialize()
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
 	_treasureEffect->SetTreasure(_treasureBase);
+	_savePointEffect->SetSavePoint(_savePoint);
 	_walkEffect->SetPlayerPos(_playerTanuki.get());
 	_findEffect->SetEnemy(_enemyBase);
 	_hatenaEffect->Enemy(_enemyBase);
@@ -486,6 +487,9 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 				continue;
 			}
 		}
+
+		enemyPtr->StopAnimation();
+		enemyPtr->PlayAnimation("idle", true);
 	}
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
