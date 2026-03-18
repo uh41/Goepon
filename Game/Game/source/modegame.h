@@ -425,9 +425,10 @@ private:
 	float _introTimer;		   // イントロの経過時間
 	static constexpr float INTRO_DURATION = 3.0f; // イントロの総時間（秒）
 
+	// イントロのフェーズを管理するための列挙型と変数
 	enum class IntroPhase
 	{
-		RotateForward,
+		RotateForward, 
 		RotateBackward,
 		Zoom,
 		Done
@@ -445,7 +446,7 @@ private:
 	float _playerRotationDuration = 2.0f; // プレイヤーが回転する演出の時間（秒）
 	float _playerInitialRotation = 0.0f;  // プレイヤー回転演出開始時のプレイヤーの向き（角度）
 	float _playerTargetRotation = 0.0f;   // プレイヤー回転演出の目標の向き（角度）
-	int _clearSequencePhase = 0; // クリア演出のフェーズ管理用変数
+	int _clearSequencePhase = 0;		  // クリア演出のフェーズ管理用変数
 	float progress;
 	
 	SaveData _saveData; // セーブデータのインスタンス

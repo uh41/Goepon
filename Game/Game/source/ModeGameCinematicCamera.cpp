@@ -544,14 +544,14 @@ bool ModeGame::ProcessIntroSequence()
 				vec::Vec3 target = _cinematicCamera->GetTarget();
 				vec::Vec3 currentPos = _cinematicCamera->GetPos();
 				float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
-				float endDist = currentDist * 0.50f;
+				float endDist = currentDist * 0.7f;
 				// あまり近すぎないように最低距離を設定
 				if(endDist < 80.0f)
 				{
 					endDist = 80.0f;
 				}
 
-				_cinematicCamera->StartZoom(target, 1.0f, currentDist, endDist, &mymath::EasingInBack);
+				_cinematicCamera->StartZoom(target, 1.5f, currentDist, endDist, &mymath::EasingInBack);
 				break;
 			}
 
@@ -701,7 +701,7 @@ bool ModeGame::ProcessClearSequence()
 			// 回転終了後にクリア用モデルへ切り替え
 			if(_playerTanuki)
 			{
-				_playerTanuki->SetClearHandle("clear", true); // ← ここを使いたいアニメ名に
+				_playerTanuki->SetGameClearHandle("clear", true); // ← ここを使いたいアニメ名に
 			}
 
 			// 回転終了後、カメラズーム演出を開始

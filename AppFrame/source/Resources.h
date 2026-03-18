@@ -126,7 +126,7 @@ namespace ef
 namespace mv1
 {
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
-  inline constexpr const char* Game_clear = "res/Gameclear/Game_clear.mv1";
+  inline constexpr const char* Game_clear = "res/GameClear/Game_clear.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
@@ -150,7 +150,6 @@ namespace mp3
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
   inline constexpr const char* Prologe = "res/BGM/Prologe.mp3";
   inline constexpr const char* Title = "res/BGM/Title.mp3";
-  inline constexpr const char* shinobiashi = "res/BGM/shinobiashi.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
   inline constexpr const char* Dog_walk = "res/SE/Dog_walk.mp3";
   inline constexpr const char* UI_Henshin_pon = "res/SE/UI_Henshin_pon.mp3";
@@ -179,10 +178,5 @@ namespace mp3
 namespace mp4
 {
   inline constexpr const char* EndCredits = "res/movie/EndCredits.mp4";
-}
-
-namespace wav
-{
-  inline constexpr const char* ks010 = "res/BGM/ks010.wav";
 }
 

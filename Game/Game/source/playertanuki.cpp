@@ -43,8 +43,8 @@ bool PlayerTanuki::Initialize()
 	_transformPlayerMonoMove = false;
 	_transformPlayerMonoCandidate = false;
 
-
-	_clearModelHandle = -1;
+	_gameClearModelHandle = -1;
+	_gameOverModelHandle  = -1;
 	return true;
 }
 
@@ -561,19 +561,19 @@ bool PlayerTanuki::Render()
 	return true;
 }
 
-bool PlayerTanuki::SetClearHandle(const std::string& animName, bool loop)
+bool PlayerTanuki::SetGameClearHandle(const std::string& animName, bool loop)
 {
 	// すでに切り替え済みなら何もしない
-	if(_clearModelHandle >= 0 && _handle == _clearModelHandle)
+	if(_gameClearModelHandle >= 0 && _handle == _gameClearModelHandle)
 	{
 		return true;
 	}
 
 	// クリア用モデルを末ロードなら取得
-	if(_clearModelHandle < 0)
+	if(_gameClearModelHandle < 0)
 	{
-		_clearModelHandle = ResourceServer::MV1LoadModel(mv1::Game_clear);
-		if(_clearModelHandle < 0)
+		_gameClearModelHandle = ResourceServer::MV1LoadModel(mv1::Game_clear);
+		if(_gameClearModelHandle < 0)
 		{
 			return false;
 		}
@@ -587,7 +587,7 @@ bool PlayerTanuki::SetClearHandle(const std::string& animName, bool loop)
 		ResourceServer::MV1DeleteModel(_handle);
 		_handle = -1;
 	}
-	_handle = _clearModelHandle;
+	_handle = _gameClearModelHandle;
 
 	// 切替後にアニメを再生
 	if(!animName.empty())
@@ -605,15 +605,48 @@ int PlayerTanuki::PlayGameClearAnimation(std::string name, bool loop)
 		_animId = -1;
 	}
 
-	if(_clearModelHandle == -1 || name.empty())
+	if(_gameClearModelHandle == -1 || name.empty())
 	{
 		return -1;
 	}
 
-	_animId = AnimationManager::GetInstance()->Play(_clearModelHandle, name, loop);
+	_animId = AnimationManager::GetInstance()->Play(_gameClearModelHandle, name, loop);
 	if(_animId != -1)
 	{
 		AnimationManager::GetInstance()->SetTime(_animId, 0.0f);
+	}
+	return _animId;
+}
+
+bool PlayerTanuki::SetGameOverHandle(const std::string& animName, bool loop)
+{
+	if(_gameOverModelHandle >= 0 && _handle == _gameOverModelHandle)
+	{
+		return true;
+	}
+
+	if(_gameOverModelHandle < 0)
+	{
+		//_gameOverModelHandle = ResourceServer::MV1LoadModel(mv1::Game_over);
+	}
+}
+
+int PlayerTanuki::PlayGameOverAnimation(std::string name, bool loop)
+{
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->Stop(_animId);
+	}
+
+	if(_gameOverModelHandle == -1 || name.empty())
+	{
+		return -1;
+	}
+
+	_animId = AnimationManager::GetInstance()->Play(_gameOverModelHandle, name, loop);
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->SetTime(_animId, 0.0f); 
 	}
 	return _animId;
 }
