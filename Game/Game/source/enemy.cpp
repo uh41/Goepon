@@ -189,9 +189,8 @@ bool Enemy::Process()
 	}
 
 	// プレイヤー検出時は向くだけ（徐々に）／または追跡時は UpdateChasing が移動する
-	if(_detectedPlayer)
+	if (_detectedPlayer && !IsSearchingAtLastPlayerPos())
 	{
-		// 共通実装を使用
 		UpdateRotationToPlayer();
 	}
 	else if (_isReturning && !_waitingTeleport)

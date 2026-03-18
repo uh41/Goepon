@@ -722,7 +722,7 @@ bool EnemyMove::Process()
 	}
 
 	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
-	if (_detectedPlayer)
+	if (_detectedPlayer && !IsSearchingAtLastPlayerPos())
 	{
 		UpdateRotationToPlayer(); // 徐々に回転
 		// または即座に向きたい場合は LookAtPlayer(); を使用
