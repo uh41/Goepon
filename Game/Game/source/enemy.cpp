@@ -92,7 +92,7 @@ bool Enemy::Process()
 	{
 		_soundDetectionTimer += dt;
 
-		// 10秒経過したら初期位置への帰還を開始
+		// 経過したら初期位置への帰還を開始
 		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
 		{
 			_soundDetectionActive = false;

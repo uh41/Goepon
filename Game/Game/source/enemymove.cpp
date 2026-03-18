@@ -45,7 +45,7 @@ bool EnemyMove::Initialize()
 
 	// 初期位置に戻る機能の初期化
 	_isReturning = false;				
-	_returnSpeed = 4.0f;				// 初期位置に戻る速度（追跡より少し遅め）
+	_returnSpeed = 4.0f;	// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
 	_waitingTeleport = false;
@@ -640,19 +640,19 @@ bool EnemyMove::Process()
 			_soundDetectionActive = false;
 			_soundDetectionTimer = 0.0f;
 
-			// 保存してある巡回ルート（ターゲット座標）へ一旦戻してから巡回再開
-			// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
-			if (_hasSavePoint)
-			{
-				_isReturning = true;
-				_isPatrol = false;
-				ResetTeleport();
-			}
-			else
-			{
-				// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
-				ReturnInitialPos();
-			}
+			//// 保存してある巡回ルート（ターゲット座標）へ一旦戻してから巡回再開
+			//// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
+			//if (_hasSavePoint)
+			//{
+			//	_isReturning = true;
+			//	_isPatrol = false;
+			//	ResetTeleport();
+			//}
+			//else
+			//{
+			//	// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
+			//	ReturnInitialPos();
+			//}
 		}
 		// 待機中は必ずWAITステータスを設定して、他の処理をスキップ
 		_status = STATUS::WAIT;
@@ -685,6 +685,13 @@ bool EnemyMove::Process()
 		UpdateChasing();
 		_isReturning = false;
 		_isPatrol = false;		// 巡回停止
+	}
+	else if (_detectedPlayer) // 追跡開始前の検知状態を維持
+	{
+		_status = STATUS::FOUND;
+		_isReturning = false;
+		_isPatrol = false;
+		_waitingReturn = false;
 	}
 	else if (_isReturning)	// 初期位置に戻り中
 	{

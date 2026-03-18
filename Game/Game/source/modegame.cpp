@@ -1246,7 +1246,7 @@ bool ModeGame::Process()
 	{
 		EnemySoundManager::GetInstance()->EmitSound(
 			playerBase->GetPos(),  // 位置
-			1,					// 音の大きさレベル（1-3で調整）
+			1,					// 音の大きさレベル
 			400.0f,				// 音波の最大半径
 			10.0f				// 音波の速度
 		);
