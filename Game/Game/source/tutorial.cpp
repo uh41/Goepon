@@ -73,6 +73,21 @@ void Tutorial::PlayTutorial()
 		effectName = "event4";
 		break;
 	}
+	case 5:
+	{
+		effectName = "event5";
+		break;
+	}
+	case 6:
+	{
+		effectName = "event6";
+		break;
+	}
+	case 7:
+	{
+		effectName = "event7";
+		break;
+	}
 	}
 
 	auto it = _eventHandle.find(effectName);

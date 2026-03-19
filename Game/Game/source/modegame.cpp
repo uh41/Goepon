@@ -415,19 +415,6 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_playerTanuki->ResetDash();
 	}
 
-	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)
-	{
-		auto& t = _treasureBase[i];
-		if(!t) continue;
-		bool shouldOpen = false;
-		for(const auto& id : saveData.openTreasureIds)
-		{
-			if(id == i) { shouldOpen = true; break; }
-		}
-		t->SetOpen(shouldOpen);
-	}
-
-
 	// メモリ上にも保存しておく（必要に応じて参照可能）
 	_saveData = saveData;
 
