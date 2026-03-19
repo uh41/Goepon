@@ -34,6 +34,7 @@ public:
 
 	void SetOwner(void* owner) { _owner = owner; }
 
+
 protected:
 
 	Select _select;     // •ÏgUI‚Ì‘I‘ğˆ

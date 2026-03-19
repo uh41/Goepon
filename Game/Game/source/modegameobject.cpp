@@ -693,7 +693,7 @@ bool ModeGame::ObjectRender()
 				return;
 			}
 
-			const bool useBlink = (_changeTimeActive && _changeTimeLimit <= 10.0f);
+			const bool useBlink = (_changeTimeActive && _changeTimeLimit <= 5.0f);
 
 			int modelHandle = player->GetModelHandle();
 			if(modelHandle >= 0)
@@ -754,12 +754,38 @@ bool ModeGame::ObjectRender()
 
 	// UIが参照するプレイヤーを「現在表示中」に合わせる
 	
-	if (_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
-	else if (_showMonoPlayer) { currentPlayer = _playerMono.get(); }
-	else { currentPlayer = _player.get(); }
+	if (_bShowTanuki)
+	{
+		currentPlayer = _playerTanuki.get();
+	}
+	else if(_showMonoPlayer)
+	{
+		currentPlayer = _playerMono.get(); 
+	}
+	else
+	{
+		currentPlayer = _player.get(); 
+	}
 
-	if (_uiHp) { _uiHp->SetPlayer(currentPlayer); }
-	if (_uiMakimono) { _uiMakimono->SetPlayer(currentPlayer); }
+	if(_uiHp)
+	{ 
+		_uiHp->SetPlayer(currentPlayer);
+	}
+	if(_uiMakimono)
+	{
+		_uiMakimono->SetPlayer(currentPlayer);
+	}
+	if(_dashUi)
+	{
+		if(_bShowTanuki)
+		{
+			_dashUi->SetPlayer(_playerTanuki.get());
+		}
+		else
+		{
+			_dashUi->SetPlayer(nullptr);
+		}
+	}
 
 	// 各敵のセンサーを個別に描画
 	// プレイヤーから半径内にいる敵だけ索敵範囲を描画
