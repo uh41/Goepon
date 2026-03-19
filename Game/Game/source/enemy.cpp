@@ -92,14 +92,14 @@ bool Enemy::Process()
 	{
 		_soundDetectionTimer += dt;
 
-		// 経過したら初期位置への帰還を開始
-		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		// 音検知から一定時間経過したら初期位置に戻る
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME && !_detectedPlayer)
 		{
-			_soundDetectionActive = false;
-			_soundDetectionTimer = 0.0f;
 			_isMovingToSound = false;
 			_waitingAtSound = false;
-
+			_soundWaitTimer = 0.0f;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
 			ReturnInitialPos();
 		}
 	}
@@ -158,6 +158,12 @@ bool Enemy::Process()
 				// 音検知タイマーをリセット
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
+			}
+			else if (_detectedPlayer) // 追跡開始前の検知状態を維持
+			{
+				_status = STATUS::WAIT;
+				_isReturning = false;
+				_waitingReturn = false;
 			}
 			else if (_isReturning)	// 初期位置に戻り中
 			{

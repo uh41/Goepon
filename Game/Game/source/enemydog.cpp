@@ -23,6 +23,10 @@ bool EnemyDog::Initialize()
 	_rotationSpeed = 0.2f;                     // 回転速度（調整可能）
 	_moveSpeed = 2.0f;
 
+	// 追跡状態初期化（未初期化防止）
+	_isChasing = false;
+	_soundEmitTimer = 0.0f;
+
 	// ランダムウォーク用の初期化
 	_rmWalkTimer = 0.0f;
 	_rmWalkInterval = 3.5f;
@@ -253,10 +257,18 @@ bool EnemyDog::Process()
 		_status = STATUS::WAIT;
 	}
 
+	float dt = 1.0f / 60.0f;
+	if (auto* app = ApplicationMain::GetInstance())
+	{
+		if (auto* frameRate = app->GetFrameRateController())
+		{
+			dt = StCas<float>(frameRate->GetDeltaTime());
+		}
+	}
+
 	// 音検知タイマーの更新（音検知が有効な場合）
 	if (_soundDetectionActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
 		// 音検知から一定時間経過したら初期位置に戻る
@@ -277,7 +289,6 @@ bool EnemyDog::Process()
 		// 待機中はWAITステータスに設定
 		_status = STATUS::WAIT;
 
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundWaitTimer -= dt;
 
 		// 待機時間が終了したら初期位置に戻る
@@ -295,7 +306,6 @@ bool EnemyDog::Process()
 	// 検知終了後の待機処理（帰還前の待機）
 	if (_waitingReturn)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_returnWaitTimer -= dt;
 
 		_status = STATUS::WAIT;
@@ -325,15 +335,13 @@ bool EnemyDog::Process()
 		_moveSpeed = 7.2f; // 追跡時の速度
 
 		// 追跡中の音波発生処理（一定間隔で発生）
-		const float dt = 1.0f / 60.0f; // 60FPS想定
-
 		if (!_isChasing)
 		{
 			// 追跡開始時：即座に音波を発生
 			auto soundManager = EnemySoundManager::GetInstance();
 			if (soundManager)
 			{
-				soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+				soundManager->EmitSound(GetPos(), 5, 430.0f, 10.0f, GetEnemyId());
 			}
 			_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
 			_isChasing = true;
@@ -358,7 +366,7 @@ bool EnemyDog::Process()
 				auto soundManager = EnemySoundManager::GetInstance();
 				if (soundManager)
 				{
-					soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+					soundManager->EmitSound(GetPos(), 5, 430.0f, 10.0f, GetEnemyId());
 				}
 				_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
 			}

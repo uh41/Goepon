@@ -90,6 +90,7 @@ public:
 
 	virtual float GetHearingRadius() const { return 0.0f; } // 音検知の半径
 	bool IsMovingToSound() const { return _isMovingToSound; }
+	bool IsWaitingAtSound() const { return _waitingAtSound; }
 
 	void SetDirSequence(const at::vet<int>& sequence, float waitTime = 2.0f);	// 向き変更のシーケンスを設定
 	void SetDirSequenceFromJson(const nlohmann::json& j);						// JSONから向き変更のシーケンスを設定
