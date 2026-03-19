@@ -67,6 +67,12 @@
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
+namespace timelimit
+{
+	static constexpr auto START_TIME_LIMIT = 5.0f; // 制限時間（秒）
+	static constexpr auto MIDDLE_TIME_LIMIT = 3.0f; // 制限時間の半分（秒）
+}
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;

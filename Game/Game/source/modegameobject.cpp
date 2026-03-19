@@ -693,7 +693,7 @@ bool ModeGame::ObjectRender()
 				return;
 			}
 
-			const bool useBlink = (_changeTimeActive && _changeTimeLimit <= 5.0f);
+			const bool useBlink = (_changeTimeActive && _changeTimeLimit <= 10.0f);
 
 			int modelHandle = player->GetModelHandle();
 			if(modelHandle >= 0)

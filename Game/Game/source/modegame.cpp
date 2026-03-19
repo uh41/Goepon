@@ -1402,10 +1402,21 @@ bool ModeGame::Process()
 				}
 			}
 		}
-		else if(_changeTimeLimit <= 10.0f)
+		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
 		{
+			// 残り時間に応じて点滅間隔を短くする
 			_changeBlinkTimer += dt;
-			if(_changeBlinkTimer >= _changeBlinkInterval)
+
+			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
+			float currentBlinkInterval = _changeBlinkInterval;
+
+			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
+			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
+			{
+				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
+			}
+
+			if(_changeBlinkTimer >= currentBlinkInterval)
 			{
 				_changeBlinkTimer = 0.0f;
 				_changeBlinkVisible = !_changeBlinkVisible;
