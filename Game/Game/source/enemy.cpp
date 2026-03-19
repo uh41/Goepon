@@ -90,7 +90,6 @@ bool Enemy::Process()
 	// 音検知タイマーの更新（音検知が有効な場合）
 	if (_soundDetectionActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
 		// 音検知から一定時間経過したら初期位置に戻る

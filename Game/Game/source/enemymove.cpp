@@ -600,6 +600,15 @@ bool EnemyMove::Process()
 		_status = STATUS::WAIT;
 	}
 
+	float dt = 1.0f / 60.0f;
+	if (auto* app = ApplicationMain::GetInstance())
+	{
+		if (auto* frameRate = app->GetFrameRateController())
+		{
+			dt = StCas<float>(frameRate->GetDeltaTime());
+		}
+	}
+
 	// EnemySensorがあれば、そのセンサーの位置と向きを自分の位置に同期
 	if (_enemySensor)
 	{
@@ -610,7 +619,6 @@ bool EnemyMove::Process()
 	// 音検知タイマーの更新（音検知が有効な場合）
 	if (_soundDetectionActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
 		// 音検知から一定時間経過したら初期位置に戻る
@@ -628,7 +636,6 @@ bool EnemyMove::Process()
 	// 音源到達後の待機中はWAITステータス（プレイヤー検知で割り込み可）
 	if (_waitingAtSound)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundWaitTimer -= dt;
 
 		if (_soundWaitTimer <= 0.0f)
@@ -659,7 +666,6 @@ bool EnemyMove::Process()
 	}
 	else if (_waitingReturn)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_returnWaitTimer -= dt;
 		if (_returnWaitTimer <= 0.0f)
 		{
