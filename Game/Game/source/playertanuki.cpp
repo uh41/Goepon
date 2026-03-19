@@ -141,6 +141,16 @@ bool PlayerTanuki::Process()
 		_transformPlayerMove = false;
 		_transformPlayerCandidate = !(pressPadDir || pressStickLen >= _fAnalogDeadZone);
 
+		ModeBase* base = ModeServer::GetInstance()->Get("game");
+		if(base)
+		{
+			auto* game = dynamic_cast<ModeGame*>(base);
+			if(game)
+			{
+				game->ShowHenshinPlayer(true);
+			}
+		}
+
 	}
 
 	if(trg & PAD_INPUT_3)
@@ -148,6 +158,16 @@ bool PlayerTanuki::Process()
 		_transformPlayerMonoButtonDown = true;
 		_transformPlayerMonoMove = false;
 		_transformPlayerMonoCandidate = !(pressPadDir || pressStickLen >= _fAnalogDeadZone);
+
+		ModeBase* base = ModeServer::GetInstance()->Get("game");
+		if(base)
+		{
+			auto* game = dynamic_cast<ModeGame*>(base);
+			if(game)
+			{
+				game->ShowHenshinMonoUi(true);
+			}
+		}
 	}
 
 	if(!_inputEnabled)
@@ -204,6 +224,16 @@ bool PlayerTanuki::Process()
 			{
 				_transformPlayerMove = true;
 				_transformPlayerCandidate = false;
+
+				ModeBase* base = ModeServer::GetInstance()->Get("game");
+				if(base)
+				{
+					auto* game = dynamic_cast<ModeGame*>(base);
+					if(game)
+					{
+						game->ShowHenshinPlayer(false);
+					}
+				}
 			}
 			
 		}
@@ -213,6 +243,16 @@ bool PlayerTanuki::Process()
 			{
 				_transformPlayerMonoMove = true;
 				_transformPlayerMonoCandidate = false;
+
+				ModeBase* base = ModeServer::GetInstance()->Get("game");
+				if(base)
+				{
+					auto* game = dynamic_cast<ModeGame*>(base);
+					if(game)
+					{
+						game->ShowHenshinMonoUi(false);
+					}
+				}
 			}
 		}
 
@@ -482,6 +522,16 @@ bool PlayerTanuki::Process()
 		_transformPlayerButtonDown = false;
 		_transformPlayerMove = false;
 		_transformPlayerCandidate = false;
+
+		ModeBase* base = ModeServer::GetInstance()->Get("game");
+		if(base)
+		{
+			auto* game = dynamic_cast<ModeGame*>(base);
+			if(game)
+			{
+				game->ShowHenshinPlayer(false);
+			}
+		}
 	}
 
 	if(rel & PAD_INPUT_3)
@@ -509,6 +559,17 @@ bool PlayerTanuki::Process()
 				}
 			}
 		}
+
+		ModeBase* base = ModeServer::GetInstance()->Get("game");
+		if(base)
+		{
+			auto* game = dynamic_cast<ModeGame*>(base);
+			if(game)
+			{
+				game->ShowHenshinMonoUi(false);
+			}
+		}
+
 		_transformPlayerMonoButtonDown = false;
 		_transformPlayerMonoMove = false;
 		_transformPlayerMonoCandidate = false;
