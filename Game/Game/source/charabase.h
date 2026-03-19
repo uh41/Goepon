@@ -99,6 +99,8 @@ public:
 	int GetAnimId() const { return _animId; }				// 現在のアニメーションIDを取得
 	bool IsAnimationPlaying() const;						// アニメーションが再生中かどうかを確認
 	void ClearAnimIdIfStopped();							// アニメーションが停止している場合、アニメーションIDをクリアする
+	float GetAnimPlayTime() const { return _fPlayTime; }    // 現在のアニメーションの再生時間を取得するゲッター
+	float GetAnimTotalTime() const { return _fTotalTime; }  // 現在のアニメーションの総時間を取得するゲッター
 
 	const vec::Vec3& GetInputVector() const
 	{

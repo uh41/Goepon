@@ -665,7 +665,46 @@ int PlayerTanuki::PlayGameOverAnimation(std::string name, bool loop)
 	_animId = AnimationManager::GetInstance()->Play(_gameOverModelHandle, name, loop);
 	if(_animId != -1)
 	{
-		AnimationManager::GetInstance()->SetTime(_animId, 0.0f); 
+		AnimationManager::GetInstance()->SetTime(_animId, 0.0f);
+		_fPlayTime = 0.0f;
+		_fTotalTime = AnimationManager::GetInstance()->GetTotalTime(_animId);
 	}
 	return _animId;
+}
+
+bool PlayerTanuki::RestoreDefaultModel(const std::string& animName, bool loop)
+{
+	// 通常モデルを再取得
+	const int defaultHandle = ResourceServer::MV1LoadModel(mv1::SK_goepon_multimotion_4);
+	if(defaultHandle < 0)
+	{
+		return false;
+	}
+
+	// 既存アニメ停止
+	StopAnimation();
+
+	// 現在のモデルを破棄して差し替え
+	if(_handle >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_handle);
+		_handle = -1;
+	}
+	_handle = defaultHandle;
+
+	// 演出用ハンドルを保持して再利用する
+	_gameClearModelHandle = -1;
+	_gameOverModelHandle = -1;
+
+	// 通常アニメ再生
+	if(!animName.empty())
+	{
+		_animId = AnimationManager::GetInstance()->Play(_handle, animName, loop);
+		if(_animId != -1)
+		{
+			AnimationManager::GetInstance()->SetTime(_animId, 0.0f);
+		}
+	}
+
+	return true;
 }

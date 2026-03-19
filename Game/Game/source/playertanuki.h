@@ -53,6 +53,8 @@ public:
 
 	void ResetDash();// ダッシュ状態をリセットする関数
 
+	// デフォルトのモデルに戻す関数
+	bool RestoreDefaultModel(const std::string& animName, bool loop);
 protected:
 	Camera* _cam;
 

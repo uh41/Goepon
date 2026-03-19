@@ -417,7 +417,8 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_playerTanuki->SetDir(saveData.playerDir);
 		_playerTanuki->SetMakimonoCount(saveData.makimonoCount);
 		_playerTanuki->_status = PlayerBase::STATUS::WAIT; // ロード後は待機状態にする
-		_playerTanuki->PlayAnimation("idle", true); // ロード後はアイドルアニメーションをループ再生する)
+		_playerTanuki->RestoreDefaultModel("idle", true); // ロード後はアイドルアニメーションをループ再生する)
+		_playerTanuki->SetInputEnabled(true);
 		_playerTanuki->Process(); // 状態を更新して位置を反映させる
 		_playerTanuki->ResetDash();
 	}
