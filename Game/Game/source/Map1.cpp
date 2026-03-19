@@ -48,7 +48,7 @@ bool Map1::Initialize()
 	_iHandleShadowMap = MakeShadowMap(8192, 8192);
 
 	// ライトの方向と色味（暖かめ・控えめ）
-	_mainLight.SetDir(VGet(0.6f, -1.0f, 0.4f)); // 斜め上からの暖かい光（方向は必要に応じ調整）
+	_mainLight.SetDir(VGet(0.5f, -1.0f, 0.2f)); // 斜め上からの暖かい光（方向は必要に応じ調整）
 
 	// アンビエント（低め・暖色）
 	_mainLight.SetAmbient(VGet(0.02f, 0.015f, 0.01f), 1.0f); // 暖かい弱めの環境光
@@ -197,7 +197,7 @@ bool Map1::Render()
 	SetUseBackCulling(true);
 
 	// ライト方向を固定
-	VECTOR lightdir = VGet(1.0f, -10.0f, 1.0f); // より自然な斜め上からの光
+	VECTOR lightdir = VGet(1.0f, -10.0f, 0.5f); // より自然な斜め上からの光
 
 #if 1 // 平行ライト
 	SetGlobalAmbientLight(GetColorF(0.03f, 0.025f, 0.02f, 1.0f)); // 少し明るく
@@ -239,7 +239,7 @@ bool Map1::Render()
 			if(_ground_handle != -1)
 			{
 				auto vertex_num = StCas<int>(_ground_vertex.size());
-				auto index_num = StCas<int>(_ground_index.size());
+				auto index_num  = StCas<int>(_ground_index.size());
 
 				// シャドウマップへの描画は、頂点数とインデックス数が3以上必要
 				if(vertex_num >= 3 && index_num >= 3)
