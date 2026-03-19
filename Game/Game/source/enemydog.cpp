@@ -48,12 +48,6 @@ bool EnemyDog::Initialize()
 	return true;
 }
 
-// EnemySensor‚ğİ’è
-void EnemyDog::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
-{
-	_enemySensor = sensor;
-}
-
 // ˆÚ“®”ÍˆÍ‚ğİ’è
 void EnemyDog::SetMovementArea(const std::vector<vec::Vec3>& areaPoints)
 {

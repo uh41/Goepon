@@ -346,19 +346,6 @@ bool EnemyMove::Terminate()
 	return true;
 }
 
-// テレポート状態のリセット
-void EnemyMove::ResetTeleport()
-{
-	_waitingTeleport = false;
-	_teleportTimer = 0.0f;
-}
-
-// EnemySensorを設定
-void EnemyMove::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
-{
-	_enemySensor = sensor;
-}
-
 // プレイヤーが検出範囲外になった時の処理
 void EnemyMove::OnPlayerLost()
 {
