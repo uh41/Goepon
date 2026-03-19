@@ -37,6 +37,7 @@ namespace texture
   inline constexpr const char* TR_6 = "res/Texture/TR_6.png";
   inline constexpr const char* TR_7 = "res/Texture/TR_7.png";
   inline constexpr const char* TR_8 = "res/Texture/TR_8.png";
+  inline constexpr const char* TR_9 = "res/Texture/TR_9.png";
   inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
   inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
   inline constexpr const char* TX_change = "res/Texture/TX_change.png";
@@ -55,7 +56,6 @@ namespace texture
   inline constexpr const char* earth = "res/Texture/earth.png";
   inline constexpr const char* makimono = "res/Texture/makimono.png";
   inline constexpr const char* tree = "res/Texture/tree.png";
-  inline constexpr const char* tutorial3 = "res/Texture/tutorial3.png";
 }
 
 namespace ui
@@ -130,6 +130,7 @@ namespace ef
   inline constexpr const char* tutorial_2 = "res/Effect/tutorial_2.efkefc";
   inline constexpr const char* tutorial_3 = "res/Effect/tutorial_3.efkefc";
   inline constexpr const char* tutorial_4 = "res/Effect/tutorial_4.efkefc";
+  inline constexpr const char* tutorial_5 = "res/Effect/tutorial_5.efkefc";
 }
 
 namespace mv1
