@@ -67,6 +67,12 @@
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
 
+namespace timelimit
+{
+	static constexpr auto START_TIME_LIMIT = 5.0f; // 制限時間（秒）
+	static constexpr auto MIDDLE_TIME_LIMIT = 2.0f; // 制限時間の半分（秒）
+}
+
 class ModeGame : public ModeBase
 {
 	typedef ModeBase base;
@@ -216,6 +222,7 @@ public:
 	auto GetPlayer() const { return _player; }
 	auto GetPlayerTanuki() const { return _playerTanuki; }
 	auto GetPlayerMono() const { return _playerMono; }
+	bool IsShowingMono() const { return _showMonoPlayer; }
 	void CancelRequestedTransform();
 
 	void SavePlayer(PlayerBase* player);

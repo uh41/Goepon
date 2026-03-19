@@ -17,6 +17,8 @@ public:
 
 	void SetTreasure(at::vspc<TreasureBase> treasure) { _treasureBase = treasure; }
 
+	void StopEffect(TreasureBase* treasure);
+
 protected:
 	at::vspc<TreasureBase> _treasureBase;
 
