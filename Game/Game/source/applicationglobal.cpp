@@ -292,7 +292,7 @@ bool ApplicationGlobal::Init()
 
 	//マーカー用
 	LoadStageData("Stage1", "stage1_0319.json", "stage"); // 1ステージ目
-	LoadStageData("Stage2", "stage2_0311.json", "stage");     // 2ステージ目
+	LoadStageData("Stage2", "stage2_0319.json", "stage");     // 2ステージ目
 	LoadStageData("Stage3", "stage3_0312.json", "stage");     // 3ステージ目
 
 	SetUseASyncLoadFlag(TRUE);
