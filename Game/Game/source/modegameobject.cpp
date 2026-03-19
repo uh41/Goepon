@@ -1296,3 +1296,47 @@ bool ModeGame::CheckAllDetections()
 
 	return anyDetected;
 }
+
+void ModeGame::RenderShadowCastersFromModeGame()
+{
+	// 敵
+	for(auto& enemy : _enemyBase)
+	{
+		if(enemy && enemy->IsAlive())
+		{
+			enemy->Render();
+		}
+	}
+
+	// 宝箱
+	for(auto& t : _treasureBase)
+	{
+		if(t)
+		{
+			t->Render();
+		}
+	}
+
+	// 巻物
+	for(auto& m : _makimono)
+	{
+		if(m)
+		{
+			m->Render();
+		}
+	}
+
+	// プレイヤー（表示中のみ）
+	if(_bShowTanuki)
+	{
+		if(_playerTanuki && _playerTanuki->IsAlive()) { _playerTanuki->Render(); }
+	}
+	else if(_showMonoPlayer)
+	{
+		if(_playerMono && _playerMono->IsAlive()) { _playerMono->Render(); }
+	}
+	else
+	{
+		if(_player && _player->IsAlive()) { _player->Render(); }
+	}
+}

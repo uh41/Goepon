@@ -265,6 +265,11 @@ bool Map1::Render()
 					MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
 					MV1DrawModel(block.modelHandle);
 				}
+
+				if(_externalShadowCasters)
+				{
+					_externalShadowCasters();
+				}
 			}
 		}
 		else // path == 1

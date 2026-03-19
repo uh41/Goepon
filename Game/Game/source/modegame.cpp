@@ -1474,47 +1474,122 @@ bool ModeGame::Render()
 	base::Render();
 
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_camera->GetPos()), DxlibConverter::VecToDxLib(_camera->GetTarget()));
+	SetCameraPositionAndTarget_UpVecY(
+		DxlibConverter::VecToDxLib(_camera->GetPos()),
+		DxlibConverter::VecToDxLib(_camera->GetTarget())
+	);
 	SetCameraNearFar(_camera->GetClipNear(), _camera->GetClipFar());
-	float fov_deg = 30.0f;
-	float fov_rad = DEG2RAD(fov_deg);
-	SetupCamera_Perspective(fov_rad);
 
-	EffekseerManager::GetInstance()->Render();
+	const float fov_deg = 30.0f;
+	SetupCamera_Perspective(DEG2RAD(fov_deg));
 
-	// オブジェクトサーバーの描画
-	if(_objectServer)
+	// マップ（シャドウマップの持ち主）を取得
+	auto* map = (_objectServer != nullptr) ? _objectServer->GetMap()   : nullptr;
+	const int shadowMapHandle = (map != nullptr) ? map->GetHandleShadowMap() : -1;
+
+	// シャドウマップが無いなら従来描画
+	if(shadowMapHandle < 0)
 	{
-		_objectServer->Render();
+		EffekseerManager::GetInstance()->Render();		// Effekseer描画
+		if(_objectServer) { _objectServer->Render(); }  // 通常描画（UI含む）
+		ObjectRender();									// モード内オブジェクトの描画
+		return true;
 	}
 
-	ObjectRender();// オブジェクト描画処理
-	
-	if(_isGameOverCinematicActive)
+	// ---- マップ側の実装に合わせたライト設定(マップと同じ処理)
+	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);           // ライトの向き
+	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f)); 
+	ChangeLightTypeDir(lightdir);						  
+
+	// シャドウマップにライトの向きを設定
+	SetShadowMapLightDirection(shadowMapHandle, lightdir);
+
+	// シャドウマップに描画する範囲
+	const float lenght = 800.f;			 
+	DxlibConverter::SetShadowMapDrawArea
+	(
+		shadowMapHandle,
+		vec3::VAdd(_camera->GetTarget(), vec3::VGet(-lenght, -1.0f, -lenght)),
+		vec3::VAdd(_camera->GetTarget(), vec3::VGet(lenght, lenght, lenght))
+	);
+
+	// 2パス描画
+	for(int path = 0; path < 2; ++path)
 	{
-		// 画面全体を暗くする
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, _gameOverDimAlpha); // 半透明の黒
-		DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモードを元に戻す
-	
-		// playerだけ暗転の上に再描画して暗くならないようにする
-		if(_playerTanuki)
+		if(path == 0)
 		{
-			_playerTanuki->Render();
+			// --- シャドウマップへ「影を落とすもの」を描く ---
+			ShadowMap_DrawSetup(shadowMapHandle);
+
+			// まずマップ（地形・ブロック）を描く
+			if(_objectServer)
+			{
+				_objectServer->Render(); // Map::Render は「本描画」もやってしまう場合があるので、本当は避けたい
+				// → 下の補足参照。現状最短で動かすために呼びます。
+			}
+
+			if(auto* map = _objectServer->GetMap())
+			{
+				map->SetCamera(_camera);
+
+				// マップのシャドウマップにキャラ/宝箱も描く
+				map->SetExternalShadowCasters([this]()
+				{
+					RenderShadowCastersFromModeGame();
+				});
+			}
+		}
+		else
+		{
+			// --- 通常描画（シャドウマップを使用） ---
+			ShadowMap_DrawEnd();
+
+			SetUseShadowMap(0, shadowMapHandle);
+
+			// Effekseer
+			EffekseerManager::GetInstance()->Render();
+
+			// 通常描画（UI含む）
+			if(_objectServer)
+			{
+				_objectServer->Render();
+			}
+			ObjectRender();
+
+			// シャドウ解除
+			SetUseShadowMap(0, -1);
+
+			// ゲームオーバー演出（既存）
+			if(_isGameOverCinematicActive)
+			{
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, _gameOverDimAlpha);
+				DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+				if(_playerTanuki)
+				{
+					_playerTanuki->Render();
+				}
+			}
+
+			int key = ApplicationBase::GetInstance()->GetKey();
+			if(key & PAD_INPUT_12)
+			{
+				DebugRender();
+			}
 		}
 	}
 
-	int key = ApplicationBase::GetInstance()->GetKey();
-	if (key & PAD_INPUT_12)
+	bool noOverlayAbove =
+		(ModeServer::GetInstance()->Get("gameover"    ) == nullptr) &&
+		(ModeServer::GetInstance()->Get("gameoverload") == nullptr);
+
+	if(noOverlayAbove)
 	{
-		DebugRender();
+		_hasRenderOnce = true;
+		_isLoadComplete = true;
 	}
-	// 処理時間を画面に表示
-	int y = 40;
-	const int lineHeight = 18;
-	const unsigned int colorYellow = GetColor(255, 255, 0);
-	const unsigned int colorWhite = GetColor(255, 255, 255);
-	const unsigned int colorRed = GetColor(255, 100, 100);
+
 
 	//DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
 
@@ -1538,23 +1613,6 @@ bool ModeGame::Render()
 	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
 	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
 	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
-
-	if(_d_view_collision)
-	{
-		//CollisionManager::GetInstance()->SetDebugDraw(true);
-	}
-
-	bool noOverlayAbove =
-		(ModeServer::GetInstance()->Get("gameover") == nullptr) &&
-		(ModeServer::GetInstance()->Get("gameoverload") == nullptr);
-
-	if(noOverlayAbove)
-	{
-		// opscenario など最初のロードで即時描画済み扱いにしたい場合はここで true にする
-		_hasRenderOnce = true;
-		_isLoadComplete = true;
-	}
-
 	return true;
 }
 

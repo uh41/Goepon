@@ -439,6 +439,7 @@ protected:
 	TreasureBase* _currentOpeningTreasure = nullptr; // 現在開けている宝箱
 
 private:
+	void RenderShadowCastersFromModeGame(); // シャドウキャスターの描画（ModeGameから呼び出す）
 	// イントロ演出用
 	bool  _isIntroActive;	   // イントロ演出が有効か
 	bool  _introButtonPressed; // イントロ中にボタンが押されたか
