@@ -132,7 +132,7 @@ namespace ef
 namespace mv1
 {
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
-  inline constexpr const char* GameClear_Tanuki = "res/GameClear/GameClear_Tanuki.mv1";
+  inline constexpr const char* GameClear_Tanuki = "res/Gameclear/GameClear_Tanuki.mv1";
   inline constexpr const char* GameOver_Tanuki = "res/Gameover/GameOver_Tanuki.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";

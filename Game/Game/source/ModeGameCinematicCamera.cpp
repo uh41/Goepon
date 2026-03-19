@@ -254,152 +254,6 @@ bool ModeGame::EndCinematicCamera()
 	return true;
 }
 
-
-//// イントロ演出開始関数を追加
-//bool ModeGame::StartIntroSequence()
-//{
-//	// カメラが初期化されていない場合は失敗
-//	if (!_camera)
-//	{
-//		return false;
-//	}
-//
-//	// 演出カメラが未作成の場合は作成
-//	if (!_cinematicCamera)
-//	{
-//		_cinematicCamera = std::make_unique<CinematicCamera>();
-//		if (!_cinematicCamera->Initialize())
-//		{
-//			_cinematicCamera.reset();
-//			return false;
-//		}
-//	}
-//
-//	// 元のカメラを保持して演出カメラに切り替え
-//	if (!_useCinematicCamera)
-//	{
-//		_savedCamera = _camera;
-//		_camera = _cinematicCamera.get();
-//		_useCinematicCamera = true;
-//	}
-//
-//	// プレイヤーの取得（タヌキ優先）
-//	PlayerBase* targetPlayer = nullptr;
-//	if (_bShowTanuki && _playerTanuki)
-//	{
-//		targetPlayer = _playerTanuki.get();
-//	}
-//	else if (_player)
-//	{
-//		targetPlayer = _player.get();
-//	}
-//
-//	// プレイヤーの位置と向きを考慮してカメラを配置
-//	if (targetPlayer && _cinematicCamera)
-//	{
-//		vec::Vec3 playerPos = targetPlayer->GetPos(); // プレイヤーの位置を取得
-//
-//		// プレイヤーの回転角度を取得
-//		float playerRotY = targetPlayer->GetRotationY();
-//
-//		// プレイヤーの前方向ベクトルを計算
-//		vec::Vec3 playerDir;
-//		playerDir.x = sinf(playerRotY);
-//		playerDir.y = 0.0f;
-//		playerDir.z = cosf(playerRotY);
-//
-//		// 念のため正規化
-//		float dirLength = vec3::VSize(playerDir);
-//
-//		if (dirLength > 0.001f)
-//		{
-//			playerDir = vec3::VNorm(playerDir);
-//		}
-//
-//		// 調整パラメータ 
-//		float cameraDistance = 300.0f;  // プレイヤーからカメラまでの距離
-//		float cameraHeight = 500.0f;    // カメラの高さオフセット
-//		float targetHeight = 60.0f;     // プレイヤーの顔の高さ（注視点）
-//
-//		// プレイヤーの前方ににカメラを配置（本来はすべてプラスだと思うがDxlibの使用？ためマイナス）
-//		vec::Vec3 cameraPos = vec3::VGet
-//		(
-//			playerPos.x - playerDir.x * cameraDistance,  // プレイヤーの前方に配置
-//			playerPos.y + cameraHeight,                  // プレイヤーの高さにオフセットを加える
-//			playerPos.z - playerDir.z * cameraDistance 
-//		);
-//
-//		// カメラターゲット：プレイヤーの顔の位置
-//		vec::Vec3 cameraTarget = vec3::VAdd(playerPos, vec3::VGet(0.0f, targetHeight, 0.0f));
-//
-//		// カメラ設定を適用
-//		_cinematicCamera->SetPos(cameraPos);
-//		_cinematicCamera->SetTarget(cameraTarget);
-//		_cinematicCamera->SetClipNear(1.0f);
-//		_cinematicCamera->SetClipFar(10000.0f);
-//	}
-//
-//	// イントロ演出を開始
-//	_isIntroActive = true;
-//	_introButtonPressed = false;
-//	_introTimer = 0.0f;
-//
-//	// プレイヤーの操作を無効化
-//	if (_playerTanuki)
-//	{
-//		_playerTanuki->SetInputEnabled(false);
-//	}
-//
-//	return true;
-//}
-//
-//
-//// ProcessIntroSequence()関数を追加
-//bool ModeGame::ProcessIntroSequence()
-//{
-//	if(!_isIntroActive)
-//	{
-//		return false;
-//	}
-//
-//
-//	PlayerTanuki* tanuki = _playerTanuki.get();
-//	if(tanuki && tanuki->IsAlive())
-//	{
-//		vec::Vec3 playerPos = tanuki->GetPos();
-//
-//		_cinematicCamera->SetTarget(playerPos);
-//	}
-//
-//	// 時間経過でイントロ終了
-//	_introTimer += 1.0f / 60.0f; // 60FPS想定
-//
-//	// イントロ演出の総時間（INTRO_DURATION）を超えたら終了
-//	if(_introTimer >= INTRO_DURATION)
-//	{
-//		EndIntroSequence();
-//		return true;
-//	}
-//
-//	// ボタン入力でイントロ終了
-//	int trg = ApplicationBase::GetInstance()->GetTrg();
-//	if(!_introButtonPressed)
-//	{
-//		if(trg & PAD_INPUT_1)
-//		{
-//			_introButtonPressed = true;
-//		}
-//	}
-//
-//	if(_introButtonPressed)
-//	{
-//		EndIntroSequence();
-//		return true;
-//	}
-//
-//	return true;
-//}
-
 bool ModeGame::StartIntroSequence()
 {
 	// カメラがない時は処理をしない
@@ -906,8 +760,10 @@ bool ModeGame::StartGameOverSequence()
 		return true;
 	}
 	
-	_isGameOverCinematicActive = true;
+	_isGameOverCinematicActive  = true;
 	_gameOverCinematicTimer		= 0.0f;
+
+	_gameOverDimAlpha = 0; // 画面暗転用のアルファ値
 
 	// 0: ズーム中, 1: モデル切替＆アニメ, 2: 余韻
 	_gameOverSequencePhase		= 0;
@@ -974,6 +830,7 @@ bool ModeGame::StartGameOverSequence()
 	vec::Vec3 target = vec3::VAdd(tanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 	vec::Vec3 camPos = _cinematicCamera->GetPos();
 
+	// ターゲットとカメラの距離を計算して、ズームの開始距離と終了距離を決定
 	float startDist = vec3::VSize(vec3::VSub(camPos, target));
 	float endDist = startDist * 0.25f;
 	if(endDist < 180.0f)endDist = 180.0f;
@@ -989,6 +846,22 @@ bool ModeGame::ProcessGameOverSequence()
 	if(!_isGameOverCinematicActive)
 	{
 		return false;
+	}
+
+	// 全体時間で終了
+	if(_tanukiAttackAnimId != -1 && !AnimationManager::GetInstance()->IsPlaying(_tanukiAttackAnimId))
+	{
+		return EndGameOverSequence();
+	}
+
+	const int   targetAlpha = 180;          // 目標の暗転アルファ値
+	const float fadeSec     = 0.5f;         // フェードインにかける時間（秒）
+	const float dt		    = 1.0f / 60.0f; // フレーム時間（秒）
+
+	if(_gameOverDimAlpha < targetAlpha)
+	{
+		const float add = (StCas<float>(targetAlpha) / fadeSec) * dt;
+		_gameOverDimAlpha += add;
 	}
 
 	if(_useCinematicCamera && _cinematicCamera)
@@ -1025,12 +898,7 @@ bool ModeGame::ProcessGameOverSequence()
 		}
 	}
 
-	// 全体時間で終了
-	if(_tanukiAttackAnimId != -1 && !AnimationManager::GetInstance()->IsPlaying(_tanukiAttackAnimId))
-	{
-		return EndGameOverSequence();
-	}
-
+	
 	return true;
 }
 
@@ -1041,12 +909,13 @@ bool ModeGame::EndGameOverSequence()
 		return false;
 	}
 
-	_isGameOverCinematicActive = false;
+	_gameOverDimAlpha = 0; // 演出カメラの停止とリセット
 
 	// 演出カメラは戻さずに、ゲームオーバーUIへ遷移する（好み）
 	// ここで戻したいなら EndCinematicSequence(true) を呼ぶ
 	EndCinematicSequence(false);
 
 	ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
+
 	return true;
 }

@@ -463,10 +463,11 @@ private:
 	bool  _isGameOverCinematicActive; // ゲームオーバー演出が有効か
 	float _gameOverCinematicTimer;    // ゲームオーバー演出の経過時間
 	int   _gameOverSequencePhase;     // ゲームオーバー演出のフェーズ管理用変数
+	int   _gameOverDimAlpha;		  // ゲームオーバー演出の暗転アルファ値
 
 	// プレイヤー回転演出用
-	bool _isPlayerRotating = false;
-	float _playerRotationTimer = 0.0f;
+	bool _isPlayerRotating = false;		  // プレイヤー回転演出が有効か
+	float _playerRotationTimer = 0.0f;    // プレイヤー回転演出の経過時間
 	float _playerRotationDuration = 2.0f; // プレイヤーが回転する演出の時間（秒）
 	float _playerInitialRotation = 0.0f;  // プレイヤー回転演出開始時のプレイヤーの向き（角度）
 	float _playerTargetRotation = 0.0f;   // プレイヤー回転演出の目標の向き（角度）

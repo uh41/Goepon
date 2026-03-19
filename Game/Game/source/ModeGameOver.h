@@ -20,23 +20,23 @@ public:
 	virtual bool Render() override;
 
 private:
+	bool UpdateSpotCenterFromPlayer(); // プレイヤーの位置からスポットライトの中心を更新し、成功したかを返す
+	void DrawSpotlightFade() const;    // 円形暗転を描画する関数
+
 	ModeGame* _ownerGame; // 所有している ModeGame への参照（必要に応じて使用）
 	int _overlayHandle;
 	bool _showOverlayImmediate;
 	std::string _debugCurrentStageId; // デバッグ用：検出したステージID
 
 	// 円形暗転
-	float _fadeSec = 0.0f;
-	float _fadeDurationSec = 1.2f;
-	int _screenCx = 0;
-	int _screenCy = 0;
-	float _spotRadius = 0.0f;
-	float _spotStartRadius = 900.0f;
-	float _spotEndRadius = 0.0f;
-	int _spotRingStepDeg = 6;
-	int _spotAlpha = 0;
-	bool _hasValidSpotCenter = false;
-
-	bool UpdateSpotCenterFromPlayer();
-	void DrawSpotlightFade() const;
+	float _fadeSec = 0.0f;			   // フェードの進行度（秒）
+	float _fadeDurationSec = 1.2f;	   // 画面中心座標（スポットライトの中心）
+	int   _screenCx = 0;			   // 画面中心座標（スポットライトの中心）
+	int   _screenCy = 0;			   // スポットライトの半径（最初は大きく、徐々に縮める）
+	float _spotRadius = 0.0f;		   // 現在の穴の半径
+	float _spotStartRadius = 900.0f;   // 穴の初期半径
+	float _spotEndRadius = 0.0f;	   // 穴の最終半径
+	int   _spotRingStepDeg = 6;		   // 360度を何度ごとに分割してポリゴンを描くか
+	int   _spotAlpha = 0;			   // 暗転のアルファ値（0-255）
+	bool  _hasValidSpotCenter = false; // playerのワールド座標からスクリーン座標変化が成功したか
 };

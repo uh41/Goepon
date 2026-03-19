@@ -159,9 +159,11 @@ bool ModeGame::Initialize()
 	//_cinematicCamera->_fClipNear = 1.0f;
 	//_cinematicCamera->_fClipFar = 1000.0f;
 	
-
+	// フラグ初期化
+	// 最初はタヌキ
 	_bShowTanuki = true;
 
+	// プレイヤーとエフェクトにカメラをセット
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
@@ -179,6 +181,7 @@ bool ModeGame::Initialize()
 	_isChengeBgm = false;
 
 	_soundFinish = gGlobal._soundServer->Get("3");
+
 
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
@@ -410,6 +413,15 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 	{
 		_initialStageId = saveData.stageId;
 	}
+
+	// 元のカメラに戻す
+	if(_savedCamera)
+	{
+		_camera = _savedCamera;
+		_savedCamera = nullptr;
+	}
+
+	_isGameOverCinematicActive = false;
 
 	if(_playerTanuki)
 	{
@@ -1477,7 +1489,20 @@ bool ModeGame::Render()
 	}
 
 	ObjectRender();// オブジェクト描画処理
-	//DebugRender(); // デバック描画処理
+	
+	if(_isGameOverCinematicActive)
+	{
+		// 画面全体を暗くする
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, _gameOverDimAlpha); // 半透明の黒
+		DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモードを元に戻す
+	
+		// playerだけ暗転の上に再描画して暗くならないようにする
+		if(_playerTanuki)
+		{
+			_playerTanuki->Render();
+		}
+	}
 
 	int key = ApplicationBase::GetInstance()->GetKey();
 	if (key & PAD_INPUT_12)

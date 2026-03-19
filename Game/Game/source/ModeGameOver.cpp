@@ -4,9 +4,10 @@
 #include "modegameoverload.h"
 #include "appframe.h"
 
+// 時間の進行と正規化
 namespace
 {
-	constexpr float kDt = 1.0f / 60.0f;
+	constexpr float kDt = 1.0f / 60.0f; // 60FPS想定のフレーム時間（秒）
 
 	float Lerp(float a, float b, float t)
 	{
@@ -79,7 +80,7 @@ bool ModeGameOver::Process()
 	_spotRadius = Lerp(_spotStartRadius, _spotEndRadius, t);
 
 	// 暗さを増やす（0→255）
-	_spotAlpha = static_cast<int>(Lerp(0.0f, 255.0f, t));
+	_spotAlpha = StCas<int>(Lerp(0.0f, 255.0f, t));
 
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 	if(trg & PAD_INPUT_1)
@@ -138,6 +139,11 @@ bool ModeGameOver::Render()
 {
 	base::Render();
 
+	// 画面全体を暗くする
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180); // 半透明の黒
+	DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモードを元に戻す
+
 	// 既存の黒背景UIは残しつつ、サンシャイン風暗転を上に載せる
 	// ※ 文字は暗転の上に描く（読みやすさ優先）にする場合は順序を入れ替える
 	DrawSpotlightFade();
@@ -168,21 +174,25 @@ bool ModeGameOver::Render()
 	return true;
 }
 
+// プレイヤーの位置からスポットライトの中心を更新し、成功したかを返す
 bool ModeGameOver::UpdateSpotCenterFromPlayer()
 {
-	_hasValidSpotCenter = false;
+	_hasValidSpotCenter = false; // 毎回リセットして、成功したらtrueにする方式
 
+	// オーナーゲームやプレイヤーが存在しない場合は失敗
 	if(!_ownerGame)
 	{
 		return false;
 	}
 
-	auto playerSp = _ownerGame->GetPlayerTanuki();
+	// プレイヤーの位置を取得
+	auto playerSp = _ownerGame->GetPlayerTanuki(); 
 	if(!playerSp)
 	{
 		return false;
 	}
 
+	// プレイヤーのワールド座標にオフセットを加えてスポットライトの中心とし、スクリーン座標に変換する
 	const vec::Vec3 world = vec3::VAdd(playerSp->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 	const VECTOR dxWorld = DxlibConverter::VecToDxLib(world);
 	const VECTOR scr = ConvWorldPosToScreenPos(dxWorld);
@@ -190,8 +200,8 @@ bool ModeGameOver::UpdateSpotCenterFromPlayer()
 	// 画面外/失敗対策（DXLibは失敗時の値が状況依存なので緩くチェック）
 	if(std::isfinite(scr.x) && std::isfinite(scr.y))
 	{
-		_screenCx = static_cast<int>(scr.x);
-		_screenCy = static_cast<int>(scr.y);
+		_screenCx = StCas<int>(scr.x);
+		_screenCy = StCas<int>(scr.y);
 		_hasValidSpotCenter = true;
 		return true;
 	}
@@ -205,32 +215,46 @@ void ModeGameOver::DrawSpotlightFade() const
 	int screenH = 0;
 	GetScreenState(&screenW, &screenH, nullptr);
 
+	// まず全画面を黒くする
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, _spotAlpha);
 	DrawBox(0, 0, screenW, screenH, GetColor(0, 0, 0), TRUE);
 
+	// 中心座標
 	const int cx = _screenCx;
 	const int cy = _screenCy;
 
 	const float r0 = (_spotRadius > 0.0f) ? _spotRadius : 0.0f;
-	const float r1 = std::sqrt(static_cast<float>(screenW * screenW + screenH * screenH));
+	const float r1 = std::sqrt(StCas<float>(screenW * screenW + screenH * screenH));
 
+	// 円形の穴を描くため、360度をいくつかの四角形に分割して描画する
 	for(int deg = 0; deg < 360; deg += _spotRingStepDeg)
 	{
-		const float a0 = DEG2RAD(static_cast<float>(deg));
-		const float a1 = DEG2RAD(static_cast<float>(deg + _spotRingStepDeg));
+		// 角度をラジアンに変換
+		const float a0 = DEG2RAD(StCas<float>(deg));
+		const float a1 = DEG2RAD(StCas<float>(deg + _spotRingStepDeg));
 
-		const int x0i = cx + static_cast<int>(std::cos(a0) * r0);
-		const int y0i = cy + static_cast<int>(std::sin(a0) * r0);
-		const int x0o = cx + static_cast<int>(std::cos(a0) * r1);
-		const int y0o = cy + static_cast<int>(std::sin(a0) * r1);
+		// 内側の円と外側の円の4点を計算
+		const int x0i = cx + StCas<int>(std::cos(a0) * r0);
+		const int y0i = cy + StCas<int>(std::sin(a0) * r0);
+		const int x0o = cx + StCas<int>(std::cos(a0) * r1);
+		const int y0o = cy + StCas<int>(std::sin(a0) * r1);
 
-		const int x1i = cx + static_cast<int>(std::cos(a1) * r0);
-		const int y1i = cy + static_cast<int>(std::sin(a1) * r0);
-		const int x1o = cx + static_cast<int>(std::cos(a1) * r1);
-		const int y1o = cy + static_cast<int>(std::sin(a1) * r1);
+		const int x1i = cx + StCas<int>(std::cos(a1) * r0);
+		const int y1i = cy + StCas<int>(std::sin(a1) * r0);
+		const int x1o = cx + StCas<int>(std::cos(a1) * r1);
+		const int y1o = cy + StCas<int>(std::sin(a1) * r1);
 
-		DrawQuadrangle(x0i, y0i, x0o, y0o, x1o, y1o, x1i, y1i, GetColor(0, 0, 0), TRUE);
+		DrawQuadrangle
+		(
+			x0i, y0i,   // 内側: 角度a0
+			x0o, y0o,   // 外側: 角度a0
+			x1o, y1o,   // 外側: 角度a1
+			x1i, y1i,   // 内側: 角度a1
+			GetColor(0, 0, 0), TRUE
+		);
 	}
 
+	// ブレンドモードを元に戻す
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }
+
