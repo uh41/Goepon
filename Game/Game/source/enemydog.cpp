@@ -23,6 +23,10 @@ bool EnemyDog::Initialize()
 	_rotationSpeed = 0.2f;                     // 回転速度（調整可能）
 	_moveSpeed = 2.0f;
 
+	// 追跡状態初期化（未初期化防止）
+	_isChasing = false;
+	_soundEmitTimer = 0.0f;
+
 	// ランダムウォーク用の初期化
 	_rmWalkTimer = 0.0f;
 	_rmWalkInterval = 3.5f;
@@ -333,7 +337,7 @@ bool EnemyDog::Process()
 			auto soundManager = EnemySoundManager::GetInstance();
 			if (soundManager)
 			{
-				soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+				soundManager->EmitSound(GetPos(), 5, 430.0f, 10.0f, GetEnemyId());
 			}
 			_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
 			_isChasing = true;
@@ -358,7 +362,7 @@ bool EnemyDog::Process()
 				auto soundManager = EnemySoundManager::GetInstance();
 				if (soundManager)
 				{
-					soundManager->EmitSound(GetPos(), 5, 1000.0f, 10.0f, GetEnemyId());
+					soundManager->EmitSound(GetPos(), 5, 430.0f, 10.0f, GetEnemyId());
 				}
 				_soundEmitTimer = SOUND_EMIT_INTERVAL; // タイマーをリセット
 			}

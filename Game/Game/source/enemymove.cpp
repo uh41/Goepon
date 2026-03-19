@@ -613,14 +613,14 @@ bool EnemyMove::Process()
 		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
-		// 指定時間を越えたら初期位置への帰還を開始
-		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		// 音検知から一定時間経過したら初期位置に戻る
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME && !_detectedPlayer)
 		{
-			_soundDetectionActive = false;
-			_soundDetectionTimer = 0.0f;
 			_isMovingToSound = false;
 			_waitingAtSound = false;
-
+			_soundWaitTimer = 0.0f;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
 			ReturnInitialPos();
 		}
 	}
@@ -688,7 +688,7 @@ bool EnemyMove::Process()
 	}
 	else if (_detectedPlayer) // 追跡開始前の検知状態を維持
 	{
-		_status = STATUS::FOUND;
+		_status = STATUS::WAIT;
 		_isReturning = false;
 		_isPatrol = false;
 		_waitingReturn = false;
