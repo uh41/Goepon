@@ -74,22 +74,62 @@ MATRIX TreasureBase::MakeModelMatrix() const
 	return m;
 }
 
-// デバック：開いたら見た目を消す
+// 開いたら見た目を消す
 void TreasureBase::SetOpen(bool isOpen)
 {
-	if (_isOpen == isOpen)
+	if(_isOpen == isOpen)
 	{
 		return;
 	}
 
 	_isOpen = isOpen;
 
-	// 開いたらモデルを差し替える
-	const int oldHandle = _handle;
-	const int openHandle = ResourceServer::MV1LoadModel(mv1::tuzura_open);
+	// 既存モデルがあれば解放
+	if(_handle >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_handle);
+		_handle = -1;
+	}
 
-	_handle = openHandle;
+	// 開閉に応じたモデルを読み込む
+	const char* modelName;
+	if(_isOpen)
+	{
+		modelName = mv1::tuzura_open;
+	}
+	else
+	{
+		modelName = mv1::tuzura_05;
+	}
+	int newHandle = ResourceServer::MV1LoadModel(modelName);
+	if(newHandle < 0)
+	{
+		return;
+	}
+
+	_handle = newHandle;
 	_isVisible = true;
+
+	// 新しいモデルでコリジョンフレームを検索して設定
+	_hitCollisionFrame = MV1SearchFrame(_handle, "Collision_04");
+	_openCollisionFrame = MV1SearchFrame(_handle, "Collision_05");
+
+	if(_hitCollisionFrame >= 0)
+	{
+		MV1SetupCollInfo(_handle, _hitCollisionFrame, 16, 16, 16);
+		MV1SetFrameVisible(_handle, _hitCollisionFrame, FALSE);
+	}
+	if(_openCollisionFrame >= 0)
+	{
+		MV1SetupCollInfo(_handle, _openCollisionFrame, 16, 16, 16);
+		MV1SetFrameVisible(_handle, _openCollisionFrame, FALSE);
+	}
+
+	// モデル行列とコリジョン情報を更新
+	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, _openCollisionFrame, MakeModelMatrix());
+
+	// 通知フラグは開閉状態に合わせてリセット／設定
+	_openedNotified = _isOpen;
 }
 
 void TreasureBase::RenderGauge(const vec::Vec3& playerPos, float progress)

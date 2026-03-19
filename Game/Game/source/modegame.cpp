@@ -339,17 +339,8 @@ void ModeGame::SavePlayer(PlayerBase* player)
 		saveData.makimonoCount = p->GetMakimonoCount();
 	}
 
+	// 重要: 宝箱の取得状態はセーブに含めない（常に未取得扱いでロードする）
 	saveData.openTreasureIds.clear();
-	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)
-	{
-		auto& treasure = _treasureBase[i];
-		if(!treasure) { continue; }
-
-		if(treasure->IsOpen())
-		{
-			saveData.openTreasureIds.push_back(i);
-		}
-	}
 
 	saveData.enemies.clear();
 	for(auto& e : _enemyBase)
@@ -367,7 +358,7 @@ void ModeGame::SavePlayer(PlayerBase* player)
 		saveData.enemies.push_back(std::move(ei));
 	}
 
-	// --- 追加: ステージ側の patrolGroup を保存（gid -> ポイント列） ---
+	// ステージ側の patrolGroup 保存
 	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
 	if(stageData)
 	{
@@ -426,6 +417,38 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_camera->SetTarget(target);
 		_camera->SetPos(vec3::VAdd(target, camDelta));
 	}
+
+	int tid = 0;
+	for(auto& t : _treasureBase)
+	{
+		if(!t)
+		{
+			++tid;
+			continue;
+		}
+
+		bool shouldOpen = false;
+		for(const auto& sid : saveData.openTreasureIds)
+		{
+			if(sid == tid)
+			{
+				shouldOpen = true;
+				break;
+			}
+		}
+
+		t->SetOpen(shouldOpen);
+
+		// ゲージ進行度を必ずリセット（セーブされていない開放は復元されないようにする）
+		_treasureProgressMap[t.get()] = 0.0f;
+
+		++tid;
+	}
+
+	// 現在開けている途中状態をクリアしてゲージ残存を防ぐ
+	_currentOpeningTreasure = nullptr;
+	_treasureHoldSec = 0.0f;
+	_isOpeningTreasure = false;
 
 	for(auto& enemyPtr : _enemyBase)
 	{
