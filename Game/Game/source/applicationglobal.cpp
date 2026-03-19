@@ -356,6 +356,8 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("5", std::make_shared<soundserver::SoundItemSE>(mp3::tanuki_run));
 	_soundServer->Add("41", std::make_shared<soundserver::SoundItemSE>(mp3::Dog_walk, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("63", std::make_shared<soundserver::SoundItemSE>(mp3::UI_Henshin_pon));
+	_soundServer->Add("70", std::make_shared<soundserver::SoundItemSE>(mp3::UI_Itemget));
+	_soundServer->Add("71", std::make_shared<soundserver::SoundItemSE>(mp3::UI_savepoint));
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
