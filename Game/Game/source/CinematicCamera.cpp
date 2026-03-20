@@ -7,11 +7,13 @@ CinematicCamera::CinematicCamera()
 	_timer = 0.0f;
 	_duration = 0.0f;
 	_targetPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
-	_orbitStartRadius = _orbitEndRadius = _orbitRevolutions = _orbitStartAngle = 0.0f;
+	_orbitStartRadius = _orbitEndRadius = _orbitRevolutions = _orbitStartAngle = 0.0f; 
 	_zoomStartDist = _zoomEndDist = 0.0f;
 	_zoomEasing = &mymath::EasingOutBounce;
 	_rotateSpeed = 0.0f;
 	_shakeIntensity = 0.0f;
+	_shakeCyclesPerSecond = 8.0f;
+	_shakeBasePos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
 }
 
 bool CinematicCamera::Initialize()
@@ -40,6 +42,7 @@ bool CinematicCamera::Process()
 	// 状態に応じた処理
 	switch(_state)
 	{
+		// 円軌道を描いて回る
 		case State::Orbit:
 		{
 			// 半径を mymath のイージングで補間
@@ -55,6 +58,7 @@ bool CinematicCamera::Process()
 			_vPos.y = _targetPos.y + 200.0f;
 			break;
 		}
+		// ターゲットに向かって距離を変える
 		case State::Zoom:
 		{
 			const auto easing = (_zoomEasing != nullptr) ? _zoomEasing : &mymath::EasingOutBounce;
@@ -91,17 +95,17 @@ bool CinematicCamera::Process()
 			}
 			break;
 		}
-		// 調整中
+		// 揺れ（ランダムオフセットを加える）
 		case State::Shake:
 		{
-			float progress = (_duration > 0.0f) ? (_timer / _duration) : 1.0f;
-			float amp = _shakeIntensity * (1.0f - progress);
-			float rx = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * amp;
-			float ry = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * amp * 0.5f;
-			float rz = ((float)rand() / RAND_MAX * 2.0f - 1.0f) * amp;
-			_vPos.x += rx;
-			_vPos.y += ry;
-			_vPos.z += rz;
+			const float progress = (_duration > 0.0f) ? (_timer / _duration) : 1.0f; 
+			const float amp      = _shakeIntensity * (1.0f - progress); // 徐々に減衰させる
+
+			const float t = _timer; //seconds
+			const float yOffSet = sinf(2.0f * DX_PI_F * _shakeCyclesPerSecond * t) * amp;
+
+			_vPos = _shakeBasePos;
+			_vPos.y += yOffSet; // Y軸方向に揺らす。必要ならX/Zも同様に揺らす
 			break;
 		}
 		default:

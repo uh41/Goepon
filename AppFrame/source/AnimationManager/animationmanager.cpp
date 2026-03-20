@@ -26,7 +26,7 @@ bool AnimationManager::Terminate()
 	return true;
 }
 
-int AnimationManager::Play(int handle, std::string& name, bool loop, float speed)
+int AnimationManager::Play(int handle, const std::string& name, bool loop, float speed)
 {
 	if(handle == -1)
 	{
@@ -235,4 +235,14 @@ float AnimationManager::GetTotalTime(int id) const
 		return 0.0f;
 	}
 	return it->second.totalTime;
+}
+
+float AnimationManager::GetPlayTime(int id) const
+{
+	auto it = _animInstance.find(id);
+	if(it == _animInstance.end())
+	{
+		return 0.0f;
+	}
+	return it->second.playTime;	
 }

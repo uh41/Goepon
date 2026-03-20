@@ -177,7 +177,8 @@ int ResourceServer::MV1DeleteModel(int handle)
 
     for(; iter != _mapModel.end(); ++iter)
     {
-        if((*iter).second == handle) {
+        if((*iter).second == handle)
+        {
             break;
         }
     }
