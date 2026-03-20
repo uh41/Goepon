@@ -889,16 +889,27 @@ bool ModeGame::ProcessGameOverSequence()
 		}
 	}
 
-	// フェーズ1：ゲームオーバーアニメが終わったら、ゲームオーバー画面へ
+	// フェーズ1：倒れた状態のアニメーション(ループ)に切り替える
 	if(_gameOverSequencePhase == 1 && _playerTanuki)
 	{
 		if(!_playerTanuki->IsAnimationPlaying())
+		{
+			_gameOverSequencePhase = 2;
+
+			// 倒れるアニメーション
+			_playerTanuki->PlayGameOverAnimation("tanuki_taore", true);
+		}
+	}
+
+	// フェーズ2：倒れループに切り替わったことが確認できたら、ゲームオーバーへ
+	if (_gameOverSequencePhase == 2 && _playerTanuki)
+	{
+		if (_playerTanuki->IsAnimationPlaying())
 		{
 			return EndGameOverSequence();
 		}
 	}
 
-	
 	return true;
 }
 
