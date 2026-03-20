@@ -30,7 +30,6 @@
 #include "uibase.h"
 #include "uihp.h"
 #include "UiMakimono.h"	
-#include "charashadow.h"
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
@@ -59,10 +58,11 @@
 #include "treasureopenui.h"
 #include "dashui.h"
 #include "tutorial.h"
-#include "configui.h"
 #include "savemanager.h"
 #include "savepoint.h"
 #include "savepointeffect.h"
+#include "makimonogeteffect.h"
+#include "goaleffect.h"
 
 // 定数定義
 
@@ -79,6 +79,12 @@ namespace GAMEOVER
 }
 
 constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
+
+namespace timelimit
+{
+	static constexpr auto START_TIME_LIMIT = 5.0f; // 制限時間（秒）
+	static constexpr auto MIDDLE_TIME_LIMIT = 2.0f; // 制限時間の半分（秒）
+}
 
 class ModeGame : public ModeBase
 {
@@ -159,9 +165,6 @@ public:
 	bool IsTransformRequested() const;
 	bool IsShowingTanuki() const { return _bShowTanuki; }
 
-	// 影関数
-	bool ShadowInitialize();
-
 	// カメラ操作公開API（メニューから呼び出すため）
 	void CameraMoveBy(const vec::Vec3& delta);
 	void CameraZoomTowardsTarget(float amount);
@@ -236,6 +239,7 @@ public:
 	auto GetPlayer() const { return _player; }
 	auto GetPlayerTanuki() const { return _playerTanuki; }
 	auto GetPlayerMono() const { return _playerMono; }
+	bool IsShowingMono() const { return _showMonoPlayer; }
 	void CancelRequestedTransform();
 
 	void SavePlayer(PlayerBase* player);
@@ -299,10 +303,6 @@ protected:
 	at::spc<TreasureOpenUi> _treasureOpenUi;
 	at::spc<DashUi> _dashUi;
 	at::spc<StunEffect> _stunEffect;
-	at::spc<ConfigUi> _configUi;
-
-	// シャドウ
-	at::vspc<CharaShadow> _charaShadow;
 
 	// エフェクト
 	at::vspc<EffectBase> _effectBase;
@@ -318,6 +318,8 @@ protected:
 	at::spc<NakiEffect> _nakiEffect;
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
+	at::spc<MakimonoGetEffect> _makimonoGetEffect;
+	at::spc<GoalEffect> _goalEffect;
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;

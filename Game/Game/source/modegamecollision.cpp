@@ -373,6 +373,12 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 
 			player->AddMakimono(1); // プレイヤーの巻物所持数を増やす
 
+			if(_makimonoGetEffect)
+			{
+				_makimonoGetEffect->SetTargetPlayer(player);
+				_makimonoGetEffect->PlayEffect(player->GetPos());
+			}
+
 			return true;
 		}
 	}
@@ -1143,7 +1149,7 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 			hitPos
 		))
 		{
-			// 初回接触のみセーブを実行する（同じセーブポイントなら2回目以降はスキップ）
+			// 初回接触のみセーブを実行する
 			if(_lastSavedPoint != savePoint)
 			{
 				SavePlayer(checkPlayer);

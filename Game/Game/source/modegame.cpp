@@ -103,7 +103,7 @@ bool ModeGame::Initialize()
 
 	if(_treasureUi)
 	{
-		_treasureUi->SetTreasureList(_treasure);
+		_treasureUi->SetTreasureList(_treasureBase);
 	}
 
 	// ゴール初期化
@@ -111,7 +111,6 @@ bool ModeGame::Initialize()
 
 	// カメラ初期化をここで行う
 	DebugInitialize();// デバック初期化
-	ShadowInitialize();// シャドウ生成
 	CameraInfoInitialize();// カメラ情報初期化 ← ここで_cameraが作成される
 
 	//  カメラが正常に作成されたことを確認 
@@ -250,12 +249,6 @@ bool ModeGame::Terminate()
 		ui_base->Terminate();
 	}
 	_uiBase.clear();
-
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Terminate();
-	}
-	_charaShadow.clear();
 	// エフェクト
 	for(auto& effectBase : _effectBase)
 	{
@@ -435,19 +428,6 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_playerTanuki->ResetDash();
 	}
 
-	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)
-	{
-		auto& t = _treasureBase[i];
-		if(!t) continue;
-		bool shouldOpen = false;
-		for(const auto& id : saveData.openTreasureIds)
-		{
-			if(id == i) { shouldOpen = true; break; }
-		}
-		t->SetOpen(shouldOpen);
-	}
-
-
 	// メモリ上にも保存しておく（必要に応じて参照可能）
 	_saveData = saveData;
 
@@ -501,8 +481,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 			}
 		}
 
-		enemyPtr->StopAnimation();
-		enemyPtr->PlayAnimation("idle", true);
+		if(auto* e = dynamic_cast<Enemy*>(enemyPtr.get()))
+		{
+			e->StopAnimation();
+			e->PlayAnimation("idle", true);
+		}
 	}
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
@@ -1270,7 +1253,7 @@ bool ModeGame::Process()
 	{
 		EnemySoundManager::GetInstance()->EmitSound(
 			playerBase->GetPos(),  // 位置
-			1,					// 音の大きさレベル（1-3で調整）
+			1,					// 音の大きさレベル
 			400.0f,				// 音波の最大半径
 			10.0f				// 音波の速度
 		);
@@ -1402,11 +1385,6 @@ bool ModeGame::Process()
 			_bShowTanuki = true;
 			_showMonoPlayer = false;
 
-			if(_configUi)
-			{
-				_configUi->SetTransForm(ConfigUi::FormType::TANUKI);
-			}
-
 			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
 			if(prevActive && _playerTanuki)
 			{
@@ -1444,10 +1422,21 @@ bool ModeGame::Process()
 				}
 			}
 		}
-		else if(_changeTimeLimit <= 10.0f)
+		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
 		{
+			// 残り時間に応じて点滅間隔を短くする
 			_changeBlinkTimer += dt;
-			if(_changeBlinkTimer >= _changeBlinkInterval)
+
+			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
+			float currentBlinkInterval = _changeBlinkInterval;
+
+			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
+			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
+			{
+				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
+			}
+
+			if(_changeBlinkTimer >= currentBlinkInterval)
 			{
 				_changeBlinkTimer = 0.0f;
 				_changeBlinkVisible = !_changeBlinkVisible;

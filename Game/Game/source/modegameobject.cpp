@@ -21,11 +21,6 @@ void ModeGame::RequestTransformToMono()
 	}
 	// 要求フラグを立てるだけ。実際の消費/変身は PlayerTransform() 内で行う
 	_requestedTransformToMono = true;
-
-	if(_configUi)
-	{
-		_configUi->SetTransForm(ConfigUi::FormType::TANUMONO);
-	}
 }
 
 void ModeGame::RequestTransformToHuman()
@@ -36,20 +31,11 @@ void ModeGame::RequestTransformToHuman()
 	}
 
 	_requestedTransformToHuman = true;
-
-	if(_configUi)
-	{
-		_configUi->SetTransForm(ConfigUi::FormType::TANUBITO);
-	}
 }
 
 void ModeGame::RequestReturnToTanukiFromHuman()
 {
 	_requestedReturnToTanuki = true;
-	if(_configUi)
-	{
-		_configUi->SetTransForm(ConfigUi::FormType::TANUKI);
-	}
 }
 
 bool ModeGame::IsTransforming() const
@@ -130,12 +116,8 @@ bool ModeGame::ObjectInitialize()
 	_dashUi->SetPlayer(_playerTanuki.get());
 	_uiBase.emplace_back(_dashUi);
 	_treasureUi = std::make_shared<TreasureUi>();
-	_treasureUi->SetTreasureList(_treasure);
+	_treasureUi->SetTreasureList(_treasureBase);
 	_uiBase.emplace_back(_treasureUi);
-	_configUi = std::make_shared<ConfigUi>();
-	_configUi->SetVisible(true);
-	_uiBase.emplace_back(_configUi);
-
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();
@@ -148,8 +130,6 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_findEffect);
 	_hatenaEffect = std::make_shared<HatenaEffect>();
 	_effectBase.emplace_back(_hatenaEffect);
-	//_aseEffect = std::make_shared<AseEffect>();
-	//_effectBase.emplace_back(_aseEffect);
 	_doyaEffect = std::make_shared<DoyaEffect>();
 	_effectBase.emplace_back(_doyaEffect);
 	_nakiEffect = std::make_shared<NakiEffect>();
@@ -160,6 +140,11 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_stunEffect);
 	_savePointEffect = std::make_shared<SavePointEffect>();
 	_effectBase.emplace_back(_savePointEffect);
+	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
+	_effectBase.emplace_back(_makimonoGetEffect);
+	_goalEffect = std::make_shared<GoalEffect>();
+	_goalEffect->SetGoal(_goal);
+	_effectBase.emplace_back(_goalEffect);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
@@ -197,12 +182,6 @@ bool ModeGame::ObjectInitialize()
 		effectBase->Initialize();
 	}
 
-	// シャドウ初期化
-	for(auto& charaShadow : _charaShadow)
-	{
-		charaShadow->Initialize();
-	}
-
 	// 点滅間隔の初期化（秒） — 明示的に初期化しておく
 	_changeBlinkInterval = 0.1f; // 0.5秒ごとに点滅
 	_changeBlinkTimer = 0.0f;
@@ -211,58 +190,6 @@ bool ModeGame::ObjectInitialize()
 	_requestedTransformToMono = false;
 	_requestedTransformToHuman = false;
 	_requestedReturnToTanuki = false;
-	return true;
-}
-
-// 影の初期化
-bool ModeGame::ShadowInitialize()
-{
-	// 既存シャドウを安全に削除（再初期化対応）
-	for(auto& s : _charaShadow)
-	{
-		if(s)
-		{
-			s->Terminate();
-		}
-	}
-	_charaShadow.clear();
-
-	// プレイヤーに対するシャドウ
-	auto playerShadow = std::make_shared<CharaShadow>();
-	playerShadow->SetTargetChara([this]() -> CharaBase*
-		{
-			if(_showMonoPlayer)
-			{
-				return _playerMono.get();
-			}
-			else if(_bShowTanuki)
-			{
-				return _playerTanuki.get();
-			}
-			else
-			{
-				return _player.get();
-			}
-		});
-	// 初期化を呼ぶ（LoadGraph 等を行う）
-	playerShadow->Initialize();
-	_charaShadow.emplace_back(playerShadow);
-
-	// 敵のシャドウは敵生成後のコンテナを参照する
-	for(auto& eb : _enemyBase)
-	{
-		if(!eb)
-		{
-			continue;
-		}
-		auto shadow = std::make_shared<CharaShadow>();
-		// eb をキャプチャして EnemyBase* を返すラムダを渡す
-		shadow->SetTargetChara([eb]() -> CharaBase* { return StCas<CharaBase*>(eb.get()); });
-		// 初期化を呼ぶ
-		shadow->Initialize();
-		_charaShadow.emplace_back(shadow);
-	}
-
 	return true;
 }
 
@@ -686,15 +613,6 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
-	// キャラクターの影処理
-	for(auto& shadow : _charaShadow)
-	{
-		if(shadow)
-		{
-			shadow->Process();
-		}
-	}
-
 	// 宝箱処理
 	for (auto& t : _treasureBase)
 	{
@@ -834,23 +752,40 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-	// キャラクターの影描画
-	for(auto& shadow : _charaShadow)
-	{
-		if(shadow)
-		{
-			shadow->Render();
-		}
-	}
-
 	// UIが参照するプレイヤーを「現在表示中」に合わせる
 	
-	if (_bShowTanuki) { currentPlayer = _playerTanuki.get(); }
-	else if (_showMonoPlayer) { currentPlayer = _playerMono.get(); }
-	else { currentPlayer = _player.get(); }
+	if (_bShowTanuki)
+	{
+		currentPlayer = _playerTanuki.get();
+	}
+	else if(_showMonoPlayer)
+	{
+		currentPlayer = _playerMono.get(); 
+	}
+	else
+	{
+		currentPlayer = _player.get(); 
+	}
 
-	if (_uiHp) { _uiHp->SetPlayer(currentPlayer); }
-	if (_uiMakimono) { _uiMakimono->SetPlayer(currentPlayer); }
+	if(_uiHp)
+	{ 
+		_uiHp->SetPlayer(currentPlayer);
+	}
+	if(_uiMakimono)
+	{
+		_uiMakimono->SetPlayer(currentPlayer);
+	}
+	if(_dashUi)
+	{
+		if(_bShowTanuki)
+		{
+			_dashUi->SetPlayer(_playerTanuki.get());
+		}
+		else
+		{
+			_dashUi->SetPlayer(nullptr);
+		}
+	}
 
 	// 各敵のセンサーを個別に描画
 	// プレイヤーから半径内にいる敵だけ索敵範囲を描画

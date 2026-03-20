@@ -1,17 +1,17 @@
 #pragma once
 #include "counterui.h"
-#include "Treasure.h"
+#include "TreasureBase.h"
 
 namespace treasure
 {
 	static constexpr auto DEGUTI_X = 1600; // 出口のX座標
-	static constexpr auto DEGUTI_Y = 56; // 出口のY座標
+	static constexpr auto DEGUTI_Y = 50; // 出口のY座標
 	static constexpr auto NOKORI_X = 1600; // 残りのX座標
-	static constexpr auto NOKORI_Y = 48; // 残りのY座標
-	static constexpr auto KAKERU_X = 1600; // 掛けるのX座標
-	static constexpr auto KAKERU_Y = 0; // 掛けるのY座標
-	static constexpr auto MAKIMONO_X = 1560; // 巻物のX座標
-	static constexpr auto MAKIMONO_Y = 15; // 巻物のY座標
+	static constexpr auto NOKORI_Y = 50; // 残りのY座標
+	static constexpr auto KAKERU_X = 1500; // 掛けるのX座標
+	static constexpr auto KAKERU_Y = 50; // 掛けるのY座標
+	static constexpr auto MAKIMONO_X = 1500; // 巻物のX座標
+	static constexpr auto MAKIMONO_Y = 50; // 巻物のY座標
 }
 
 class TreasureUi : public CounterUi
@@ -25,7 +25,7 @@ typedef CounterUi base;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void SetTreasureList(const at::vspc<Treasure>& treasure) { _treasure = treasure; }
+	void SetTreasureList(const at::vspc<TreasureBase>& treasure) { _treasure = treasure; }
 
 	bool GetHandleMakimono();
 
@@ -36,6 +36,6 @@ protected:
 
 	int _remainCount; // 残りの宝箱の数
 
-	at::vspc<Treasure> _treasure; // 宝箱のリスト
+	at::vspc<TreasureBase> _treasure; // 宝箱のリスト
 };
 

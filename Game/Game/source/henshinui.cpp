@@ -17,7 +17,7 @@ HenshinUi::HenshinUi()
 bool HenshinUi::Initialize()
 {
 	base::Initialize();
-	_handle = LoadGraph(img::UI_Makimono);
+	//_handle = LoadGraph(img::UI_Makimono);
 	_handleTanubito = LoadGraph(ui::UI_Hito);
 	return true;
 }
@@ -73,9 +73,15 @@ bool HenshinUi::Process()
 
 		// 人間表示時は PAD_INPUT_4 を押すことで UI 経由で即時タヌキへ戻す要求を出せるようにする
 		// （ModeGame 側でモノ表示時は無視されるため安全）
-		if(mgCheck && (trg & PAD_INPUT_4))
+		if(mgCheck && !mgCheck->IsShowingMono() && (trg & PAD_INPUT_4))
 		{
 			mgCheck->RequestReturnToTanukiFromHuman();
+			return true;
+		}
+
+		if(mgCheck && mgCheck->IsShowingMono() && (trg & PAD_INPUT_3))
+		{
+			mgCheck->RequestReturnToTanukiFromHuman(); // 既存の戻す要求を利用
 			return true;
 		}
 

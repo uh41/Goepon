@@ -78,20 +78,28 @@ bool Enemy::Process()
 		_status = STATUS::WAIT;
 	}
 
+	float dt = 1.0f / 60.0f;
+	if (auto* app = ApplicationMain::GetInstance())
+	{
+		if (auto* frameRate = app->GetFrameRateController())
+		{
+			dt = StCas<float>(frameRate->GetDeltaTime());
+		}
+	}
+
 	// 音検知タイマーの更新（音検知が有効な場合）
 	if (_soundDetectionActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
-		// 10秒経過したら初期位置への帰還を開始
-		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		// 音検知から一定時間経過したら初期位置に戻る
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME && !_detectedPlayer)
 		{
-			_soundDetectionActive = false;
-			_soundDetectionTimer = 0.0f;
 			_isMovingToSound = false;
 			_waitingAtSound = false;
-
+			_soundWaitTimer = 0.0f;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
 			ReturnInitialPos();
 		}
 	}
@@ -115,15 +123,12 @@ bool Enemy::Process()
 	// 検知終了後の待機処理（共通フラグを参照）
 	if(_waitingReturn)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_returnWaitTimer -= dt;
 
 		if(_returnWaitTimer <= 0.0f)
 		{
 			_waitingReturn = false;
-
-			// 初期位置へ戻る処理は base 実装を使う
-			ReturnInitialPos();
+			ReturnInitialPos();	// 初期位置へ戻る処理は base 実装を使う
 		}
 
 		_status = STATUS::WAIT;
@@ -154,20 +159,11 @@ bool Enemy::Process()
 				_soundDetectionActive = false;
 				_soundDetectionTimer = 0.0f;
 			}
-			else if (_waitingReturn)	// 検知終了後の待機処理
+			else if (_detectedPlayer) // 追跡開始前の検知状態を維持
 			{
-				const float dt = 1.0f / 60.0f; // 60FPS想定
-				_returnWaitTimer -= dt;
-
-				if (_returnWaitTimer <= 0.0f)
-				{
-					_waitingReturn = false;
-
-					// 初期位置へ戻る処理は base 実装を使う
-					ReturnInitialPos();
-				}
-
 				_status = STATUS::WAIT;
+				_isReturning = false;
+				_waitingReturn = false;
 			}
 			else if (_isReturning)	// 初期位置に戻り中
 			{
@@ -199,9 +195,8 @@ bool Enemy::Process()
 	}
 
 	// プレイヤー検出時は向くだけ（徐々に）／または追跡時は UpdateChasing が移動する
-	if(_detectedPlayer)
+	if (_detectedPlayer && !IsSearchingAtLastPlayerPos())
 	{
-		// 共通実装を使用
 		UpdateRotationToPlayer();
 	}
 	else if (_isReturning && !_waitingTeleport)

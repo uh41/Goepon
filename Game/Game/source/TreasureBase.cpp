@@ -77,13 +77,19 @@ MATRIX TreasureBase::MakeModelMatrix() const
 // デバック：開いたら見た目を消す
 void TreasureBase::SetOpen(bool isOpen)
 {
+	if (_isOpen == isOpen)
+	{
+		return;
+	}
+
 	_isOpen = isOpen;
 
-	// デバッグ：開いたら見た目を消す
-	if(_isOpen)
-	{
-		_isVisible = false;
-	}
+	// 開いたらモデルを差し替える
+	const int oldHandle = _handle;
+	const int openHandle = ResourceServer::MV1LoadModel(mv1::tuzura_open);
+
+	_handle = openHandle;
+	_isVisible = true;
 }
 
 void TreasureBase::RenderGauge(const vec::Vec3& playerPos, float progress)

@@ -37,6 +37,7 @@ namespace texture
   inline constexpr const char* TR_6 = "res/Texture/TR_6.png";
   inline constexpr const char* TR_7 = "res/Texture/TR_7.png";
   inline constexpr const char* TR_8 = "res/Texture/TR_8.png";
+  inline constexpr const char* TR_9 = "res/Texture/TR_9.png";
   inline constexpr const char* TX_Tresure5 = "res/Texture/TX_Tresure5.png";
   inline constexpr const char* TX_ase = "res/Texture/TX_ase.png";
   inline constexpr const char* TX_change = "res/Texture/TX_change.png";
@@ -55,7 +56,6 @@ namespace texture
   inline constexpr const char* earth = "res/Texture/earth.png";
   inline constexpr const char* makimono = "res/Texture/makimono.png";
   inline constexpr const char* tree = "res/Texture/tree.png";
-  inline constexpr const char* tutorial3 = "res/Texture/tutorial3.png";
 }
 
 namespace ui
@@ -63,8 +63,9 @@ namespace ui
   inline constexpr const char* B_gamestart = "res/UI/B_gamestart.png";
   inline constexpr const char* B_gamestart_1 = "res/UI/B_gamestart_1.png";
   inline constexpr const char* Dash_Icon = "res/UI/Dash_Icon.png";
-  inline constexpr const char* Dash_Icon_Batu = "res/UI/Dash_Icon_Batu.png";
+  inline constexpr const char* Dash_Icon_BK = "res/UI/Dash_Icon_BK.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
+  inline constexpr const char* DegutiBK = "res/UI/DegutiBK.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";
@@ -75,9 +76,9 @@ namespace ui
   inline constexpr const char* Tanuki_config_2 = "res/UI/Tanuki_config_2.png";
   inline constexpr const char* Tanumono_config = "res/UI/Tanumono_config.png";
   inline constexpr const char* Title_gamefinish = "res/UI/Title_gamefinish.png";
-  inline constexpr const char* Title_gamefinish_small = "res/UI/Title_gamefinish_small.png";
+  inline constexpr const char* Title_gamefinish_no = "res/UI/Title_gamefinish_no.png";
   inline constexpr const char* Title_gamestart = "res/UI/Title_gamestart.png";
-  inline constexpr const char* Title_gamestart_small = "res/UI/Title_gamestart_small.png";
+  inline constexpr const char* Title_gamestart_no = "res/UI/Title_gamestart_no.png";
   inline constexpr const char* UI_0 = "res/UI/UI_0.png";
   inline constexpr const char* UI_1 = "res/UI/UI_1.png";
   inline constexpr const char* UI_2 = "res/UI/UI_2.png";
@@ -89,8 +90,10 @@ namespace ui
   inline constexpr const char* UI_8 = "res/UI/UI_8.png";
   inline constexpr const char* UI_9 = "res/UI/UI_9.png";
   inline constexpr const char* UI_Hito = "res/UI/UI_Hito.png";
+  inline constexpr const char* UI_HitoBK = "res/UI/UI_HitoBK.png";
   inline constexpr const char* UI_Mono = "res/UI/UI_Mono.png";
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
+  inline constexpr const char* UI_nokoriBK = "res/UI/UI_nokoriBK.png";
   inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
   inline constexpr const char* UI_x = "res/UI/UI_x.png";
   inline constexpr const char* prologe_config = "res/UI/prologe_config.png";
@@ -127,15 +130,17 @@ namespace ef
   inline constexpr const char* tutorial_2 = "res/Effect/tutorial_2.efkefc";
   inline constexpr const char* tutorial_3 = "res/Effect/tutorial_3.efkefc";
   inline constexpr const char* tutorial_4 = "res/Effect/tutorial_4.efkefc";
+  inline constexpr const char* tutorial_5 = "res/Effect/tutorial_5.efkefc";
 }
 
 namespace mv1
 {
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
-  inline constexpr const char* GameClear_Tanuki = "res/GameClear/GameClear_Tanuki.mv1";
-  inline constexpr const char* GameOver_Tanuki = "res/Gameover/GameOver_Tanuki.mv1";
+  inline constexpr const char* Game_clear = "res/Gameclear/Game_clear.mv1";
+  inline constexpr const char* anime_tanuki_gameover = "res/Gameover/anime_tanuki_gameover.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
+  inline constexpr const char* SM_Stage1V2 = "res/map/SM_Stage1V2.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
@@ -148,6 +153,7 @@ namespace mv1
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
   inline constexpr const char* gamestart = "res/Titleanimation/gamestart.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";
+  inline constexpr const char* tuzura_open = "res/Treasure/Treasureopen/tuzura_open.mv1";
 }
 
 namespace mp3
@@ -159,9 +165,12 @@ namespace mp3
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
   inline constexpr const char* Dog_walk = "res/SE/Dog_walk.mp3";
+  inline constexpr const char* Dog_walkHowling = "res/SE/Dog_walkHowling.mp3";
   inline constexpr const char* UI_Henshin_pon = "res/SE/UI_Henshin_pon.mp3";
+  inline constexpr const char* UI_Itemget = "res/SE/UI_Itemget.mp3";
   inline constexpr const char* UI_charin = "res/SE/UI_charin.mp3";
   inline constexpr const char* UI_no_makimono = "res/SE/UI_no_makimono.mp3";
+  inline constexpr const char* UI_savepoint = "res/SE/UI_savepoint.mp3";
   inline constexpr const char* bush_found = "res/SE/bush_found.mp3";
   inline constexpr const char* bushi_sight_off = "res/SE/bushi_sight_off.mp3";
   inline constexpr const char* bushi_stun_start = "res/SE/bushi_stun_start.mp3";

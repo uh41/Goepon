@@ -45,7 +45,7 @@ bool EnemyMove::Initialize()
 
 	// 初期位置に戻る機能の初期化
 	_isReturning = false;				
-	_returnSpeed = 4.0f;				// 初期位置に戻る速度（追跡より少し遅め）
+	_returnSpeed = 4.0f;	// 初期位置に戻る速度（追跡より少し遅め）
 
 	// テレポート関連の初期化
 	_waitingTeleport = false;
@@ -384,7 +384,17 @@ void EnemyMove::OnPlayerLost()
 		_hasSavePoint = true;
 	}
 
-	ReturnInitialPos();	// 初期位置に戻る処理を開始
+	// 待機してから初期位置へ戻す
+	_isPatrol = false;
+	_isReturning = false;
+	_waitingReturn = true;
+	_returnWaitTimer = RETURN_WAIT_TIME;
+	ResetTeleport();
+
+	if (_enemySensor)
+	{
+		_enemySensor->ResetDetection();
+	}
 }
 
 // 初期位置に戻る処理の更新
@@ -590,6 +600,15 @@ bool EnemyMove::Process()
 		_status = STATUS::WAIT;
 	}
 
+	float dt = 1.0f / 60.0f;
+	if (auto* app = ApplicationMain::GetInstance())
+	{
+		if (auto* frameRate = app->GetFrameRateController())
+		{
+			dt = StCas<float>(frameRate->GetDeltaTime());
+		}
+	}
+
 	// EnemySensorがあれば、そのセンサーの位置と向きを自分の位置に同期
 	if (_enemySensor)
 	{
@@ -600,17 +619,16 @@ bool EnemyMove::Process()
 	// 音検知タイマーの更新（音検知が有効な場合）
 	if (_soundDetectionActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundDetectionTimer += dt;
 
-		// 指定時間を越えたら初期位置への帰還を開始
-		if (_soundDetectionTimer >= SOUND_RETURN_TIME)
+		// 音検知から一定時間経過したら初期位置に戻る
+		if (_soundDetectionTimer >= SOUND_RETURN_TIME && !_detectedPlayer)
 		{
-			_soundDetectionActive = false;
-			_soundDetectionTimer = 0.0f;
 			_isMovingToSound = false;
 			_waitingAtSound = false;
-
+			_soundWaitTimer = 0.0f;
+			_soundDetectionActive = false;
+			_soundDetectionTimer = 0.0f;
 			ReturnInitialPos();
 		}
 	}
@@ -618,7 +636,6 @@ bool EnemyMove::Process()
 	// 音源到達後の待機中はWAITステータス（プレイヤー検知で割り込み可）
 	if (_waitingAtSound)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
 		_soundWaitTimer -= dt;
 
 		if (_soundWaitTimer <= 0.0f)
@@ -630,21 +647,31 @@ bool EnemyMove::Process()
 			_soundDetectionActive = false;
 			_soundDetectionTimer = 0.0f;
 
-			// 保存してある巡回ルート（ターゲット座標）へ一旦戻してから巡回再開
-			// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
-			if (_hasSavePoint)
-			{
-				_isReturning = true;
-				_isPatrol = false;
-				ResetTeleport();
-			}
-			else
-			{
-				// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
-				ReturnInitialPos();
-			}
+			//// 保存してある巡回ルート（ターゲット座標）へ一旦戻してから巡回再開
+			//// _savePoint / _savePatrolIndex / _hasSavePoint は検知開始時に保存済み
+			//if (_hasSavePoint)
+			//{
+			//	_isReturning = true;
+			//	_isPatrol = false;
+			//	ResetTeleport();
+			//}
+			//else
+			//{
+			//	// 念のため保険：保存が無ければ通常帰還（結果的に巡回へ戻る）
+			//	ReturnInitialPos();
+			//}
 		}
 		// 待機中は必ずWAITステータスを設定して、他の処理をスキップ
+		_status = STATUS::WAIT;
+	}
+	else if (_waitingReturn)
+	{
+		_returnWaitTimer -= dt;
+		if (_returnWaitTimer <= 0.0f)
+		{
+			_waitingReturn = false;
+			ReturnInitialPos();
+		}
 		_status = STATUS::WAIT;
 	}
 	// 優先順位: 音の追跡 > 扇形の追跡 > 帰還 > 巡回
@@ -664,6 +691,13 @@ bool EnemyMove::Process()
 		UpdateChasing();
 		_isReturning = false;
 		_isPatrol = false;		// 巡回停止
+	}
+	else if (_detectedPlayer) // 追跡開始前の検知状態を維持
+	{
+		_status = STATUS::WAIT;
+		_isReturning = false;
+		_isPatrol = false;
+		_waitingReturn = false;
 	}
 	else if (_isReturning)	// 初期位置に戻り中
 	{
@@ -689,12 +723,12 @@ bool EnemyMove::Process()
 		// プレイヤーを見失っていて、かつ初期位置にいない場合は初期位置に戻る
 		if (_enemySensor && !_enemySensor->IsChasing() && !IsAtInitialPos() && !IsStun())
 		{
-			ReturnInitialPos();
+			_waitingReturn = true;
 		}
 	}
 
 	// プレイヤーを検出している場合、プレイヤーの方向に徐々に向く
-	if (_detectedPlayer)
+	if (_detectedPlayer && !IsSearchingAtLastPlayerPos())
 	{
 		UpdateRotationToPlayer(); // 徐々に回転
 		// または即座に向きたい場合は LookAtPlayer(); を使用
