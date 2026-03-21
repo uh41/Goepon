@@ -612,7 +612,7 @@ bool EffekseerManager::SetEffectMatrix(int handle, const Effekseer::Matrix43& ma
 
 	// DxLib(EffekseerForDXLib) 側が管理している Effekseer::Manager を取ってくる必要がある
 	// ※関数名は環境差があるため、ここはプロジェクト側APIに合わせて調整してください
-	auto manager = Effekseer::Manager::Create(1000);
+	auto manager = GetEffekseer3DManager();
 	if(manager == nullptr)
 	{
 		return false;
@@ -628,8 +628,36 @@ void EffekseerManager::Update()
 	{
 		return;
 	}
+	// Effekseer の更新
 	UpdateEffekseer3D();
 	UpdateEffekseer2D();
+
+	// 再生が終了したハンドルのクリーンアップ
+	if(!_effectSpeed.empty())
+	{
+		at::vet<int> removeList;
+		removeList.reserve(_effectSpeed.size());
+
+		for(auto& p : _effectSpeed)
+		{
+			int handle = p.first;
+			// Effekseer の API は 0:再生中, -1:再生されていない（終了）を返す
+			bool playing3D = (IsEffekseer3DEffectPlaying(handle) == 0);
+			bool playing2D = (IsEffekseer2DEffectPlaying(handle) == 0);
+
+			if(!playing3D && !playing2D)
+			{
+				removeList.emplace_back(handle);
+			}
+		}
+
+		for(auto h : removeList)
+		{
+			_effectSpeed.erase(h);
+			_effectPos.erase(h);
+			_effectRotation.erase(h);
+		}
+	}
 }
 
 void EffekseerManager::Render()

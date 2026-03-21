@@ -439,7 +439,16 @@ bool ModeGame::Terminate()
 	std::string curStage = _stageManager.GetCurrentStageId();
 	if(!curStage.empty())
 	{
-		gGlobal.UnloadMapData(curStage);   // Map の MV1 ハンドル等を解放
+		// ステージID -> マップ名 の対応で正しいマップ名を指定してアンロードする
+		std::string mapName;
+		if(curStage == "Stage1") mapName = "Map1";
+		else if(curStage == "Stage2") mapName = "Map2";
+		else if(curStage == "Stage3") mapName = "Map3";
+
+		if(!mapName.empty())
+		{
+			gGlobal.UnloadMapData(mapName);   // Map の MV1 ハンドル等を解放
+		}
 		gGlobal.UnloadStageData(curStage); // ステージ内 JSON 等を解放
 	}
 
