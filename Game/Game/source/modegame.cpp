@@ -466,8 +466,17 @@ void ModeGame::SavePlayer(PlayerBase* player)
 		saveData.makimonoCount = p->GetMakimonoCount();
 	}
 
-	// 重要: 宝箱の取得状態はセーブに含めない（常に未取得扱いでロードする）
+	// 宝箱の取得状態をセーブに含める（開いている宝箱のインデックスを保存）
 	saveData.openTreasureIds.clear();
+	for(size_t i = 0; i < _treasureBase.size(); ++i)
+	{
+		auto& tptr = _treasureBase[i];
+		if(!tptr) continue;
+		if(tptr->IsOpen())
+		{
+			saveData.openTreasureIds.push_back(static_cast<int>(i));
+		}
+	}
 
 	saveData.takenMakimonoIds.clear();
 	for(size_t i = 0; i < _makimono.size(); ++i)
@@ -676,6 +685,83 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 	}
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
+
+	for(auto& effectBase : _effectBase)
+	{
+		if(effectBase)
+		{
+			effectBase->StopPlaying(); // 各 Effect クラスの停止処理（内部 state クリア）
+		}
+	}
+
+	if(_playerTanuki)
+	{
+		if(_doyaEffect) _doyaEffect->SetTargetPlayer(_playerTanuki.get());
+		if(_nakiEffect) _nakiEffect->SetTargetPlayer(_playerTanuki.get());
+		if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+	}
+
+	// 敵リストを参照するエフェクトに最新の敵配列を渡す
+	if(_findEffect) _findEffect->SetEnemy(_enemyBase);
+	if(_hatenaEffect) _hatenaEffect->Enemy(_enemyBase);
+
+	// 宝箱／セーブポイント等の参照を再設定（念のため）
+	if(_treasureEffect) _treasureEffect->SetTreasure(_treasureBase);
+	if(_savePointEffect) _savePointEffect->SetSavePoint(_savePoint);
+	if(_goalEffect) _goalEffect->SetGoal(_goal);
+
+	// HatenaEffect の内部フラグをリセット（既に再生済み扱いを解除して、必要な箇所で再生できるようにする）
+	if(_hatenaEffect)
+	{
+		for(auto& e : _enemyBase)
+		{
+			if(e) _hatenaEffect->ResetEnemyEffect(e.get());
+		}
+	}
+
+	// NakiEffect の一時状態をクリア
+	if(_nakiEffect)
+	{
+		_nakiEffect->ResetEffect();
+	}
+
+	_suppressSavePoint = false; // セーブポイントの再出現を抑制するフラグをリセット
+	_suppressedSavePoint = nullptr; // 抑制中のセーブポイント参照もクリア
+	if(_playerTanuki && !_savePoint.empty())
+	{
+		for(auto& sp : _savePoint)
+		{
+			if(!sp)
+			{
+				continue;
+			}
+
+			int h = sp->GetHandle();
+			int f = sp->GetSavePointCollisionFrame();
+			if(h > 0 || f < 0)
+			{
+				continue;
+			}
+
+			MATRIX model = sp->MakeModelMatrix();
+			MV1SetMatrix(h, model);
+			MV1RefreshCollInfo(h, f);
+
+			vec::Vec3 hitPos;
+			if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+				_playerTanuki->GetPos(),
+				h,
+				f,
+				_playerTanuki->GetColSubY(),
+				hitPos
+			))
+			{
+				_suppressSavePoint= true;
+				_suppressedSavePoint = sp.get();
+				break;
+			}
+		}
+	}
 }
 
 void ModeGame::ResetEnemyRoot()
