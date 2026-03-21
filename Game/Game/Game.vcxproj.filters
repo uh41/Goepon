@@ -4,7 +4,6 @@
     <ClCompile Include="source\applicationmain.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
-    <ClCompile Include="source\charashadow.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
     <ClCompile Include="source\cube.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
@@ -288,13 +287,15 @@
     <ClCompile Include="source\savepointeffect.cpp" />
     <ClCompile Include="source\makimonogeteffect.cpp" />
     <ClCompile Include="source\goaleffect.cpp" />
+    <ClCompile Include="source\treasureopen.cpp">
+      <Filter>ソースファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
     <ClInclude Include="source\applicationmain.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
-    <ClInclude Include="source\charashadow.h" />
     <ClInclude Include="source\CinematicCamera.h" />
     <ClInclude Include="source\cube.h" />
     <ClInclude Include="source\doyaeffect.h" />
@@ -381,6 +382,9 @@
     <ClInclude Include="source\savepointeffect.h" />
     <ClInclude Include="source\makimonogeteffect.h" />
     <ClInclude Include="source\goaleffect.h" />
+    <ClInclude Include="source\treasureopen.h">
+      <Filter>ヘッダーファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

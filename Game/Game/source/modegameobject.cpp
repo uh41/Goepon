@@ -132,6 +132,8 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_hatenaEffect);
 	_doyaEffect = std::make_shared<DoyaEffect>();
 	_effectBase.emplace_back(_doyaEffect);
+	_TreasureOpenEffect = std::make_shared<TreasureopenEffect>();
+	_effectBase.emplace_back(_TreasureOpenEffect);
 	_nakiEffect = std::make_shared<NakiEffect>();
 	_effectBase.emplace_back(_nakiEffect);
 	_shirimochiEffect = std::make_shared<ShirimochiEffect>();
