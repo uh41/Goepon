@@ -365,6 +365,56 @@ void ApplicationGlobal::UnloadAllStageData()
 	_stageData.clear();
 }
 
+
+// 指定ステージの Map/Stage データを必要ならロードする
+bool ApplicationGlobal::EnsureStageDataLoad(const std::string& stageId)
+{
+	if(stageId.empty()) return false;
+
+	// ステージ -> マップ名 / JSON ファイル名 の既定マッピング（Init と同じ組）
+	if(stageId == "Stage1")
+	{
+		// Map1 / stage1_0319x.json
+		if(GetMapData("Map1") == nullptr)
+		{
+			LoadMapData("Map1", "stage1_0319x.json", "stage");
+		}
+		if(GetStageData("Stage1") == nullptr)
+		{
+			LoadStageData("Stage1", "stage1_0319x.json", "stage");
+		}
+	}
+	else if(stageId == "Stage2")
+	{
+		// Map2 / map JSON は Init と同じに合わせる（MapとStageでファイル名が異なる実装）
+		if(GetMapData("Map2") == nullptr)
+		{
+			LoadMapData("Map2", "stage2_0311.json", "stage");
+		}
+		if(GetStageData("Stage2") == nullptr)
+		{
+			LoadStageData("Stage2", "stage2_0319.json", "stage");
+		}
+	}
+	else if(stageId == "Stage3")
+	{
+		if(GetMapData("Map3") == nullptr)
+		{
+			LoadMapData("Map3", "stage3_0312.json", "stage");
+		}
+		if(GetStageData("Stage3") == nullptr)
+		{
+			LoadStageData("Stage3", "stage3_0312.json", "stage");
+		}
+	}
+	else
+	{
+		// 未定義ステージは false を返すが無視してもよい
+		return false;
+	}
+	return true;
+}
+
 // 初期化
 bool ApplicationGlobal::Init()
 {
