@@ -241,6 +241,9 @@ public:
 	auto GetPlayerMono() const { return _playerMono; }
 	bool IsShowingMono() const { return _showMonoPlayer; }
 	void CancelRequestedTransform();
+	void ShowHenshinPlayer(bool show) { if(_henshinUi) _henshinUi->SetShowPlayerUi(show); }
+	void ShowHenshinMonoUi(bool show) { if(_henshinUi) _henshinUi->SetShowPlayerMonoUi(show); }
+
 
 	void SavePlayer(PlayerBase* player);
 	void ApplySaveData(const SaveData& data);

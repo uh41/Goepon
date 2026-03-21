@@ -379,6 +379,12 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 				_makimonoGetEffect->PlayEffect(player->GetPos());
 			}
 
+			auto makimonoSe = gGlobal._soundServer->Get("70");
+			if(makimonoSe)
+			{
+				makimonoSe->Play();
+			}
+
 			return true;
 		}
 	}
@@ -482,6 +488,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	// 引数チェック
 	if (!player)
 	{
+		return false;
+	}
+
+	if(dynamic_cast<PlayerMono*>(player) != nullptr)
+	{
+		// PlayerMonoは宝箱を開けられない
 		return false;
 	}
 
@@ -1154,6 +1166,12 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 			{
 				SavePlayer(checkPlayer);
 				_lastSavedPoint = savePoint;
+
+				auto save = gGlobal._soundServer->Get("71");
+				if(save)
+				{
+					save->Play();
+				}
 			}
 			return true;
 		}

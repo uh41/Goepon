@@ -15,6 +15,8 @@ struct SaveData
 
 	at::vet<int> openTreasureIds; // ŠJ‚¯‚½•ó” ‚ÌIDƒŠƒXƒg
 
+	at::vet<int> takenMakimonoIds;
+
 	struct EnemyInitial
 	{
 		uint32_t enemyId; // “G‚ÌID

@@ -17,7 +17,7 @@ private:
 	struct ComicPanel
 	{
 		int x, y;		// 表示位置
-		int w, h;		// 表示サイズ
+		//int w, h;		// 表示サイズ
 		float alpha;	// 透明度（0.0f - 1.0f）
 	};
 

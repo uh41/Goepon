@@ -80,7 +80,11 @@ bool ModeGameLoad::Process()
 	{
 		if(GetASyncLoadNum() == 0)
 		{
-			ModeServer::GetInstance()->Add(new ModeGame(), 1, "game");
+			// 追加直後に ProcessInit を呼んで即時 Initialize させる（ModeGameOverLoad と同様の扱い）
+			auto* newGame = new ModeGame();
+			ModeServer::GetInstance()->Add(newGame, 0, "game");
+			ModeServer::GetInstance()->Process(); // ここで Initialize を実行し、同フレームで確実に登録されるようにする
+			ModeServer::GetInstance()->Render();
 		}
 		return true;
 	}

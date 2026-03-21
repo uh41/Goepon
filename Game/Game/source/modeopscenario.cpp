@@ -46,20 +46,14 @@ bool ModeOpScenario::Initialize()
 	};
 
 	// �y�[�W�̕\���f�[�^��ݒ�
-	_panelData =
+	_panelData.clear();
+	_panelData.resize(_page.size());
+	for(int i = 0; i < StCas<int>(_panelData.size()); ++i)
 	{
-		{ 50,  50,  250, 250, 0.0f },   // �y�[�W1�̈ʒu�E�T�C�Y�E�����x
-		{ 50, 200,  250, 250, 0.0f },   // �y�[�W2
-		{ 50,  450, 250, 250, 0.0f },   // �y�[�W3
-		{ 300,  50, 250, 250, 0.0f },   // �y�[�W4
-		{ 300, 300, 250, 250, 0.0f },   // �y�[�W5
-		{ 300, 500, 250, 250, 0.0f },   // �y�[�W6
-		{ 550,  50, 300, 300, 0.0f },   // �y�[�W7
-		{ 550, 340, 350, 350, 0.0f },   // �y�[�W8
-		{ 900,  50, 400, 400, 0.0f },   // �y�[�W9
-		{ 920,  450, 300, 300, 0.0f },   // �y�[�W10
-		{ 1250, 450, 550, 550, 0.0f },   // �y�[�W11
-	};
+		_panelData[i].x = 0;
+		_panelData[i].y = 0;
+		_panelData[i].alpha = 0.0f;
+	}
 	_pageNo = 0;
 	_fadeTimer = 0;
 
@@ -217,12 +211,9 @@ bool ModeOpScenario::Render()
 			SetDrawBlendMode(DX_BLENDMODE_ADD, 30); // ���Z�u�����h�ŏ������邭
 			// �ʏ�̕`��
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, StCas<int>(255 * _panelData[i].alpha));
-			DrawExtendGraph
-			(
+			DrawGraph(
 				_panelData[i].x,
 				_panelData[i].y,
-				_panelData[i].x + _panelData[i].w,
-				_panelData[i].y + _panelData[i].h,
 				_page[i].handle,
 				TRUE
 			);

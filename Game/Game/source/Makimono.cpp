@@ -4,8 +4,11 @@ bool Makimono::Initialize()
 {
 	base::Initialize();
 	
-	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::IT_makimono, 1.0f);
-	if(_handle < 0) { return false; }
+	if(!LoadModel(mv1::makimono_01))
+	{
+		// 読み込み失敗
+		return false;
+	}
 
 	_vPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
 	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
@@ -14,6 +17,9 @@ bool Makimono::Initialize()
 	_drawSize = 60.0f;
 	_playHandle = -1;
 	_fCollisionR = 45.0f;
+
+	ModelMatrixSetUp();
+
 	return true;
 }
 
@@ -42,34 +48,33 @@ bool Makimono::Terminate()
 bool Makimono::Process()
 {
 	base::Process();
-	auto em = EffekseerManager::GetInstance();
-	if(!em || _handle == -1) { return true; }
 
-	if(_isVisible)
-	{
-		// ハンドルが無い、または再生終了していたら再生しなおす = ループ
-		if(_playHandle == -1 || !em->IsPlayingEffect(_playHandle))
-		{
-			_playHandle = em->PlayEffect3DPos(_handle, _vPos);
-		}
-		else
-		{
-			em->SetPosEffect(_playHandle, _vPos);
-		}
-	}
-	else
-	{
-		if(em->IsPlayingEffect(_playHandle))
-		{
-			em->StopEffect(_playHandle);
-		}
-		_playHandle = -1;
-	}
+	ModelMatrixSetUp();
 	return true;
 }
 
 bool Makimono::Render()
 {
 	base::Render();
+
+	if(!_isVisible) { return true; }
+
+	float vorty = atan2(_vDir.x * -1, _vDir.z * -1);
+
+	MATRIX mRotY = MGetRotY(vorty);
+
+	MV1SetPosition(_handle, DxlibConverter::VecToDxLib(_vPos));
+
+	MATRIX mTrans = MGetTranslate(DxlibConverter::VecToDxLib(_vPos));
+	MATRIX mScale = MGetScale(VGet(1.0f, 1.0f, 1.0f));
+
+	MATRIX m = MGetIdent();
+	m = MMult(m, mRotY);
+	m = MMult(m, mScale);
+	m = MMult(m, mTrans);
+
+	MV1SetMatrix(_handle, m);
+	MV1DrawModel(_handle);
+
 	return true;
 }

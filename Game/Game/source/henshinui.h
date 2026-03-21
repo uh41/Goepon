@@ -3,10 +3,10 @@
 
 namespace henshin
 {
-	static constexpr auto MAKIMONO_X = 1559;
-	static constexpr auto MAKIMONO_Y = 16;
-	static constexpr auto TANUBITO_X = 1400;
-	static constexpr auto TANUBITO_Y = 800;
+	static constexpr auto HENSHIN_X = 1400; //1400
+	static constexpr auto HENSHIN_Y = 800; //800
+	static constexpr auto TANUBITO_X = 1559;
+	static constexpr auto TANUBITO_Y = 16;
 	static constexpr auto TANUMONO_X = 1530;
 	static constexpr auto TANUMONO_Y = 847;
 }
@@ -34,6 +34,8 @@ public:
 
 	void SetOwner(void* owner) { _owner = owner; }
 
+	void SetShowPlayerUi(bool show) { _showPlayerUi = show; }
+	void SetShowPlayerMonoUi(bool show) { _showPlayerMonoUi = show; }
 
 protected:
 
@@ -44,5 +46,8 @@ protected:
 	bool _padInput5Active;	// パッド入力5Aが有効かどうか
 
 	void* _owner; // このUIを所有するオブジェクトへのポインタ
+
+	bool _showPlayerUi; // プレイヤーUIを表示するかどうか
+	bool _showPlayerMonoUi;  // ものUIを表示するかどうか
 };
 
