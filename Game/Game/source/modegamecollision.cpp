@@ -618,6 +618,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 						_doyaEffect->PlayEffect(treasure->GetPos());
 					}
 
+					if(_TreasureOpenEffect)
+					{
+						_TreasureOpenEffect->PlayEffect(treasure->GetPos());
+					}
+
 					// 宝箱を開けた時の音波
 					EnemySoundManager::GetInstance()->EmitSound(
 						treasure->GetPos(),
@@ -763,6 +768,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				{
 					_doyaEffect->SetTargetPlayer(player);
 					_doyaEffect->PlayEffect(currentTreasure->GetPos());
+				}
+
+				if (_TreasureOpenEffect)
+				{
+					_TreasureOpenEffect->PlayEffect(currentTreasure->GetPos());
 				}
 
 				if(gGlobal._soundServer)

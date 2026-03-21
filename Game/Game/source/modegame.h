@@ -44,6 +44,7 @@
 #include "findeffect.h"
 #include "hatenaeffect.h"
 #include "doyaeffect.h"
+#include "treasureopen.h"
 #include "nakieffect.h"
 #include "shirimochieffect.h"
 #include "stuneffect.h"
@@ -318,6 +319,7 @@ protected:
 	at::spc<FindEffect> _findEffect;
 	at::spc<HatenaEffect> _hatenaEffect;
 	at::spc<DoyaEffect> _doyaEffect;
+	at::spc<TreasureopenEffect> _TreasureOpenEffect;
 	at::spc<NakiEffect> _nakiEffect;
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
