@@ -132,6 +132,10 @@ bool ObjectServer::ClearObject()
 	// _map が objects/addObj/delObj のどれで消されてもよいように監視
 	for(auto* obj : objects)
 	{
+		if(!obj) continue;
+
+		// 既に Terminate が呼ばれている可能性を考慮して idempotent にすることが望ましい
+		obj->Terminate(); // ← 追加：確実に Terminate を呼ぶ
 		if(obj == _map)
 		{
 			_map = nullptr;
@@ -141,7 +145,11 @@ bool ObjectServer::ClearObject()
 
 	for(auto* obj : addObj)
 	{
-		if(!obj) { continue; }
+		if(!obj) {
+			continue;
+		}
+		// addObj は ProcessInit() の前に移動してきた未登録オブジェクトの可能性があるため
+		// 既存実装どおり Terminate を呼ぶ
 		obj->Terminate();
 		if(obj == _map)
 		{
@@ -153,7 +161,9 @@ bool ObjectServer::ClearObject()
 	// DeleteObject() で _deleteObj に積んだものが残って終了するケースを想定して破棄
 	for(auto* obj : delObj)
 	{
-		if(!obj) { continue; }
+		if(!obj) {
+			continue;
+		}
 		obj->Terminate();
 		if(obj == _map)
 		{

@@ -343,7 +343,14 @@ bool ModeGame::Terminate()
 
 	// マップ等
 	if(_map1) { _map1->Terminate(); _map1.reset(); }
-	if(_mapBase.size() > 0) { _mapBase.clear(); }
+	for(auto& mb : _mapBase)
+	{
+		if(mb)
+		{
+			mb->Terminate();
+		}
+	}
+	_mapBase.clear();
 	if(_cube) { _cube->Terminate(); _cube.reset(); }
 	if(_goal) { _goal->Terminate(); _goal.reset(); }
 
@@ -405,6 +412,30 @@ bool ModeGame::Terminate()
 	_hasRenderOnce = false;
 	_requestNextStage = false;
 	_requestResetStage = false;
+
+	if(EffekseerManager::GetInstance())
+	{
+		EffekseerManager::GetInstance()->StopAllPlayingEffect();
+		EffekseerManager::GetInstance()->Terminate();
+	}
+
+	if(_objectServer)
+	{
+		if(auto* map = _objectServer->GetMap())
+		{
+			_objectServer->DeleteObject(map);
+			// ProcessInit を呼んで実際の削除（Terminate + delete）を確定させる
+			_objectServer->ProcessInit();
+		}
+	}
+
+	// 2) ApplicationGlobal に保持されたデータをアンロード（現在のステージのみ）
+	std::string curStage = _stageManager.GetCurrentStageId();
+	if(!curStage.empty())
+	{
+		gGlobal.UnloadMapData(curStage);   // Map の MV1 ハンドル等を解放
+		gGlobal.UnloadStageData(curStage); // ステージ内 JSON 等を解放
+	}
 
 	return true;
 }

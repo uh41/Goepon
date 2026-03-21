@@ -491,6 +491,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		return false;
 	}
 
+	if(dynamic_cast<PlayerMono*>(player) != nullptr)
+	{
+		// PlayerMonoは宝箱を開けられない
+		return false;
+	}
+
 	// 空中なら処理しない（設計に合わせて維持）
 	if (!player->GetLand())
 	{

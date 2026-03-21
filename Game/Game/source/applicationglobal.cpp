@@ -35,13 +35,6 @@ ApplicationGlobal::~ApplicationGlobal()
 {
 	for(auto& mapPair : _mapData)
 	{
-		for(auto& modelPair : mapPair.second.modelHandle)
-		{
-			if(modelPair.second >= 0)
-			{
-				MV1DeleteModel(modelPair.second);
-			}
-		}
 		mapPair.second.modelHandle.clear();
 		mapPair.second.blockPos.clear();
 	}
@@ -276,6 +269,102 @@ const ApplicationGlobal::StageData* ApplicationGlobal::GetStageData(const std::s
 	return nullptr; // 見つからない場合はnullptrを返す
 }
 
+bool ApplicationGlobal::UnloadMapData(const std::string& mapName)
+{
+	auto it = _mapData.find(mapName);
+	if(it == _mapData.end()) return false;
+
+	// MapData 内のモデルハンドルを解放
+	MapData& md = it->second;
+	for(auto& kv : md.modelHandle)
+	{
+		int h = kv.second;
+		if(h >= 0)
+		{
+			// ResourceServer による一元削除を利用（なければ ::MV1DeleteModel を使ってください）
+			ResourceServer::MV1DeleteModel(h);
+		}
+	}
+	// ブロック配列に残る個別ハンドルも解放
+	for(auto& bp : md.blockPos)
+	{
+		if(bp.modelHandle >= 0)
+		{
+			ResourceServer::MV1DeleteModel(bp.modelHandle);
+			bp.modelHandle = -1;
+		}
+	}
+
+	// コンテナを再構築して内部メモリを解放しやすくする
+	md.modelHandle.clear();
+	md.blockPos = at::vet<mymath::BLOCKPOS>();
+
+	// マップデータ自体を辞書から削除
+	_mapData.erase(it);
+	return true;
+}
+
+void ApplicationGlobal::UnloadAllMapData()
+{
+	for(auto it = _mapData.begin(); it != _mapData.end(); ++it)
+	{
+		MapData& md = it->second;
+		for(auto& kv : md.modelHandle)
+		{
+			int h = kv.second;
+			if(h >= 0) ResourceServer::MV1DeleteModel(h);
+		}
+		for(auto& bp : md.blockPos)
+		{
+			if(bp.modelHandle >= 0)
+			{
+				ResourceServer::MV1DeleteModel(bp.modelHandle);
+				bp.modelHandle = -1;
+			}
+		}
+		md.modelHandle.clear();
+		md.blockPos = at::vet<mymath::BLOCKPOS>();
+	}
+	_mapData.clear();
+}
+
+bool ApplicationGlobal::UnloadStageData(const std::string& stageName)
+{
+	auto it = _stageData.find(stageName);
+	if(it == _stageData.end()) return false;
+
+	StageData& sd = it->second;
+
+	// JSON を明示的に破棄（nlohmann::json の内部メモリを解放）
+	for(auto& obj : sd.object)
+	{
+		obj.json = nlohmann::json();
+	}
+	// コンテナを再構築してメモリ解放しやすくする
+	sd.object = at::vet<StageObjectData>();
+	sd.patrolGroup = at::umtt<std::string, at::vet<vec::Vec3>>();
+	sd.patrolPointInfo = at::umtc<std::string, at::vec<PatrolPointInfo>>();
+
+	_stageData.erase(it);
+	return true;
+}
+
+void ApplicationGlobal::UnloadAllStageData()
+{
+	for(auto& kv : _stageData)
+	{
+		StageData& sd = kv.second;
+		for(auto& obj : sd.object)
+		{
+			obj.json = nlohmann::json();
+		}
+		sd.object = at::vet<StageObjectData>();
+		sd.patrolGroup = at::umtt<std::string, at::vet<vec::Vec3>>();
+		sd.patrolPointInfo = at::umtc<std::string, at::vec<PatrolPointInfo>>();
+	}
+	_stageData.clear();
+}
+
 // 初期化
 bool ApplicationGlobal::Init()
 {
@@ -361,7 +450,6 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
-
 
 	return true;
 }

@@ -8,6 +8,7 @@
 /*********************************************************************/
 
 #include "ApplicationBase.h"
+#include "../ResourceServer.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -95,6 +96,7 @@ bool ApplicationBase::Terminate()
 	
 	delete _serverMode;
 
+	ResourceServer::Release();
 	
 	// Effekseerを終了する。
 	Effkseer_End();

@@ -8,7 +8,7 @@ bool Map1::Initialize()
 	if(!base::Initialize()) { return false; }
 
 	// �X�J�C�X�t�B�A�ǂݍ���
-	_iHandleSkySphere = MV1LoadModel("res/SkySphere/skysphere.mv1");
+	_iHandleSkySphere = ResourceServer::MV1LoadModel("res/SkySphere/skysphere.mv1");
 
 	const ApplicationGlobal::MapData* map = gGlobal.GetMapData("Map1");
 	if(map)
@@ -67,31 +67,52 @@ bool Map1::Initialize()
 // �I��
 bool Map1::Terminate()
 {
-	//// スカイスフィアモデルの削除
-	//if(_iHandleSkySphere >= 0)
-	//{
-	//	MV1DeleteModel(_iHandleSkySphere);
-	//	_iHandleSkySphere = -1;
-	//}
+	// スカイスフィアモデルの削除
+	if(_iHandleSkySphere >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_iHandleSkySphere);
+		_iHandleSkySphere = -1;
+	}
 
-	//// シャドウマップの削除
-	//if(_iHandleShadowMap >= 0)
-	//{
-	//	DeleteShadowMap(_iHandleShadowMap);
-	//	_iHandleShadowMap = -1;
-	//}
+	// メインマップモデルの削除
+	if(_iHandleMap >= 0)
+	{
+		ResourceServer::MV1DeleteModel(_iHandleMap);
+		_iHandleMap = -1;
+	}
 
-	//// 地面テクスチャハンドルの削除
-	//if(_ground_handle >= 0)
-	//{
-	//	DeleteGraph(_ground_handle);
-	//	_ground_handle = -1;
-	//}
+	// シャドウマップの削除（そのまま）
+	if(_iHandleShadowMap >= 0)
+	{
+		DeleteShadowMap(_iHandleShadowMap);
+		_iHandleShadowMap = -1;
+	}
 
-	//// ベクターのクリア（メモリ解放）
-	//_ground_vertex.clear();
-	//_ground_index.clear();
-	//_vBlockPos.clear();
+	// 個別モデルハンドルの削除
+	for(auto& pair : _mModelHandle)
+	{
+		if(pair.second >= 0)
+		{
+			ResourceServer::MV1DeleteModel(pair.second);
+		}
+	}
+	_mModelHandle.clear();
+
+	// ベクターのクリア（容量ごと解放）
+	_ground_vertex.clear();
+	std::vector<VERTEX3D>().swap(_ground_vertex);         // メモリを確実に解放
+
+	_ground_index.clear();
+	std::vector<unsigned short>().swap(_ground_index);    // メモリを確実に解放
+
+	_vBlockPos.clear();
+	at::vet<mymath::BLOCKPOS>().swap(_vBlockPos);        // at::vet の場合も再構築で解放促進
+
+	// ファイルストリームのクローズ
+	if(_iFile.is_open())
+	{
+		_iFile.close();
+	}
 
 	// 基底クラスの終了処理
 	base::Terminate();
