@@ -531,12 +531,6 @@ void EnemyBase::UpdateDamageAnimation()
 			{
 				_animId = PlayAnimation(_attachAnimGetUp, false);
 				_fPlayTime = 0.0f;
-				// 起き上がりのボイス
-				auto getUpSound = gGlobal._soundServer->Get("34");
-				if(getUpSound && !getUpSound->IsPlay())
-				{
-					getUpSound->Play();
-				}
 			}
 		}
 	}
@@ -616,14 +610,6 @@ void EnemyBase::UpdateReturnInitialPos()
 			_enemySensor->ResetDetection();	// センサーの検出状態もリセット
 		}
 
-		if(_playSightOffOnReturn && gGlobal._soundServer)
-		{
-			auto sightOff = gGlobal._soundServer->Get("33");
-			if(sightOff && !sightOff->IsPlay())
-			{
-				sightOff->Play();	// 初期位置に戻ったときのSEを再生
-			}
-		}
 		_playSightOffOnReturn = false;
 
 		return;

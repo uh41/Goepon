@@ -50,6 +50,12 @@ public:
 
 	bool Init();    // 初期化
 
+	bool UnloadMapData(const std::string& mapName); // マップデータをアンロードする関数
+	void UnloadAllMapData();
+
+	bool UnloadStageData(const std::string& stageName);
+	void UnloadAllStageData();
+
 	int _iCgCursor;       // カーソル画像ハンドル
 	at::spc<soundserver::SoundServer> _soundServer;
 

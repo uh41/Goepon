@@ -64,11 +64,17 @@ bool ModeGameClearLoad::Process()
 			// 次のステージがない場合はタイトルに戻る
 			if(nextStageId.empty())
 			{
+				gGlobal.UnloadMapData(_stageId);
+				gGlobal.UnloadStageData(_stageId);
 				ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeAffterScenario");
 				ModeServer::GetInstance()->ProcessInit();
 				ModeServer::GetInstance()->Del(this);
 				return true;
 			}
+
+			gGlobal.UnloadMapData(_stageId);
+			gGlobal.UnloadStageData(_stageId);
+
 			// まだステージがあるなら次のModeGameを起動
 			auto* newGame = new ModeGame();
 			newGame->SetInitialStageId(nextStageId);

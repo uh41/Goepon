@@ -228,34 +228,63 @@ bool ModeGame::Terminate()
 	}
 
 	_useCinematicCamera = false;
+
 	// キャラ
 	for(auto& chara : _chara)
 	{
-		chara->Terminate();
+		if(chara) chara->Terminate();
 	}
 	_chara.clear();
+
 	for(auto& object : _object)
 	{
-		object->Terminate();
+		if(object) object->Terminate();
 	}
 	_object.clear();
+
 	for(auto& player_base : _playerBase)
 	{
-		player_base->Terminate();
+		if(player_base) player_base->Terminate();
 	}
 	_playerBase.clear();
+
 	for(auto& ui_base : _uiBase)
 	{
-		ui_base->Terminate();
+		if(ui_base) ui_base->Terminate();
 	}
 	_uiBase.clear();
-	// エフェクト
+
+	// 個別 UI ポインタを安全に解放（存在していれば Terminate を呼ぶ）
+	if(_uiHp) { _uiHp->Terminate(); _uiHp.reset(); }
+	if(_uiMakimono) { _uiMakimono->Terminate(); _uiMakimono.reset(); }
+	if(_henshinUi) { _henshinUi->Terminate(); _henshinUi.reset(); }
+	if(_counterUi) { _counterUi->Terminate(); _counterUi.reset(); }
+	if(_treasureUi) { _treasureUi->Terminate(); _treasureUi.reset(); }
+	if(_attackUi) { _attackUi->Terminate(); _attackUi.reset(); }
+	if(_treasureOpenUi) { _treasureOpenUi->Terminate(); _treasureOpenUi.reset(); }
+	if(_dashUi) { _dashUi->Terminate(); _dashUi.reset(); }
+
+	// エフェクト（コンテナ）
 	for(auto& effectBase : _effectBase)
 	{
-		effectBase->Terminate();
+		if(effectBase) effectBase->Terminate();
 	}
 	_effectBase.clear();
 
+	// 個別エフェクトポインタを Terminate して解放
+	if(_treasureEffect) { _treasureEffect->Terminate(); _treasureEffect.reset(); }
+	if(_hensinEffect) { _hensinEffect->Terminate(); _hensinEffect.reset(); }
+	if(_walkEffect) { _walkEffect->Terminate(); _walkEffect.reset(); }
+	if(_findEffect) { _findEffect->Terminate(); _findEffect.reset(); }
+	if(_hatenaEffect) { _hatenaEffect->Terminate(); _hatenaEffect.reset(); }
+	if(_doyaEffect) { _doyaEffect->Terminate(); _doyaEffect.reset(); }
+	if(_nakiEffect) { _nakiEffect->Terminate(); _nakiEffect.reset(); }
+	if(_shirimochiEffect) { _shirimochiEffect->Terminate(); _shirimochiEffect.reset(); }
+	if(_savePointEffect) { _savePointEffect->Terminate(); _savePointEffect.reset(); }
+	if(_makimonoGetEffect) { _makimonoGetEffect->Terminate(); _makimonoGetEffect.reset(); }
+	if(_goalEffect) { _goalEffect->Terminate(); _goalEffect.reset(); }
+
+	// チュートリアル
 	for(auto& tutorial : _tutorial)
 	{
 		if(tutorial)
@@ -265,11 +294,71 @@ bool ModeGame::Terminate()
 	}
 	_tutorial.clear();
 
+	// セーブポイント
 	for(auto& sp : _savePoint)
 	{
 		if(sp) sp->Terminate();
 	}
 	_savePoint.clear();
+	_lastSavedPoint = nullptr;
+
+	// プレイヤー系（個別ポインタがあれば Terminate -> reset）
+	if(_player)
+	{
+		_player->Terminate();
+		_player.reset();
+	}
+	if(_playerTanuki)
+	{
+		_playerTanuki->Terminate();
+		_playerTanuki.reset();
+	}
+	if(_playerMono)
+	{
+		_playerMono->Terminate();
+		_playerMono.reset();
+	}
+
+	// 敵（コンテナと個別カテゴリ）を確実に終了・解放
+	for(auto& enemy : _enemyBase)
+	{
+		if(enemy) enemy->Terminate();
+	}
+	_enemyBase.clear();
+
+	for(auto& e : _enemy) { if(e) e->Terminate(); }
+	_enemy.clear();
+	for(auto& em : _enemyMove) { if(em) em->Terminate(); }
+	_enemyMove.clear();
+	for(auto& ed : _enemyDog) { if(ed) ed->Terminate(); }
+	_enemyDog.clear();
+
+	// 宝箱・巻物などオブジェクト系の解放
+	for(auto& t : _treasureBase) { if(t) t->Terminate(); }
+	_treasureBase.clear();
+	for(auto& t : _treasure) { if(t) t->Terminate(); }
+	_treasure.clear();
+	for(auto& tr : _treasureRapidFire) { if(tr) tr->Terminate(); }
+	_treasureRapidFire.clear();
+
+	for(auto& m : _makimono) { if(m) m->Terminate(); }
+	_makimono.clear();
+
+	// マップ等
+	if(_map1) { _map1->Terminate(); _map1.reset(); }
+	for(auto& mb : _mapBase)
+	{
+		if(mb)
+		{
+			mb->Terminate();
+		}
+	}
+	_mapBase.clear();
+	if(_cube) { _cube->Terminate(); _cube.reset(); }
+	if(_goal) { _goal->Terminate(); _goal.reset(); }
+
+	// オブジェクトサーバーは外部所有（ApplicationMain）なので delete しない
+	_objectServer = nullptr;
 
 	// カメラの削除を最後に行う
 	if(_camera && _camera != _savedCamera)
@@ -297,6 +386,7 @@ bool ModeGame::Terminate()
 		_sound3D.reset();
 	}
 
+	// モード内のサウンドハンドルを解放
 	if(_soundFinish)
 	{
 		_soundFinish->Stop();
@@ -315,6 +405,40 @@ bool ModeGame::Terminate()
 	// BGM ハンドル参照をクリア（安全のため）
 	_bgmInitialize = nullptr;
 	_bgmChenge = nullptr;
+
+	// その他コンテナ/状態のクリア
+	_enemiesInAttackRange.clear();
+	_treasureProgressMap.clear();
+	_currentOpeningTreasure = nullptr;
+
+	_isLoadComplete = false;
+	_hasRenderOnce = false;
+	_requestNextStage = false;
+	_requestResetStage = false;
+
+	if(EffekseerManager::GetInstance())
+	{
+		EffekseerManager::GetInstance()->StopAllPlayingEffect();
+		EffekseerManager::GetInstance()->Terminate();
+	}
+
+	if(_objectServer)
+	{
+		if(auto* map = _objectServer->GetMap())
+		{
+			_objectServer->DeleteObject(map);
+			// ProcessInit を呼んで実際の削除（Terminate + delete）を確定させる
+			_objectServer->ProcessInit();
+		}
+	}
+
+	// 2) ApplicationGlobal に保持されたデータをアンロード（現在のステージのみ）
+	std::string curStage = _stageManager.GetCurrentStageId();
+	if(!curStage.empty())
+	{
+		gGlobal.UnloadMapData(curStage);   // Map の MV1 ハンドル等を解放
+		gGlobal.UnloadStageData(curStage); // ステージ内 JSON 等を解放
+	}
 
 	return true;
 }
@@ -342,15 +466,18 @@ void ModeGame::SavePlayer(PlayerBase* player)
 		saveData.makimonoCount = p->GetMakimonoCount();
 	}
 
+	// 重要: 宝箱の取得状態はセーブに含めない（常に未取得扱いでロードする）
 	saveData.openTreasureIds.clear();
-	for(int i = 0; i < StCas<int>(_treasureBase.size()); ++i)
-	{
-		auto& treasure = _treasureBase[i];
-		if(!treasure) { continue; }
 
-		if(treasure->IsOpen())
+	saveData.takenMakimonoIds.clear();
+	for(size_t i = 0; i < _makimono.size(); ++i)
+	{
+		auto& mptr = _makimono[i];
+		if(!mptr) continue;
+		// ワールド上で既に消えている（取得済み）ならインデックスを保存
+		if(!mptr->IsVisible())
 		{
-			saveData.openTreasureIds.push_back(i);
+			saveData.takenMakimonoIds.push_back(static_cast<int>(i));
 		}
 	}
 
@@ -370,7 +497,7 @@ void ModeGame::SavePlayer(PlayerBase* player)
 		saveData.enemies.push_back(std::move(ei));
 	}
 
-	// --- 追加: ステージ側の patrolGroup を保存（gid -> ポイント列） ---
+	// ステージ側の patrolGroup 保存
 	const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
 	if(stageData)
 	{
@@ -439,6 +566,66 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_camera->SetTarget(target);
 		_camera->SetPos(vec3::VAdd(target, camDelta));
 	}
+
+	int tid = 0;
+	for(auto& t : _treasureBase)
+	{
+		if(!t)
+		{
+			++tid;
+			continue;
+		}
+
+		bool shouldOpen = false;
+		for(const auto& sid : saveData.openTreasureIds)
+		{
+			if(sid == tid)
+			{
+				shouldOpen = true;
+				break;
+			}
+		}
+
+		t->SetOpen(shouldOpen);
+
+		// ゲージ進行度を必ずリセット（セーブされていない開放は復元されないようにする）
+		_treasureProgressMap[t.get()] = 0.0f;
+
+		++tid;
+	}
+
+	if(!saveData.takenMakimonoIds.empty() && !_makimono.empty())
+	{
+		for(size_t i = 0; i < _makimono.size(); ++i)
+		{
+			auto& mptr = _makimono[i];
+			if(!mptr) continue;
+
+			bool taken = false;
+			for(auto id : saveData.takenMakimonoIds)
+			{
+				if(id == static_cast<int>(i))
+				{
+					taken = true;
+					break;
+				}
+			}
+			mptr->SetVisible(!taken);
+		}
+	}
+	else
+	{
+		// 保存に情報が無ければ既定の表示（全て表示）にする
+		for(auto& mptr : _makimono)
+		{
+			if(mptr) mptr->SetVisible(true);
+		}
+	}
+
+	// 現在開けている途中状態をクリアしてゲージ残存を防ぐ
+	_currentOpeningTreasure = nullptr;
+	_treasureHoldSec = 0.0f;
+	_isOpeningTreasure = false;
 
 	for(auto& enemyPtr : _enemyBase)
 	{

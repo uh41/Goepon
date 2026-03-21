@@ -25,6 +25,8 @@ bool SaveManager::Save(const SaveData& data, const std::string& path)
 	j["player"]["pos"] = Vec3ToJson(data.playerPos);
 	j["player"]["dir"] = Vec3ToJson(data.playerDir);
 	j["player"]["makimonoCount"] = data.makimonoCount;
+
+	j["player"]["takenMakimonoIds"] = data.takenMakimonoIds;
 	
 	j["treasure"]["openId"] = data.openTreasureIds;
 
@@ -115,6 +117,10 @@ bool SaveManager::TryLoad(SaveData& outData, const std::string& path)
 		if(player.contains("makimonoCount"))
 		{
 			outData.makimonoCount = player.at("makimonoCount").get<int>();
+		}
+		if(player.contains("takenMakimonoIds"))
+		{
+			outData.takenMakimonoIds = player.at("takenMakimonoIds").get<at::vet<int>>();
 		}
 	}
 

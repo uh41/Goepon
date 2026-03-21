@@ -11,14 +11,17 @@ HenshinUi::HenshinUi()
 	_select = Select::TANUBITO;
 	_padInput5Active = true;  // 初期状態で選択状態を有効化
 	_owner = nullptr;
+	_showPlayerUi = false;
+	_showPlayerMonoUi = false;
 	Initialize();
 }
 
 bool HenshinUi::Initialize()
 {
 	base::Initialize();
-	//_handle = LoadGraph(img::UI_Makimono);
-	_handleTanubito = LoadGraph(ui::UI_Hito);
+	_handle = LoadGraph(ui::UI_Hito);
+	_handleTanubito = LoadGraph(ui::Dash_Icon);
+	_handleMono = LoadGraph(ui::UI_Mono);
 	return true;
 }
 
@@ -35,6 +38,11 @@ bool HenshinUi::Terminate()
 	{
 		DeleteGraph(_handleTanubito);
 		_handleTanubito = -1;
+	}
+	if(_handleMono != -1)
+	{
+		DeleteGraph(_handleMono);
+		_handleMono = -1;
 	}
 
 	return true;
@@ -117,9 +125,24 @@ bool HenshinUi::Render()
 	// タヌビト画像
 	if(_select == Select::TANUBITO)
 	{
+		if(_handle != -1)
+		{
+			DrawGraph(henshin::HENSHIN_X, henshin::HENSHIN_Y, _handle, TRUE);
+		}
+	}
+
+	if(_showPlayerUi)
+	{
 		if(_handleTanubito != -1)
 		{
 			DrawGraph(henshin::TANUBITO_X, henshin::TANUBITO_Y, _handleTanubito, TRUE);
+		}
+	}
+	if(_showPlayerMonoUi)
+	{
+		if(_handleMono != -1)
+		{
+			DrawGraph(henshin::TANUMONO_X, henshin::TANUMONO_Y, _handleMono, TRUE);
 		}
 	}
 
