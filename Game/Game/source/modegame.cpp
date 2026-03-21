@@ -724,6 +724,44 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 	{
 		_nakiEffect->ResetEffect();
 	}
+
+	_suppressSavePoint = false; // セーブポイントの再出現を抑制するフラグをリセット
+	_suppressedSavePoint = nullptr; // 抑制中のセーブポイント参照もクリア
+	if(_playerTanuki && !_savePoint.empty())
+	{
+		for(auto& sp : _savePoint)
+		{
+			if(!sp)
+			{
+				continue;
+			}
+
+			int h = sp->GetHandle();
+			int f = sp->GetSavePointCollisionFrame();
+			if(h > 0 || f < 0)
+			{
+				continue;
+			}
+
+			MATRIX model = sp->MakeModelMatrix();
+			MV1SetMatrix(h, model);
+			MV1RefreshCollInfo(h, f);
+
+			vec::Vec3 hitPos;
+			if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+				_playerTanuki->GetPos(),
+				h,
+				f,
+				_playerTanuki->GetColSubY(),
+				hitPos
+			))
+			{
+				_suppressSavePoint= true;
+				_suppressedSavePoint = sp.get();
+				break;
+			}
+		}
+	}
 }
 
 void ModeGame::ResetEnemyRoot()

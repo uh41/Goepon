@@ -1171,6 +1171,12 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 			hitPos
 		))
 		{
+			if(_suppressSavePoint && _suppressedSavePoint == savePoint)
+			{
+				// セーブポイントの抑制フラグが立っていて、かつ同じセーブポイントに触れている場合はセーブを抑制して終了
+				return true;
+			}
+
 			// 初回接触のみセーブを実行する
 			if(_lastSavedPoint != savePoint)
 			{

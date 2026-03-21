@@ -331,6 +331,8 @@ protected:
 
 	at::vspc<SavePoint> _savePoint;
 	SavePoint* _lastSavedPoint;
+	bool _suppressSavePoint;// セーブポイントの効果音を一時的に抑制するフラグ（セーブポイントに連続で触れたときの効果音の多重再生を防止するため）
+	SavePoint* _suppressedSavePoint; // 効果音を抑制するセーブポイントのポインタ
 
 	// チュートリアル
 	at::vspc<Tutorial> _tutorial;
