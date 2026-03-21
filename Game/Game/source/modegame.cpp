@@ -67,6 +67,9 @@ bool ModeGame::Initialize()
 	// オブジェクトサーバーの初期化（applicationmain から取得）
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
+	gGlobal.EnsureStageDataLoad(_stageManager.GetCurrentStageId());
+
+
 	// オブジェクトサーバーでマップデータを読み込み
 	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
 
