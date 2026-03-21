@@ -45,11 +45,16 @@ public:
 	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
 
 	// クリア演出用のモデルへ切り替え
-	bool SetClearHandle(const std::string& animName, bool loop); //引数でアニメーション名とループするかどうかを指定
+	bool SetGameClearHandle(const std::string& animName, bool loop); //引数でアニメーション名とループするかどうかを指定
 	int  PlayGameClearAnimation(std::string name, bool loop);
+	// ゲームオーバー演出用のモデルへ切り替え
+	bool SetGameOverHandle(const std::string& animName, bool loop); //引数でアニメーション名とループするかどうかを指定
+	int  PlayGameOverAnimation(std::string name, bool loop);
 
 	void ResetDash();// ダッシュ状態をリセットする関数
 
+	// デフォルトのモデルに戻す関数
+	bool RestoreDefaultModel(const std::string& animName, bool loop);
 protected:
 	Camera* _cam;
 
@@ -80,6 +85,8 @@ protected:
 
 	float _target_Rotation_Y;
 private:
-	int _clearModelHandle; // クリア後のモデルハンドル
+	int _gameClearModelHandle; // クリア後のモデルハンドル
+	int _gameOverModelHandle; // ゲームオーバー時のモデルハンドル
+
 };
 

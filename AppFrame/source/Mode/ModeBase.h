@@ -132,7 +132,7 @@ private:
 
 protected:
 	int _handle;
-
+	
 	int _loadProgress;	// ローディング進行度（0-100）
 
 	State _state;

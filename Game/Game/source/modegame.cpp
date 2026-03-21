@@ -158,9 +158,11 @@ bool ModeGame::Initialize()
 	//_cinematicCamera->_fClipNear = 1.0f;
 	//_cinematicCamera->_fClipFar = 1000.0f;
 	
-
+	// フラグ初期化
+	// 最初はタヌキ
 	_bShowTanuki = true;
 
+	// プレイヤーとエフェクトにカメラをセット
 	_player->SetCamera(_camera);
 	_playerTanuki->SetCamera(_camera);
 	_playerMono->SetCamera(_camera);
@@ -178,6 +180,7 @@ bool ModeGame::Initialize()
 	_isChengeBgm = false;
 
 	_soundFinish = gGlobal._soundServer->Get("3");
+
 
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
@@ -404,13 +407,23 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		_initialStageId = saveData.stageId;
 	}
 
+	// 元のカメラに戻す
+	if(_savedCamera)
+	{
+		_camera = _savedCamera;
+		_savedCamera = nullptr;
+	}
+
+	_isGameOverCinematicActive = false;
+
 	if(_playerTanuki)
 	{
 		_playerTanuki->SetPos(saveData.playerPos);
 		_playerTanuki->SetDir(saveData.playerDir);
 		_playerTanuki->SetMakimonoCount(saveData.makimonoCount);
 		_playerTanuki->_status = PlayerBase::STATUS::WAIT; // ロード後は待機状態にする
-		_playerTanuki->PlayAnimation("idle", true); // ロード後はアイドルアニメーションをループ再生する)
+		_playerTanuki->RestoreDefaultModel("idle", true); // ロード後はアイドルアニメーションをループ再生する)
+		_playerTanuki->SetInputEnabled(true);
 		_playerTanuki->Process(); // 状態を更新して位置を反映させる
 		_playerTanuki->ResetDash();
 	}
@@ -1004,6 +1017,13 @@ bool ModeGame::Process()
 		return true;
 	}
 
+	if(_isGameOverCinematicActive)
+	{
+		ProcessGameOverSequence();
+		AnimationManager::GetInstance()->Update(1.0f);
+		return true;
+	}
+
 	if (_isIntroActive)
 	{
 		ProcessIntroSequence();
@@ -1217,7 +1237,7 @@ bool ModeGame::Process()
 					//ResetEnemyRoot();
 
 					//ここでゲームオーバー処理へ移行
-					ModeServer::GetInstance()->Add(NEW ModeGameOver(this), 255, "ModeGameOver");
+					StartGameOverSequence();
 
 					break;
 				}
@@ -1443,34 +1463,122 @@ bool ModeGame::Render()
 	base::Render();
 
 	// カメラ設定更新
-	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_camera->GetPos()), DxlibConverter::VecToDxLib(_camera->GetTarget()));
+	SetCameraPositionAndTarget_UpVecY(
+		DxlibConverter::VecToDxLib(_camera->GetPos()),
+		DxlibConverter::VecToDxLib(_camera->GetTarget())
+	);
 	SetCameraNearFar(_camera->GetClipNear(), _camera->GetClipFar());
-	float fov_deg = 30.0f;
-	float fov_rad = DEG2RAD(fov_deg);
-	SetupCamera_Perspective(fov_rad);
 
-	EffekseerManager::GetInstance()->Render();
+	const float fov_deg = 30.0f;
+	SetupCamera_Perspective(DEG2RAD(fov_deg));
 
-	// オブジェクトサーバーの描画
-	if(_objectServer)
+	// マップ（シャドウマップの持ち主）を取得
+	auto* map = (_objectServer != nullptr) ? _objectServer->GetMap()   : nullptr;
+	const int shadowMapHandle = (map != nullptr) ? map->GetHandleShadowMap() : -1;
+
+	// シャドウマップが無いなら従来描画
+	if(shadowMapHandle < 0)
 	{
-		_objectServer->Render();
+		EffekseerManager::GetInstance()->Render();		// Effekseer描画
+		if(_objectServer) { _objectServer->Render(); }  // 通常描画（UI含む）
+		ObjectRender();									// モード内オブジェクトの描画
+		return true;
 	}
 
-	ObjectRender();// オブジェクト描画処理
-	//DebugRender(); // デバック描画処理
+	// ---- マップ側の実装に合わせたライト設定(マップと同じ処理)
+	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);           // ライトの向き
+	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f)); 
+	ChangeLightTypeDir(lightdir);						  
 
-	int key = ApplicationBase::GetInstance()->GetKey();
-	if (key & PAD_INPUT_12)
+	// シャドウマップにライトの向きを設定
+	SetShadowMapLightDirection(shadowMapHandle, lightdir);
+
+	// シャドウマップに描画する範囲
+	const float lenght = 800.f;			 
+	DxlibConverter::SetShadowMapDrawArea
+	(
+		shadowMapHandle,
+		vec3::VAdd(_camera->GetTarget(), vec3::VGet(-lenght, -1.0f, -lenght)),
+		vec3::VAdd(_camera->GetTarget(), vec3::VGet(lenght, lenght, lenght))
+	);
+
+	// 2パス描画
+	for(int path = 0; path < 2; ++path)
 	{
-		DebugRender();
+		if(path == 0)
+		{
+			// --- シャドウマップへ「影を落とすもの」を描く ---
+			ShadowMap_DrawSetup(shadowMapHandle);
+
+			// まずマップ（地形・ブロック）を描く
+			if(_objectServer)
+			{
+				_objectServer->Render(); // Map::Render は「本描画」もやってしまう場合があるので、本当は避けたい
+				// → 下の補足参照。現状最短で動かすために呼びます。
+			}
+
+			if(auto* map = _objectServer->GetMap())
+			{
+				map->SetCamera(_camera);
+
+				// マップのシャドウマップにキャラ/宝箱も描く
+				map->SetExternalShadowCasters([this]()
+				{
+					RenderShadowCastersFromModeGame();
+				});
+			}
+		}
+		else
+		{
+			// --- 通常描画（シャドウマップを使用） ---
+			ShadowMap_DrawEnd();
+
+			SetUseShadowMap(0, shadowMapHandle);
+
+			// Effekseer
+			EffekseerManager::GetInstance()->Render();
+
+			// 通常描画（UI含む）
+			if(_objectServer)
+			{
+				_objectServer->Render();
+			}
+			ObjectRender();
+
+			// シャドウ解除
+			SetUseShadowMap(0, -1);
+
+			// ゲームオーバー演出（既存）
+			if(_isGameOverCinematicActive)
+			{
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, _gameOverDimAlpha);
+				DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+				if(_playerTanuki)
+				{
+					_playerTanuki->Render();
+				}
+			}
+
+			int key = ApplicationBase::GetInstance()->GetKey();
+			if(key & PAD_INPUT_12)
+			{
+				DebugRender();
+			}
+		}
 	}
-	// 処理時間を画面に表示
-	int y = 40;
-	const int lineHeight = 18;
-	const unsigned int colorYellow = GetColor(255, 255, 0);
-	const unsigned int colorWhite = GetColor(255, 255, 255);
-	const unsigned int colorRed = GetColor(255, 100, 100);
+
+	bool noOverlayAbove =
+		(ModeServer::GetInstance()->Get("gameover"    ) == nullptr) &&
+		(ModeServer::GetInstance()->Get("gameoverload") == nullptr);
+
+	if(noOverlayAbove)
+	{
+		_hasRenderOnce = true;
+		_isLoadComplete = true;
+	}
+
 
 	//DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
 
@@ -1494,23 +1602,6 @@ bool ModeGame::Render()
 	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
 	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
 	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
-
-	if(_d_view_collision)
-	{
-		//CollisionManager::GetInstance()->SetDebugDraw(true);
-	}
-
-	bool noOverlayAbove =
-		(ModeServer::GetInstance()->Get("gameover") == nullptr) &&
-		(ModeServer::GetInstance()->Get("gameoverload") == nullptr);
-
-	if(noOverlayAbove)
-	{
-		// opscenario など最初のロードで即時描画済み扱いにしたい場合はここで true にする
-		_hasRenderOnce = true;
-		_isLoadComplete = true;
-	}
-
 	return true;
 }
 

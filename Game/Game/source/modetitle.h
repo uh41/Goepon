@@ -33,5 +33,19 @@ protected:
 	at::spc<soundserver::SoundServer> _soundServer;
 	int _gbmHandle;
 	int _startHandle;
+
+private:
+	int _bgHandle;
+	int _titleHandle;
+
+	// ロゴ落下アニメ用
+	float _titleX		 = 30.0f;    // タイトルロゴのX位置
+	float _titleY		 = -130.0f;  // タイトルロゴのY位置
+	int   _titleW		 = 0;		 // タイトルロゴの幅
+	int   _titleH		 = 0;		 // タイトルロゴの高さ
+	float _titleVY       = 0.0f;     // タイトルロゴの落下速度
+	float _titleTargetY  = -120.0f;  // タイトルロゴの最終的なY位置
+	bool  _titleLanding  = false;    // タイトルロゴが落下中かどうか
+	
 };
 

@@ -161,4 +161,24 @@ bool CharaBase::Render()
 	return true;
 }
 
+bool CharaBase::IsAnimationPlaying() const
+{
+	if(_animId == -1)
+	{
+		return false;
+	}
+	return AnimationManager::GetInstance()->IsPlaying(_animId);
+}
 
+void CharaBase::ClearAnimIdIfStopped()
+{
+	if(_animId == -1)
+	{
+		return;
+	}
+
+	if(!AnimationManager::GetInstance()->IsPlaying(_animId))
+	{
+		_animId = -1;
+	}
+}

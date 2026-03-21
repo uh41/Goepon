@@ -23,6 +23,9 @@ public:
 	
 	//モデル読み込み
 	virtual bool LoadModel(std::string fileName, std::string attachFrameName = "");
+
+	// 外部の影キャスター描画
+	void SetExternalShadowCasters(std::function<void()> caster) { _externalShadowCasters = caster; }
 protected:
 	Camera* _cam;
 	// マップ用
@@ -56,4 +59,7 @@ protected:
 
 	// ライト情報
 	Light _mainLight{ LightType::Directional };
+
+	// 外部影キャスター
+	std::function<void()> _externalShadowCasters;
 };

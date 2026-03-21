@@ -10,7 +10,7 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	// API（呼ぶだけで演出開始）
+	// 演出の種類
 	enum class State
 	{
 		Idle,
@@ -20,6 +20,7 @@ public:
 		Shake,
 	};
 
+	// イージング関数の型定義
 	using EasingFunc = float(*)(float cnt, float start, float end, float frames);
 	// ターゲットを中心に、指定した半径で円軌道を描いて回る（ターゲットは固定）
 	void StartOrbit(const vec::Vec3& target, float durationSeconds, float startRadius, float endRadius, float revolutions = 1.0f);
@@ -46,25 +47,27 @@ protected:
 
 	// Orbit用パラメータ
 	float _orbitStartRadius = 0.0f; // ターゲットからの距離の開始値
-	float _orbitEndRadius = 0.0f; // ターゲットからの距離の終了値
+	float _orbitEndRadius = 0.0f;   // ターゲットからの距離の終了値
 	float _orbitRevolutions = 0.0f; // 演出全体での回転数（例：1.0なら1周、0.5なら半周）
-	float _orbitStartAngle = 0.0f; // 演出開始時のカメラ位置から見たターゲットの角度（ラジアン）
+	float _orbitStartAngle = 0.0f;  // 演出開始時のカメラ位置から見たターゲットの角度（ラジアン）
 
 	// Zoom用パラメータ
-	float _zoomStartDist = 0.0f; // ターゲットからの距離の開始値
-	float _zoomEndDist = 0.0f; // ターゲットからの距離の終了値
-	EasingFunc _zoomEasing = nullptr; // ズームのイージング関数（nullptrなら線形）
+	float _zoomStartDist = 0.0f;	  // ターゲットからの距離の開始値
+	float _zoomEndDist = 0.0f;		  // ターゲットからの距離の終了値
+	EasingFunc _zoomEasing = nullptr; // ズームのイージング関数
+
 	// Rotate用パラメータ
 	float _rotateSpeed = 0.0f; // 回転速度（ラジアン/秒）
 
 	// Shake用パラメータ
-	float _shakeIntensity = 0.0f; // 揺れの強さ
-
+	float _shakeIntensity = 0.0f;		// 揺れの強さ
+	float _shakeCyclesPerSecond = 8.0f; // 揺れの周期（1秒あたりの揺れの回数）
+	vec::Vec3 _shakeBasePos{};			// 揺れの基準位置（演出開始時のカメラ位置）
 private:
-	static constexpr int kDebugTrailMax = 180;
+	static constexpr int kDebugTrailMax = 180; // デバック用
 
-	bool _debugDrawEnabled = true;
-	int _debugTrailCount = 0;
-	int _debugTrailHead = 0;
-	vec::Vec3 _debugTrail[kDebugTrailMax]{};
+	bool _debugDrawEnabled = true;	         // デバッグ描画の有効フラグ
+	int _debugTrailCount = 0;                // デバッグ用の軌跡のカウンタ
+	int _debugTrailHead = 0;		         // デバッグ用の軌跡のヘッドインデックス
+	vec::Vec3 _debugTrail[kDebugTrailMax]{}; // デバッグ用の軌跡の位置配列
 };

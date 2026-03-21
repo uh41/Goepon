@@ -25,7 +25,7 @@ public:
 	~AnimationManager();
 
 	// アニメーションの再生
-	int Play(int handle, std::string& name, bool loop = true, float speed = 1.0f);
+	int Play(int handle, const std::string& name, bool loop = true, float speed = 1.0f);
 
 	// アニメーションを停止
 	void Stop(int id);
@@ -51,6 +51,7 @@ public:
 	// 総再生時間を取得
 	float GetTotalTime(int id) const;
 
+	float GetPlayTime(int id) const;
 private:
 
 	int CreateInstance(int handle, int attachindex, const std::string& name,float totaltime, bool loop, float speed);

@@ -20,14 +20,34 @@ ModeTitle::~ModeTitle()
 
 bool ModeTitle::Initialize()
 {
-	// �w�i�摜��ǂݍ��ށi�p�X�̓v���W�F�N�g�̃��\�[�X�z�u�ɍ��킹�ĕύX�j
-	_handle = LoadGraph(img::Title_kari);
-	if(_handle == -1)
+	// 読み込み
+	_bgHandle    = LoadGraph("res/Title/Title_GB.png");
+	_titleHandle = LoadGraph("res/Title/Title_Logo.png");
+
+	// 読み込み失敗していれば初期化失敗
+	if(_bgHandle == -1)
 	{
 		return false;
 	}
 
 	_startHandle = LoadGraph(ui::B_gamestart);
+
+	// ロゴ落下への初期化
+	_titleX = 30.0f;
+	_titleW = 0;
+	_titleH = 0;
+	_titleVY = 0.0f;
+	_titleTargetY = -130.0f;
+	_titleLanding = false;
+
+	// タイトルロゴのサイズを取得
+	if(_titleHandle != -1)
+	{
+		GetGraphSize(_titleHandle, &_titleW, &_titleH);
+	}
+
+	// 画面外上から開始
+	_titleY = -StCas<float>(_titleH);
 
 	// �K�L�����f�[�^��쐬
 	_player = std::make_shared<TitleTanuki>();
@@ -74,10 +94,16 @@ bool ModeTitle::Initialize()
 
 bool ModeTitle::Terminate()
 {
-	if(_handle != -1)
+	if(_bgHandle != -1)
 	{
-		DeleteGraph(_handle);
-		_handle = -1;
+		DeleteGraph(_bgHandle);
+		_bgHandle = -1;
+	}
+
+	if(_titleHandle != -1)
+	{
+		DeleteGraph(_titleHandle);
+		_titleHandle = -1;
 	}
 
 	// �K�L�����J��
@@ -124,6 +150,38 @@ bool ModeTitle::Process()
 	if(_cam) { _cam->Process(); }
 	if(_player) { _player->Process(); }
 
+	if(_titleHandle != -1 && !_titleLanding)
+	{
+		const float gravity = 1.2f;  // 重力加速度
+		const float maxVY   = 40.0f; // 落下速度の上限
+		const float bounce  = 0.55f; // 反発係数
+
+		_titleVY += gravity; // 重力を加算
+		if(_titleVY > maxVY)
+		{
+			_titleVY = maxVY; // 落下速度の上限を適用
+		}
+
+		_titleY += _titleVY; // 位置を更新
+
+		// 着地判定
+		if(_titleY >= _titleTargetY)
+		{
+			_titleY = _titleTargetY; // 位置を修正
+
+			// バウンド
+			if(std::abs(_titleVY) > 6.0f && bounce > 0.0f)
+			{
+				_titleVY = -_titleVY * bounce;
+				_titleY += _titleVY; // 1フレーム分だけ戻す
+			}
+			else
+			{
+				_titleVY = 0.0f;
+				_titleLanding = true;
+			}
+		}
+	}
 	// �X�e�[�g����
 	switch(_state)
 	{
@@ -154,9 +212,9 @@ bool ModeTitle::Render()
 	base::Render();
 
 	// �w�i�摜�`��
-	if(_handle != -1)
+	if(_bgHandle != -1)
 	{
-		DrawGraph(0, 0, _handle, TRUE);
+		DrawGraph(0, 0, _bgHandle, TRUE);
 	}
 
 	DrawGraph(ui::START_CONFIG_X, ui::START_CONFIG_Y, _startHandle, TRUE);
@@ -174,6 +232,12 @@ bool ModeTitle::Render()
 	if(_player)
 	{
 		_player->Render();
+	}
+
+	// タイトルロゴの描画
+	if (_titleHandle != -1)
+	{
+		DrawGraph(StCas<int>(_titleX), StCas<int>(_titleY), _titleHandle, TRUE);
 	}
 
 	return true;
