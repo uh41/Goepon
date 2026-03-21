@@ -376,7 +376,7 @@ bool EnemyDog::Process()
 		UpdateChasing();
 
 		// 犬専用：プレイヤーの方向に即座に向く
-		LookAtPlayer();
+		//LookAtPlayer();
 
 		_rmWalking = false; 
 		_isMovingToSound = false; 
