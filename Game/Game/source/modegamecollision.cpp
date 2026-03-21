@@ -787,11 +787,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
 			//_treasureHoldSec = 0.0f;
-			// 開けていた宝箱の進行度をリセット
-			if (_currentOpeningTreasure != nullptr)
-			{
-				_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
-			}
+			//// 開けていた宝箱の進行度をリセット
+			//if (_currentOpeningTreasure != nullptr)
+			//{
+			//	_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
+			//}
 			_currentOpeningTreasure = nullptr;
 			auto sound = gGlobal._soundServer->Get("60");
 			if (sound && sound->IsPlay())
@@ -805,7 +805,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			_treasureOpenUi->SetVisible(false);
 		}
 
-		progress = 0.0f;	//進行度をリセット
+		//progress = 0.0f;	//進行度をリセット
 
 		// 連打型宝箱もリセット
 		for (const auto& sp : treasures)
