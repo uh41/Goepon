@@ -418,3 +418,5 @@ FodyWeavers.xsd
 *.msp
 Game/Game/Log.txt
 _tool/Log.txt
+Game/Game/res/save/saveData.json
+Game/Game/Log.txt
