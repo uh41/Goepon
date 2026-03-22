@@ -400,11 +400,11 @@ bool ApplicationGlobal::EnsureStageDataLoad(const std::string& stageId)
 	{
 		if(GetMapData("Map3") == nullptr)
 		{
-			LoadMapData("Map3", "stage3_0312.json", "stage");
+			LoadMapData("Map3", "stage3_0322.json", "stage");
 		}
 		if(GetStageData("Stage3") == nullptr)
 		{
-			LoadStageData("Stage3", "stage3_0312.json", "stage");
+			LoadStageData("Stage3", "stage3_0322.json", "stage");
 		}
 	}
 	else
