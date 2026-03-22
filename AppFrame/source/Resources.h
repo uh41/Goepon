@@ -56,6 +56,7 @@ namespace texture
   inline constexpr const char* earth = "res/Texture/earth.png";
   inline constexpr const char* makimono = "res/Texture/makimono.png";
   inline constexpr const char* tree = "res/Texture/tree.png";
+  inline constexpr const char* tresure05_00002 = "res/Texture/tresure05_00002.png";
 }
 
 namespace ui
@@ -151,6 +152,7 @@ namespace mv1
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_multimotionTanuHuman_06 = "res/Tanuhuman/SK_multimotionTanuHuman_06.mv1";
   inline constexpr const char* SK_goepon_multimotion_4 = "res/Tanuki/SK_goepon_multimotion_4.mv1";
+  inline constexpr const char* SK_goepon_multimotion_4BK = "res/Tanuki/SK_goepon_multimotion_4BK.mv1";
   inline constexpr const char* sigaraki = "res/tanumono/sigaraki.mv1";
   inline constexpr const char* gamestart = "res/Titleanimation/gamestart.mv1";
   inline constexpr const char* tuzura_05 = "res/Treasure/tuzura_05.mv1";

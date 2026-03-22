@@ -35,7 +35,6 @@ bool ModeGameLoad::Terminate()
 	base::Terminate();
 	if(_loadHandle != -1)
 	{
-		DeleteGraph(_loadHandle);
 		_loadHandle = -1;
 	}
 

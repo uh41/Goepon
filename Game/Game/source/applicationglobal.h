@@ -70,6 +70,8 @@ public:
 	bool LoadStageData(const std::string& stageName, const std::string& jsonFileName, const std::string& jsonObjectName = "stage");
 	const StageData* GetStageData(const std::string& stageName); // ステージデータを取得
 	
+	bool EnsureStageDataLoad(const std::string& stageId); // ステージデータがロードされていない場合にロードする関数
+
 	// ステージ管理機能追加
 	const at::vec<std::string>& GetStageList() const { return _stageList; } // ステージ名のリストを取得
 	std::string GetNextStageId(const std::string& currentStageId) const;       // 次のステージ名を取得

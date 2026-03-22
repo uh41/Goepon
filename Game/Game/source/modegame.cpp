@@ -36,6 +36,13 @@ bool ModeGame::Initialize()
 
 	if(!base::Initialize()) { return false; }
 
+	if(EffekseerManager::GetInstance() && !_effekseerLaunched)
+	{
+		// EffekseerManager の Initialize() は存在する想定
+		EffekseerManager::GetInstance()->Initialize();
+		_effekseerLaunched = true;
+	}
+
 	// カメラ変数の初期化
 	_savedCamera        = nullptr;
 	_cinematicCamera    = nullptr;
@@ -66,6 +73,8 @@ bool ModeGame::Initialize()
 
 	// オブジェクトサーバーの初期化（applicationmain から取得）
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
+
+	gGlobal.EnsureStageDataLoad(_stageManager.GetCurrentStageId());
 
 	// オブジェクトサーバーでマップデータを読み込み
 	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
@@ -416,11 +425,11 @@ bool ModeGame::Terminate()
 	_requestNextStage = false;
 	_requestResetStage = false;
 
-	if(EffekseerManager::GetInstance())
-	{
-		EffekseerManager::GetInstance()->StopAllPlayingEffect();
-		EffekseerManager::GetInstance()->Terminate();
-	}
+	//if(EffekseerManager::GetInstance())
+	//{
+	//	EffekseerManager::GetInstance()->StopAllPlayingEffect();
+	//	EffekseerManager::GetInstance()->Terminate();
+	//}
 
 	if(_objectServer)
 	{
@@ -436,7 +445,16 @@ bool ModeGame::Terminate()
 	std::string curStage = _stageManager.GetCurrentStageId();
 	if(!curStage.empty())
 	{
-		gGlobal.UnloadMapData(curStage);   // Map の MV1 ハンドル等を解放
+		// ステージID -> マップ名 の対応で正しいマップ名を指定してアンロードする
+		std::string mapName;
+		if(curStage == "Stage1") mapName = "Map1";
+		else if(curStage == "Stage2") mapName = "Map2";
+		else if(curStage == "Stage3") mapName = "Map3";
+
+		if(!mapName.empty())
+		{
+			gGlobal.UnloadMapData(mapName);   // Map の MV1 ハンドル等を解放
+		}
 		gGlobal.UnloadStageData(curStage); // ステージ内 JSON 等を解放
 	}
 
