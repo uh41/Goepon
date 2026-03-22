@@ -26,7 +26,6 @@
 #define NEW new
 #endif
 
-
 // 初期化
 bool ModeGame::Initialize()
 {
@@ -424,12 +423,6 @@ bool ModeGame::Terminate()
 	_hasRenderOnce = false;
 	_requestNextStage = false;
 	_requestResetStage = false;
-
-	//if(EffekseerManager::GetInstance())
-	//{
-	//	EffekseerManager::GetInstance()->StopAllPlayingEffect();
-	//	EffekseerManager::GetInstance()->Terminate();
-	//}
 
 	if(_objectServer)
 	{

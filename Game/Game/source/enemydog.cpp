@@ -48,12 +48,6 @@ bool EnemyDog::Initialize()
 	return true;
 }
 
-// EnemySensorを設定
-void EnemyDog::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
-{
-	_enemySensor = sensor;
-}
-
 // 移動範囲を設定
 void EnemyDog::SetMovementArea(const std::vector<vec::Vec3>& areaPoints)
 {
@@ -328,7 +322,7 @@ bool EnemyDog::Process()
 	}
 
 	// 優先順位: プレイヤー検出（追跡） > 音源への移動 > 初期位置への帰還 > ランダムウォーク
-	if (_detectedPlayer && _enemySensor && _enemySensor->IsChasing())
+	if (_enemySensor && _enemySensor->IsChasing())
 	{
 		_status = STATUS::FOUND;
 		// 追跡時の移動速度を確保（他の処理で変更されている可能性に対応）
@@ -379,7 +373,14 @@ bool EnemyDog::Process()
 		//LookAtPlayer();
 
 		_rmWalking = false; 
-		_isMovingToSound = false; 
+		_isMovingToSound = false;  
+	}
+	else if (_detectedPlayer)
+	{
+		_status = STATUS::WAIT;
+		_isReturning = false;
+		_rmWalking = false;
+		_isMovingToSound = false;
 	}
 	else if (_isMovingToSound && !_detectedPlayer && (!_enemySensor || !_enemySensor->IsChasing()))
 	{
@@ -399,6 +400,7 @@ bool EnemyDog::Process()
 		_status = STATUS::WALK;
 		// 通常時はランダムウォーク
 		ProcessRandomWalk();
+		_moveSpeed = 2.0f;
 	}
 	else
 	{

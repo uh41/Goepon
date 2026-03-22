@@ -41,6 +41,32 @@ bool ModeGameClearLoad::Process()
 {
 	base::Process();
 
+	// 先に次のステージIDを決定する
+	std::string nextStageId;
+	if(_stageManager)
+	{
+		nextStageId = _stageManager->GetNextStageId(_stageId);
+	}
+
+	// 次のステージがない場合は既存の ModeGame を削除してシナリオモードへ
+	if(nextStageId.empty())
+	{
+		gGlobal.UnloadMapData(_stageId);
+		gGlobal.UnloadStageData(_stageId);
+
+		// もし既に game モードが存在していたら削除予約する（表示されないようにする）
+		ModeBase* existingGame = ModeServer::GetInstance()->Get("game");
+		if(existingGame)
+		{
+			ModeServer::GetInstance()->Del(existingGame);
+		}
+
+		ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeAffterScenario");
+		ModeServer::GetInstance()->ProcessInit();
+		ModeServer::GetInstance()->Del(this);
+		return true;
+	}
+
 	// ModeGameが存在するかを確認
 	ModeBase* gameBase = ModeServer::GetInstance()->Get("game");
 	if(gameBase == nullptr)
@@ -54,28 +80,7 @@ bool ModeGameClearLoad::Process()
 				return true;
 			}
 
-			// クリアしたステージの「次」を決定
-			std::string nextStageId;
-			if(_stageManager)
-			{
-				nextStageId = _stageManager->GetNextStageId(_stageId);
-			}
-
-			// 次のステージがない場合はタイトルに戻る
-			if(nextStageId.empty())
-			{
-				gGlobal.UnloadMapData(_stageId);
-				gGlobal.UnloadStageData(_stageId);
-				ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeAffterScenario");
-				ModeServer::GetInstance()->ProcessInit();
-				ModeServer::GetInstance()->Del(this);
-				return true;
-			}
-
-			gGlobal.UnloadMapData(_stageId);
-			gGlobal.UnloadStageData(_stageId);
-
-			// まだステージがあるなら次のModeGameを起動
+			// 次のステージが既に確定しているので、ここで ModeGame を起動
 			auto* newGame = new ModeGame();
 			newGame->SetInitialStageId(nextStageId);
 

@@ -19,7 +19,6 @@ class ModeTitle : public ModeBase
 {
 	typedef ModeBase base;
 public:
-	ModeTitle();
 	virtual ~ModeTitle();
 	virtual bool Initialize() override;
 	virtual bool Terminate() override;
@@ -28,7 +27,7 @@ public:
 
 protected:
 	at::spc<TitleTanuki> _player;
-	TitleCamera* _cam;
+	TitleCamera* _cam = nullptr;
 		
 	at::spc<soundserver::SoundServer> _soundServer;
 	int _gbmHandle;

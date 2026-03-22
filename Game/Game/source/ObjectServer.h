@@ -51,7 +51,6 @@ public:
 
 	MapBase* GetMap() const { return _map; }
 
-
 private:
 	// オブジェクト　
 	std::vector<class ObjectBase*> _objects;
@@ -75,7 +74,7 @@ private:
 	// ModeGameが持つ機能や情報を利用するために、自身をnewしたModeGameクラスのアドレスと保持
 	class ModeGame* _game;
 	// マップクラス
-	class MapBase* _map;
+	MapBase* _map;
 
 	std::string _sPath;
 	std::string _sJsonFile;
