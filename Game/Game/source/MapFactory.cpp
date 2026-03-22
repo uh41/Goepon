@@ -26,6 +26,14 @@ MapBase* MapFactory::CreateMap(MapType mapType)
     }
 }
 
+MapBase* MapFactory::DestroyMap(MapBase* map)
+{
+    if(!map) return nullptr;
+    map->Terminate();
+    delete map;
+    return nullptr;
+}
+
 // •¶š—ñ‚©‚çMapType‚ğæ“¾‚·‚éŠÖ”
 MapType MapFactory::GetMapTypeFromString(const std::string& mapTypeName)
 {

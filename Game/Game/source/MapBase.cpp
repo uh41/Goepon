@@ -14,49 +14,60 @@ bool MapBase::Initialize()
 bool MapBase::Terminate()
 {
 	base::Terminate();
+
+	// 外部影キャスターを先に解除（キャプチャしている参照を切る）
+	_externalShadowCasters = nullptr;
+
 	// スカイスフィアモデルの削除
-	if(_iHandleSkySphere >= 0)
+	if (_iHandleSkySphere >= 0)
 	{
 		ResourceServer::MV1DeleteModel(_iHandleSkySphere);
 		_iHandleSkySphere = -1;
 	}
 
 	// メインマップモデルの削除
-	if(_iHandleMap >= 0)
+	if (_iHandleMap >= 0)
 	{
 		ResourceServer::MV1DeleteModel(_iHandleMap);
 		_iHandleMap = -1;
 	}
 
-	// シャドウマップの削除（そのまま）
-	if(_iHandleShadowMap >= 0)
+	// シャドウマップの削除
+	if (_iHandleShadowMap >= 0)
 	{
 		DeleteShadowMap(_iHandleShadowMap);
 		_iHandleShadowMap = -1;
 	}
 
-	// 個別モデルハンドルの削除
-	for(auto& pair : _mModelHandle)
+	// 地面テクスチャハンドルの削除（※現状ここが抜けている）
+	if (_ground_handle >= 0)
 	{
-		if(pair.second >= 0)
+		DeleteGraph(_ground_handle);
+		_ground_handle = -1;
+	}
+
+	// 個別モデルハンドルの削除
+	for (auto& pair : _mModelHandle)
+	{
+		if (pair.second >= 0)
 		{
 			ResourceServer::MV1DeleteModel(pair.second);
 		}
 	}
 	_mModelHandle.clear();
 
-	// ベクターのクリア（容量ごと解放）
+	// ベクターの解放
 	_ground_vertex.clear();
-	std::vector<VERTEX3D>().swap(_ground_vertex);         // メモリを確実に解放
+	std::vector<VERTEX3D>().swap(_ground_vertex);
 
 	_ground_index.clear();
-	std::vector<unsigned short>().swap(_ground_index);    // メモリを確実に解放
+	std::vector<unsigned short>().swap(_ground_index);
 
 	_vBlockPos.clear();
-	at::vet<mymath::BLOCKPOS>().swap(_vBlockPos);        // at::vet の場合も再構築で解放促進
+	at::vet<mymath::BLOCKPOS>().swap(_vBlockPos);
 
 	// ファイルストリームのクローズ
-	if(_iFile.is_open())
+	if (_iFile.is_open())
 	{
 		_iFile.close();
 	}
