@@ -36,6 +36,13 @@ bool ModeGame::Initialize()
 
 	if(!base::Initialize()) { return false; }
 
+	if(EffekseerManager::GetInstance() && !_effekseerLaunched)
+	{
+		// EffekseerManager の Initialize() は存在する想定
+		EffekseerManager::GetInstance()->Initialize();
+		_effekseerLaunched = true;
+	}
+
 	// カメラ変数の初期化
 	_savedCamera        = nullptr;
 	_cinematicCamera    = nullptr;
@@ -68,7 +75,6 @@ bool ModeGame::Initialize()
 	_objectServer = ApplicationMain::GetInstance()->GetObjectServer();
 
 	gGlobal.EnsureStageDataLoad(_stageManager.GetCurrentStageId());
-
 
 	// オブジェクトサーバーでマップデータを読み込み
 	_objectServer->LoadDate(_stageManager.GetCurrentStageId());
@@ -419,11 +425,11 @@ bool ModeGame::Terminate()
 	_requestNextStage = false;
 	_requestResetStage = false;
 
-	if(EffekseerManager::GetInstance())
-	{
-		EffekseerManager::GetInstance()->StopAllPlayingEffect();
-		EffekseerManager::GetInstance()->Terminate();
-	}
+	//if(EffekseerManager::GetInstance())
+	//{
+	//	EffekseerManager::GetInstance()->StopAllPlayingEffect();
+	//	EffekseerManager::GetInstance()->Terminate();
+	//}
 
 	if(_objectServer)
 	{
