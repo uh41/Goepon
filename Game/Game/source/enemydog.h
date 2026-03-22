@@ -17,8 +17,6 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);
-
 	virtual float GetHearingRadius() const override { return 1000.0f; }
 
 	// ˆÚ“®”ÍˆÍ‚ğİ’è

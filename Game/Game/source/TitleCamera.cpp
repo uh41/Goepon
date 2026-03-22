@@ -15,14 +15,18 @@ bool TitleCamera::Initialize()
 	return true;
 }
 
+bool TitleCamera::Terminate()
+{
+	base::Terminate();
+	return true;
+}
+
 bool TitleCamera::Process()
 {
-	base::Process();
 	return true;
 }
 
 bool TitleCamera::Render()
 {
-	base::Render();
 	return true;
 }

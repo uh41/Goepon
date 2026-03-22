@@ -14,13 +14,21 @@ CinematicCamera::CinematicCamera()
 	_shakeIntensity = 0.0f;
 	_shakeCyclesPerSecond = 8.0f;
 	_shakeBasePos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
+
 }
 
 bool CinematicCamera::Initialize()
 {
+	base::Initialize(); // Camera の初期化も行う
 	_state = State::Idle;
 	_timer = 0.0f;
 	_duration = 0.0f;
+	return true;
+}
+
+bool CinematicCamera::Terminate()
+{
+	base::Terminate(); // Camera の終了処理も行う
 	return true;
 }
 
@@ -123,8 +131,6 @@ bool CinematicCamera::Process()
 
 bool CinematicCamera::Render()
 {
-	// デバッグ情報（必要なら有効化）
-	// 基本は Camera::Render と同等の情報を描画しても良い
 	return true;
 }
 

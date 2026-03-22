@@ -14,5 +14,6 @@ class MapFactory
 {
 public:
     static MapBase* CreateMap(MapType mapType);
-    static MapType GetMapTypeFromString(const std::string& mapTypeName);
+	static MapBase* DestroyMap(MapBase* map);
+    static MapType  GetMapTypeFromString(const std::string& mapTypeName);
 };

@@ -56,6 +56,7 @@ namespace texture
   inline constexpr const char* earth = "res/Texture/earth.png";
   inline constexpr const char* makimono = "res/Texture/makimono.png";
   inline constexpr const char* tree = "res/Texture/tree.png";
+  inline constexpr const char* tresure05_00002 = "res/Texture/tresure05_00002.png";
 }
 
 namespace ui
@@ -66,6 +67,8 @@ namespace ui
   inline constexpr const char* Dash_Icon_BK = "res/UI/Dash_Icon_BK.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* DegutiBK = "res/UI/DegutiBK.png";
+  inline constexpr const char* Gameclear = "res/UI/Gameclear.png";
+  inline constexpr const char* Gamestart = "res/UI/Gamestart.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";

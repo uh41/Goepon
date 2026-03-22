@@ -8,14 +8,9 @@
 #define NEW new
 #endif
 
-ModeTitle::ModeTitle()
-{
-	Initialize();
-}
-
 ModeTitle::~ModeTitle()
 {
-	//Terminate();
+	Terminate();
 }
 
 bool ModeTitle::Initialize()
@@ -116,6 +111,7 @@ bool ModeTitle::Terminate()
 	// �J�����J��
 	if(_cam)
 	{
+		_cam->Terminate();
 		delete _cam;
 		_cam = nullptr;
 	}

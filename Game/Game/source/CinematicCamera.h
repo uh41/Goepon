@@ -2,11 +2,13 @@
 #include "camera.h"
 class CinematicCamera : public Camera
 {
+	typedef Camera base;
 public:
 	CinematicCamera();
 	virtual ~CinematicCamera() = default;
 
 	virtual bool Initialize() override;
+	virtual bool Terminate() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
 
