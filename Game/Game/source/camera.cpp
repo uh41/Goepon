@@ -22,6 +22,18 @@ bool Camera::Initialize()
 	return true;
 }
 
+bool Camera::Terminate()
+{
+	// Camera 自体は外部リソースを保持していないため、状態を初期化して終了とする
+	_vPos = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_vTarget = vec3::VGet(0.0f, 0.0f, 0.0f);
+	_clipNear = 0.0f;
+	_clipFar = 0.0f;
+	_forvScale = 0.0f;
+
+	return true;
+}
+
 bool Camera::Process()
 {
 	int key = ApplicationMain::GetInstance()->GetKey();

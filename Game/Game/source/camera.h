@@ -17,6 +17,7 @@ class Camera
 {
 public:
 	virtual bool Initialize();
+	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
 
