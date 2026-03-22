@@ -120,7 +120,6 @@ void ObjectServer::DeleteObject(ObjectBase* obj)
 
 bool ObjectServer::ClearObject()
 {
-	// まずポインタを退避してからコンテナを空にする（破棄中の再入に強くする）
 	std::vector<ObjectBase*> objects = std::move(_objects);
 	std::vector<ObjectBase*> addObj = std::move(_addObj);
 	std::vector<ObjectBase*> delObj = std::move(_deleteObj);
@@ -129,48 +128,23 @@ bool ObjectServer::ClearObject()
 	_addObj.clear();
 	_deleteObj.clear();
 
-	// _map が objects/addObj/delObj のどれで消されてもよいように監視
-	for(auto* obj : objects)
-	{
-		if(!obj) continue;
-
-		// 既に Terminate が呼ばれている可能性を考慮して idempotent にすることが望ましい
-		obj->Terminate(); // ← 追加：確実に Terminate を呼ぶ
-		if(obj == _map)
+	auto destroyOne = [this](ObjectBase* obj)
 		{
-			_map = nullptr;
-		}
-		delete obj;
-	}
+			if (!obj) return;
 
-	for(auto* obj : addObj)
-	{
-		if(!obj) {
-			continue;
-		}
-		// addObj は ProcessInit() の前に移動してきた未登録オブジェクトの可能性があるため
-		// 既存実装どおり Terminate を呼ぶ
-		obj->Terminate();
-		if(obj == _map)
-		{
-			_map = nullptr;
-		}
-		delete obj;
-	}
+			if (obj == _map)
+			{
+				_map = MapFactory::DestroyMap(_map);
+				return;
+			}
 
-	// DeleteObject() で _deleteObj に積んだものが残って終了するケースを想定して破棄
-	for(auto* obj : delObj)
-	{
-		if(!obj) {
-			continue;
-		}
-		obj->Terminate();
-		if(obj == _map)
-		{
-			_map = nullptr;
-		}
-		delete obj;
-	}
+			obj->Terminate();
+			delete obj;
+		};
+
+	for (auto* obj : objects) destroyOne(obj);
+	for (auto* obj : addObj)  destroyOne(obj);
+	for (auto* obj : delObj)  destroyOne(obj);
 
 	return true;
 }
