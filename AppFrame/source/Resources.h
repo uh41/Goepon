@@ -67,6 +67,8 @@ namespace ui
   inline constexpr const char* Dash_Icon_BK = "res/UI/Dash_Icon_BK.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* DegutiBK = "res/UI/DegutiBK.png";
+  inline constexpr const char* Gameclear = "res/UI/Gameclear.png";
+  inline constexpr const char* Gamestart = "res/UI/Gamestart.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";
@@ -93,6 +95,7 @@ namespace ui
   inline constexpr const char* UI_Hito = "res/UI/UI_Hito.png";
   inline constexpr const char* UI_HitoBK = "res/UI/UI_HitoBK.png";
   inline constexpr const char* UI_Mono = "res/UI/UI_Mono.png";
+  inline constexpr const char* UI_Tanubito_no = "res/UI/UI_Tanubito_no.png";
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
   inline constexpr const char* UI_nokoriBK = "res/UI/UI_nokoriBK.png";
   inline constexpr const char* UI_waru = "res/UI/UI_waru.png";
