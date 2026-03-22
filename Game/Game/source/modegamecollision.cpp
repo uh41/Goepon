@@ -585,6 +585,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				rapidFire->AddCount();
 
+				if(player)
+				{
+					player->PlayAnimation("takarabako_open", true);
+				}
+
 				// SE再生（連打音）
 				auto soundButton = gGlobal._soundServer->Get("60");
 				if (soundButton)
@@ -605,6 +610,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				{
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
+
+					if(player)
+					{
+						player->PlayAnimation("idle", true);
+					}
 
 					if (_counterUi)
 					{
@@ -684,8 +694,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
-				//_treasureHoldSec = 0.0f;
-				//_treasureProgressMap[currentTreasure] = 0.0f;
+				if(player)
+				{
+					player->PlayAnimation("idle", true);
+				}
 				auto sound = gGlobal._soundServer->Get("60");
 				if (sound && sound->IsPlay())
 				{
@@ -725,7 +737,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				TreasureOpeningCameraControl();
 				_isOpeningTreasure = true;
-				//_treasureHoldSec = 0.0f;
+				if(player)
+				{
+					player->PlayAnimation("takarabako_open", true);
+				}
 
 				auto sound = gGlobal._soundServer->Get("60");
 				if (sound && !sound->IsPlay())
@@ -751,6 +766,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				currentTreasure->SetOpen(true);
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
+
+				if(player)
+				{
+					player->PlayAnimation("idle", true);
+				}
 
 				// お宝のカウントを減らす
 				if (_counterUi)
@@ -798,6 +818,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				return true;
 			}
 		}
+	}
+
+	if(!inAnyTreasure && player)
+	{
+		player->PlayAnimation("idle", true);
 	}
 
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
