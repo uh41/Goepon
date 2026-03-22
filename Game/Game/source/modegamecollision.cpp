@@ -820,11 +820,6 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		}
 	}
 
-	if(!inAnyTreasure && player)
-	{
-		player->PlayAnimation("idle", true);
-	}
-
 	// どの宝箱範囲にも入ってない or A押してない等ならリセット
 	if (!inAnyTreasure)
 	{
