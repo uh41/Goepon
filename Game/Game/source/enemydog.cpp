@@ -399,6 +399,7 @@ bool EnemyDog::Process()
 		_status = STATUS::WALK;
 		// 通常時はランダムウォーク
 		ProcessRandomWalk();
+		_moveSpeed = 2.0f;
 	}
 	else
 	{
