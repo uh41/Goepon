@@ -425,12 +425,6 @@ bool ModeGame::Terminate()
 	_requestNextStage = false;
 	_requestResetStage = false;
 
-	//if(EffekseerManager::GetInstance())
-	//{
-	//	EffekseerManager::GetInstance()->StopAllPlayingEffect();
-	//	EffekseerManager::GetInstance()->Terminate();
-	//}
-
 	if(_objectServer)
 	{
 		if(auto* map = _objectServer->GetMap())
