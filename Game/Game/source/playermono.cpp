@@ -78,66 +78,59 @@ bool PlayerMono::Process()
 
 	_v = { 0,0,0 };
 
-	if (!_inputEnabled)
+	float sx = _cam->GetPos().x - _cam->GetTarget().x;
+	float sz = _cam->GetPos().z - _cam->GetTarget().z;
+	float camrad = atan2(sz, sx);
+
+	lStickX = fLx;
+	lStickZ = fLz;
+
+	vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
+	if (key & PAD_INPUT_DOWN)
 	{
-		_status = STATUS::WAIT;
+		inputLocal.z = 1.0f;
+	}
+	if (key & PAD_INPUT_UP)
+	{
+		inputLocal.z = -1.0f;
+	}
+	if (key & PAD_INPUT_LEFT)
+	{
+		inputLocal.x = -1.0f;
+	}
+	if (key & PAD_INPUT_RIGHT)
+	{
+		inputLocal.x = 1.0f;
+	}
+
+	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+	float rad = 0.0f;
+
+	if (length >= _fAnalogDeadZone)
+	{
+		float moveX = lStickZ;
+		float moveZ = lStickX;
+
+		_vInput = vec3::VGet(moveX, 0.0f, moveZ);
+
+		if (vec3::VSize(_vInput) > 0.0f)
+		{
+			_vInput = vec3::VNorm(_vInput);
+		}
+
+		rad = atan2(moveZ, moveX);
+
+		_v.x = cos(rad + camrad) * length;
+		_v.z = sin(rad + camrad) * length;
+
+		_vDir = _v;
+		_status = STATUS::WALK;
 	}
 	else
 	{
-		float sx = _cam->GetPos().x - _cam->GetTarget().x;
-		float sz = _cam->GetPos().z - _cam->GetTarget().z;
-		float camrad = atan2(sz, sx);
-
-		lStickX = fLx;
-		lStickZ = fLz;
-
-		vec::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
-		if (key & PAD_INPUT_DOWN)
-		{
-			inputLocal.z = 1.0f;
-		}
-		if (key & PAD_INPUT_UP)
-		{
-			inputLocal.z = -1.0f;
-		}
-		if (key & PAD_INPUT_LEFT)
-		{
-			inputLocal.x = -1.0f;
-		}
-		if (key & PAD_INPUT_RIGHT)
-		{
-			inputLocal.x = 1.0f;
-		}
-
-		float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-		float rad = 0.0f;
-
-		if (length >= _fAnalogDeadZone)
-		{
-			float moveX = lStickZ;
-			float moveZ = lStickX;
-
-			_vInput = vec3::VGet(moveX, 0.0f, moveZ);
-
-			if (vec3::VSize(_vInput) > 0.0f)
-			{
-				_vInput = vec3::VNorm(_vInput);
-			}
-
-			rad = atan2(moveZ, moveX);
-
-			_v.x = cos(rad + camrad) * length;
-			_v.z = sin(rad + camrad) * length;
-
-			_vDir = _v;
-			_status = STATUS::WALK;
-		}
-		else
-		{
-			_v = { 0,0,0 };
-			_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
-			_status = STATUS::WAIT;
-		}
+		_v = { 0,0,0 };
+		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
+		_status = STATUS::WAIT;
 	}
 	
 	PlayerMonoSoundMove();
