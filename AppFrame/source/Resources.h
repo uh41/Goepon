@@ -7,6 +7,8 @@ namespace img
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stageclear = "res/BG_stageclear.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
+  inline constexpr const char* Fusuma_L = "res/Fusuma_L.png";
+  inline constexpr const char* Fusuma_R = "res/Fusuma_R.png";
   inline constexpr const char* Loading_1start = "res/Loading_1start.png";
   inline constexpr const char* Loading_2start = "res/Loading_2start.png";
   inline constexpr const char* Loading_3gameover = "res/Loading_3gameover.png";

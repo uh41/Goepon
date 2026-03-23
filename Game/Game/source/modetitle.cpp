@@ -1,5 +1,7 @@
 ﻿#include "modetitle.h"
 #include "modeloading.h"
+#include "mymath.h"
+#include "modeopscenario.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -23,6 +25,9 @@ bool ModeTitle::Initialize()
 	_startNoHandle  = LoadGraph(ui::Title_gamestart_no);
 	_exitYesHandle  = LoadGraph(ui::Title_gamefinish);
 	_exitNoHandle   = LoadGraph(ui::Title_gamefinish_no);
+	// ふすまのハンドルを読み込む
+	_fusumaRighetHandle = LoadGraph(img::Fusuma_R);
+	_fusumaLeftHandle   = LoadGraph(img::Fusuma_L);
 
 	// 読み込み失敗していれば初期化失敗
 	if(_bgHandle == -1)
@@ -48,6 +53,20 @@ bool ModeTitle::Initialize()
 	{
 		GetGraphSize(_titleHandle, &_titleW, &_titleH);
 	}
+
+	// ふすまサイズ取得&初期位置の設定
+	if(_fusumaLeftHandle != -1)
+	{
+		GetGraphSize(_fusumaLeftHandle, &_fusumaW, &_fusumaH);
+	}
+
+	_fusumaY = 0.0f;
+
+	// 初期状態は空いている
+	_fusumaLeftX  = -StCas<float>(_fusumaW);	
+	_fusumaRightX =  StCas<float>(_fusumaW);
+	_fusumaState = FusumaState::None;
+	_fusumaCnt = 0.0f;
 
 	// 画面外上から開始
 	_titleY = -StCas<float>(_titleH);
@@ -235,32 +254,47 @@ bool ModeTitle::Process()
 		}
 	}
 
-	// �X�e�[�g����
-	switch(_state)
+	// ふすま閉じの更新（閉じ終わったら true）
+	const bool fusumaClosedNow = ProcessFusumaClose();
+
+	switch (_state)
 	{
-		case ModeBase::State::WAIT:
-			// �{�^�����������܂őҋ@
-			if(trg & PAD_INPUT_1)
+	case ModeBase::State::WAIT:
+		if (trg & PAD_INPUT_1)
+		{
+			if (_menu == MenuItem::Start)
 			{
-				if(_menu == MenuItem::Start)
+				// まずふすまを閉じる
+				StartFusumaClose();
+			}
+			else
+			{
+				ModeServer::GetInstance()->Del(this);
+				if (ApplicationBase::GetInstance())
 				{
-					_state = ModeBase::State::DONE;
-				}
-				else
-				{
-					ModeServer::GetInstance()->Del(this);
-					if(ApplicationBase::GetInstance())
-					{
-						ApplicationBase::GetInstance()->RequestExit();
-					}
+					ApplicationBase::GetInstance()->RequestExit();
 				}
 			}
-			break;
-		case ModeBase::State::DONE:
-			// ���̃��[�h�ֈڍs
-			ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
-			ModeServer::GetInstance()->Del(this);
-			break;
+		}
+
+		// ふすまが閉じきったら遷移
+		if (_fusumaState == FusumaState::closed)
+		{
+			_fusumaClosedWaitCnt++;	
+
+			// 閉じた状態で少し待つ
+			if(_fusumaClosedWaitCnt >= _fusumaClosedWaitFrames)
+			{
+				_state = ModeBase::State::DONE;
+			}
+		}
+		break;
+
+	case ModeBase::State::DONE:
+		//ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
+		ModeServer::GetInstance()->Add(NEW ModeOpScenario(), 1, "opscenario");
+		ModeServer::GetInstance()->Del(this);
+		break;
 	}
 
 	return true;
@@ -319,5 +353,77 @@ bool ModeTitle::Render()
 		DrawGraph(x, y, _startNoHandle, TRUE);
 		DrawGraph(x + spacing, y, _exitYesHandle, TRUE);
 	}
+
+	// ふすまの描画
+	RenderFusuma();
 	return true;
+}
+
+void ModeTitle::StartFusumaClose()
+{
+	// すでに閉じていたら何もしない
+	if(_fusumaState == FusumaState::closing || _fusumaState == FusumaState::closed)
+	{
+		return; 
+	}
+
+	_fusumaState = FusumaState::closing;
+	_fusumaCnt = 0.0f; 
+	_fusumaClosedWaitCnt = 0;
+	// ふすま開始位置
+	_fusumaLeftX = -StCas<float>(_fusumaW);
+	_fusumaRightX = 1920.0f;
+}
+
+bool ModeTitle::ProcessFusumaClose()
+{
+	// 演出中ではなかったら
+	if(_fusumaState != FusumaState::closing)
+	{
+		return false; 
+	}
+
+	_fusumaCnt += 1.0f; // フレームカウンタを進める	
+	if(_fusumaCnt > _fusumaFrames)
+	{
+		_fusumaCnt = _fusumaFrames; 
+	}
+
+	const float screenW = 1920.0f;	
+	
+	const float leftStartX = -StCas<float>(_fusumaW);
+	const float leftEndX = 0.0f;
+
+	const float rightStartX = screenW;
+	const float rightEndX = screenW - StCas<float>(_fusumaW);
+
+	// イージング関数で位置を計算
+	_fusumaLeftX = mymath::EasingOutQuad(_fusumaCnt, leftStartX, leftEndX, _fusumaFrames);
+	_fusumaRightX = mymath::EasingOutQuad(_fusumaCnt, rightStartX, rightEndX, _fusumaFrames);
+
+	// 閉じ終わりの判定
+	if (_fusumaCnt >= _fusumaFrames)
+	{
+		_fusumaState = FusumaState::closed;
+		return true; // 閉じ終わり
+	}
+
+	return false; // 閉じ途中
+}
+
+void ModeTitle::RenderFusuma() const
+{
+	if (_fusumaLeftHandle == -1 || _fusumaRighetHandle == -1)
+	{
+		return;
+	}
+
+	// Noneでも描画したいなら条件を外す
+	if (_fusumaState == FusumaState::None)
+	{
+		return;
+	}
+
+	DrawGraph(StCas<int>(_fusumaLeftX), StCas<int>(_fusumaY), _fusumaLeftHandle, TRUE);
+	DrawGraph(StCas<int>(_fusumaRightX), StCas<int>(_fusumaY), _fusumaRighetHandle, TRUE);
 }
