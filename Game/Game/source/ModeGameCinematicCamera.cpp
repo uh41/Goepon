@@ -801,6 +801,12 @@ bool ModeGame::StartGameOverSequence()
 		{
 			s2->Stop();
 		}
+
+		// ゲームオーバー演出用BGM
+		if(auto overBgm = gGlobal._soundServer->Get("170"))
+		{
+			overBgm->Play();
+		}
 	}
 	_isGameOverCinematicActive  = true;
 	_gameOverCinematicTimer		= 0.0f;

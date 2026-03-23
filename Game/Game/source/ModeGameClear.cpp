@@ -22,7 +22,7 @@ bool ModeGameClear::Initialize()
 			s2->Stop();
 		}
 
-		// クリアBGMが鳴っていなければ再生（デバッグ直遷移などの保険）
+		// クリアBGMが鳴っていなければ再生
 		if(auto clearBgm = gGlobal._soundServer->Get("160"))
 		{
 			if(!clearBgm->IsPlay())
@@ -70,7 +70,7 @@ bool ModeGameClear::Process()
 
 			if(hasNextStage)
 			{
-				if(auto clearBgm = gGlobal._soundServer->Get("120"))
+				if(auto clearBgm = gGlobal._soundServer->Get("160"))
 				{
 					clearBgm->Stop();
 				}

@@ -49,6 +49,30 @@ bool ModeGameOver::Initialize()
 
 	UpdateSpotCenterFromPlayer();
 
+	if(gGlobal._soundServer)
+	{
+		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
+
+		// ゲーム中BGMだけは明示的に停止
+		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
+		{
+			s->Stop();
+		}
+		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
+		{
+			s2->Stop();
+		}
+
+		// ゲームオーバーBGMが鳴っていなければ再生
+		if(auto clearBgm = gGlobal._soundServer->Get("170"))
+		{
+			if(!clearBgm->IsPlay())
+			{
+				clearBgm->Play();
+			}
+		}
+	}
+
 	return true;
 }
 
