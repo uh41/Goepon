@@ -2,12 +2,8 @@
 // * \file   enemybase.h
 // * \brief  エネミーベースクラス
 // *
-// * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
-//              センサーが追跡中関数の追加 石森虹大　2026/02/12
+// * \author 市村義春
 /*********************************************************************/
-
 #pragma once
 #include "charabase.h"
 #include "appframe.h"
@@ -62,13 +58,16 @@ public:
 	// 無敵中かどうか
 	bool GetIsInvincible() const { return _isInvincible; }
 
+	// ダメージアニメーションの描画
 	void RenderDamageTime();
 
+	// プレイヤーを検出しているかどうかのゲッター
 	bool IsDetectPlayer() const { return _detectedPlayer; }
 
-	vec::Vec3 GetInitialPos() const { return _initialPos; }
-	vec::Vec3 GetInitialDir() const { return _initialDir; }
+	vec::Vec3 GetInitialPos() const { return _initialPos; }	// 初期位置のゲッター
+	vec::Vec3 GetInitialDir() const { return _initialDir; }	// 初期向きのゲッター
 
+	// 初期位置と向きをキャプチャする関数（EnemyMoveでオーバーライドして巡回ポイントもキャプチャする）
 	virtual	void CaptureInitialTransform();
 
 	std::shared_ptr<EnemySensor> GetEnemySensor() const { return _enemySensor; }
@@ -78,8 +77,8 @@ public:
 
 	// センサーが追跡中かどうか
 	bool IsPlayerChasing() const; 
-	void UpdateDamageAnimation();// ダメージアニメーションの更新
 
+	void UpdateDamageAnimation();	// ダメージアニメーションの更新
 	virtual void OnDamageStart() {} // ダメージアニメーション開始時の処理
 	virtual void OnDamageEnd() {}   // ダメージアニメーション終了時の処理
 
@@ -88,9 +87,9 @@ public:
 	void SetEnemyId(uint32_t id) { _enemyId = id; }
 	uint32_t GetEnemyId() const { return _enemyId; }
 
-	virtual float GetHearingRadius() const { return 0.0f; } // 音検知の半径
-	bool IsMovingToSound() const { return _isMovingToSound; }
-	bool IsWaitingAtSound() const { return _waitingAtSound; }
+	virtual float GetHearingRadius() const { return 0.0f; }		// 音検知の半径
+	bool IsMovingToSound() const { return _isMovingToSound; }	// 音源に向かって移動中かどうか
+	bool IsWaitingAtSound() const { return _waitingAtSound; }	// 音源到達後の待機中かどうか
 
 	void SetDirSequence(const at::vet<int>& sequence, float waitTime = 2.0f);	// 向き変更のシーケンスを設定
 	void SetDirSequenceFromJson(const nlohmann::json& j);						// JSONから向き変更のシーケンスを設定
@@ -149,7 +148,7 @@ protected:
 	float _soundDetectionTimer;		// 音検知からの経過時間
 	static constexpr float SOUND_RETURN_TIME = 5.0f; // 音検知から初期位置に戻るまでの時間
 
-	at::spc<EffectBase> _effect;	// エフェクト
+	at::spc<EffectBase> _effect;		// エフェクト
 	at::spc<EffectBase> _stunEffect;	// スタンエフェクト
 
 	bool _isInvincible;		// 無敵状態かどうか
@@ -158,9 +157,9 @@ protected:
 	static constexpr float STAN_DURATION = 15.0f; // スタン時間
 
 	// アニメーション名
-	std::string _attachAnimDamage;// ダメージアニメーション名
-	std::string _attachAnimStan;  // スタンアニメーション名
-	std::string _attachAnimGetUp; // 起き上がりアニメーション名
+	std::string _attachAnimDamage;	// ダメージアニメーション名
+	std::string _attachAnimStan;	// スタンアニメーション名
+	std::string _attachAnimGetUp;	// 起き上がりアニメーション名
 
 	// 向き変更のシーケンス関連
 	at::vet<int> _dirSequence;		// 向き変更のシーケンス
@@ -176,8 +175,7 @@ protected:
 	// 最終目撃地点での見渡し処理
 	void ResetChasedSearch();
 	void ChasedSearch();
-
-	bool _isSearching;	// 最終目撃地点で見渡し中か
+	bool _isSearching;			// 見渡し中か
 	vec::Vec3 _searchBaseDir;	// 見渡しの基準向き
 	float _searchTimer;			// 見渡し時間
 	float _searchSweepSpeed;	// 見渡し速度

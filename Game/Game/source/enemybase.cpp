@@ -2,11 +2,8 @@
 // * \file   enemybase.cpp
 // * \brief  エネミーベースクラス（共通処理集中）
 // *
-// * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
+// * \author 市村義春
 /*********************************************************************/
-
 #include "enemybase.h"
 #include "enemysensor.h"
 #include "applicationglobal.h"

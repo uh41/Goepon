@@ -584,7 +584,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			if (pressedA)
 			{
 				rapidFire->AddCount();
-
+				//player->SetInputEnabled(false);
 				if(player)
 				{
 					player->PlayAnimation("takarabako_open", true);
@@ -656,6 +656,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					return true;
 				}
 			}
+			/*else 
+			{
+				player->SetInputEnabled(true);
+			}*/
 			// 連打型は複数同時に処理可能なのでcontinue
 			continue;
 		}
@@ -694,6 +698,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
+				//player->SetInputEnabled(true);
 				if(player)
 				{
 					player->PlayAnimation("idle", true);
@@ -737,6 +742,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				TreasureOpeningCameraControl();
 				_isOpeningTreasure = true;
+				//player->SetInputEnabled(false);
 				if(player)
 				{
 					player->PlayAnimation("takarabako_open", true);
