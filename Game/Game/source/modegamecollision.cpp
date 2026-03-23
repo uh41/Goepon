@@ -611,6 +611,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
 
+					if(_goal && _treasureTakenCount >= _treasureRequiredCount)
+					{
+						_goal->SetCollisionEnabled(true);
+					}
+
 					if(player)
 					{
 						player->PlayAnimation("idle", true);
@@ -772,6 +777,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				currentTreasure->SetOpen(true);
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
+
+				if(_goal && _treasureTakenCount >= _treasureRequiredCount)
+				{
+					_goal->SetCollisionEnabled(true);
+				}
 
 				if(player)
 				{
@@ -1072,6 +1082,12 @@ bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
 	{
 		return false;
 	}
+
+	if(!goal->IsCollisionEnabled())
+	{
+		return false;
+	}
+
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
