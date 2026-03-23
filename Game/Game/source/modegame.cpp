@@ -1831,19 +1831,23 @@ bool ModeGame::Render()
 			// --- 通常描画（シャドウマップを使用） ---
 			ShadowMap_DrawEnd();
 
+			// 影あり描画（3Dモデル群）
 			SetUseShadowMap(0, shadowMapHandle);
 
-			// Effekseer
-			EffekseerManager::GetInstance()->Render();
-
-			// 通常描画（UI含む）
+			// 通常の3D（マップ/モデル）
 			if(_objectServer)
 			{
 				_objectServer->Render();
 			}
 			ObjectRender();
 
-			// シャドウ解除
+			// ここから先は影なし（Effekseer 等）
+			SetUseShadowMap(0, -1);
+
+			// Effekseer（必ず影なしで描く）
+			EffekseerManager::GetInstance()->Render();
+
+			// シャドウ解除（保険）
 			SetUseShadowMap(0, -1);
 
 			// ゲームオーバー演出（既存）
