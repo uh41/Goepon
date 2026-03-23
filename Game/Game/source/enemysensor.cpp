@@ -1,4 +1,10 @@
-﻿#include "enemysensor.h"
+﻿/*********************************************************************/
+// * \file   enemysensor.cpp
+// * \brief  エネミーセンサークラス
+// *
+// * \author 市村義春
+/*********************************************************************/
+#include "enemysensor.h"
 #include "appframe.h"
 #include "map.h"
 
