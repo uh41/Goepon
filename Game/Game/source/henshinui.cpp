@@ -20,7 +20,7 @@ bool HenshinUi::Initialize()
 {
 	base::Initialize();
 	_handle = LoadGraph(ui::UI_Hito);
-	_handleTanubito = LoadGraph(ui::Dash_Icon);
+	_handleTanubito = LoadGraph(ui::UI_Tanubito_no);
 	_handleMono = LoadGraph(ui::UI_Mono);
 	return true;
 }

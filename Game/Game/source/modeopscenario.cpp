@@ -28,7 +28,7 @@ bool ModeOpScenario::Initialize()
 	base::Initialize();
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 
-	_backHandle = LoadGraph("res/Prologue/BG_opstory.png");	// �w�i�摜�̓ǂݍ���
+	//_backHandle = LoadGraph("res/Prologue/BG_opstory.png");	// �w�i�摜�̓ǂݍ���
 
 	_page =
 	{
@@ -43,6 +43,13 @@ bool ModeOpScenario::Initialize()
 		{ LoadGraph("res/Prologue/9.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/10.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/11.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/12.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/13.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/14.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/15.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/16.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/17.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/18.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 	};
 
 	// �y�[�W�̕\���f�[�^��ݒ�
