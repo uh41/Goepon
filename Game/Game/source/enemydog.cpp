@@ -24,7 +24,7 @@ bool EnemyDog::Initialize()
 	// コリジョン半径の設定
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 10.0f;
-	_fHp = 30.0f;
+	
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
 	_rotationSpeed = 0.2f;                     // 回転速度（調整可能）
 	_moveSpeed = 2.0f;

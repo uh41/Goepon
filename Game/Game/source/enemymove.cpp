@@ -27,8 +27,6 @@ bool EnemyMove::Initialize()
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 100.0f;
 
-	_fHp = 30.0f;
-
 	// センサー関連の初期化
 	_detectedPlayer = false;					
 	_playerPos = vec3::VGet(0.0f, 0.0f, 0.0f);	
