@@ -151,6 +151,7 @@ namespace mv1
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_Stage1V2 = "res/map/SM_Stage1V2.mv1";
+  inline constexpr const char* SM_Stage3_0323 = "res/map/SM_Stage3_0323.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
