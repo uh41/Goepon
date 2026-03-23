@@ -29,6 +29,7 @@ bool Goal::Initialize()
 	MV1SetFrameVisible(_handle, _hitCollisionFrame, FALSE);
 
 	_isVisible = true;
+	_collisionEnabled = false;
 
 	// “–‚½‚è”»’èî•ñ‚Ì‰ŠúXV
 	ApplyMatrixAndRefreshCollInfo(_handle, _hitCollisionFrame, -1, MakeModelMatrix());
