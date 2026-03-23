@@ -15,18 +15,26 @@ ModeTitle::~ModeTitle()
 
 bool ModeTitle::Initialize()
 {
-	// 読み込み
-	_bgHandle    = LoadGraph("res/Title/Title_GB.png");
-	_titleHandle = LoadGraph("res/Title/Title_Logo.png");
+	// 読み込み関連
+	_bgHandle    = LoadGraph(img::Title_GB);
+	_titleHandle = LoadGraph(img::Title_Logo);
+	// メニューのハンドルを読み込む
+	_startYesHandle = LoadGraph(ui::Title_gamestart);
+	_startNoHandle  = LoadGraph(ui::Title_gamestart_no);
+	_exitYesHandle  = LoadGraph(ui::Title_gamefinish);
+	_exitNoHandle   = LoadGraph(ui::Title_gamefinish_no);
 
 	// 読み込み失敗していれば初期化失敗
 	if(_bgHandle == -1)
 	{
 		return false;
 	}
+	if(_startYesHandle == -1 || _startNoHandle == -1 || _exitYesHandle == -1 || _exitNoHandle == -1)
+	{
+		return false;
+	}
 
-	_startHandle = LoadGraph(ui::B_gamestart);
-
+	_menu = MenuItem::Start; // デフォルトは「スタート」
 	// ロゴ落下への初期化
 	_titleX = 30.0f;
 	_titleW = 0;
@@ -99,6 +107,27 @@ bool ModeTitle::Terminate()
 	{
 		DeleteGraph(_titleHandle);
 		_titleHandle = -1;
+	}
+
+	if(_startYesHandle != -1)
+	{
+		DeleteGraph(_startYesHandle);
+		_startYesHandle = -1;
+	}
+	if(_startNoHandle != -1)
+	{
+		DeleteGraph(_startNoHandle);
+		_startNoHandle = -1;
+	}
+	if(_exitYesHandle != -1)
+	{
+		DeleteGraph(_exitYesHandle);
+		_exitYesHandle = -1;
+	}
+	if(_exitNoHandle != -1)
+	{
+		DeleteGraph(_exitNoHandle);
+		_exitNoHandle = -1;
 	}
 
 	// �K�L�����J��
@@ -178,14 +207,32 @@ bool ModeTitle::Process()
 			}
 		}
 	}
+
+	// 選択移動
+	if(trg & PAD_INPUT_LEFT)
+	{
+		_menu = MenuItem::Start;
+	}
+	else if(trg & PAD_INPUT_RIGHT)
+	{
+		_menu = MenuItem::Exit;
+	}
+
 	// �X�e�[�g����
 	switch(_state)
 	{
 		case ModeBase::State::WAIT:
 			// �{�^�����������܂őҋ@
-			if(trg & PAD_INPUT_2)
+			if(trg & PAD_INPUT_1)
 			{
-				_state = ModeBase::State::DONE;
+				if(_menu == MenuItem::Start)
+				{
+					_state = ModeBase::State::DONE;
+				}
+				else
+				{
+					DxLib_End(); // ゲーム終了
+				}
 			}
 			break;
 		case ModeBase::State::DONE:
@@ -212,9 +259,6 @@ bool ModeTitle::Render()
 	{
 		DrawGraph(0, 0, _bgHandle, TRUE);
 	}
-
-	DrawGraph(ui::START_CONFIG_X, ui::START_CONFIG_Y, _startHandle, TRUE);
-
 	// �J�����ݒ�X�V
 	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_cam->GetPos()), DxlibConverter::VecToDxLib(_cam->GetTarget()));
 	SetCameraNearFar(_cam->GetClipNear(), _cam->GetClipFar());
@@ -235,6 +279,24 @@ bool ModeTitle::Render()
 	{
 		DrawGraph(StCas<int>(_titleX), StCas<int>(_titleY), _titleHandle, TRUE);
 	}
+	
+	// メニューの描画
+	int startW = 0, startH = 0;
+	GetGraphSize(_startYesHandle, &startW, &startH);
 
+	const int x = ui::MENU_UI_X;
+	const int y = ui::MENU_UI_Y; // タイトルロゴの下に配置
+
+	const int spacing = ui::MENU_ITEM_SPACING;	
+	if(_menu == MenuItem::Start)
+	{
+		DrawGraph(x, y, _startYesHandle, TRUE);
+		DrawGraph(x + spacing, y, _exitNoHandle, TRUE);
+	}
+	else
+	{
+		DrawGraph(x, y, _startNoHandle, TRUE);
+		DrawGraph(x + spacing, y, _exitYesHandle, TRUE);
+	}
 	return true;
 }

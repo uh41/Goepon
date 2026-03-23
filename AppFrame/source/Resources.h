@@ -11,6 +11,8 @@ namespace img
   inline constexpr const char* Loading_2start = "res/Loading_2start.png";
   inline constexpr const char* Loading_3gameover = "res/Loading_3gameover.png";
   inline constexpr const char* Loading_4gameover = "res/Loading_4gameover.png";
+  inline constexpr const char* Title_GB = "res/Title_GB.png";
+  inline constexpr const char* Title_Logo = "res/Title_Logo.png";
   inline constexpr const char* Title_kari = "res/Title_kari.png";
   inline constexpr const char* UI_Makimono = "res/UI_Makimono.png";
   inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
@@ -141,7 +143,7 @@ namespace ef
 namespace mv1
 {
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
-  inline constexpr const char* GameClear_Tanuki = "res/Gameclear/GameClear_Tanuki.mv1";
+  inline constexpr const char* GameClear_Tanuki = "res/GameClear/GameClear_Tanuki.mv1";
   inline constexpr const char* GameOver_Tanuki = "res/Gameover/GameOver_Tanuki.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
