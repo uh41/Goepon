@@ -115,194 +115,187 @@ bool Player::Process()
 	// 移動方向を決める
 	_v = { 0,0,0 };
 
-	if (!_inputEnabled)
+	// カメラの向いている角度を取得
+	float sx = _cam->GetPos().x - _cam->GetTarget().x;
+	float sz = _cam->GetPos().z - _cam->GetTarget().z;
+	float camrad = atan2(sz, sx);
+	float rad = 0.0f;
+
+	//左スティック値
+	lStickX = fLx;
+	lStickZ = fLz;
+
+	// ローカル入力ベクトル（キーボード）
+	vec3::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
+
+	// 操作（キーボード）
+	if (key & PAD_INPUT_UP)
 	{
-		_status = STATUS::WAIT;
+		inputLocal.x = -1.0f;
 	}
-	else 
+	if (key & PAD_INPUT_DOWN)
 	{
-		// カメラの向いている角度を取得
-		float sx = _cam->GetPos().x - _cam->GetTarget().x;
-		float sz = _cam->GetPos().z - _cam->GetTarget().z;
-		float camrad = atan2(sz, sx);
-		float rad = 0.0f;
+		inputLocal.x = 1.0f;
+	}
+	if (key & PAD_INPUT_LEFT)
+	{
+		inputLocal.z = -1.0f;
+	}
+	if (key & PAD_INPUT_RIGHT)
+	{
+		inputLocal.z = 1.0f;
+	}
 
-		//左スティック値
-		lStickX = fLx;
-		lStickZ = fLz;
+	// アナログ入力の長さ/角度
+	float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
+	float radStick = atan2(lStickX, lStickZ);
 
-		// ローカル入力ベクトル（キーボード）
-		vec3::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
+	// アナログ左スティック用
+	if (length < _fAnalogDeadZone)
+	{
+		// 入力が小さかったら動かなかったことにする
+		length = 0.f;
+	}
+	else
+	{
+		length = _fMvSpeed;
+	}
 
-		// 操作（キーボード）
-		if (key & PAD_INPUT_UP)
+	// World-space の移動ベクトル（アニメ/向き用）
+	_v.x = cos(radStick + camrad) * length;
+	_v.z = sin(radStick + camrad) * length;
+
+	SetTargetRotationFromDirection(_v); // 向きの目標値を移動方向に合わせる
+
+	// 重要：ここで直接 _vPos に加算しない。
+	// 移動（位置更新）と床判定は ModeGame::EscapeCollision に委ねる。
+	// 代わりに入力ベクトルを保存して、EscapeCollision が使えるようにする。
+
+	// 優先順：アナログ > キーボード
+	if (length > 0.0f)
+	{
+		_vInput = vec3::VGet(lStickZ, 0.0f, lStickX);
+		if (vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
+	}
+	else
+	{
+		_vInput = inputLocal;
+		if (vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
+	}
+
+	// 十字キー保持での軸ロック開始判定
+	if (key & PAD_INPUT_6)
+	{
+		_iAxisHoldCount++;
+		if (_iAxisHoldCount >= _iAxisThreshold)
 		{
-			inputLocal.x = -1.0f;
+			// ロックに入る瞬間に一度だけロック方向をキャプチャする
+			if (!_bAxisUseLock)
+			{
+				_bAxisUseLock = true;
+
+				// 現在の向きをロック方向として保存
+				_vAxisLockDir = _vDir;
+				_vAxisLockDir.y = 0.0f;
+				if (vec3::VSize(_vAxisLockDir) > 0.0f)
+				{
+					_vAxisLockDir = vec3::VNorm(_vAxisLockDir);
+				}
+				else
+				{
+					// 向きが不定の場合はデフォルト方向を採用
+					_vAxisLockDir = vec3::VGet(0.0f, 0.0f, -1.0f);
+				}
+			}
 		}
+	}
+	else
+	{
+		_iAxisHoldCount = 0;
+		_bAxisUseLock = false;
+	}
+
+	// 十字キー水平入力ロック処理
+	if (_bAxisUseLock)
+	{
+		// 軸ロック中の移動処理（向き固定で前後左右に移動）
+		vec::Vec3 axis_lock_input = vec3::VGet(0.0f, 0.0f, 0.0f);
+
+		// 軸ロック専用の入力を取得
 		if (key & PAD_INPUT_DOWN)
 		{
-			inputLocal.x = 1.0f;
+			axis_lock_input.x = 0.5f;
+		}
+		if (key & PAD_INPUT_UP)
+		{
+			axis_lock_input.x = -0.5f;
 		}
 		if (key & PAD_INPUT_LEFT)
 		{
-			inputLocal.z = -1.0f;
+			axis_lock_input.z = -0.5f;
 		}
 		if (key & PAD_INPUT_RIGHT)
 		{
-			inputLocal.z = 1.0f;
+			axis_lock_input.z = 0.5f;
 		}
 
-		// アナログ入力の長さ/角度
-		float length = sqrt(lStickX * lStickX + lStickZ * lStickZ);
-		float radStick = atan2(lStickX, lStickZ);
+		_vInput = axis_lock_input; // 上書き（軸ロック優先）
 
-		// アナログ左スティック用
-		if (length < _fAnalogDeadZone)
+		// 入力があれば軸ロック移動を計算（アニメ用 _v は更新）
+		if (vec3::VSize(axis_lock_input) > 0.0f)
 		{
-			// 入力が小さかったら動かなかったことにする
-			length = 0.f;
-		}
-		else
-		{
-			length = _fMvSpeed;
-		}
-
-		// World-space の移動ベクトル（アニメ/向き用）
-		_v.x = cos(radStick + camrad) * length;
-		_v.z = sin(radStick + camrad) * length;
-
-		SetTargetRotationFromDirection(_v); // 向きの目標値を移動方向に合わせる
-
-		// 重要：ここで直接 _vPos に加算しない。
-		// 移動（位置更新）と床判定は ModeGame::EscapeCollision に委ねる。
-		// 代わりに入力ベクトルを保存して、EscapeCollision が使えるようにする。
-
-		// 優先順：アナログ > キーボード
-		if (length > 0.0f)
-		{
-			_vInput = vec3::VGet(lStickZ, 0.0f, lStickX);
-			if (vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
-		}
-		else
-		{
-			_vInput = inputLocal;
-			if (vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
-		}
-
-		// 十字キー保持での軸ロック開始判定
-		if (key & PAD_INPUT_6)
-		{
-			_iAxisHoldCount++;
-			if (_iAxisHoldCount >= _iAxisThreshold)
+			vec::Vec3 forward = _vAxisLockDir;
+			forward.y = 0.0f;
+			if (vec3::VSize(forward) > 0.0f)
 			{
-				// ロックに入る瞬間に一度だけロック方向をキャプチャする
-				if (!_bAxisUseLock)
-				{
-					_bAxisUseLock = true;
-
-					// 現在の向きをロック方向として保存
-					_vAxisLockDir = _vDir;
-					_vAxisLockDir.y = 0.0f;
-					if (vec3::VSize(_vAxisLockDir) > 0.0f)
-					{
-						_vAxisLockDir = vec3::VNorm(_vAxisLockDir);
-					}
-					else
-					{
-						// 向きが不定の場合はデフォルト方向を採用
-						_vAxisLockDir = vec3::VGet(0.0f, 0.0f, -1.0f);
-					}
-				}
+				forward = vec3::VNorm(forward);
 			}
-		}
-		else
-		{
-			_iAxisHoldCount = 0;
-			_bAxisUseLock = false;
-		}
+			// 右ベクトル（XZ平面で前方の90度回転）
+			//VECTOR right = VGet(forward.z, 0.0f, -forward.x);
 
-		// 十字キー水平入力ロック処理
-		if (_bAxisUseLock)
-		{
-			// 軸ロック中の移動処理（向き固定で前後左右に移動）
-			vec::Vec3 axis_lock_input = vec3::VGet(0.0f, 0.0f, 0.0f);
+			// ローカル入力 axis_lock_input.x = 前後(UP/DOWN), axis_lock_input.z = 左右(LEFT/RIGHT)
+			float forwardInput = -axis_lock_input.x; // UP = 前進, DOWN = 後退
+			float sideInput = axis_lock_input.z;     // RIGHT = 右移動, LEFT = 左移動
 
-			// 軸ロック専用の入力を取得
-			if (key & PAD_INPUT_DOWN)
+			// 移動ベクトルを計算（前方向 + 横方向）
+			vec::Vec3 moveDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+			// right ベクトルを直接計算して組み合わせる
+			vec::Vec3 right = vec3::VGet(forward.z, 0.0f, -forward.x);
+
+			moveDir.x = forward.x * forwardInput + right.x * sideInput;
+			moveDir.z = forward.z * forwardInput + right.z * sideInput;
+
+			// 移動ベクトルを正規化してから速度を掛ける（アニメ向け）
+			if (vec3::VSize(moveDir) > 0.0f)
 			{
-				axis_lock_input.x = 0.5f;
-			}
-			if (key & PAD_INPUT_UP)
-			{
-				axis_lock_input.x = -0.5f;
-			}
-			if (key & PAD_INPUT_LEFT)
-			{
-				axis_lock_input.z = -0.5f;
-			}
-			if (key & PAD_INPUT_RIGHT)
-			{
-				axis_lock_input.z = 0.5f;
+				moveDir = vec3::VNorm(moveDir);
+				_v.x = moveDir.x * _fMvSpeed;
+				_v.z = moveDir.z * _fMvSpeed;
 			}
 
-			_vInput = axis_lock_input; // 上書き（軸ロック優先）
-
-			// 入力があれば軸ロック移動を計算（アニメ用 _v は更新）
-			if (vec3::VSize(axis_lock_input) > 0.0f)
-			{
-				vec::Vec3 forward = _vAxisLockDir;
-				forward.y = 0.0f;
-				if (vec3::VSize(forward) > 0.0f)
-				{
-					forward = vec3::VNorm(forward);
-				}
-				// 右ベクトル（XZ平面で前方の90度回転）
-				//VECTOR right = VGet(forward.z, 0.0f, -forward.x);
-
-				// ローカル入力 axis_lock_input.x = 前後(UP/DOWN), axis_lock_input.z = 左右(LEFT/RIGHT)
-				float forwardInput = -axis_lock_input.x; // UP = 前進, DOWN = 後退
-				float sideInput = axis_lock_input.z;     // RIGHT = 右移動, LEFT = 左移動
-
-				// 移動ベクトルを計算（前方向 + 横方向）
-				vec::Vec3 moveDir = vec3::VGet(0.0f, 0.0f, 0.0f);
-				// right ベクトルを直接計算して組み合わせる
-				vec::Vec3 right = vec3::VGet(forward.z, 0.0f, -forward.x);
-
-				moveDir.x = forward.x * forwardInput + right.x * sideInput;
-				moveDir.z = forward.z * forwardInput + right.z * sideInput;
-
-				// 移動ベクトルを正規化してから速度を掛ける（アニメ向け）
-				if (vec3::VSize(moveDir) > 0.0f)
-				{
-					moveDir = vec3::VNorm(moveDir);
-					_v.x = moveDir.x * _fMvSpeed;
-					_v.z = moveDir.z * _fMvSpeed;
-				}
-
-				// 向きは固定
-				_vDir = forward;
-			}
+			// 向きは固定
+			_vDir = forward;
 		}
-		else
+	}
+	else
+	{
+		// 通常：カメラ方向に合わせて回転して移動（inputLocal はローカル入力）
+		// vをrad分回転させる（ローカル入力の角度）
+		if (vec3::VSize(inputLocal) > 0.0f)
 		{
-			// 通常：カメラ方向に合わせて回転して移動（inputLocal はローカル入力）
-			// vをrad分回転させる（ローカル入力の角度）
-			if (vec3::VSize(inputLocal) > 0.0f)
+			float lengthLocal = _fMvSpeed;
+			float localRad = atan2(inputLocal.z, inputLocal.x);
+			_v.x = cos(localRad + camrad) * lengthLocal;
+			_v.z = sin(localRad + camrad) * lengthLocal;
+
+			// キーボード入力の場合、_vInput を上書き（アナログ優先だが無ければキーボードを使用）
+			if (vec3::VSize(_vInput) == 0.0f)
 			{
-				float lengthLocal = _fMvSpeed;
-				float localRad = atan2(inputLocal.z, inputLocal.x);
-				_v.x = cos(localRad + camrad) * lengthLocal;
-				_v.z = sin(localRad + camrad) * lengthLocal;
-
-				// キーボード入力の場合、_vInput を上書き（アナログ優先だが無ければキーボードを使用）
-				if (vec3::VSize(_vInput) == 0.0f)
-				{
-					_vInput = inputLocal;
-					if (vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
-				}
+				_vInput = inputLocal;
+				if (vec3::VSize(_vInput) > 0.0f) _vInput = vec3::VNorm(_vInput);
 			}
-
 		}
+
 	}
 	
 	// 地上移動（アニメ・向き更新のみ。実際の座標更新は ModeGame::EscapeCollision に任せる）

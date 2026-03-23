@@ -31,16 +31,16 @@ bool ModeAfScenario::Initialize()
 
 	_page =
 	{
-		{ LoadGraph("res/Af_Scenario.png"), "" },// 画像読み込み, 音声ファイル
+		{ LoadGraph("res/Af_Scenario.png"), mp3::UI_Henshin_pon },// 画像読み込み, 音声ファイル
 	};
 	_pageNo = 0;
 
-	if(!_page.empty())
-	{
-		_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);
-		_soundServer->Add("voice", _voice);
-		_voice->Play();
-	}
+	//if(!_page.empty())
+	//{
+	//	_se = std::make_shared<soundserver::SoundItemSE>(_page[_pageNo].voiceFile);
+	//	_soundServer->Add("se", _se);
+	//	_se->Play();
+	//}
 
 	if(gGlobal._soundServer)
 	{
@@ -103,8 +103,19 @@ bool ModeAfScenario::Process()
 		case ModeGame::State::WAIT:
 		{
 			// 次のページへ
-			if (trg & PAD_INPUT_2)
+			if (trg & PAD_INPUT_1)
 			{
+				if(!_page[_pageNo].voiceFile.empty())
+				{
+					if(_soundServer)
+					{
+						_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+						_se = std::make_shared<soundserver::SoundItemSE>(_page[_pageNo].voiceFile);
+						_soundServer->Add("se", _se);
+						_se->Play();
+					}
+				}
+
 				// 最終ページならフェードアウト
 				if (_pageNo >= StCas<int>(_page.size()) - 1)
 				{
@@ -117,11 +128,11 @@ bool ModeAfScenario::Process()
 				}
 			}
 
-			// 前のページに行く
-			if (trg & PAD_INPUT_1)
-			{
-				ChangePage(-1);
-			}
+			//// 前のページに行く
+			//if (trg & PAD_INPUT_2)
+			//{
+			//	ChangePage(-1);
+			//}
 			break;
 		}
 		case ModeBase::State::FADE_OUT:

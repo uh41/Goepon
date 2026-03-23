@@ -11,8 +11,10 @@ namespace soundserver
 
 namespace ui
 {
-	static constexpr auto START_CONFIG_X = 0;
-	static constexpr auto START_CONFIG_Y = 980;
+	// UIの開始位置
+	static constexpr auto MENU_UI_X = 50;
+	static constexpr auto MENU_UI_Y = 940;
+	static constexpr auto MENU_ITEM_SPACING = 550; // 間のスペース
 }
 
 class ModeTitle : public ModeBase
@@ -34,8 +36,24 @@ protected:
 	int _startHandle;
 
 private:
+	// メニュー選択の状態
+	enum class MenuItem
+	{
+		Start,
+		Exit,
+	};
+	MenuItem _menu = MenuItem::Start; // デフォルトは「スタート」
+
+
+	// タイトルロゴと背景のハンドル
 	int _bgHandle;
 	int _titleHandle;
+
+	// メニュー選択ハンドル
+	int _startYesHandle = -1;
+	int _startNoHandle  = -1;
+	int _exitYesHandle  = -1;
+	int _exitNoHandle	= -1;
 
 	// ロゴ落下アニメ用
 	float _titleX		 = 30.0f;    // タイトルロゴのX位置
@@ -45,6 +63,5 @@ private:
 	float _titleVY       = 0.0f;     // タイトルロゴの落下速度
 	float _titleTargetY  = -120.0f;  // タイトルロゴの最終的なY位置
 	bool  _titleLanding  = false;    // タイトルロゴが落下中かどうか
-	
 };
 

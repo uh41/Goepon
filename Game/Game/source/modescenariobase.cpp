@@ -17,7 +17,7 @@ bool ModeScenarioBase::Initialize()
 	_pageNo = 0;
 	_backHandle = -1;
 	_soundServer = std::make_shared<soundserver::SoundServer>();
-	_voice = nullptr;
+	_se = nullptr;
 	_moveHandle = -1;
 
 	return true;
@@ -30,7 +30,7 @@ bool ModeScenarioBase::Terminate()
 		_soundServer->Clear();
 		_soundServer = nullptr;  // nullptrにセット
 	}
-	_voice = nullptr;  // nullptrにセット
+	_se = nullptr;  // nullptrにセット
 
 	// ページの画像リソースを解放
 	for (auto& page : _page)
@@ -85,13 +85,13 @@ void ModeScenarioBase::ChangePage(int pageNo)
 	if(_soundServer)
 	{
 		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-		_voice = nullptr;
+		_se = nullptr;
 
 		if(!_page[_pageNo].voiceFile.empty())		// ボイスファイルがある場合
 		{
-			_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);// ボイス作成
-			_soundServer->Add("voice", _voice);// サウンドサーバーに追加
-			_voice->Play();// ボイス再生
+			_se = std::make_shared<soundserver::SoundItemSE>(_page[_pageNo].voiceFile);// ボイス作成
+			_soundServer->Add("se", _se);// サウンドサーバーに追加
+			_se->Play();// ボイス再生
 		}
 	}
 }
