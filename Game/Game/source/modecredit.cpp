@@ -16,6 +16,8 @@ bool ModeCredit::Initialize()
 {
 	_handle = MovieManager::GetInstance()->LoadMovie(mp4::EndCredits);
 
+	_creditHandle = LoadGraph(ui::Staffroll_config);
+
 	// ロード成功していれば即再生する
 	if(_handle != -1)
 	{
@@ -66,13 +68,22 @@ bool ModeCredit::Process()
 
 	case ModeBase::State::WAIT:
 	{
-		if(trg & PAD_INPUT_1)
+		if(trg & PAD_INPUT_2)
 		{
 			// 修正: _handle のチェックを先に行う
 			if(_handle != -1)
 			{
 				MovieManager::GetInstance()->StopMovie(_handle);
 				MovieManager::GetInstance()->UnloadMovie(_handle);
+
+				if(gGlobal._soundServer)
+				{
+					auto bgm = gGlobal._soundServer->Get("74");
+					if(bgm)
+					{
+						bgm->Stop();
+					}
+				}
 				_handle = -1;
 			}
 
@@ -140,6 +151,11 @@ bool ModeCredit::Render()
 	if(_handle != -1)
 	{
 		DrawGraph(0, 0, _handle, TRUE);
+	}
+
+	if(_state == ModeBase::State::WAIT)
+	{
+		DrawGraph(credit::CREDIT_X, credit::CREDIT_Y, _creditHandle, TRUE);
 	}
 
 	// フェードを重ねる（フェードアウト時に有効）
