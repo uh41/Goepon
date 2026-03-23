@@ -88,7 +88,7 @@ bool ModeTitle::Initialize()
 		auto bgm = _soundServer->Get("102");
 		if(bgm)
 		{
-			//bgm->Play(); // 追加後に明示的に再生
+			bgm->Play(); // 追加後に明示的に再生
 		}
 	}
 

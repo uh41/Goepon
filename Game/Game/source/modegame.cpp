@@ -900,6 +900,7 @@ void ModeGame::ResetEnemiesToInitialPositions()
 			if(em->IsPatrolling())
 			{
 				em->SetAlive(true);
+				em->ResetStunEffect();
 				continue;
 			}
 
@@ -912,6 +913,7 @@ void ModeGame::ResetEnemiesToInitialPositions()
 
 			em->OnPlayerLost();
 			em->SetAlive(true);
+			em->ResetStunEffect();
 			continue;
 		}
 
@@ -923,6 +925,7 @@ void ModeGame::ResetEnemiesToInitialPositions()
 		enemyPtr->ResetTeleport();
 		enemyPtr->SetAlive(true);
 		enemyPtr->CaptureInitialTransform();
+		enemyPtr->ResetStunEffect();
 	}
 }
 
@@ -1863,11 +1866,11 @@ bool ModeGame::Render()
 				}
 			}
 
-			int key = ApplicationBase::GetInstance()->GetKey();
-			if(key & PAD_INPUT_12)
-			{
-				DebugRender();
-			}
+			//int key = ApplicationBase::GetInstance()->GetKey();
+			//if(key & PAD_INPUT_12)
+			//{
+			//	DebugRender();
+			//}
 		}
 	}
 
