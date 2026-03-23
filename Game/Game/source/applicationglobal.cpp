@@ -400,11 +400,11 @@ bool ApplicationGlobal::EnsureStageDataLoad(const std::string& stageId)
 	{
 		if(GetMapData("Map3") == nullptr)
 		{
-			LoadMapData("Map3", "stage3_0323.json", "stage");
+			LoadMapData("Map3", "stage3_0323_2.json", "stage");
 		}
 		if(GetStageData("Stage3") == nullptr)
 		{
-			LoadStageData("Stage3", "stage3_0323.json", "stage");
+			LoadStageData("Stage3", "stage3_0323_2.json", "stage");
 		}
 	}
 	else
@@ -427,12 +427,12 @@ bool ApplicationGlobal::Init()
 	// マップ用
 	LoadMapData("Map1", "stage1_0319x.json", "stage");	// 1ステージ目
 	LoadMapData("Map2", "stage2_0323.json", "stage");	// 2ステージ目
-	LoadMapData("Map3", "stage3_0323.json", "stage");	// 3ステージ目
+	LoadMapData("Map3", "stage3_0323_2.json", "stage");	// 3ステージ目
 
 	//マーカー用
 	LoadStageData("Stage1", "stage1_0319x.json", "stage"); // 1ステージ目
 	LoadStageData("Stage2", "stage2_0323.json", "stage");     // 2ステージ目
-	LoadStageData("Stage3", "stage3_0323.json", "stage");     // 3ステージ目
+	LoadStageData("Stage3", "stage3_0323_2.json", "stage");     // 3ステージ目
 
 	SetUseASyncLoadFlag(TRUE);
 
@@ -447,9 +447,9 @@ bool ApplicationGlobal::Init()
 								 	 
 	// マップ関連モデル読み込み	  	 
 	ResourceServer::MV1LoadModel(mv1::skysphere);
-	ResourceServer::MV1LoadModel(mv1::SM_stage1_0301);
+	ResourceServer::MV1LoadModel(mv1::SM_Stage1V2);
 	ResourceServer::MV1LoadModel(mv1::SM_stage20303);
-	ResourceServer::MV1LoadModel(mv1::SM_stage3);
+	ResourceServer::MV1LoadModel(mv1::SM_Stage3_0323);
 	ResourceServer::MV1LoadModel(mv1::S_Marker_Event);
 
 	// その他
