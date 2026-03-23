@@ -23,6 +23,7 @@ namespace
 bool ModeGameOver::Initialize()
 {
 	if(!base::Initialize()) return false;
+	_gameoverLogoHandle = LoadGraph(ui::GameOver_logo);
 
 	_debugCurrentStageId = "Stage1"; // �f�t�H���g
 	if(_ownerGame)
@@ -157,29 +158,9 @@ bool ModeGameOver::Render()
 	// ※ 文字は暗転の上に描く（読みやすさ優先）にする場合は順序を入れ替える
 	DrawSpotlightFade();
 
-	// UI枠（既存）
-	DrawBox(BgLeft, BgTop, BgRight, BgBottom, GetColor(255, 255, 255), FALSE);
+	int x = 0, y = 0;
 
-	SetFontSize(TitleFontSize);
-	DrawString(TitlePosX, TitlePosY, GameOverMessage, GetColor(WhiteR, WhiteG, WhiteB));
-
-	SetFontSize(HintFontSize);
-	DrawString(HintPosX, HintPosY, HintMessage, GetColor(HintR, HintG, HintB));
-
-	if(_showOverlayImmediate && _overlayHandle != -1)
-	{
-		int screenW, screenH;
-		GetScreenState(&screenW, &screenH, nullptr);
-
-		int imgW, imgH;
-		GetGraphSize(_overlayHandle, &imgW, &imgH);
-
-		int x = (screenW - imgW) / 2;
-		int y = (screenH - imgH) / 2;
-
-		DrawGraph(x, y, _overlayHandle, TRUE);
-	}
-
+	DrawGraph(x, y, _gameoverLogoHandle, TRUE);
 	return true;
 }
 

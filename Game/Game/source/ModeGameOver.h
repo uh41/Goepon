@@ -22,6 +22,8 @@ public:
 private:
 	bool UpdateSpotCenterFromPlayer(); // プレイヤーの位置からスポットライトの中心を更新し、成功したかを返す
 	void DrawSpotlightFade() const;    // 円形暗転を描画する関数
+	
+	int _gameoverLogoHandle;
 
 	ModeGame* _ownerGame; // 所有している ModeGame への参照（必要に応じて使用）
 	int _overlayHandle;

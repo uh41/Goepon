@@ -389,22 +389,22 @@ bool ApplicationGlobal::EnsureStageDataLoad(const std::string& stageId)
 		// Map2 / map JSON は Init と同じに合わせる（MapとStageでファイル名が異なる実装）
 		if(GetMapData("Map2") == nullptr)
 		{
-			LoadMapData("Map2", "stage2_0311.json", "stage");
+			LoadMapData("Map2", "stage2_0323.json", "stage");
 		}
 		if(GetStageData("Stage2") == nullptr)
 		{
-			LoadStageData("Stage2", "stage2_0319.json", "stage");
+			LoadStageData("Stage2", "stage2_0323.json", "stage");
 		}
 	}
 	else if(stageId == "Stage3")
 	{
 		if(GetMapData("Map3") == nullptr)
 		{
-			LoadMapData("Map3", "stage3_0322.json", "stage");
+			LoadMapData("Map3", "stage3_0323.json", "stage");
 		}
 		if(GetStageData("Stage3") == nullptr)
 		{
-			LoadStageData("Stage3", "stage3_0322.json", "stage");
+			LoadStageData("Stage3", "stage3_0323.json", "stage");
 		}
 	}
 	else
@@ -426,13 +426,13 @@ bool ApplicationGlobal::Init()
 
 	// マップ用
 	LoadMapData("Map1", "stage1_0319x.json", "stage");	// 1ステージ目
-	LoadMapData("Map2", "stage2_0311.json", "stage");	// 2ステージ目
-	LoadMapData("Map3", "stage3_0322.json", "stage");	// 3ステージ目
+	LoadMapData("Map2", "stage2_0323.json", "stage");	// 2ステージ目
+	LoadMapData("Map3", "stage3_0323.json", "stage");	// 3ステージ目
 
 	//マーカー用
 	LoadStageData("Stage1", "stage1_0319x.json", "stage"); // 1ステージ目
-	LoadStageData("Stage2", "stage2_0319.json", "stage");     // 2ステージ目
-	LoadStageData("Stage3", "stage3_0322.json", "stage");     // 3ステージ目
+	LoadStageData("Stage2", "stage2_0323.json", "stage");     // 2ステージ目
+	LoadStageData("Stage3", "stage3_0323.json", "stage");     // 3ステージ目
 
 	SetUseASyncLoadFlag(TRUE);
 

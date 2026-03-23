@@ -485,5 +485,8 @@ private:
 	float progress;
 	
 	SaveData _saveData; // セーブデータのインスタンス
+
+	int _introLogoHandle; // イントロロゴの画像ハンドル	
+	
 };
 

@@ -33,6 +33,7 @@ int WINAPI WinMain(
 	LPSTR lpCmdLine,
 	int nCmdShow
 ) {
+	SetOutApplicationLogValidFlag(false);
 	// メモリリークチェック開始
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 

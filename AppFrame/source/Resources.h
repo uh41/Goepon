@@ -69,12 +69,14 @@ namespace ui
   inline constexpr const char* Dash_Icon_BK = "res/UI/Dash_Icon_BK.png";
   inline constexpr const char* Deguti = "res/UI/Deguti.png";
   inline constexpr const char* DegutiBK = "res/UI/DegutiBK.png";
+  inline constexpr const char* GameOver_logo = "res/UI/GameOver_logo.png";
   inline constexpr const char* Gameclear = "res/UI/Gameclear.png";
   inline constexpr const char* Gamestart = "res/UI/Gamestart.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";
   inline constexpr const char* Mokuhyou = "res/UI/Mokuhyou.png";
+  inline constexpr const char* Staffroll_config = "res/UI/Staffroll_config.png";
   inline constexpr const char* TailAtacck = "res/UI/TailAtacck.png";
   inline constexpr const char* Tanubito_config = "res/UI/Tanubito_config.png";
   inline constexpr const char* Tanuki_config = "res/UI/Tanuki_config.png";
@@ -143,7 +145,7 @@ namespace ef
 namespace mv1
 {
   inline constexpr const char* SK_Dog = "res/Dog/SK_Dog.mv1";
-  inline constexpr const char* GameClear_Tanuki = "res/Gameclear/GameClear_Tanuki.mv1";
+  inline constexpr const char* GameClear_Tanuki = "res/GameClear/GameClear_Tanuki.mv1";
   inline constexpr const char* GameOver_Tanuki = "res/Gameover/GameOver_Tanuki.mv1";
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
