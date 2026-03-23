@@ -21,6 +21,15 @@ bool ModeGameClear::Initialize()
 		{
 			s2->Stop();
 		}
+
+		// クリアBGMが鳴っていなければ再生（デバッグ直遷移などの保険）
+		if(auto clearBgm = gGlobal._soundServer->Get("160"))
+		{
+			if(!clearBgm->IsPlay())
+			{
+				clearBgm->Play();
+			}
+		}
 	}
 	return true;
 }
@@ -52,10 +61,21 @@ bool ModeGameClear::Process()
 			}
 		}
 
-		//if(_ownerGame)
-		//{
-		//	ModeServer::GetInstance()->Del(_ownerGame); // ゲームモードを削除
-		//}
+		// 次ステージがある場合のみ、クリアBGMを止める
+		if(gGlobal._soundServer)
+		{
+			StageManager sm;
+			sm.SetStages(gGlobal.GetStageList());
+			const bool hasNextStage = !sm.GetNextStageId(currentStageId).empty();
+
+			if(hasNextStage)
+			{
+				if(auto clearBgm = gGlobal._soundServer->Get("120"))
+				{
+					clearBgm->Stop();
+				}
+			}
+		}
 
 		// 名前"game" で登録されているモードがあれば削除予約
 		ModeBase* existing = ModeServer::GetInstance()->Get("game");

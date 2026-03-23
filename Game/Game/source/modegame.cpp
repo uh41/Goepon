@@ -1866,11 +1866,11 @@ bool ModeGame::Render()
 				}
 			}
 
-			//int key = ApplicationBase::GetInstance()->GetKey();
-			//if(key & PAD_INPUT_12)
-			//{
-			//	DebugRender();
-			//}
+			int key = ApplicationBase::GetInstance()->GetKey();
+			if(key & PAD_INPUT_12)
+			{
+				DebugRender();
+			}
 		}
 	}
 

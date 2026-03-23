@@ -482,6 +482,12 @@ bool ModeGame::StartClearSequence()
 		{
 			s2->Stop();
 		}
+
+		// ゲームクリア演出用
+		if(auto clearBgm = gGlobal._soundServer->Get("160"))
+		{
+			clearBgm->Play();
+		}
 	}
 
 	_isGameClearCinematicActive = true;
@@ -783,7 +789,19 @@ bool ModeGame::StartGameOverSequence()
 	{
 		return true;
 	}
-	
+	if(gGlobal._soundServer)
+	{
+		// 全BGMを停止（既存）
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
+		{
+			s->Stop();
+		}
+		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
+		{
+			s2->Stop();
+		}
+	}
 	_isGameOverCinematicActive  = true;
 	_gameOverCinematicTimer		= 0.0f;
 

@@ -151,6 +151,7 @@ namespace mv1
   inline constexpr const char* Goal = "res/Goal/Goal.mv1";
   inline constexpr const char* makimono_01 = "res/Makimono/makimono_01.mv1";
   inline constexpr const char* SM_Stage1V2 = "res/map/SM_Stage1V2.mv1";
+  inline constexpr const char* SM_Stage3_0323 = "res/map/SM_Stage3_0323.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
@@ -173,6 +174,8 @@ namespace mp3
   inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
   inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
+  inline constexpr const char* GameClear = "res/BGM/GameClear.mp3";
+  inline constexpr const char* GameOver = "res/BGM/GameOver.mp3";
   inline constexpr const char* Prologe = "res/BGM/Prologe.mp3";
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";
