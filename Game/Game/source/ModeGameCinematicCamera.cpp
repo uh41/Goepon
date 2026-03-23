@@ -469,6 +469,21 @@ bool ModeGame::EndIntroSequence()
 
 bool ModeGame::StartClearSequence()
 {
+	if(gGlobal._soundServer)
+	{
+		// 全BGMを停止（既存）
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+
+		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
+		{
+			s->Stop();
+		}
+		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
+		{
+			s2->Stop();
+		}
+	}
+
 	_isGameClearCinematicActive = true;
 	_clearCinematicTimer = 0.0f;
 	_clearSequencePhase = 0; // 0: プレイヤー回転, 1: カメラズーム
@@ -535,6 +550,15 @@ bool ModeGame::StartClearSequence()
 
 	// プレイヤー回転演出を開始
 	StartPlayerRotation();
+
+	if(gGlobal._soundServer)
+	{
+		auto se = gGlobal._soundServer->Get("72");
+		if(se)
+		{
+			se->Play();
+		}
+	}
 
 	return true;
 }
@@ -836,6 +860,15 @@ bool ModeGame::StartGameOverSequence()
 	if(endDist < 180.0f)endDist = 180.0f;
 
 	_cinematicCamera->StartZoom(target, 0.8f, startDist, endDist);
+
+	if(gGlobal._soundServer)
+	{
+		auto se = gGlobal._soundServer->Get("73");
+		if(se)
+		{
+			se->Play();
+		}
+	}
 
 	// ここでズーム開始
 	return true;

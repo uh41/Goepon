@@ -32,17 +32,17 @@ bool ModeOpScenario::Initialize()
 
 	_page =
 	{
-		{ LoadGraph("res/Prologue/1.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/2.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/3.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/4.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/5.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/6.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/7.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/8.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/9.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/10.png"), ""},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/11.png"), ""},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/1.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/2.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/3.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/4.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/5.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/6.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/7.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/8.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/9.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/10.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/11.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 	};
 
 	// �y�[�W�̕\���f�[�^��ݒ�
@@ -57,12 +57,12 @@ bool ModeOpScenario::Initialize()
 	_pageNo = 0;
 	_fadeTimer = 0;
 
-	if(!_page.empty())
-	{
-		_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);
-		_soundServer->Add("voice",_voice);
-		_voice->Play();
-	}
+	//if(!_page.empty())
+	//{
+	//	_se = std::make_shared<soundserver::SoundItemSE>(_page[_pageNo].voiceFile);
+	//	_soundServer->Add("se",_se);
+	//	_se->Play();
+	//}
 
 	if(gGlobal._soundServer)
 	{
@@ -124,7 +124,7 @@ bool ModeOpScenario::Process()
 	{
 		case ModeBase::State::WAIT:
 		{
-			if(trg & PAD_INPUT_2)
+			if(trg & PAD_INPUT_1)
 			{
 				if (_pageNo >= 0 && _pageNo < StCas<int>(_panelData.size()))
 				{
@@ -142,10 +142,10 @@ bool ModeOpScenario::Process()
 					{
 						if (_soundServer)
 						{
-							_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-							_voice = std::make_shared<soundserver::SoundItemVoice>(_page[_pageNo].voiceFile);
-							_soundServer->Add("voice", _voice);
-							_voice->Play();
+							_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+							_se = std::make_shared<soundserver::SoundItemSE>(_page[_pageNo].voiceFile);
+							_soundServer->Add("se", _se);
+							_se->Play();
 						}
 					}
 				}
@@ -156,7 +156,7 @@ bool ModeOpScenario::Process()
 					Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// �t�F�[�h�A�E�g�J�n
 				}
 			}
-			if(trg & PAD_INPUT_1)
+			if(trg & PAD_INPUT_2)
 			{
 				_state = ModeBase::State::FADE_OUT;
 				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);
@@ -179,7 +179,7 @@ bool ModeOpScenario::Process()
 				_soundServer->Clear();
 				_soundServer = nullptr;
 			}
-			_voice = nullptr;
+			_se = nullptr;
 
 			// ���̃��[�h��
 			ModeServer::GetInstance()->Add(NEW ModeGameLoad(), 0, "ModeGameLoad");
@@ -200,8 +200,6 @@ bool ModeOpScenario::Render()
 		DrawGraph(0, 0, _backHandle, TRUE);
 	}
 
-	DrawGraph(ui::MOVE_X, ui::MOVE_Y, _moveHandle, TRUE);
-
 	// �\������Ă���R�}����Ԃɕ`��
 	for(int i = 0; i <= _pageNo && i < StCas<int>(_page.size()); i++)
 	{
@@ -220,6 +218,9 @@ bool ModeOpScenario::Render()
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 	}
+
+	DrawGraph(ui::MOVE_X, ui::MOVE_Y, _moveHandle, TRUE);
+
 	Fade::GetInstance()->Render();	// �t�F�[�h�`��
 	return true;
 }

@@ -164,6 +164,7 @@ namespace mv1
 
 namespace mp3
 {
+  inline constexpr const char* BGM_EndCredits = "res/BGM/BGM_EndCredits.mp3";
   inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
   inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
@@ -192,6 +193,8 @@ namespace mp3
   inline constexpr const char* tanuki_henshinfinish = "res/SE/tanuki_henshinfinish.mp3";
   inline constexpr const char* tanuki_run = "res/SE/tanuki_run.mp3";
   inline constexpr const char* tanuki_walk = "res/SE/tanuki_walk.mp3";
+  inline constexpr const char* wafu_clear = "res/SE/wafu_clear.mp3";
+  inline constexpr const char* wafu_gameover = "res/SE/wafu_gameover.mp3";
   inline constexpr const char* voice1 = "res/Voice/voice1.mp3";
   inline constexpr const char* voice2 = "res/Voice/voice2.mp3";
   inline constexpr const char* voice3 = "res/Voice/voice3.mp3";

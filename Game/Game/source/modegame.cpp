@@ -103,15 +103,29 @@ bool ModeGame::Initialize()
 		}
 	}
 
-	// カウンタ/UI に正しい数を反映
+	int totalTreasureCount = 0;
+	for(auto& tb : _treasureBase)
+	{
+		if(tb) {++totalTreasureCount;}
+	}
+	_treasureTakenCount = 0;
+	_treasureRequiredCount = totalTreasureCount;
+
+	// カウンタ/UI に正しい数を反映（全宝箱数を表示）
 	if(_counterUi)
 	{
-		_counterUi->SetTreasureCount(static_cast<int>(_treasure.size()));
+		_counterUi->SetTreasureCount(_treasureRequiredCount);
 	}
 
 	if(_treasureUi)
 	{
 		_treasureUi->SetTreasureList(_treasureBase);
+	}
+
+	// 宝箱がゼロならゴールを即有効化
+	if(_goal)
+	{
+		_goal->SetCollisionEnabled(_treasureRequiredCount == 0);
 	}
 
 	// ゴール初期化
