@@ -45,19 +45,19 @@ bool Map2::Initialize()
 	_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 
 	// �V���h�E�}�b�v�̐���
-	_iHandleShadowMap = MakeShadowMap(2048, 2048);
+	_iHandleShadowMap = MakeShadowMap(8192, 8192);
 
+	// ライトの方向と色味（暖かめ・控えめ）
+	_mainLight.SetDir(VGet(0.5f, -1.0f, 0.2f)); // 斜め上からの暖かい光（方向は必要に応じ調整）
 
-	_mainLight.SetDir(VGet(-1.0f, -1.0f, 0.5f));
+	// アンビエント（低め・暖色）
+	_mainLight.SetAmbient(VGet(0.02f, 0.015f, 0.01f), 1.0f); // 暖かい弱めの環境光
 
-	// �����i��߁j
-	_mainLight.SetAmbient(VGet(0.05f, 0.03f, 0.02f), 1.0f);
+	// 拡散光（暖色寄りだが強すぎない）
+	_mainLight.SetDiffuse(VGet(0.98f, 0.74f, 0.48f), 1.0f); // 明るさを抑えつつ暖色を強調
 
-	// �g�U���i�I�����W���j
-	_mainLight.SetDiffuse(VGet(1.0f, 0.75f, 0.45f), 1.0f);
-
-	// ���ʔ��ˁi�����ɏ����j
-	_mainLight.SetSpecular(VGet(0.8f, 0.8f, 0.8f), 1.0f);
+	// 鏡面反射（控えめで柔らかく）
+	_mainLight.SetSpecular(VGet(0.35f, 0.30f, 0.25f), 1.0f);
 
 	_mainLight.SetCastShadow(true);
 
@@ -212,67 +212,99 @@ bool Map2::Render()
 {
 	base::Render();
 
-	// 3D��{�ݒ�
-	SetUseZBuffer3D(TRUE);
-	SetWriteZBuffer3D(TRUE);
-	SetUseBackCulling(TRUE);
+	// 3D基本設定
+	SetUseZBuffer3D(true);
+	SetWriteZBuffer3D(true);
+	SetUseBackCulling(true);
 
-	// ���C�g�ݒ�
-	const int extent = 800; // �V���h�E�}�b�v�͈̔�
-	_mainLight.ApplyShadowMap(_iHandleShadowMap, DxlibConverter::VecToDxLib(_cam->GetTarget()), extent);
+	// ライト方向を固定
+	VECTOR lightdir = VGet(1.0f, -10.0f, 0.5f); // より自然な斜め上からの光
 
-	// 2��܂킵�āApath = 0; �V���h�E�}�b�v�ւ̕`��Apath = 1; ���f���̕`��(�V���h�E�K�p�j	
-	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);
-#if 1 // ���s���C�g
-	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f));
+#if 1 // 平行ライト
+	SetGlobalAmbientLight(GetColorF(0.03f, 0.025f, 0.02f, 1.0f)); // 少し明るく
 	ChangeLightTypeDir(lightdir);
 #endif
-#if 0 // �|�C���g���C�g
+#if 0 // ポイントライト
 	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f));
 	ChangeLightTypePoint(VAdd(_pos, VGet(0.50f, 0)), 1000.f, 0.f, 0.005f, 0.f);
 #endif
 
-	// �V���h�E�}�b�v���z�肷�郉�C�g�̕�����Z�b�g
+	// シャドウマップを投射するライトの方向をセット
 	SetShadowMapLightDirection(_iHandleShadowMap, lightdir);
 
-	// �V���h�E�}�b�v�ɕ`�悷��͈͂�ݒ�
-	// �J�����̒����_�𒆐S�ɂ���
-	float lenght = 800.f;
-	DxlibConverter::SetShadowMapDrawArea(
-		_iHandleShadowMap,
-		vec3::VAdd(_cam->GetTarget(), vec3::VGet(-lenght, -1.0f, -lenght)),
-		vec3::VAdd(_cam->GetTarget(), vec3::VGet(lenght, lenght, lenght))
-	);
-	// 2��܂킵�āApath = 0: �V���h�E�}�b�v�ւ̕`��Apath = 1: ���f���́F�`��
+	// シャドウマップの範囲を大幅に縮小（解像度向上のため）
+	const float shadowRange = 800.0f; // 5000 -> 800に変更
+	const float shadowHeight = 400.0f; // 高さ方向の範囲を制限
+	VECTOR shadowCenter = VGet(0.0f, 0.0f, 0.0f); // シャドウマップの中心位置（固定）
+
+	// シャドウマップの描画範囲を設定（Near/Farを適切に）
+	VECTOR shadowMin = VAdd(shadowCenter, VGet(-shadowRange, -shadowHeight * 0.5f, -shadowRange));
+	VECTOR shadowMax = VAdd(shadowCenter, VGet(shadowRange, shadowHeight * 0.5f, shadowRange));
+
+	// DxLibのVECTORをvec3::Vec3に変換してから渡す
+	SetShadowMapDrawArea(_iHandleShadowMap, shadowMin, shadowMax);
+
+	// ライト設定をシャドウマップ用に設定
+	const int extent = 5000; // 5000 -> 800に変更
+	_mainLight.ApplyShadowMap(_iHandleShadowMap, shadowCenter, extent);
+
+	// 2回まわして、path = 0: シャドウマップへの描画、path = 1: モデルの描画
 	for(int path = 0; path < 2; path++)
 	{
 		if(path == 0)
 		{
-			// �V���h�E�}�b�v�ւ̕`�揀��
+			// シャドウマップへの描画開始
 			ShadowMap_DrawSetup(_iHandleShadowMap);
 
-			// �V���h�E�L���X�^�[��`��(�X�J�C�͒ʏ�`���Ȃ�)
-			if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
-			for(auto& block : _vBlockPos)
+			// 地面もシャドウキャスターに追加
+			if(_ground_handle != -1)
 			{
-				MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
-				MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
-				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-				MV1DrawModel(block.modelHandle);
+				auto vertex_num = StCas<int>(_ground_vertex.size());
+				auto index_num = StCas<int>(_ground_index.size());
+
+				// シャドウマップへの描画は、頂点数とインデックス数が3以上必要
+				if(vertex_num >= 3 && index_num >= 3)
+				{
+					auto polygon_num = index_num / 3;
+					DrawPolygonIndexed3D
+					(
+						_ground_vertex.data(),
+						vertex_num,
+						_ground_index.data(),
+						polygon_num,
+						_ground_handle,
+						FALSE
+					);
+				}
+
+				// シャドウキャスター描画
+				if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
+				for(auto& block : _vBlockPos)
+				{
+					MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+					MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+					MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+					MV1DrawModel(block.modelHandle);
+				}
+
+				if(_externalShadowCasters)
+				{
+					_externalShadowCasters();
+				}
 			}
 		}
 		else // path == 1
 		{
-			// �V���h�E�}�b�v�ւ̕`��I��
+			// シャドウマップへの描画終了
 			ShadowMap_DrawEnd();
 
-			// �`��Ɏg�p����V���h�E�}�b�v��ݒ�
+			// 描画に使用するシャドウマップを設定
 			SetUseShadowMap(0, _iHandleShadowMap);
 
-			// ���C�g�ݒ������_���ɓK�p�i�A���r�G���g�E���C�g��ʓ��j
+			// ライト設定を頂点色に適用(アンビエント・ライト反映等)
 			_mainLight.ApplyRenderer();
 
-			// �{�`��p�X�F�}�b�v�E�X�J�C�X�t�B�A�E�u���b�N��`��i�V���h�E�}�b�v���K�p�����j
+			// 本描画パス：マップ・スカイスフィア・ブロック描画(シャドウマップが適用される)
 			if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
 			if(_iHandleSkySphere >= 0) MV1DrawModel(_iHandleSkySphere);
 			for(auto& block : _vBlockPos)
@@ -282,35 +314,23 @@ bool Map2::Render()
 				MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
 				MV1DrawModel(block.modelHandle);
 			}
+
+			// 地面描画
+			if(_ground_handle != -1)
+			{
+				auto vertex_num = StCas<int>(_ground_vertex.size());
+				auto index_num = StCas<int>(_ground_index.size());
+
+				if(vertex_num >= 3 && index_num >= 3)
+				{
+					auto polygon_num = index_num / 3;
+					DrawPolygonIndexed3D(_ground_vertex.data(), vertex_num, _ground_index.data(), polygon_num, _ground_handle, FALSE);
+				}
+			}
 		}
 	}
-	// �V���h�E�}�b�v�̉��
+	// シャドウマップの解除
 	SetUseShadowMap(0, -1);
 
-	if(_ground_handle == -1)
-	{
-		return false;
-	}
-
-	// �n�ʂ�`��
-	auto vertex_num = StCas<int>(_ground_vertex.size());
-	auto index_num = StCas<int>(_ground_index.size());
-
-	// �|���S����1��Ȃ���Ε`�悵�Ȃ�
-	if(3 > vertex_num || 3 > index_num)
-	{
-		return false;
-	}
-	auto polygon_num = index_num / 3;
-	DrawPolygonIndexed3D(_ground_vertex.data(), vertex_num, _ground_index.data(), polygon_num, _ground_handle, FALSE);
-
-	for(auto& block : _vBlockPos)
-	{
-		// �u���b�N���f����`��
-		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
-		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
-		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-		MV1DrawModel(block.modelHandle);
-	}
 	return true;
 }

@@ -133,5 +133,5 @@ void FrameRateController::WaitForNextFrame()
 
 void FrameRateController::RenderFpsDisplay()
 {
-	DrawFormatString(0, 0, GetColor(255, 0, 0), "FPS: %d", _currentFps);
+	//DrawFormatString(0, 0, GetColor(255, 0, 0), "FPS: %d", _currentFps);
 }
