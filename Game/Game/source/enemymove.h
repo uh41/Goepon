@@ -1,3 +1,9 @@
+/*********************************************************************/
+// * \file   enemymove.h
+// * \brief  エネミームーブクラス
+// *
+// * \author 市村義春
+/*********************************************************************/
 #pragma once
 #include "enemybase.h"
 #include "appframe.h"
@@ -17,8 +23,7 @@ public:
 	virtual bool Process();
 	virtual bool Render();
 
-	void SetEnemySensor(std::shared_ptr<EnemySensor> sensor);	// EnemySensorを設定
-	void OnPlayerLost();										// プレイヤー見失い時の処理
+	void OnPlayerLost();	// プレイヤー見失い時の処理
 
 	// 巡回ルートの設定
 	void SetPatrolPoint(const at::vet<vec::Vec3>& point);	// 巡回ポイントの位置を設定
@@ -43,6 +48,7 @@ public:
 	// 初期巡回位置関連（外部から復元するためのAPI）
 	bool HasInitialPatrolIndex() const { return _hasInitialPatrolIndex; }
 	int GetInitialPatrolIndex() const { return _initialPatrolIndex; }
+
 	// 初期インデックスへ patrol コントローラと位置を復元する（Reset 後に呼ぶ）
 	void RestoreInitialPatrolPosition();
 

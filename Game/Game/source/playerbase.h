@@ -34,6 +34,10 @@ public:
 
 	void SetInputDisable(bool disable) { _inputDisabled = disable; } // 入力を無効にする
 	bool IsInputDisabled() const { return _inputDisabled; }		   // 入力が無効かどうかを返す
+
+	// 入力が有効かどうかのゲッターとセッター
+	bool GetInputEnabled() const { return _inputEnabled; }
+	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
 protected:
 
 	//アナログスティック関係
@@ -59,5 +63,6 @@ protected:
 	float _yRotation; // プレイヤーのY軸回転角
 
 	bool _inputDisabled; // 入力を受け付けるかどうか
+	bool _inputEnabled; // 入力が有効かどうか
 };
 

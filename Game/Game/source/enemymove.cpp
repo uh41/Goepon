@@ -1,13 +1,9 @@
 ﻿/*********************************************************************/
-// * \file   enemy.cpp
-// * \brief  エネミークラス
+// * \file   enemymove.cpp
+// * \brief  エネミームーブクラス
 // *
-// * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
-//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
+// * \author 市村義春
 /*********************************************************************/
-
 #include "enemymove.h"
 #include "enemysensor.h"
 #include "enemysoundmanager.h"
@@ -30,8 +26,6 @@ bool EnemyMove::Initialize()
 	// コリジョン半径の設定
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 100.0f;
-
-	_fHp = 30.0f;
 
 	// センサー関連の初期化
 	_detectedPlayer = false;					
@@ -351,12 +345,6 @@ void EnemyMove::ResetTeleport()
 {
 	_waitingTeleport = false;
 	_teleportTimer = 0.0f;
-}
-
-// EnemySensorを設定
-void EnemyMove::SetEnemySensor(std::shared_ptr<EnemySensor> sensor)
-{
-	_enemySensor = sensor;
 }
 
 // プレイヤーが検出範囲外になった時の処理

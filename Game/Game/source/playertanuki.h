@@ -40,9 +40,9 @@ public:
 
 	auto GetDashCount() const { return _dashCount; } // ダッシュ回数を取得するゲッター
 
-	// 入力が有効かどうかのゲッターとセッター
-	bool GetInputEnabled() const { return _inputEnabled; }
-	void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
+	//// 入力が有効かどうかのゲッターとセッター
+	//bool GetInputEnabled() const { return _inputEnabled; }
+	//void SetInputEnabled(bool enabled) { _inputEnabled = enabled; }
 
 	// クリア演出用のモデルへ切り替え
 	bool SetGameClearHandle(const std::string& animName, bool loop); //引数でアニメーション名とループするかどうかを指定
@@ -74,7 +74,7 @@ protected:
 	float _dashRecoverTime; // ダッシュ回復のタイマー
 	bool _dashRecoverActive; // ダッシュ回復がアクティブかどうか
 
-	bool _inputEnabled; // 入力が有効かどうか
+	//bool _inputEnabled; // 入力が有効かどうか
 
 	bool _transformPlayerButtonDown; // 変身ボタンが押されているかどうか
 	bool _transformPlayerMove; // 変身中に移動しているかどうか

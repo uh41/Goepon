@@ -1,4 +1,10 @@
-﻿#pragma once
+﻿/*********************************************************************/
+// * \file   enemysensor.h
+// * \brief  エネミーセンサークラス
+// *
+// * \author 市村義春
+/*********************************************************************/
+#pragma once
 #include "enemybase.h"
 #include "playerbase.h"
 #include "MapBase.h"
