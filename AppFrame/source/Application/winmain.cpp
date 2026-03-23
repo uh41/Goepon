@@ -50,7 +50,7 @@ int WINAPI WinMain(
 	auto frameRateController = appBase->GetFrameRateController();
 
 	// 1フレームループを組む ----------------------------------------------------------
-	while (ProcessMessage() == 0)		// プログラムが終了するまでループ
+	while (ProcessMessage() == 0 && !appBase->IsExitRequested())		// プログラムが終了するまでループ
 	{
 		frameRateController->BeginFrame();
 

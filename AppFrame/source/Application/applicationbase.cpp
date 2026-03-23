@@ -29,6 +29,7 @@ ApplicationBase::ApplicationBase()
 	_gTrg = 0;
 	_serverMode = nullptr;
 	_frameRateController = std::make_unique<FrameRateController>(60.0);  // 追加
+	_requestExit = false;
 }
 
 ApplicationBase::~ApplicationBase()
@@ -116,6 +117,16 @@ bool ApplicationBase::Input()
 	_gRel = (_gKey ^ keyold) & ~_gKey;	// キーのリリース情報生成（離した瞬間しか反応しないキー情報）
 
 	return true;
+}
+
+void ApplicationBase::RequestExit()
+{
+	_requestExit = true;
+}
+
+bool ApplicationBase::IsExitRequested() const
+{
+	return _requestExit;
 }
 
 bool ApplicationBase::Process()

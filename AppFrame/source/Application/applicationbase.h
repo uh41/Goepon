@@ -36,6 +36,10 @@ public:
 	virtual int GetRel() { return _gRel; }
 
 	FrameRateController* GetFrameRateController() { return _frameRateController.get(); }
+
+	void RequestExit();
+	bool IsExitRequested() const;
+
 protected:
 	static	ApplicationBase	*_lp_instance;
 	static  Fade* _fade;
@@ -46,4 +50,6 @@ protected:
 
 	ModeServer* _serverMode;
 	at::upc<FrameRateController> _frameRateController;
+
+	bool _requestExit;
 };

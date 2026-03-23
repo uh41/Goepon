@@ -88,7 +88,7 @@ bool ModeTitle::Initialize()
 		auto bgm = _soundServer->Get("102");
 		if(bgm)
 		{
-			bgm->Play(); // 追加後に明示的に再生
+			//bgm->Play(); // 追加後に明示的に再生
 		}
 	}
 
@@ -155,6 +155,11 @@ bool ModeTitle::Terminate()
 		}
 	}
 
+	if(_soundServer)
+	{
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+	}
+
 	return true;
 }
 
@@ -209,6 +214,7 @@ bool ModeTitle::Process()
 	}
 
 	// 選択移動
+	MenuItem prevMenu = _menu;
 	if(trg & PAD_INPUT_LEFT)
 	{
 		_menu = MenuItem::Start;
@@ -216,6 +222,17 @@ bool ModeTitle::Process()
 	else if(trg & PAD_INPUT_RIGHT)
 	{
 		_menu = MenuItem::Exit;
+	}
+
+	if(prevMenu != _menu)
+	{
+		if(_soundServer)
+		{
+			_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+			auto se = std::make_shared<soundserver::SoundItemSE>(mp3::UI_Henshin_pon);
+			_soundServer->Add("se_title", se);
+			se->Play();
+		}
 	}
 
 	// �X�e�[�g����
@@ -231,7 +248,11 @@ bool ModeTitle::Process()
 				}
 				else
 				{
-					DxLib_End(); // ゲーム終了
+					ModeServer::GetInstance()->Del(this);
+					if(ApplicationBase::GetInstance())
+					{
+						ApplicationBase::GetInstance()->RequestExit();
+					}
 				}
 			}
 			break;

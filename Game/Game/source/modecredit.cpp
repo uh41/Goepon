@@ -1,5 +1,6 @@
 #include "modecredit.h"
 #include "modeinit.h"
+#include "applicationglobal.h"
 
 ModeCredit::ModeCredit()
 {
@@ -19,6 +20,15 @@ bool ModeCredit::Initialize()
 	if(_handle != -1)
 	{
 		MovieManager::GetInstance()->PlayMovie(_handle);
+
+		if(gGlobal._soundServer)
+		{
+			auto bgm = gGlobal._soundServer->Get("74");
+			if(bgm)
+			{
+				bgm->Play();
+			}
+		}
 	}
 
 	return true;
@@ -30,6 +40,15 @@ bool ModeCredit::Terminate()
 	{
 		MovieManager::GetInstance()->UnloadMovie(_handle);
 		_handle = -1;
+	}
+
+	if(gGlobal._soundServer)
+	{
+		auto bgm = gGlobal._soundServer->Get("74");
+		if(bgm)
+		{
+			bgm->Stop();
+		}
 	}
 	return true;
 }
@@ -67,6 +86,14 @@ bool ModeCredit::Process()
 		{
 			if(!MovieManager::GetInstance()->IsMoviePlaying(_handle))
 			{
+				if(gGlobal._soundServer)
+				{
+					auto bgm = gGlobal._soundServer->Get("74");
+					if(bgm)
+					{
+						bgm->Stop();
+					}
+				}
 				_state = ModeBase::State::FADE_OUT;
 				Fade::GetInstance()->FadeOut(0, 0, 0, FADE_FRAME);	// フェードアウト開始
 			}
