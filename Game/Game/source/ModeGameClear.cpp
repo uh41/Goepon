@@ -10,7 +10,17 @@ bool ModeGameClear::Initialize()
 
 	if(gGlobal._soundServer)
 	{
+		// ‘SBGM‚ð’âŽ~iŠù‘¶j
 		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+
+		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
+		{
+			s->Stop();
+		}
+		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
+		{
+			s2->Stop();
+		}
 	}
 	return true;
 }

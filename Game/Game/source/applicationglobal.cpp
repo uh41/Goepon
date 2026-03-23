@@ -497,6 +497,8 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("63", std::make_shared<soundserver::SoundItemSE>(mp3::UI_Henshin_pon));
 	_soundServer->Add("70", std::make_shared<soundserver::SoundItemSE>(mp3::UI_Itemget));
 	_soundServer->Add("71", std::make_shared<soundserver::SoundItemSE>(mp3::UI_savepoint));
+	_soundServer->Add("72", std::make_shared<soundserver::SoundItemSE>(mp3::wafu_clear));
+	_soundServer->Add("73", std::make_shared<soundserver::SoundItemSE>(mp3::wafu_gameover));
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
