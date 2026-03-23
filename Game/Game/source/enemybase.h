@@ -75,6 +75,8 @@ public:
 	void SetEffect(at::spc<EffectBase> effect) { _effect = effect; }
 	void SetStunEffect(at::spc<EffectBase> effect) {_stunEffect = effect;}
 
+	void ResetStunEffect(); // スタンエフェクトのリセット
+
 	// センサーが追跡中かどうか
 	bool IsPlayerChasing() const; 
 

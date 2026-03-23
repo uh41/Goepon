@@ -802,6 +802,30 @@ void EnemyBase::UpdateMovingToSound()
 	_status = STATUS::WALK;
 }
 
+void EnemyBase::ResetStunEffect()
+{
+	// エフェクトが再生中なら停止
+	if(_stunEffect)
+	{
+		_stunEffect->StopPlaying();
+	}
+
+	// スタン状態・無敵状態をクリアして、アニメーションを停止
+	_isInvincible = false;
+	_attachStage = 0;
+	_stanTimer = 0.0f;
+
+	// センサーを有効化して検出状態もリセット（復帰時に検知が残らないように）
+	if(_enemySensor)
+	{
+		_enemySensor->SetSensorEnabled(true);
+		_enemySensor->ResetDetection();
+	}
+
+	// 必要ならダメージ終了時の処理も実行
+	OnDamageEnd();
+}
+
 // 計算処理
 bool EnemyBase::Process()
 {
