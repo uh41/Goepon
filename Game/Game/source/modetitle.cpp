@@ -249,6 +249,10 @@ bool ModeTitle::Process()
 				else
 				{
 					ModeServer::GetInstance()->Del(this);
+					if(ApplicationBase::GetInstance())
+					{
+						ApplicationBase::GetInstance()->RequestExit();
+					}
 				}
 			}
 			break;
