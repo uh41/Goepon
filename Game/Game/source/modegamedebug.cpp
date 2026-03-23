@@ -96,23 +96,23 @@ bool ModeGame::DebugProcess()
 	int key = ApplicationMain::GetInstance()->GetKey();
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 	// ESCキーでメニューを開く
-	if(trg & PAD_INPUT_9)
-	{
-		ModeMenu* modemenu = NEW ModeMenu();
-		// ModeGameより上のレイヤーにメニューを登録する
-		ModeServer::GetInstance()->Add(modemenu, 99, "menu");
-		// オーナーにこの ModeGame を設定
-		modemenu->SetOwner(this);
-		// ModeMenuにメニュー項目を追加する
-		modemenu->Add(NEW MenuItemViewCollision(this, "ViewCollision"));
-		modemenu->Add(NEW MenuItemUseCollision(this, "UseCollision"));
-		modemenu->Add(NEW MenuItemViewCameraInfo(this, "ViewCameraInfo"));
-		modemenu->Add(NEW MenuItemLaunchEffekseer(this, "Effekseer"));
-		modemenu->Add(NEW MenuItemViewShadowMap(this, "ShadowMapView"));
-		// カメラ操作モード切替項目を追加
-		modemenu->Add(NEW MenuItemCameraControlMode(this, "CameraControlMode"));
-		modemenu->Add(NEW MenuItemViewFps(this, "ViewFps"));
-	}
+	//if(trg & PAD_INPUT_9)
+	//{
+	//	ModeMenu* modemenu = NEW ModeMenu();
+	//	// ModeGameより上のレイヤーにメニューを登録する
+	//	ModeServer::GetInstance()->Add(modemenu, 99, "menu");
+	//	// オーナーにこの ModeGame を設定
+	//	modemenu->SetOwner(this);
+	//	// ModeMenuにメニュー項目を追加する
+	//	modemenu->Add(NEW MenuItemViewCollision(this, "ViewCollision"));
+	//	modemenu->Add(NEW MenuItemUseCollision(this, "UseCollision"));
+	//	modemenu->Add(NEW MenuItemViewCameraInfo(this, "ViewCameraInfo"));
+	//	modemenu->Add(NEW MenuItemLaunchEffekseer(this, "Effekseer"));
+	//	modemenu->Add(NEW MenuItemViewShadowMap(this, "ShadowMapView"));
+	//	// カメラ操作モード切替項目を追加
+	//	modemenu->Add(NEW MenuItemCameraControlMode(this, "CameraControlMode"));
+	//	modemenu->Add(NEW MenuItemViewFps(this, "ViewFps"));
+	//}
 
 	//
 	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);

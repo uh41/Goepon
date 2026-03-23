@@ -822,8 +822,6 @@ void EnemyBase::ResetStunEffect()
 		_enemySensor->ResetDetection();
 	}
 
-	// 必要ならダメージ終了時の処理も実行
-	OnDamageEnd();
 }
 
 // 計算処理
