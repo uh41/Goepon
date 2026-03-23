@@ -2,12 +2,8 @@
 // * \file   enemy.cpp
 // * \brief  エネミークラス
 // *
-// * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
-// *            vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
+// * \author 市村義春
 /*********************************************************************/
-
 #include "enemy.h"
 #include "enemysensor.h"
 
@@ -30,11 +26,9 @@ bool Enemy::Initialize()
 	_fCollisionR = 30.0f;
 	_fCollisionWeight = 100.0f;
 
-	_fHp = 30.0f;
-
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
-	_rotationSpeed = 0.5f;						// 回転速度（調整可能）
-	_moveSpeed = 7.2f;
+	_rotationSpeed = 0.5f;	// 回転速度
+	_moveSpeed = 7.2f;		// 移動速度
 
 	// 整合性のため他は base に委譲済み
 

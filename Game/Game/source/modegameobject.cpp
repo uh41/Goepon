@@ -172,6 +172,12 @@ bool ModeGame::ObjectInitialize()
 		object->Initialize();
 	}
 
+	if(_goal)
+	{
+		_goal->SetVisible(true);           // 描画はする
+		_goal->SetCollisionEnabled(false); // 当たり判定は無効（宝を全部取ったら有効化する）
+	}
+
 	// UI
 	for(auto& ui_base : _uiBase)
 	{

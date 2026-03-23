@@ -30,7 +30,7 @@ protected:
 	int _pageNo;
 	int _backHandle; // 背景のグラフィックハンドル	
 	at::spc<soundserver::SoundServer> _soundServer;
-	at::spc<soundserver::SoundItemVoice> _voice;
+	at::spc<soundserver::SoundItemSE> _se;
 
 	int _moveHandle;
 };

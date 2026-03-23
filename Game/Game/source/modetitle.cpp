@@ -36,11 +36,11 @@ bool ModeTitle::Initialize()
 
 	_menu = MenuItem::Start; // デフォルトは「スタート」
 	// ロゴ落下への初期化
-	_titleX = 30.0f;
+	_titleX = 70.0f;
 	_titleW = 0;
 	_titleH = 0;
 	_titleVY = 0.0f;
-	_titleTargetY = -130.0f;
+	_titleTargetY = 100.0f;
 	_titleLanding = false;
 
 	// タイトルロゴのサイズを取得

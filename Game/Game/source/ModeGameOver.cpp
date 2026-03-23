@@ -85,6 +85,15 @@ bool ModeGameOver::Process()
 	int trg = ApplicationMain::GetInstance()->GetTrg();
 	if(trg & PAD_INPUT_1)
 	{
+		if(gGlobal._soundServer)
+		{
+			auto se = gGlobal._soundServer->Get("73");
+			if(se)
+			{
+				se->Stop();
+			}
+		}
+
 		SaveData sd{};
 		if(SaveManager::TryLoad(sd, SaveManager::GetDefaultPath()))
 		{

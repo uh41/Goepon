@@ -28,13 +28,17 @@ public:
 
 	// デバック用(モデルを表示/非表示)
 	bool IsVisible() const { return _isVisible; }
+	void SetVisible(bool isVisible) { _isVisible = isVisible; }
 
+	void SetCollisionEnabled(bool e) { _collisionEnabled = e; }
+	bool IsCollisionEnabled() const { return _collisionEnabled; }
 
 	MATRIX MakeModelMatrix() const;
 
 protected:
 	int _hitCollisionFrame; // 当たり判定用フレーム
-	int _attachIndex;       // モデルの当たり判定用フレームのアタッチ番号
+	int _attachIndex;       // アタッチインデックス
 	bool _isVisible;        // 表示フラグ
+	bool _collisionEnabled; // 当たり判定有効フラグ
 };
 

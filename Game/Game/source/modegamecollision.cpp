@@ -584,7 +584,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			if (pressedA)
 			{
 				rapidFire->AddCount();
-
+				//player->SetInputEnabled(false);
 				if(player)
 				{
 					player->PlayAnimation("takarabako_open", true);
@@ -610,6 +610,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				{
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
+
+					if(_goal && _treasureTakenCount >= _treasureRequiredCount)
+					{
+						_goal->SetCollisionEnabled(true);
+					}
 
 					if(player)
 					{
@@ -656,6 +661,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					return true;
 				}
 			}
+			/*else 
+			{
+				player->SetInputEnabled(true);
+			}*/
 			// 連打型は複数同時に処理可能なのでcontinue
 			continue;
 		}
@@ -694,6 +703,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
+				//player->SetInputEnabled(true);
 				if(player)
 				{
 					player->PlayAnimation("idle", true);
@@ -737,6 +747,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				TreasureOpeningCameraControl();
 				_isOpeningTreasure = true;
+				//player->SetInputEnabled(false);
 				if(player)
 				{
 					player->PlayAnimation("takarabako_open", true);
@@ -766,6 +777,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				currentTreasure->SetOpen(true);
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
+
+				if(_goal && _treasureTakenCount >= _treasureRequiredCount)
+				{
+					_goal->SetCollisionEnabled(true);
+				}
 
 				if(player)
 				{
@@ -1066,6 +1082,12 @@ bool ModeGame::PlayerToGoalHitCollision(PlayerBase* player, Goal* goal)
 	{
 		return false;
 	}
+
+	if(!goal->IsCollisionEnabled())
+	{
+		return false;
+	}
+
 	// 空中なら処理しない（設計に合わせて維持）
 	if(!player->GetLand())
 	{
