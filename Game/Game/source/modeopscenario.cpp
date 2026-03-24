@@ -75,6 +75,7 @@ bool ModeOpScenario::Initialize()
 		auto bgm = gGlobal._soundServer->Get("110");
 		if(bgm)
 		{
+			bgm->Stop();
 			bgm->Play();
 		}
 	}

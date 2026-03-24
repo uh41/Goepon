@@ -494,7 +494,7 @@ bool PlayerTanuki::Process()
 
 	if(rel & PAD_INPUT_4)
 	{
-		if(_transformPlayerButtonDown && !_transformPlayerMove)
+		if(((rel & PAD_INPUT_3) == 0) && _transformPlayerButtonDown && !_transformPlayerMove)
 		{
 			ModeBase* base = ModeServer::GetInstance()->Get("game");
 			if(base)
@@ -535,7 +535,7 @@ bool PlayerTanuki::Process()
 
 	if(rel & PAD_INPUT_3)
 	{
-		if(_transformPlayerMonoButtonDown && !_transformPlayerMonoMove)
+		if(((rel & PAD_INPUT_4) == 0) && _transformPlayerMonoButtonDown && !_transformPlayerMonoMove)
 		{
 			ModeBase* base = ModeServer::GetInstance()->Get("game");
 			if(base)

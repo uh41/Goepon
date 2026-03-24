@@ -1691,6 +1691,7 @@ bool ModeGame::Process()
 			{
 				_playerTanuki->SetPos(prevActive->GetPos());
 				_playerTanuki->SetDir(prevActive->GetDir());
+				_playerTanuki->SetRotationY(atan2f(-prevActive->GetDir().x, -prevActive->GetDir().z));
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 				_playerTanuki->PlayAnimation("idle", true);
 				_playerTanuki->Process(); // 変身直後の1フレーム更新
