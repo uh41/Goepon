@@ -6,6 +6,9 @@ bool MapBase::Initialize()
 	if(!base::Initialize()) { return false; }
 	_mapName.clear();
 
+	// SkySphereÇÃì«Ç›çûÇ›
+	_iHandleSkySphere = ResourceServer::MV1LoadModel("res/SkySphere/skySphere.mv1");
+
 	// ?V???h?E?}?b?v?????
 	_iHandleShadowMap = MakeShadowMap(8192, 8192);
 
@@ -94,6 +97,83 @@ bool MapBase::Terminate()
 bool MapBase::Process()
 {
 	base::Process();
+
+	auto offset_index = 0;
+	_ground_vertex.clear();
+	_ground_index.clear();
+
+	// ?n??|???S??????_?E?C???f?b?N?X??
+	for(int i = 0; i < GROUND_Z * GROUND_X; i++)
+	{
+		// ?s????v?Z
+		int z = i / StCas<int>(GROUND_X);// ?s
+		int x = i % StCas<int>(GROUND_X);// ??
+
+		// ?I?t?Z?b?g?v?Z
+		auto offset_x = _start_x + StCas<float>(x) * GROUND_POLYGON_SIZE;
+		auto offset_z = _start_z + StCas<float>(z) * GROUND_POLYGON_SIZE;
+
+		// 4???_???
+		for(int j = 0; j < 4; j++)
+		{
+			VERTEX3D vertex;
+			VECTOR base = _ground_pos_list[j];
+
+			base.x += offset_x;
+			base.z += offset_z;
+
+			vertex.pos = base;
+			vertex.norm = _ground_normal;
+			vertex.dif = _diffuse;
+			vertex.spc = _specular;
+			vertex.u = _u_list[j];
+			vertex.v = _v_list[j];
+
+			_ground_vertex.push_back(vertex);
+		}
+
+		// 2????O?p?`??C???f?b?N?X
+		auto index = StCas<unsigned short>(i * 4);
+		_ground_index.push_back(StCas<unsigned short>(index + 0));
+		_ground_index.push_back(StCas<unsigned short>(index + 1));
+		_ground_index.push_back(StCas<unsigned short>(index + 2));
+		_ground_index.push_back(StCas<unsigned short>(index + 2));
+		_ground_index.push_back(StCas<unsigned short>(index + 1));
+		_ground_index.push_back(StCas<unsigned short>(index + 3));
+	}
+
+	// ?u???b?N???u?E??]?E?X?P?[?????
+	for(auto& block : _vBlockPos)
+	{
+		// ???f???n???h???????????X?L?b?v
+		if(block.modelHandle < 0)
+		{
+			continue;
+		}
+		// ??u?E??]?E?X?P?[?????
+		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+
+		// ?R???W???????? transform ??????X?V?i?d?v?j
+		MV1RefreshCollInfo(block.modelHandle, -1);
+	}
+
+	// SkySphere?i?X?P?[???E??u?j???
+	if(_iHandleSkySphere >= 0)
+	{
+		// ??F200?{?i?K?v??l??????j
+		float kSkySphereScale = 200.0f;
+		MV1SetScale(_iHandleSkySphere, VGet(kSkySphereScale, kSkySphereScale, kSkySphereScale));
+
+		// ???_?????????[??????????A?J???????]??????i?????j
+		if(_cam)
+		{
+			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->GetPos()));
+		}
+
+	}
+
 	return true;
 }
 

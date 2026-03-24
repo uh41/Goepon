@@ -1277,7 +1277,7 @@ bool ModeGame::Process()
 	//	{
 	//		ModeServer::GetInstance()->Del(_modeGameLoad);
 	//		_modeGameLoad = nullptr;
-	//	  }
+	//	}
 	//	return true; // 最初のフレームは他の処理をスキップ
 	//}
 
@@ -1804,17 +1804,6 @@ bool ModeGame::Render()
 	auto* map = (_objectServer != nullptr) ? _objectServer->GetMap()   : nullptr;
 	const int shadowMapHandle = (map != nullptr) ? map->GetHandleShadowMap() : -1;
 
-	// シャドウマップが無いなら従来描画
-	if(shadowMapHandle < 0)
-	{
-		// オブジェクトを先に描いても問題ないので順序を安定化
-		if(_objectServer) { _objectServer->Render(); }  // マップ等
-		ObjectRender();                                  // モデル系の描画（ここではエフェクトを含めない）
-		// Effekseer はシャドウの影響を受けない
-		EffekseerManager::GetInstance()->Render();
-		return true;
-	}
-
 	// ---- マップ側の実装に合わせたライト設定(マップと同じ処理)
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);           // ライトの向き
 	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f)); 
@@ -1867,13 +1856,15 @@ bool ModeGame::Render()
 			}
 			ObjectRender();
 
-			// ここから先は影なし
-			SetUseShadowMap(0, -1);
+			// ここから先は影なし（Effekseer 等）
+			//SetUseShadowMap(0, -1);
+
+			// Effekseer（必ず影なしで描く）
 			EffekseerManager::GetInstance()->Render();
 			//xRenderEffects();
 
 			// シャドウ解除（保険）
-			SetUseShadowMap(0, -1);
+			//SetUseShadowMap(0, -1);
 
 			// ゲームオーバー演出（既存）
 			if(_isGameOverCinematicActive)
