@@ -1328,9 +1328,6 @@ bool ModeGame::Process()
 	if (_isIntroActive)
 	{
 		ProcessIntroSequence();
-
-		// イントロ中はプレイヤー入力を無効化（必要に応じて）
-		// ここでプレイヤーの操作フラグを制御できます
 	}
 
 	// カメラ処理
@@ -1905,60 +1902,32 @@ bool ModeGame::Render()
 bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 {
 	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
-	bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
-
-	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
+	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 	if(!hitGoal)
-	{
-		_notGoalFlag = false;
-	}
-
-	// 抑制中は確認を開かない（No直後に乗りっぱなしでも再表示しない）
-	if(_notGoalFlag)
 	{
 		return false;
 	}
 
-	// 踏んだ瞬間に確認モードを開く
-	if(hitGoal && !_goalConfirmOpened)
-	{
-		_goalConfirmOpened = true;
-		_goalConfirmResult = ModeGoalConfirm::Result::None;
+	// 以降のゴール判定を止める（多重開始防止）
+	_isGameClear = true;
 
-		ModeServer::GetInstance()->Add(NEW ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
-		return true;
+	// 旧「確認UI」関連の状態は念のためクリア
+	_goalConfirmOpened = false;
+	_goalConfirmResult = ModeGoalConfirm::Result::None;
+	_notGoalFlag = false;
+
+	// ゴールを踏んだら即クリア演出へ
+	if(!_isGameClearCinematicActive)
+	{
+		if(!StartClearSequence())
+		{
+			// 演出開始に失敗した場合はロックを戻す（詰み防止）
+			_isGameClear = false;
+			return false;
+		}
 	}
 
-	// 確認結果を受けて処理を行う
-	if(_goalConfirmOpened)
-	{
-		if(_goalConfirmResult == ModeGoalConfirm::Result::Yes)
-		{
-			_goalConfirmOpened = false;
-			_goalConfirmResult = ModeGoalConfirm::Result::None;
-
-			/*_isGameClear = true;
-			ModeServer::GetInstance()->Add(NEW ModeGameClear(this), 255, "ModeGameClear");*/
-
-			// クリア演出を開始
-			if (!_isGameClearCinematicActive)
-			{
-				StartClearSequence();
-			}
-			return true;
-		}
-		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
-		{
-			_goalConfirmOpened = false;
-			_goalConfirmResult = ModeGoalConfirm::Result::None;
-
-			// 抑制フラグを立てる（ゴールから離れたら解除される）
-			_notGoalFlag = true;
-		}
-
-	}
-
-	return false;
+	return true;
 }
 
 
