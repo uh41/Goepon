@@ -400,7 +400,7 @@ bool Map::Render()
 			ShadowMap_DrawEnd();
 
 			// 描画に使用するシャドウマップを設定
-			SetUseShadowMap(0, _iHandleShadowMap);
+			//SetUseShadowMap(0, _iHandleShadowMap);
 
 			// ライト設定をレンダラに適用（アンビエント・ライト種別等）
 			_mainLight.ApplyRenderer();
@@ -418,7 +418,7 @@ bool Map::Render()
 		}
 	}
 	// シャドウマップの解除
-	SetUseShadowMap(0, -1);
+	//SetUseShadowMap(0, -1);
 
 	if (_ground_handle == -1)
 	{
