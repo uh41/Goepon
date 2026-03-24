@@ -15,5 +15,6 @@ public:
 
 private:
 	ModeBase* _ownerGame; // 所有しているゲームモードへのポインタ
+
 };
 

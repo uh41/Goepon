@@ -49,7 +49,7 @@ private:
 	float _fusumaY = 0.0f;
 
 	float _fusumaCnt = 0.0f;
-	float _fusumaFrames = 80.0f;
+	float _fusumaFrames = 100.0f;
 
 };
 

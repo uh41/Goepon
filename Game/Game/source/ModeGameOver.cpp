@@ -157,6 +157,7 @@ bool ModeGameOver::Process()
 			return true;
 		}
 
+		// ロードに失敗した場合は、デバッグ用に現在のステージIDを渡してリロードする
 		if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
 		{
 			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, _debugCurrentStageId), 300, "gameoverload");

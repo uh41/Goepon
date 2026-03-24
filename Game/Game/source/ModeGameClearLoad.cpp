@@ -22,7 +22,7 @@ ModeGameClearLoad::~ModeGameClearLoad()
 bool ModeGameClearLoad::Initialize()
 {
 	base::Initialize();
-	_handle = LoadGraph(img::BG_stageclear);
+	_handle = LoadGraph(img::Loading_1start);
 	return true;
 }
 

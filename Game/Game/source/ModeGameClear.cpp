@@ -13,6 +13,9 @@ bool ModeGameClear::Initialize()
 		// 全BGMを停止（既存）
 		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
 
+		_handle = LoadGraph(ui::GameClear);
+
+		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
 		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
 		{
 			s->Stop();
@@ -105,41 +108,14 @@ bool ModeGameClear::Render()
 {
 	base::Render();
 
-	// 背景(半透明に設定)
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BackgroundAlpha);
-	DrawBox
-	(
-		BgLeft, BgTop, BgRight, BgBottom,
-		GetColor(BlackR, BlackG, BlackB),
-		TRUE
-	);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	if(!_handle)
+	{
+		return false;
+	}
 
-	// 枠
-	DrawBox
-	(
-		BgLeft, BgTop, BgRight, BgBottom,
-		GetColor(255, 255, 255),
-		FALSE
-	);
+	int x = 100, y = 0;
 
-	// クリアメッセージ
-	SetFontSize(TitleFontSize);
-	DrawString
-	(
-		TitlePosX, TitlePosY,
-		ClearMessage,
-		GetColor(WhiteR, WhiteG, WhiteB)
-	);
-
-	// ヒントメッセージ
-	SetFontSize(HintFontSize);
-	DrawString
-	(
-		HintPosX, HintPosY,
-		HintMessage,
-		GetColor(HintR, HintG, HintB)
-	);
+	DrawGraph(x, y, _handle, TRUE);
 
 	return true;
 }

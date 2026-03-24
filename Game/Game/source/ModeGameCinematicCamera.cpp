@@ -667,8 +667,8 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 		// プレイヤーの位置にカメラを再配置（必要に応じてオフセットを調整）
 		if(startPlayer)
 		{
-			const vec::Vec3 camDelta = vec3::VSub(_savedCamera->GetPos(), _savedCamera->GetTarget());
-			const vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, -662.0f); // 元のオフセット（必要に応じて調整）
 			_savedCamera->SetTarget(target);
 			_savedCamera->SetPos(vec3::VAdd(target, camDelta));
 		}

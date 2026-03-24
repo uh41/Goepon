@@ -293,6 +293,7 @@ bool ModeTitle::Process()
 	case ModeBase::State::DONE:
 		//ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
 		ModeServer::GetInstance()->Add(NEW ModeOpScenario(), 1, "opscenario");
+		ModeServer::GetInstance()->ProcessInit();
 		ModeServer::GetInstance()->Del(this);
 		break;
 	}
