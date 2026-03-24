@@ -195,6 +195,15 @@ bool ModeGame::TreasureOpeningCameraControl()
 			_savedCamera = _camera;
 			_useCinematicCamera = true;
 			_camera = _cinematicCamera.get();
+
+			// Map 側が保持しているカメラ参照も合わせる（SkySphere/Shadow等のズレ防止）
+			if(_objectServer)
+			{
+				if(auto* map = _objectServer->GetMap())
+				{
+					map->SetCamera(_camera);
+				}
+			}
 		}
 		else
 		{
@@ -234,24 +243,8 @@ bool ModeGame::TreasureOpeningCameraControl()
 
 bool ModeGame::EndCinematicCamera()
 {
-	// シネマティックカメラが使用されていない場合は処理しない
-	if(!_useCinematicCamera || !_cinematicCamera)
-	{
-		return false;
-	}
-
-	// 元のカメラに戻す
-	if(_savedCamera)
-	{
-		_camera = _savedCamera;
-		_savedCamera = nullptr;
-	}
-
-	_useCinematicCamera = false;
-
-	//　シネマティックカメラをリセット
-	_cinematicCamera->StopAll();
-	return true;
+	// 宝箱などの演出終了は「必ずメインカメラへ戻す」
+	return EndCinematicSequence(true);
 }
 
 bool ModeGame::StartIntroSequence()
@@ -674,8 +667,8 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 		// プレイヤーの位置にカメラを再配置（必要に応じてオフセットを調整）
 		if(startPlayer)
 		{
-			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-			vec::Vec3 camDelta = vec3::VGet(0.0f, 1600.0f, -662.0f); // 元のオフセット（必要に応じて調整）
+			const vec::Vec3 camDelta = vec3::VSub(_savedCamera->GetPos(), _savedCamera->GetTarget());
+			const vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 			_savedCamera->SetTarget(target);
 			_savedCamera->SetPos(vec3::VAdd(target, camDelta));
 		}
@@ -683,8 +676,21 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 		// メインカメラに切り替え
 		_camera = _savedCamera;
 
+		// Map 側の参照も戻す
+		if(_objectServer)
+		{
+			if(auto* map = _objectServer->GetMap())
+			{
+				map->SetCamera(_camera);
+			}
+		}
+
+		// 次回の演出開始時に再保存できるようにクリア
+		_savedCamera = nullptr;
 	}
+
 	_useCinematicCamera = false;
+	return true;
 
 	return true;
 }
