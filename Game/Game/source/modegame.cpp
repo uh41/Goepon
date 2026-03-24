@@ -1275,7 +1275,7 @@ bool ModeGame::Process()
 	//	{
 	//		ModeServer::GetInstance()->Del(_modeGameLoad);
 	//		_modeGameLoad = nullptr;
-	//	}
+	//	  }
 	//	return true; // 最初のフレームは他の処理をスキップ
 	//}
 
