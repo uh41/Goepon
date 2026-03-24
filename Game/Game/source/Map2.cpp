@@ -44,23 +44,6 @@ bool Map2::Initialize()
 	_u_list = { 0.0f, 0.0f, 1.0f, 1.0f };
 	_v_list = { 0.0f, 1.0f, 0.0f, 1.0f };
 
-	// �V���h�E�}�b�v�̐���
-	_iHandleShadowMap = MakeShadowMap(8192, 8192);
-
-	// ライトの方向と色味（暖かめ・控えめ）
-	_mainLight.SetDir(VGet(0.5f, -1.0f, 0.2f)); // 斜め上からの暖かい光（方向は必要に応じ調整）
-
-	// アンビエント（低め・暖色）
-	_mainLight.SetAmbient(VGet(0.02f, 0.015f, 0.01f), 1.0f); // 暖かい弱めの環境光
-
-	// 拡散光（暖色寄りだが強すぎない）
-	_mainLight.SetDiffuse(VGet(0.98f, 0.74f, 0.48f), 1.0f); // 明るさを抑えつつ暖色を強調
-
-	// 鏡面反射（控えめで柔らかく）
-	_mainLight.SetSpecular(VGet(0.35f, 0.30f, 0.25f), 1.0f);
-
-	_mainLight.SetCastShadow(true);
-
 	return true;
 }
 
