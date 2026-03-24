@@ -339,7 +339,14 @@ bool Player::Process()
 			anim_name = "idle"; // 元コードに合わせる
 			break;
 		case STATUS::WALK:
-			anim_name = "walk";
+			if(_bAxisUseLock)
+			{
+				anim_name = "tanuhuman_walk_yoko";
+			}
+			else
+			{
+				anim_name = "walk";
+			}
 			break;
 		default:
 			anim_name.clear();
@@ -382,7 +389,14 @@ bool Player::Process()
 			anim_name = "idle";
 			break;
 		case STATUS::WALK:
-			anim_name = "walk";
+			if(_bAxisUseLock)
+			{
+				anim_name = "tanuhuman_walk_yoko";
+			}
+			else
+			{
+				anim_name = "walk";
+			}
 			break;
 
 		default:
