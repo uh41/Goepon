@@ -205,7 +205,33 @@ void EnemyDog::ProcessRandomWalk()
 		if (_dcWaitTimer <= 0.0f)
 		{
 			_isTurnWait = false;
-			_rmWalking = true; // 3) 待機後に歩行開始
+
+			// 目標方向との差分で次アクションを決める
+			float currentAngle = atan2f(_vDir.x, _vDir.z);
+			float targetAngle = atan2f(_rmWalkDir.x, _rmWalkDir.z);
+			float angleDiff = targetAngle - currentAngle;
+			while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+			while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+			const float dirLenSq =
+				_rmWalkDir.x * _rmWalkDir.x +
+				_rmWalkDir.y * _rmWalkDir.y +
+				_rmWalkDir.z * _rmWalkDir.z;
+
+			if (dirLenSq <= 0.0001f)
+			{
+				_status = STATUS::WAIT;
+			}
+			else if (fabsf(angleDiff) <= _rotationSpeed)
+			{
+				// すでに目標方向を向いている = 向き変更後待機が終わった
+				_rmWalking = true;
+			}
+			else
+			{
+				// まだ向いていない = 向き変更前待機が終わった
+				_isDirectionChange = true;
+			}
 		}
 		return;
 	}
@@ -218,19 +244,11 @@ void EnemyDog::ProcessRandomWalk()
 	{
 		SetNewRandomDirection();
 
-		const float dirLenSq =
-			_rmWalkDir.x * _rmWalkDir.x +
-			_rmWalkDir.y * _rmWalkDir.y +
-			_rmWalkDir.z * _rmWalkDir.z;
-
-		if (dirLenSq > 0.0001f)
-		{
-			_isDirectionChange = true;
-		}
-		else
-		{
-			_status = STATUS::WAIT;
-		}
+		// まず待機してから向き変更へ
+		_rmWalking = false;
+		_isTurnWait = true;
+		_dcWaitTimer = DC_WAIT_TIME;
+		_status = STATUS::WAIT;
 		return;
 	}
 
@@ -248,23 +266,12 @@ void EnemyDog::ProcessRandomWalk()
 		}
 		else
 		{
-			// 障害時も同じ遷移：向き変更 -> 待機 -> 歩行
+			// 障害時も同じ遷移：待機 -> 向き変更 -> 待機 -> 歩行
 			SetNewRandomDirection();
-
-			const float dirLenSq =
-				_rmWalkDir.x * _rmWalkDir.x +
-				_rmWalkDir.y * _rmWalkDir.y +
-				_rmWalkDir.z * _rmWalkDir.z;
-
-			if (dirLenSq > 0.0001f)
-			{
-				_isDirectionChange = true;
-			}
-			else
-			{
-				_status = STATUS::WAIT;
-			}
 			_rmWalking = false;
+			_isTurnWait = true;
+			_dcWaitTimer = DC_WAIT_TIME;
+			_status = STATUS::WAIT;
 		}
 	}
 	else
