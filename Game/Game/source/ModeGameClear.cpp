@@ -13,7 +13,7 @@ bool ModeGameClear::Initialize()
 		// 全BGMを停止（既存）
 		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
 
-		_handle = LoadGraph(ui::GameClear);
+		_handle = LoadGraph(ui::Gameclear);
 
 		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
 		if(auto s = gGlobal._soundServer->Get("bgminitialize"))

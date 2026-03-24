@@ -43,6 +43,7 @@ bool EnemyDog::Initialize()
 
 	// 方向転換待機用の初期化
 	_isDirectionChange = false;
+	_isTurnWait = false;
 	_dcWaitTimer = 0.0f;
 
 	// 移動範囲制限の初期化
@@ -109,55 +110,73 @@ bool EnemyDog::Terminate()
 // 新しいランダム方向を設定
 void EnemyDog::SetNewRandomDirection()
 {
-	// ランダムな角度を生成（0～360度）
-	float randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
+	bool found = false;
+	vec::Vec3 selectedDir = vec3::VGet(0.0f, 0.0f, 0.0f);
 
-	// ランダムな距離を設定（50～200の範囲）
-	_rmWalkDistance = 50.0f + (float)(rand() % 151);
-	_rmWalkTraveledDistance = 0.0f;
-
-	// 角度から方向ベクトルを計算
-	vec::Vec3 testDir;
-	testDir.x = sin(randomAngle);
-	testDir.y = 0.0f;
-	testDir.z = cos(randomAngle);
-
-	// 移動先の床の存在を確認
-	vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(testDir, _moveSpeed * 10.0f));
-
-	if (CheckFloorExistence(testPos))
+	for (int i = 0; i < 16; ++i)
 	{
-		// 床がある場合は新しい方向を設定
-		_rmWalkDir = testDir;
-		_rmWalking = true;
+		float randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
+
+		vec::Vec3 testDir;
+		testDir.x = sin(randomAngle);
+		testDir.y = 0.0f;
+		testDir.z = cos(randomAngle);
+
+		vec::Vec3 testPos = vec3::VAdd(_vPos, vec3::VScale(testDir, _moveSpeed * 10.0f));
+
+		// 床の存在と移動範囲内かをチェック
+		if (CheckFloorExistence(testPos) && IsPosInArea(testPos))
+		{
+			selectedDir = testDir;
+			found = true;
+			break;
+		}
+	}
+
+	// 有効な方向が見つかった場合はその方向を設定、見つからなければ移動しない
+	if (found)
+	{
+		_rmWalkDir = selectedDir;
+		_rmWalkDistance = 50.0f + (float)(rand() % 151);
+		_rmWalkTraveledDistance = 0.0f;
+		_rmWalkInterval = 2.0f + (float)(rand() % 31) / 10.0f;
+		_rmWalkTimer = _rmWalkInterval;
 	}
 	else
 	{
-		// 床がない場合は別の方向を試す
-		for (int i = 0; i < 16; i++)
-		{
-			randomAngle = (float)(rand() % 360) * (DX_PI_F / 180.0f);
-			testDir.x = sin(randomAngle);
-			testDir.y = 0.0f;
-			testDir.z = cos(randomAngle);
-
-			testPos = vec3::VAdd(_vPos, vec3::VScale(testDir, _moveSpeed * 10.0f));
-
-			if (CheckFloorExistence(testPos))
-			{
-				_rmWalkDir = testDir;
-				_rmWalking = true;
-				return;
-			}
-		}
-
-		// すべて失敗した場合は待機
-		_rmWalking = false;
+		_rmWalkDir = vec3::VGet(0.0f, 0.0f, 0.0f);
+		_rmWalkDistance = 0.0f;
+		_rmWalkTraveledDistance = 0.0f;
+		_rmWalkInterval = 1.0f;
+		_rmWalkTimer = _rmWalkInterval;
 	}
 
-	// 次の方向変更までの時間をランダムに設定（2～5秒）
-	_rmWalkInterval = 2.0f + (float)(rand() % 31) / 10.0f;
-	_rmWalkTimer = _rmWalkInterval;
+	// 方向決定直後はまだ歩かない（向き変更→待機→歩行のため）
+	_rmWalking = false;
+}
+
+// 目標方向へ徐々に回転。完了時 true
+bool EnemyDog::UpdateTurnToWalkDirection()
+{
+	float currentAngle = atan2f(_vDir.x, _vDir.z);
+	float targetAngle = atan2f(_rmWalkDir.x, _rmWalkDir.z);
+
+	float angleDiff = targetAngle - currentAngle;
+	while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
+	while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
+
+	if (abs(angleDiff) <= _rotationSpeed)
+	{
+		_vDir = _rmWalkDir;
+		return true;
+	}
+
+	float step = (angleDiff > 0.0f) ? _rotationSpeed : -_rotationSpeed;
+	float newAngle = currentAngle + step;
+	_vDir.x = sin(newAngle);
+	_vDir.y = 0.0f;
+	_vDir.z = cos(newAngle);
+	return false;
 }
 
 // ランダムウォークの処理
@@ -165,82 +184,91 @@ void EnemyDog::ProcessRandomWalk()
 {
 	const float deltaTime = 1.0f / 60.0f; // 60FPS
 
-	// 方向転換待機中の処理
+	// 1) 方向転換中（歩かずに向きだけ変える）
 	if (_isDirectionChange)
 	{
-		_dcWaitTimer -= deltaTime;
 		_status = STATUS::WAIT;
-
-		// 待機時間が終了したら新しい方向を設定
-		if (_dcWaitTimer <= 0.0f)
+		if (UpdateTurnToWalkDirection())
 		{
 			_isDirectionChange = false;
-			SetNewRandomDirection();
+			_isTurnWait = true;
+			_dcWaitTimer = DC_WAIT_TIME; // 2) 向き変更後に待機
 		}
 		return;
 	}
 
-	// タイマーを更新
-	_rmWalkTimer -= deltaTime;
-
-	// タイマーが0以下、または目標距離に到達したら待機状態に移行
-	if (_rmWalkTimer <= 0.0f || _rmWalkTraveledDistance >= _rmWalkDistance)
+	// 2) 向き変更後の待機
+	if (_isTurnWait)
 	{
-		// 方向転換前に1秒待機
-		_isDirectionChange = true;
-		_dcWaitTimer = DC_WAIT_TIME;
-		_rmWalking = false;
+		_status = STATUS::WAIT;
+		_dcWaitTimer -= deltaTime;
+		if (_dcWaitTimer <= 0.0f)
+		{
+			_isTurnWait = false;
+			_rmWalking = true; // 3) 待機後に歩行開始
+		}
 		return;
 	}
 
-	// ランダム移動中の場合
+	// 歩行時間タイマー
+	_rmWalkTimer -= deltaTime;
+
+	// 新しい方向へ遷移する条件
+	if (_rmWalkTimer <= 0.0f || _rmWalkTraveledDistance >= _rmWalkDistance)
+	{
+		SetNewRandomDirection();
+
+		const float dirLenSq =
+			_rmWalkDir.x * _rmWalkDir.x +
+			_rmWalkDir.y * _rmWalkDir.y +
+			_rmWalkDir.z * _rmWalkDir.z;
+
+		if (dirLenSq > 0.0001f)
+		{
+			_isDirectionChange = true;
+		}
+		else
+		{
+			_status = STATUS::WAIT;
+		}
+		return;
+	}
+
+	// ランダム移動中
 	if (_rmWalking)
 	{
-		// 移動量を計算
 		vec::Vec3 movement = vec3::VScale(_rmWalkDir, _moveSpeed);
 		vec::Vec3 newPos = vec3::VAdd(_vPos, movement);
 
-		// 床の存在を確認
 		if (CheckFloorExistence(newPos) && IsPosInArea(newPos))
 		{
 			_vPos = newPos;
 			_rmWalkTraveledDistance += _moveSpeed;
-
-			// 徐々に移動方向を向く
-			float currentAngle = atan2f(_vDir.x, _vDir.z);
-			float targetAngle = atan2f(_rmWalkDir.x, _rmWalkDir.z);
-
-			// 角度差を計算（-π から π の範囲に正規化）
-			float angleDiff = targetAngle - currentAngle;
-			while (angleDiff > DX_PI_F) angleDiff -= 2.0f * DX_PI_F;
-			while (angleDiff < -DX_PI_F) angleDiff += 2.0f * DX_PI_F;
-
-			// 回転速度を制限
-			if (abs(angleDiff) > _rotationSpeed)
-			{
-				angleDiff = (angleDiff > 0) ? _rotationSpeed : -_rotationSpeed;
-			}
-
-			// 新しい角度を計算
-			float newAngle = currentAngle + angleDiff;
-			_vDir.x = sin(newAngle);
-			_vDir.z = cos(newAngle);
-
-			// ステータスをWALKに設定
 			_status = STATUS::WALK;
 		}
 		else
 		{
-			// 床がない場合は新しい方向を設定
-			// 方向転換前に1秒待機
-			_isDirectionChange = true;
-			_dcWaitTimer = DC_WAIT_TIME;
+			// 障害時も同じ遷移：向き変更 -> 待機 -> 歩行
+			SetNewRandomDirection();
+
+			const float dirLenSq =
+				_rmWalkDir.x * _rmWalkDir.x +
+				_rmWalkDir.y * _rmWalkDir.y +
+				_rmWalkDir.z * _rmWalkDir.z;
+
+			if (dirLenSq > 0.0001f)
+			{
+				_isDirectionChange = true;
+			}
+			else
+			{
+				_status = STATUS::WAIT;
+			}
 			_rmWalking = false;
 		}
 	}
 	else
 	{
-		// 待機中
 		_status = STATUS::WAIT;
 	}
 }
