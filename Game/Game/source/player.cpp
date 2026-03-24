@@ -62,6 +62,9 @@ bool Player::Initialize()
 
 	_inputDisabled = false; // 入力は初期状態で有効
 
+	_prevAxisUseLock = false;
+	_animName.clear();
+
 	return true;
 }
 
@@ -319,6 +322,43 @@ bool Player::Process()
 		_status = STATUS::WAIT;
 	}
 
+	if(_status == STATUS::WALK && (_bAxisUseLock || (key & PAD_INPUT_6)))
+	{
+		// 既に優先アニメが再生中なら何もしない
+			// 既存アニメ停止
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->Stop(_animId);
+				_animId = -1;
+			}
+			// 優先アニメを再生
+			_animName = "tanuhuman_walk_yoko";
+			_animId = AnimationManager::GetInstance()->Play(_handle, _animName, true);
+			float anim_speed = 0.5f;
+			_fPlayTime += anim_speed;
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			}
+	}
+	else if(_status == STATUS::WALK)
+	{
+		if(_animId != -1)
+		{
+			AnimationManager::GetInstance()->Stop(_animId);
+			_animId = -1;
+		}
+		// 優先アニメを再生
+		_animName = "walk";
+		_animId = AnimationManager::GetInstance()->Play(_handle, _animName, true);
+		float anim_speed = 0.5f;
+		_fPlayTime += anim_speed;
+		if(_animId != -1)
+		{
+			AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+		}
+	}
+
 	if(_status == STATUS::WALK && !(key & PAD_INPUT_6))
 	{
 		UpdateRotation();
@@ -339,7 +379,7 @@ bool Player::Process()
 			anim_name = "idle"; // 元コードに合わせる
 			break;
 		case STATUS::WALK:
-			if(_bAxisUseLock)
+			if(_bAxisUseLock || (key & PAD_INPUT_6))
 			{
 				anim_name = "tanuhuman_walk_yoko";
 			}
@@ -389,7 +429,7 @@ bool Player::Process()
 			anim_name = "idle";
 			break;
 		case STATUS::WALK:
-			if(_bAxisUseLock)
+			if(_bAxisUseLock )
 			{
 				anim_name = "tanuhuman_walk_yoko";
 			}
@@ -419,9 +459,14 @@ bool Player::Process()
 			}
 		}
 	}
-	if(_fPlayTime >= _fTotalTime)
+	if(_fTotalTime > 0.0f && _fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
+	}
+
+	if(_animId != -1)
+	{
+		AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 	}
 
 	return true;

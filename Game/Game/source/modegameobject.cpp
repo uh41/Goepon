@@ -276,6 +276,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = false;
 			_player->SetPos(_playerTanuki->GetPos());
 			_player->SetDir(_playerTanuki->GetDir());
+			_player->SetRotationY(atan2f(-_playerTanuki->GetDir().x, -_playerTanuki->GetDir().z));
 			_player->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
@@ -317,6 +318,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = true;
 			_playerMono->SetPos(_playerTanuki->GetPos());
 			_playerMono->SetDir(_playerTanuki->GetDir());
+			_playerMono->SetRotationY(atan2f(-_playerTanuki->GetDir().x, -_playerTanuki->GetDir().z));
 			_playerMono->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
@@ -428,6 +430,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetDir(_playerMono->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
 			_playerTanuki->SetMakimonoCount(_playerMono->GetMakimonoCount());
+			_playerTanuki->SetRotationY(atan2f(-_playerMono->GetDir().x, -_playerMono->GetDir().z));
 			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
@@ -471,6 +474,7 @@ bool ModeGame::PlayerTransform()
 			{
 				_playerTanuki->SetPos(srcPlayer->GetPos());
 				_playerTanuki->SetDir(srcPlayer->GetDir());
+				_playerTanuki->SetRotationY(atan2f(-srcPlayer->GetDir().x, -srcPlayer->GetDir().z));
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 
 				_playerTanuki->SetMakimonoCount(srcPlayer->GetMakimonoCount());
@@ -1122,6 +1126,7 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 
 					_playerTanuki->SetPos(player->GetPos());
 					_playerTanuki->SetDir(player->GetDir());
+					_playerTanuki->SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 					_playerTanuki->PlayAnimation("goepon_idle", true);
@@ -1154,6 +1159,7 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 
 					_playerTanuki->SetPos(player->GetPos());
 					_playerTanuki->SetDir(player->GetDir());
+					_playerTanuki->SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 					_playerTanuki->PlayAnimation("idle", true);

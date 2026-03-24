@@ -39,5 +39,7 @@ protected:
 	vec::Vec3 _camOffset;
 	vec::Vec3 _camTargetOffset;
 
+	bool _prevAxisUseLock; // 前フレームの十字キー水平入力ロック状態
+	std::string _animName; // 現在再生中のアニメーションの名前
 };
 
