@@ -144,9 +144,12 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_savePointEffect);
 	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
 	_effectBase.emplace_back(_makimonoGetEffect);
+	_particleEffect = std::make_shared<ParticleEffect>();
+	_effectBase.emplace_back(_particleEffect);
 	_goalEffect = std::make_shared<GoalEffect>();
 	_goalEffect->SetGoal(_goal);
 	_effectBase.emplace_back(_goalEffect);
+
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);

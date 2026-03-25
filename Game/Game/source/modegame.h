@@ -64,6 +64,7 @@
 #include "savepointeffect.h"
 #include "makimonogeteffect.h"
 #include "goaleffect.h"
+#include "particleeffect.h"
 
 // 定数定義
 
@@ -327,7 +328,9 @@ protected:
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
 	at::spc<MakimonoGetEffect> _makimonoGetEffect;
+	at::spc<ParticleEffect> _particleEffect;
 	at::spc<GoalEffect> _goalEffect;
+	
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
