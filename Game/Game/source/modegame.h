@@ -326,8 +326,9 @@ protected:
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
 	at::spc<MakimonoGetEffect> _makimonoGetEffect;
-	at::spc<GoalEffect> _goalEffect;
 	at::spc<ParticleEffect> _particleEffect;
+	at::spc<GoalEffect> _goalEffect;
+	
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;

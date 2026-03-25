@@ -8,7 +8,7 @@ ParticleEffect::ParticleEffect()
 bool ParticleEffect::Initialize()
 {
 	base::Initialize();
-	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::EF_Treasureopen, 1.0f);
+	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::EF_Kirakira, 1.0f);
 	_playHandle = -1;
 	_targetPlayer = nullptr;
 	return true;
