@@ -166,6 +166,7 @@ public:
 	void SetLoadComplete(bool b) { _isLoadComplete = b; }
 	bool IsTransformRequested() const;
 	bool IsShowingTanuki() const { return _bShowTanuki; }
+	bool IsTanukiAttackPlaying() const { return _isTanukiAttackPlaying; }
 
 	// カメラ操作公開API（メニューから呼び出すため）
 	void CameraMoveBy(const vec::Vec3& delta);
@@ -359,9 +360,13 @@ protected:
 	int _transformAnimId = -1;
 	bool _isTanukiAttackPlaying = false;
 	int _tanukiAttackAnimId = -1;
+	bool _tanukiReturnPending = false; // タヌキへの戻りが保留されているかどうか
+	float _tanukiReturnTimer = 0.0f;   // タヌキへの戻りが保留されている場合のタイマー
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;
+
+	int _tanukiAttackCount;
 
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
