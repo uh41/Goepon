@@ -26,7 +26,7 @@ bool EnemyDog::Initialize()
 	_fCollisionWeight = 10.0f;
 	
 	// センサー関連の初期化（共通は EnemyBase::Initialize で行われる）
-	_rotationSpeed = 0.2f;                     // 回転速度（調整可能）
+	_rotationSpeed = 0.05f;                     // 回転速度（調整可能）
 	_moveSpeed = 2.0f;
 
 	// 追跡状態初期化（未初期化防止）
@@ -139,7 +139,7 @@ void EnemyDog::SetNewRandomDirection()
 		_rmWalkDir = selectedDir;
 		_rmWalkDistance = 50.0f + (float)(rand() % 151);
 		_rmWalkTraveledDistance = 0.0f;
-		_rmWalkInterval = 2.0f + (float)(rand() % 31) / 10.0f;
+		_rmWalkInterval = 2.5f + (float)(rand() % 31) / 10.0f;
 		_rmWalkTimer = _rmWalkInterval;
 	}
 	else
@@ -147,7 +147,7 @@ void EnemyDog::SetNewRandomDirection()
 		_rmWalkDir = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_rmWalkDistance = 0.0f;
 		_rmWalkTraveledDistance = 0.0f;
-		_rmWalkInterval = 1.0f;
+		_rmWalkInterval = 1.5f;
 		_rmWalkTimer = _rmWalkInterval;
 	}
 
