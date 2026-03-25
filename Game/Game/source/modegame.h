@@ -353,8 +353,8 @@ protected:
 	
 	bool anyDetected;	// プレイヤー検出フラグ
 	bool _bTransCancel;	// 変身キャンセルフラグ
-	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
-	bool _bLandedOnUp;// 上方向に着地したかどうか
+	bool _bResolveOnY;  // Y方向のコリジョン解決を行うかどうか
+	bool _bLandedOnUp;  // 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
 	bool _showMonoPlayer;// モノプレイヤー表示フラグ

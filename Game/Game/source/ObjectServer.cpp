@@ -89,7 +89,7 @@ void ObjectServer::AddObject(ObjectBase* obj)
 		return;
 	}
 
-	// 削除予約されている（追加しない）
+	// 削除予約されている(追加しない)
 	if(std::find(_deleteObj.begin(), _deleteObj.end(), obj) != _deleteObj.end())
 	{
 		return;

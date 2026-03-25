@@ -72,7 +72,7 @@ public:
 	
 	bool EnsureStageDataLoad(const std::string& stageId); // ステージデータがロードされていない場合にロードする関数
 
-	// ステージ管理機能追加
+	// ステージ管理機能
 	const at::vec<std::string>& GetStageList() const { return _stageList; } // ステージ名のリストを取得
 	std::string GetNextStageId(const std::string& currentStageId) const;       // 次のステージ名を取得
 	bool HasNextStage(const std::string& currentStageId) const;                // 次のステージが存在するかどうか

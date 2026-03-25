@@ -255,7 +255,7 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 		return false;
 	}
 
-	// 追加: いずれかが EnemyBase にキャストできてスタン中であれば当たり判定を無視
+	// いずれかが EnemyBase にキャストできてスタン中であれば当たり判定を無視
 	if(auto e1 = dynamic_cast<EnemyBase*>(c1))
 	{
 		if(e1->IsStun()) return false;
@@ -1031,7 +1031,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 
 		if(hit)
 		{
-			// 範囲内の敵をリストに追加（UI表示用）
+			// 範囲内の敵をリストに追加(UI表示用)
 			_enemiesInAttackRange.push_back(enemy.get());
 
 			// 人間状態のみUIを表示（上でたぬきは弾いているのでここでは不要だが二重チェック）

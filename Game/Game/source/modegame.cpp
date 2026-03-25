@@ -29,12 +29,13 @@
 // 初期化
 bool ModeGame::Initialize()
 {
-	_hasRenderOnce = false;
-	/*_requestResetStage = false;*/
-	_requestNextStage  = false;
+	
+	_hasRenderOnce	  = false; // 初回レンダリング前のフラグをリセット
+	_requestNextStage = false; // 次のステージへの遷移要求フラグをリセット
 
 	if(!base::Initialize()) { return false; }
 
+	// EffekseerManager の初期化
 	if(EffekseerManager::GetInstance() && !_effekseerLaunched)
 	{
 		// EffekseerManager の Initialize() は存在する想定
@@ -64,8 +65,7 @@ bool ModeGame::Initialize()
 		if(!_stageManager.SetCurrentStageId(_initialStageId))
 		{
 			// デバッグ出力：指定IDが見つからなかった
-
-			DrawFormatString(10, 20, GetColor(255, 0, 0), "Warning: initial stage id '%s' not found", _initialStageId.c_str());
+			//DrawFormatString(10, 20, GetColor(255, 0, 0), "Warning: initial stage id '%s' not found", _initialStageId.c_str());
 		}
 	}
 
@@ -95,6 +95,7 @@ bool ModeGame::Initialize()
 
 	LoadStageData();// ステージデータ読み込み
 
+	// 宝箱のベクターを宝箱ベースから作成
 	_treasure.clear();
 	for(auto& tb : _treasureBase)
 	{
@@ -176,12 +177,6 @@ bool ModeGame::Initialize()
 		map->SetCamera(_camera);
 	}
 	
-	// 設定
-	//_cinematicCamera->_vPos = vec::Vec3(0.0f, 100.0f, 0.0f);      // 例：初期位置
-	//_cinematicCamera->_vTarget = vec::Vec3(0.0f, 0.0f, 0.0f);     // 例：注視点
-	//_cinematicCamera->_fClipNear = 1.0f;
-	//_cinematicCamera->_fClipFar = 1000.0f;
-	
 	// フラグ初期化
 	// 最初はタヌキ
 	_bShowTanuki = true;
@@ -202,9 +197,7 @@ bool ModeGame::Initialize()
 	_hasSavedCameraState = false;
 
 	_isChengeBgm = false;
-
 	_soundFinish = gGlobal._soundServer->Get("3");
-
 
 	// BGM再生
 	_bgmInitialize = gGlobal._soundServer->Get("bgminitialize");
@@ -222,7 +215,7 @@ bool ModeGame::Initialize()
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
 
-	// イントロ演出の初期化を追加
+	// イントロ演出の初期化
 	_isIntroActive = false;
 	_introButtonPressed = false;
 	_introTimer = 0.0f;
@@ -821,10 +814,10 @@ void ModeGame::ResetEnemyRoot()
 				if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
 				{
 					em->SetPatrolPointInfo(ppInfos);
-					// CaptureInitialTransform は内部で初期インデックスをキャプチャするようにした
+					// CaptureInitialTransform は内部で初期インデックスをキャプチャする
 					em->CaptureInitialTransform();
 
-					// 追加：保存しておいた「初期巡回インデックス」から位置とインデックスを復元する
+					// 保存しておいた「初期巡回インデックス」から位置とインデックスを復元
 					em->RestoreInitialPatrolPosition();
 
 					em->OnPlayerLost();
@@ -1374,7 +1367,7 @@ bool ModeGame::Process()
 
 
 	// オブジェクトサーバー処理
-	_objectServer->ProcessInit(); // 追加・削除予約の確定
+	_objectServer->ProcessInit();
 	_objectServer->Process();
 
 
@@ -1659,7 +1652,7 @@ bool ModeGame::Process()
 		_changeTimeLimit -= dt;
 		if(_changeTimeLimit < 0.0f) _changeTimeLimit = 0.0f;
 
-		// 追加: 2回攻撃時の遅延戻りタイマーを管理
+		// 2回攻撃時の遅延戻りタイマーを管理
 		if(_tanukiReturnPending)
 		{
 			_tanukiReturnTimer -= dt;
