@@ -290,6 +290,7 @@
     <ClCompile Include="source\particleeffect.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\modeGameCinematic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />

@@ -695,33 +695,6 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 	return true;
 }
 
-bool ModeGame::StartPlayerRotation()
-{
-	// ★★★ タヌキプレイヤーのみを対象に回転演出を初期化 ★★★
-	PlayerTanuki* targetPlayer = _playerTanuki.get();
-
-	if(!targetPlayer)
-	{
-		return false; // タヌキプレイヤーが存在しない場合は処理しない
-	}
-
-	// 回転演出の初期化
-	_isPlayerRotating = true;
-	_playerRotationTimer = 0.0f;
-	_playerRotationDuration = 2.0f; // 回転演出の総時間（秒）
-
-	// 現在の回転角度を取得
-	_playerInitialRotation = targetPlayer->GetRotationY();
-
-	// 目標角度: dir.z = 1 の方向 = 0度（正面）
-	_playerTargetRotation = 0.0f;
-
-	// タヌキプレイヤーの操作を無効化
-	targetPlayer->SetInputEnabled(false);
-
-	return true;
-}
-
 bool ModeGame::ProcessPlayerRotation()
 {
 	if(!_isPlayerRotating)
@@ -955,11 +928,26 @@ bool ModeGame::ProcessGameOverSequence()
 	// フェーズ1：倒れた状態のアニメーション(ループ)に切り替える
 	if(_gameOverSequencePhase == 1 && _playerTanuki)
 	{
-		if(!_playerTanuki->IsAnimationPlaying())
+		bool shouldSwitch = false;
+
+		const int animId = _playerTanuki->GetAnimId();
+		if(animId != -1)
+		{
+			const float total = AnimationManager::GetInstance()->GetTotalTime(animId);
+			const float play = AnimationManager::GetInstance()->GetPlayTime(animId);
+
+			// DxLibのアニメ時間は「フレーム相当」のことが多いので、まずは 6.0f くらい前で切替
+			const float kLead = 6.0f;
+
+			if(total > 0.0f && (total - play) <= kLead)
+			{
+				shouldSwitch = true;
+			}
+		}
+
+		if(shouldSwitch || !_playerTanuki->IsAnimationPlaying())
 		{
 			_gameOverSequencePhase = 2;
-
-			// 倒れるアニメーション
 			_playerTanuki->PlayGameOverAnimation("tanuki_taore", true);
 		}
 	}

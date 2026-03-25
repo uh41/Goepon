@@ -389,7 +389,7 @@ bool ApplicationGlobal::EnsureStageDataLoad(const std::string& stageId)
 		// Map2 / map JSON は Init と同じに合わせる（MapとStageでファイル名が異なる実装）
 		if(GetMapData("Map2") == nullptr)
 		{
-			LoadMapData("Map2", "stage2_0325w.json", "stage");
+			LoadMapData("Map2", "stage2_0325.json", "stage");
 		}
 		if(GetStageData("Stage2") == nullptr)
 		{
