@@ -112,9 +112,6 @@
     <ClCompile Include="source\charabase.cpp">
       <Filter>ソースファイル\モードゲーム\キャラベース</Filter>
     </ClCompile>
-    <ClCompile Include="source\charashadow.cpp">
-      <Filter>ソースファイル\モードゲーム\影</Filter>
-    </ClCompile>
     <ClCompile Include="source\doyaeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\ドヤエフェクト</Filter>
     </ClCompile>
@@ -290,6 +287,7 @@
     <ClCompile Include="source\treasureopen.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
+    <ClCompile Include="source\modeGameCinematic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -439,9 +437,6 @@
     </ClInclude>
     <ClInclude Include="source\charabase.h">
       <Filter>ヘッダーファイル\モードゲーム\キャラベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\charashadow.h">
-      <Filter>ヘッダーファイル\モードゲーム\影</Filter>
     </ClInclude>
     <ClInclude Include="source\doyaeffect.h">
       <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\ドヤエフェクト</Filter>
