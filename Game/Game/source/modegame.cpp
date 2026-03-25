@@ -305,6 +305,8 @@ bool ModeGame::Terminate()
 	if(_savePointEffect) { _savePointEffect->Terminate(); _savePointEffect.reset(); }
 	if(_makimonoGetEffect) { _makimonoGetEffect->Terminate(); _makimonoGetEffect.reset(); }
 	if(_goalEffect) { _goalEffect->Terminate(); _goalEffect.reset(); }
+	if (_particleEffect) { _particleEffect->Terminate(); _particleEffect.reset(); }
+	if (_TreasureOpenEffect) { _TreasureOpenEffect->Terminate(); _TreasureOpenEffect.reset(); }
 
 	// チュートリアル
 	for(auto& tutorial : _tutorial)
