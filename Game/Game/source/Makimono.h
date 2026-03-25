@@ -1,9 +1,9 @@
 #pragma once
-#include "effectbase.h"
+#include "charabase.h"
 #include "appframe.h"	
-class Makimono : public EffectBase
+class Makimono : public CharaBase
 {
-	typedef EffectBase base;
+	typedef CharaBase base;
 public:
 	
 	bool Initialize() override;

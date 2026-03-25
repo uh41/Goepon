@@ -52,6 +52,8 @@ bool ModeGame::Initialize()
 	_debugF2KeyPressed  = false;
 	_debugShakeActive   = false;
 
+	_tanukiAttackCount = 0;
+
 	// ステージマネージャーにステージを登録
 	_stageManager.SetStages(gGlobal.GetStageList());
 
@@ -1601,9 +1603,6 @@ bool ModeGame::Process()
 	
 
 	// 3Dサウンド処理
-
-	// 3Dサウンド処理
-
 	if(_sound3D)
 	{
 		// 全ての EnemyBase 系に対して、歩行中のみ3D音を再生する
@@ -1654,11 +1653,58 @@ bool ModeGame::Process()
 	// 変身時間制限処理
 	if(_changeTimeActive)
 	{
-		float dt = 1.0f / 60.0f; // 60FPS想定
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+
+		// 既存の残り時間を減算して保持（他用途と共用）
 		_changeTimeLimit -= dt;
-		// 変更箇所: changeTimeLimit <= 0.0f のブロック内
+		if(_changeTimeLimit < 0.0f) _changeTimeLimit = 0.0f;
+
+		// 追加: 2回攻撃時の遅延戻りタイマーを管理
+		if(_tanukiReturnPending)
+		{
+			_tanukiReturnTimer -= dt;
+			if(_tanukiReturnTimer <= 0.0f)
+			{
+				_tanukiReturnPending = false;
+				_tanukiReturnTimer = 0.0f;
+
+				// 3秒経過でリクエストを立てる
+				_requestedReturnToTanuki = true;
+
+				// 点滅状態をリセット
+				_changeTimeActive = false;
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = true;
+			}
+		}
+
+		// 元の「残り時間に応じた点滅」ロジックを保持しつつ、遅延時は最後の1秒で加速
+		float currentBlinkInterval = _changeBlinkInterval;
+
+		// 既存の閾値で加速（例: 残り <= 2秒 で 2倍速）
+		if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
+		{
+			currentBlinkInterval *= 0.5f;
+		}
+
+		// 2回攻撃の遅延中かつ残り1秒以下なら更に速く点滅させる
+		if(_tanukiReturnPending && _tanukiReturnTimer <= 1.0f)
+		{
+			currentBlinkInterval *= 0.25f; // さらに速く（必要なら調整）
+		}
+
+		// ブリンクタイマー更新（トグル）
+		_changeBlinkTimer += dt;
+		if(_changeBlinkTimer >= currentBlinkInterval)
+		{
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = !_changeBlinkVisible;
+		}
+
+		// 既存: 変身の残り時間がゼロの場合の復帰処理（従来の挙動を維持）
 		if(_changeTimeLimit <= 0.0f)
 		{
+			// 以下は既存の変身解除処理（コピペで元の処理を維持）
 			_changeTimeActive = false;
 			_changeTimeLimit = 0.0f;
 			_changeBlinkTimer = 0.0f;
@@ -1721,26 +1767,6 @@ bool ModeGame::Process()
 				}
 			}
 		}
-		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
-		{
-			// 残り時間に応じて点滅間隔を短くする
-			_changeBlinkTimer += dt;
-
-			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
-			float currentBlinkInterval = _changeBlinkInterval;
-
-			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
-			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
-			{
-				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
-			}
-
-			if(_changeBlinkTimer >= currentBlinkInterval)
-			{
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = !_changeBlinkVisible;
-			}
-		}
 	}
 
 	// ゲームオーバー復帰の円形フェイドイン
@@ -1798,26 +1824,19 @@ bool ModeGame::Render()
 	{
 		if(path == 0)
 		{
-			// --- シャドウマップへ「影を落とすもの」を描く ---
-			ShadowMap_DrawSetup(shadowMapHandle);
-
-			// まずマップ（地形・ブロック）を描く
-			if(_objectServer)
-			{
-				_objectServer->Render(); // Map::Render は「本描画」もやってしまう場合があるので、本当は避けたい
-				// → 下の補足参照。現状最短で動かすために呼びます。
-			}
-
-			// シャドウマップに描画するものをマップ側で指定する方式にする（キャラクターや宝箱などにも描く）
 			if(auto* map = _objectServer->GetMap())
 			{
 				map->SetCamera(_camera);
-
-				// マップのシャドウマップにキャラ/宝箱も描く
-				map->SetExternalShadowCasters([this]()
-				{
-					RenderShadowCastersFromModeGame();
-				});
+				map->SetExternalShadowCasters([this]() 
+					{
+						RenderShadowCastersFromModeGame(); 
+					}
+				);
+			}
+			ShadowMap_DrawSetup(shadowMapHandle);
+			if(_objectServer) 
+			{
+				_objectServer->Render();
 			}
 		}
 		else
@@ -1837,6 +1856,7 @@ bool ModeGame::Render()
 
 			// Effekseer（必ず影なしで描く）
 			EffekseerManager::GetInstance()->Render();
+			//xRenderEffects();
 
 			// シャドウ解除（保険）
 			//SetUseShadowMap(0, -1);

@@ -11,6 +11,7 @@
 #include "player.h"
 #include "appframe.h"
 #include "applicationglobal.h"
+#include "modegame.h"
 
 // 初期化
 bool Player::Initialize()
@@ -109,6 +110,9 @@ bool Player::Process()
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
 	base::Process();
+
+	ModeGame* modeGame = dynamic_cast<ModeGame*>(ModeServer::GetInstance()->Get("game"));
+	bool priorityAttackPlaying = (modeGame && modeGame->IsTanukiAttackPlaying());
 
 	// 処理前の位置を保存（他の当たり判定で参照するため）
 	_vOldPos = _vPos;
@@ -322,16 +326,16 @@ bool Player::Process()
 		_status = STATUS::WAIT;
 	}
 
-	if(_status == STATUS::WALK && (_bAxisUseLock || (key & PAD_INPUT_6)))
+	if(!priorityAttackPlaying)
 	{
-		// 既に優先アニメが再生中なら何もしない
-			// 既存アニメ停止
+		if(_status == STATUS::WALK && (_bAxisUseLock || (key & PAD_INPUT_6)))
+		{
+			// 既存アニメ停止／tanuhuman_walk_yoko 再生（元の処理）
 			if(_animId != -1)
 			{
 				AnimationManager::GetInstance()->Stop(_animId);
 				_animId = -1;
 			}
-			// 優先アニメを再生
 			_animName = "tanuhuman_walk_yoko";
 			_animId = AnimationManager::GetInstance()->Play(_handle, _animName, true);
 			float anim_speed = 0.5f;
@@ -340,22 +344,22 @@ bool Player::Process()
 			{
 				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 			}
-	}
-	else if(_status == STATUS::WALK)
-	{
-		if(_animId != -1)
-		{
-			AnimationManager::GetInstance()->Stop(_animId);
-			_animId = -1;
 		}
-		// 優先アニメを再生
-		_animName = "walk";
-		_animId = AnimationManager::GetInstance()->Play(_handle, _animName, true);
-		float anim_speed = 0.5f;
-		_fPlayTime += anim_speed;
-		if(_animId != -1)
+		else if(_status == STATUS::WALK)
 		{
-			AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->Stop(_animId);
+				_animId = -1;
+			}
+			_animName = "walk";
+			_animId = AnimationManager::GetInstance()->Play(_handle, _animName, true);
+			float anim_speed = 0.5f;
+			_fPlayTime += anim_speed;
+			if(_animId != -1)
+			{
+				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+			}
 		}
 	}
 
@@ -369,93 +373,98 @@ bool Player::Process()
 		PlayerSoundMove();
 	}
 
-	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
+	if(!priorityAttackPlaying)
 	{
-		_animId = -1;
-		std::string anim_name;
-		switch(_status)
+		if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
 		{
-		case STATUS::WAIT:
-			anim_name = "idle"; // 元コードに合わせる
-			break;
-		case STATUS::WALK:
-			if(_bAxisUseLock || (key & PAD_INPUT_6))
+			_animId = -1;
+			std::string anim_name;
+			switch(_status)
 			{
-				anim_name = "tanuhuman_walk_yoko";
+			case STATUS::WAIT:
+				anim_name = "idle";
+				break;
+			case STATUS::WALK:
+				if(_bAxisUseLock || (key & PAD_INPUT_6))
+				{
+					anim_name = "tanuhuman_walk_yoko";
+				}
+				else
+				{
+					anim_name = "walk";
+				}
+				break;
+			default:
+				anim_name.clear();
 			}
-			else
+			if(!anim_name.empty())
 			{
-				anim_name = "walk";
-			}
-			break;
-		default:
-			anim_name.clear();
-		}
-		if(!anim_name.empty())
-		{
-			_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-			_fPlayTime = 0.0f;
-			if(_animId != -1)
-			{
-				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+				_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
+				_fPlayTime = 0.0f;
+				if(_animId != -1)
+				{
+					AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+				}
 			}
 		}
 	}
 
 	// アニメーション時間・アタッチ管理
-	if(old_status == _status)
+	if(!priorityAttackPlaying)
 	{
-		float anim_speed = 0.5f;
-		_fPlayTime += anim_speed;
-		switch(_status)
+		if(old_status == _status)
 		{
-		case STATUS::WAIT:
-			_fPlayTime += (float)(rand() % 10) / 100.0f;
-			break;
-		}
-	}
-	else
-	{
-		if(_animId != -1)
-		{
-			AnimationManager::GetInstance()->Stop(_animId);
-			_animId = -1;
-		}
-
-		std::string anim_name;
-		switch(_status)
-		{
-		case STATUS::WAIT:
-			anim_name = "idle";
-			break;
-		case STATUS::WALK:
-			if(_bAxisUseLock )
-			{
-				anim_name = "tanuhuman_walk_yoko";
-			}
-			else
-			{
-				anim_name = "walk";
-			}
-			break;
-
-		default:
-			anim_name.clear();
-		}
-
-		if(!anim_name.empty())
-		{
-			_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
-			_fPlayTime = 0.0f;
+			float anim_speed = 0.5f;
+			_fPlayTime += anim_speed;
 			switch(_status)
 			{
 			case STATUS::WAIT:
-				_fPlayTime += rand() % 30;
+				_fPlayTime += (float)(rand() % 10) / 100.0f;
 				break;
 			}
+		}
+		else
+		{
 			if(_animId != -1)
 			{
-				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+				AnimationManager::GetInstance()->Stop(_animId);
+				_animId = -1;
+			}
+
+			std::string anim_name;
+			switch(_status)
+			{
+			case STATUS::WAIT:
+				anim_name = "idle";
+				break;
+			case STATUS::WALK:
+				if(_bAxisUseLock)
+				{
+					anim_name = "tanuhuman_walk_yoko";
+				}
+				else
+				{
+					anim_name = "walk";
+				}
+				break;
+			default:
+				anim_name.clear();
+			}
+
+			if(!anim_name.empty())
+			{
+				_animId = AnimationManager::GetInstance()->Play(_handle, anim_name, true);
+				_fPlayTime = 0.0f;
+				switch(_status)
+				{
+				case STATUS::WAIT:
+					_fPlayTime += rand() % 30;
+					break;
+				}
+				if(_animId != -1)
+				{
+					AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+				}
 			}
 		}
 	}
@@ -464,7 +473,7 @@ bool Player::Process()
 		_fPlayTime = 0.0f;
 	}
 
-	if(_animId != -1)
+	if(!priorityAttackPlaying && _animId != -1)
 	{
 		AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 	}

@@ -15,8 +15,6 @@ bool Makimono::Initialize()
 	haveMakimono = false;
 	_isVisible = true;
 	_drawSize = 60.0f;
-	_playHandle = -1;
-	_fCollisionR = 45.0f;
 
 	ModelMatrixSetUp();
 
@@ -26,20 +24,6 @@ bool Makimono::Initialize()
 bool Makimono::Terminate()
 {
 	base::Terminate();
-
-	auto em = EffekseerManager::GetInstance();
-	if(em && _playHandle != -1)
-	{
-		em->StopEffect(_playHandle);
-		_playHandle = -1;
-	}
-
-	if(em && _handle)
-	{
-		em->DeleteEffect(_handle);
-		_handle = -1;
-	}
-
 	haveMakimono = false;
 	_isVisible = false;
 	return true;
