@@ -229,33 +229,33 @@ bool MapBase::Render()
 			// 地面もシャドウキャスターに追加
 			if(_ground_handle != -1)
 			{
-				auto vertex_num = StCas<int>(_ground_vertex.size());
-				auto index_num = StCas<int>(_ground_index.size());
+				//auto vertex_num = StCas<int>(_ground_vertex.size());
+				//auto index_num = StCas<int>(_ground_index.size());
 
-				// シャドウマップへの描画は、頂点数とインデックス数が3以上必要
-				if(vertex_num >= 3 && index_num >= 3)
-				{
-					auto polygon_num = index_num / 3;
-					DrawPolygonIndexed3D
-					(
-						_ground_vertex.data(),
-						vertex_num,
-						_ground_index.data(),
-						polygon_num,
-						_ground_handle,
-						FALSE
-					);
-				}
+				//// シャドウマップへの描画は、頂点数とインデックス数が3以上必要
+				//if(vertex_num >= 3 && index_num >= 3)
+				//{
+				//	auto polygon_num = index_num / 3;
+				//	DrawPolygonIndexed3D
+				//	(
+				//		_ground_vertex.data(),
+				//		vertex_num,
+				//		_ground_index.data(),
+				//		polygon_num,
+				//		_ground_handle,
+				//		FALSE
+				//	);
+				//}
 
-				// シャドウキャスター描画
-				if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
-				for(auto& block : _vBlockPos)
-				{
-					MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
-					MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
-					MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-					MV1DrawModel(block.modelHandle);
-				}
+				//// シャドウキャスター描画
+				//if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
+				//for(auto& block : _vBlockPos)
+				//{
+				//	MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
+				//	MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
+				//	MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
+				//	MV1DrawModel(block.modelHandle);
+				//}
 
 				if(_externalShadowCasters)
 				{
