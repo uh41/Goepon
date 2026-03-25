@@ -100,8 +100,7 @@ namespace ui
   inline constexpr const char* UI_8 = "res/UI/UI_8.png";
   inline constexpr const char* UI_9 = "res/UI/UI_9.png";
   inline constexpr const char* UI_Hito = "res/UI/UI_Hito.png";
-  inline constexpr const char* UI_HitoBK_1 = "res/UI/UI_HitoBK_1.png";
-  inline constexpr const char* UI_HitoBK_2 = "res/UI/UI_HitoBK_2.png";
+  inline constexpr const char* UI_Hito_Makimono_0 = "res/UI/UI_Hito_Makimono_0.png";
   inline constexpr const char* UI_Mono = "res/UI/UI_Mono.png";
   inline constexpr const char* UI_Tanubito_no = "res/UI/UI_Tanubito_no.png";
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
