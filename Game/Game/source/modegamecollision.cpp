@@ -962,13 +962,24 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	// 攻撃アニメ再生中なら入力を受け付けない（終了したら解除）
 	if(_isTanukiAttackPlaying)
 	{
+		// アニメがまだ再生中なら何もしない
 		if(_tanukiAttackAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_tanukiAttackAnimId))
 		{
 			return false;
 		}
 
+		// アニメが終了したタイミングでフラグを解除
 		_isTanukiAttackPlaying = false;
 		_tanukiAttackAnimId = -1;
+
+		// 攻撃による「戻り保留」がある場合はここで実行（アニメ終了後に戻す）
+		if(_tanukiReturnPending)
+		{
+			_tanukiReturnPending = false;
+			RequestReturnToTanukiFromHuman();
+			// 戻し要求を発行したら他処理は不要
+			return false;
+		}
 	}
 
 	int trg = ApplicationMain::GetInstance()->GetTrg();
@@ -1034,7 +1045,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			// 範囲内の敵をリストに追加（UI表示用）
 			_enemiesInAttackRange.push_back(enemy.get());
 
-			// 人間状態のみUIを表示（上でたぬきは弾いているのでここでは不要だが二重チェック）
+			// 人間状態のみUIを表示
 			if(_attackUi && dynamic_cast<PlayerTanuki*>(player) == nullptr)
 			{
 				_attackUi->SetVisible(true);
@@ -1062,14 +1073,15 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	// ヒットした時だけ攻撃アニメ開始＆ロックON
 	if(anyhit)
 	{
+		// 追加仕様:
+		// - 攻撃ヒット時に変身の残り時間を5秒にして点滅を開始（まだ変身中で残り>5秒なら短縮）
+		// - 既に変身中で残り時間が5秒以下（＝点滅中）なら「即戻し」ではなくアニメ終了後に戻す（保留）
 		if(_changeTimeActive)
 		{
-			// 既に変身中なら、残り時間が5秒以下なら即戻す（また、二度目の攻撃で戻す）
 			if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
 			{
-				// UI やフラグ操作は Request 関数に任せる
-				RequestReturnToTanukiFromHuman();
-				return false;
+				// ここでは即戻しせず、アニメ終了を待ってから戻す
+				_tanukiReturnPending = true;
 			}
 			else
 			{
