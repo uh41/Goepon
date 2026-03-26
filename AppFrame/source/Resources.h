@@ -34,6 +34,9 @@ namespace texture
   inline constexpr const char* Particle01 = "res/Texture/Particle01.png";
   inline constexpr const char* Particle02 = "res/Texture/Particle02.png";
   inline constexpr const char* TR_1 = "res/Texture/TR_1.png";
+  inline constexpr const char* TR_10 = "res/Texture/TR_10.png";
+  inline constexpr const char* TR_11 = "res/Texture/TR_11.png";
+  inline constexpr const char* TR_12 = "res/Texture/TR_12.png";
   inline constexpr const char* TR_2 = "res/Texture/TR_2.png";
   inline constexpr const char* TR_3 = "res/Texture/TR_3.png";
   inline constexpr const char* TR_4 = "res/Texture/TR_4.png";
@@ -75,6 +78,7 @@ namespace ui
   inline constexpr const char* GameOver_logo = "res/UI/GameOver_logo.png";
   inline constexpr const char* Gameclear = "res/UI/Gameclear.png";
   inline constexpr const char* Gamestart = "res/UI/Gamestart.png";
+  inline constexpr const char* Gotoexit = "res/UI/Gotoexit.png";
   inline constexpr const char* Item_Makimono = "res/UI/Item_Makimono.png";
   inline constexpr const char* KeyOpen = "res/UI/KeyOpen.png";
   inline constexpr const char* Makimono = "res/UI/Makimono.png";
@@ -144,6 +148,9 @@ namespace ef
   inline constexpr const char* tutorial_3 = "res/Effect/tutorial_3.efkefc";
   inline constexpr const char* tutorial_4 = "res/Effect/tutorial_4.efkefc";
   inline constexpr const char* tutorial_5 = "res/Effect/tutorial_5.efkefc";
+  inline constexpr const char* tutorial_6 = "res/Effect/tutorial_6.efkefc";
+  inline constexpr const char* tutorial_7 = "res/Effect/tutorial_7.efkefc";
+  inline constexpr const char* tutorial_8 = "res/Effect/tutorial_8.efkefc";
 }
 
 namespace mv1
