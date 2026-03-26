@@ -105,10 +105,16 @@ bool ModeGame::Initialize()
 		}
 	}
 
+	// 初期カウント: 長押し型 + 連打型 の両方をカウントする
 	int totalTreasureCount = 0;
 	for(auto& tb : _treasureBase)
 	{
-		if(tb) {++totalTreasureCount;}
+		if(!tb) continue;
+		// 表示中かつ未開放の宝箱のみをクリア条件に含める
+		if(tb->IsVisible() && !tb->IsOpen())
+		{
+			++totalTreasureCount;
+		}
 	}
 	_treasureTakenCount = 0;
 	_treasureRequiredCount = totalTreasureCount;
@@ -124,7 +130,7 @@ bool ModeGame::Initialize()
 		_treasureUi->SetTreasureList(_treasureBase);
 	}
 
-	// 宝箱がゼロならゴールを即有効化
+	// ゴールは「必要個数が0なら有効化」
 	if(_goal)
 	{
 		_goal->SetCollisionEnabled(_treasureRequiredCount == 0);
