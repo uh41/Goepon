@@ -287,9 +287,6 @@
     <ClCompile Include="source\treasureopen.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\particleeffect.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\modeGameCinematic.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -384,9 +381,6 @@
     <ClInclude Include="source\makimonogeteffect.h" />
     <ClInclude Include="source\goaleffect.h" />
     <ClInclude Include="source\treasureopen.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="source\particleeffect.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
   </ItemGroup>
