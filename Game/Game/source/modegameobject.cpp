@@ -286,9 +286,8 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_player.get());
 			_doyaEffect->SetTargetPlayer(_player.get());
 			_nakiEffect->SetTargetPlayer(_player.get());
-			//_aseEffect->StopPlaying();
-			//_aseEffect->SetPlayer(nullptr);
-			_player->Process(); // 変身直後の一フレーム更新
+			_savePointEffect->SetTargetPlayer(_player.get()); // ←追加
+			_player->Process();
 
 			// たぬ人間変身時の処理
 			_changeTimeActive = true;// 時間制言を有効化
@@ -328,9 +327,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_walkEffect->SetPlayerPos(_playerMono.get());
 			_doyaEffect->SetTargetPlayer(_playerMono.get());
 			_nakiEffect->SetTargetPlayer(_playerMono.get());
-			//_aseEffect->StopPlaying();
-			//_aseEffect->SetPlayer(nullptr);
-
+			_savePointEffect->SetTargetPlayer(_playerMono.get());
 			_playerMono->Process(); // 変身直後の一フレーム更新
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 
@@ -439,6 +436,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->Process();
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
+			_savePointEffect->SetTargetPlayer(_playerTanuki.get());
 			auto soundHenshin = gGlobal._soundServer->Get("2");
 			if(soundHenshin && !soundHenshin->IsPlay())
 			{
@@ -496,7 +494,8 @@ bool ModeGame::PlayerTransform()
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
 			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			//_aseEffect->SetPlayer(_playerTanuki.get());
+			_savePointEffect->SetTargetPlayer(_playerTanuki.get()); // ←追加
+
 
 			auto soundFinish = gGlobal._soundServer->Get("3");
 			if(soundFinish && !soundFinish->IsPlay())

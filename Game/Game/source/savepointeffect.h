@@ -20,5 +20,8 @@ protected:
 
 	at::vspc<SavePoint> _savePoint;
 	at::umtc<SavePoint*, int> _savePointEffectHandle; // 各セーブポイントに対応するエフェクトのハンドル
+	at::umtc<SavePoint*, bool> _savePointEffectIsKirakira; // 各セーブポイントに対応する再生中のエフェクトのハンドル
+	int _efSaveHandle; // エフェクトのリソースハンドル
+	int _efKirakiraHandle; // キラキラエフェクトのリソースハンドル
 };
 

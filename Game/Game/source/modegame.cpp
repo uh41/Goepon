@@ -197,6 +197,13 @@ bool ModeGame::Initialize()
 	_findEffect->SetEnemy(_enemyBase);
 	_hatenaEffect->Enemy(_enemyBase);
 
+	if(_savePointEffect)
+	{
+		if(_bShowTanuki) _savePointEffect->SetTargetPlayer(_playerTanuki.get());
+		else if(_showMonoPlayer) _savePointEffect->SetTargetPlayer(_playerMono.get());
+		else _savePointEffect->SetTargetPlayer(_player.get());
+	}
+
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
 	_bCameraControlMode = false;
@@ -736,6 +743,7 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		if(_doyaEffect) _doyaEffect->SetTargetPlayer(_playerTanuki.get());
 		if(_nakiEffect) _nakiEffect->SetTargetPlayer(_playerTanuki.get());
 		if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
+		if(_savePointEffect) _savePointEffect->SetTargetPlayer(_playerTanuki.get()); // ←追加
 	}
 
 	// 敵リストを参照するエフェクトに最新の敵配列を渡す
