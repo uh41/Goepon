@@ -254,6 +254,7 @@ public:
 	bool PlayerToSavePointCollision(PlayerBase* player);
 	void ResetEnemiesToInitialPositions();
 	void ResetEnemyRoot();
+	void SuppressNextSavePointSound();
 
 protected:
 	Camera* _camera;      // メインカメラ
@@ -418,6 +419,7 @@ protected:
 
 	// ロード時間計測用
 	float _loadTimeMs = 0.0f; // ロードにかかった時間（ミリ秒）
+	bool _suppressNextSavePointSound = false;
 
 	// Process内の各処理セクション実行時間計測用（マイクロ秒）
 	float _processCameraMs = 0.0f;
