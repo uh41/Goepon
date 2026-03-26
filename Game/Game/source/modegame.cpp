@@ -633,6 +633,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		// ゲージ進行度を必ずリセット（セーブされていない開放は復元されないようにする）
 		_treasureProgressMap[t.get()] = 0.0f;
 
+		// 連打型宝箱の進行度もリセット（死亡復帰時にセーブ時点へ戻す）
+		if(auto* rapidFire = dynamic_cast<TreasureRapidFire*>(t.get()))
+		{
+			rapidFire->ResetCount();
+		}
 		++tid;
 	}
 
