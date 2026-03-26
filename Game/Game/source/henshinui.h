@@ -1,6 +1,6 @@
 #pragma once
 #include "uibase.h"
-
+#include "Makimono.h"
 namespace henshin
 {
 	static constexpr auto HENSHIN_X = 1400; //1400
@@ -38,10 +38,11 @@ public:
 	void SetShowPlayerMonoUi(bool show) { _showPlayerMonoUi = show; }
 
 protected:
-
-	Select _select;     // 変身UIの選択肢
+	Makimono* _makimono;  // 巻物を取得
+	Select _select;      // 変身UIの選択肢
 	int _handleTanubito; // タヌキ人間UIのグラフィックハンドル
 	int _handleMono;     // モノUIのグラフィックハンドル
+	int _handleNotCg;    // 変身ができないときに表示するUIのグラフィックハンドル
 
 	bool _padInput5Active;	// パッド入力5Aが有効かどうか
 

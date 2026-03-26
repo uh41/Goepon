@@ -10,7 +10,7 @@ bool Makimono::Initialize()
 		return false;
 	}
 
-	_vPos = vec::Vec3{ 0.0f, 0.0f, 0.0f };
+	_vPos = vec::Vec3{ 0.0f, 0.0f,  0.0f };
 	_vDir = vec::Vec3{ 0.0f, 0.0f, -1.0f };
 	haveMakimono = false;
 	_isVisible = true;

@@ -241,6 +241,7 @@ public:
 
 	const at::vec<EnemyBase*>& GetEnemiesInAttackRangees() const { return _enemiesInAttackRange; }
 
+	auto GetPlayerBase() const { return _playerBase; }
 	auto GetPlayer() const { return _player; }
 	auto GetPlayerTanuki() const { return _playerTanuki; }
 	auto GetPlayerMono() const { return _playerMono; }
