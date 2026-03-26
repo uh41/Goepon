@@ -20,7 +20,10 @@ namespace img
   inline constexpr const char* UI_Tanubito = "res/UI_Tanubito.png";
   inline constexpr const char* UI_Tanumono = "res/UI_Tanumono.png";
   inline constexpr const char* cursor = "res/cursor.png";
+  inline constexpr const char* ending_completed1 = "res/ending_completed1.png";
+  inline constexpr const char* ending_completed2 = "res/ending_completed2.png";
   inline constexpr const char* gameoverload = "res/gameoverload.png";
+  inline constexpr const char* oshimai = "res/oshimai.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";
   inline constexpr const char* split_0_0 = "res/split_0_0.png";
   inline constexpr const char* teamlogo = "res/teamlogo.png";
@@ -163,6 +166,8 @@ namespace mv1
   inline constexpr const char* SM_Stage1V2 = "res/map/SM_Stage1V2.mv1";
   inline constexpr const char* SM_Stage3_0323 = "res/map/SM_Stage3_0323.mv1";
   inline constexpr const char* SM_stage1_0301 = "res/map/SM_stage1_0301.mv1";
+  inline constexpr const char* SM_stage1_0326 = "res/map/SM_stage1_0326.mv1";
+  inline constexpr const char* SM_stage1_M = "res/map/SM_stage1_M.mv1";
   inline constexpr const char* SM_stage20303 = "res/map/SM_stage20303.mv1";
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
   inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";

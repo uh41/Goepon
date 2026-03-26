@@ -57,6 +57,8 @@ public:
 
 	void ResetDash();// ダッシュ状態をリセットする関数
 
+	void BlockDashFor(float seconds);// 一定時間ダッシュを禁止
+
 	// デフォルトのモデルに戻す関数
 	bool RestoreDefaultModel(const std::string& animName, bool loop);
 protected:

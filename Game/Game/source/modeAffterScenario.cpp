@@ -31,7 +31,9 @@ bool ModeAfScenario::Initialize()
 
 	_page =
 	{
-		{ LoadGraph("res/Af_Scenario.png"), mp3::UI_Henshin_pon },// 画像読み込み, 音声ファイル
+		{ LoadGraph(img::ending_completed1), mp3::UI_Henshin_pon },// 画像読み込み, 音声ファイル
+		{ LoadGraph(img::ending_completed2), mp3::UI_Henshin_pon },
+		{ LoadGraph(img::oshimai), mp3::UI_Henshin_pon },
 	};
 	_pageNo = 0;
 

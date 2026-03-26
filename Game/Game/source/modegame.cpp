@@ -106,10 +106,16 @@ bool ModeGame::Initialize()
 		}
 	}
 
+	// 初期カウント: 長押し型 + 連打型 の両方をカウントする
 	int totalTreasureCount = 0;
 	for(auto& tb : _treasureBase)
 	{
-		if(tb) {++totalTreasureCount;}
+		if(!tb) continue;
+		// 表示中かつ未開放の宝箱のみをクリア条件に含める
+		if(tb->IsVisible() && !tb->IsOpen())
+		{
+			++totalTreasureCount;
+		}
 	}
 	_treasureTakenCount = 0;
 	_treasureRequiredCount = totalTreasureCount;
@@ -125,7 +131,7 @@ bool ModeGame::Initialize()
 		_treasureUi->SetTreasureList(_treasureBase);
 	}
 
-	// 宝箱がゼロならゴールを即有効化
+	// ゴールは「必要個数が0なら有効化」
 	if(_goal)
 	{
 		_goal->SetCollisionEnabled(_treasureRequiredCount == 0);
@@ -463,6 +469,12 @@ bool ModeGame::Terminate()
 	return true;
 }
 
+void ModeGame::SuppressNextSavePointSound()
+{
+	// 次回セーブポイントでの効果音再生を1回だけ抑制する
+	_suppressNextSavePointSound = true;
+}
+
 void ModeGame::SavePlayer(PlayerBase* player)
 {
 	PlayerBase* p;
@@ -620,6 +632,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		// ゲージ進行度を必ずリセット（セーブされていない開放は復元されないようにする）
 		_treasureProgressMap[t.get()] = 0.0f;
 
+		// 連打型宝箱の進行度もリセット（死亡復帰時にセーブ時点へ戻す）
+		if(auto* rapidFire = dynamic_cast<TreasureRapidFire*>(t.get()))
+		{
+			rapidFire->ResetCount();
+		}
 		++tid;
 	}
 
@@ -1646,9 +1663,7 @@ bool ModeGame::Process()
 	// 変身時間制限処理
 	if(_changeTimeActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
-
-		// 既存の残り時間を減算して保持（他用途と共用）
+		float dt = 1.0f / 60.0f; // 60FPS想定
 		_changeTimeLimit -= dt;
 		if(_changeTimeLimit < 0.0f) _changeTimeLimit = 0.0f;
 
@@ -1697,7 +1712,6 @@ bool ModeGame::Process()
 		// 既存: 変身の残り時間がゼロの場合の復帰処理（従来の挙動を維持）
 		if(_changeTimeLimit <= 0.0f)
 		{
-			// 以下は既存の変身解除処理（コピペで元の処理を維持）
 			_changeTimeActive = false;
 			_changeTimeLimit = 0.0f;
 			_changeBlinkTimer = 0.0f;
@@ -1758,6 +1772,26 @@ bool ModeGame::Process()
 				{
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
+			}
+		}
+		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
+		{
+			// 残り時間に応じて点滅間隔を短くする
+			_changeBlinkTimer += dt;
+
+			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
+			float currentBlinkInterval = _changeBlinkInterval;
+
+			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
+			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
+			{
+				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
+			}
+
+			if(_changeBlinkTimer >= currentBlinkInterval)
+			{
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = !_changeBlinkVisible;
 			}
 		}
 	}

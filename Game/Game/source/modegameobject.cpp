@@ -123,6 +123,7 @@ bool ModeGame::ObjectInitialize()
 	_uiBase.emplace_back(_introUi);
 
 	// エフェクト初期化
+	
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
 	_hensinEffect = std::make_shared<HensinEffect>();
@@ -147,13 +148,9 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_savePointEffect);
 	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
 	_effectBase.emplace_back(_makimonoGetEffect);
-	_particleEffect = std::make_shared<ParticleEffect>();
-	_particleEffect->SetGoal(_goal);
-	_effectBase.emplace_back(_particleEffect);
 	_goalEffect = std::make_shared<GoalEffect>();
 	_goalEffect->SetGoal(_goal);
 	_effectBase.emplace_back(_goalEffect);
-
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
@@ -448,6 +445,10 @@ bool ModeGame::PlayerTransform()
 				soundHenshin->Play();
 			}
 
+			//_playerTanuki->SetInputEnabled(false);
+			//_tanukiReturnPending = true;
+			//_tanukiReturnTimer = 5.0f; // 1秒
+
 			// タイマーが動いてたらリセット
 			_changeTimeActive = false; // 時間制限を無効化
 			_changeTimeLimit = 0.0f;
@@ -489,6 +490,8 @@ bool ModeGame::PlayerTransform()
 				// モノから戻る場合もタヌキの待機アニメーションを再生する
 				_playerTanuki->PlayAnimation("idle", true);
 				_playerTanuki->Process();
+
+				_playerTanuki->BlockDashFor(2.0f);
 			}
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());

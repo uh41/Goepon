@@ -287,9 +287,6 @@
     <ClCompile Include="source\treasureopen.cpp">
       <Filter>ソースファイル</Filter>
     </ClCompile>
-    <ClCompile Include="source\particleeffect.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\modeGameCinematic.cpp" />
     <ClCompile Include="source\IntroUi.cpp" />
   </ItemGroup>

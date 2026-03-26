@@ -74,7 +74,6 @@
     <ClInclude Include="source\nakieffect.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
-    <ClInclude Include="source\particleeffect.h" />
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playermono.h" />
@@ -163,7 +162,6 @@
     <ClCompile Include="source\nakieffect.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
-    <ClCompile Include="source\particleeffect.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\playermono.cpp" />

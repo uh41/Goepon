@@ -962,13 +962,24 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	// 攻撃アニメ再生中なら入力を受け付けない（終了したら解除）
 	if(_isTanukiAttackPlaying)
 	{
+		// アニメがまだ再生中なら何もしない
 		if(_tanukiAttackAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_tanukiAttackAnimId))
 		{
 			return false;
 		}
 
+		// アニメが終了したタイミングでフラグを解除
 		_isTanukiAttackPlaying = false;
 		_tanukiAttackAnimId = -1;
+
+		// 攻撃による「戻り保留」がある場合はここで実行（アニメ終了後に戻す）
+		if(_tanukiReturnPending)
+		{
+			_tanukiReturnPending = false;
+			RequestReturnToTanukiFromHuman();
+			// 戻し要求を発行したら他処理は不要
+			return false;
+		}
 	}
 
 	int trg = ApplicationMain::GetInstance()->GetTrg();
@@ -1034,7 +1045,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			// 範囲内の敵をリストに追加(UI表示用)
 			_enemiesInAttackRange.push_back(enemy.get());
 
-			// 人間状態のみUIを表示（上でたぬきは弾いているのでここでは不要だが二重チェック）
+			// 人間状態のみUIを表示
 			if(_attackUi && dynamic_cast<PlayerTanuki*>(player) == nullptr)
 			{
 				_attackUi->SetVisible(true);
@@ -1062,6 +1073,33 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	// ヒットした時だけ攻撃アニメ開始＆ロックON
 	if(anyhit)
 	{
+		// 追加仕様:
+		// - 攻撃ヒット時に変身の残り時間を5秒にして点滅を開始（まだ変身中で残り>5秒なら短縮）
+		// - 既に変身中で残り時間が5秒以下（＝点滅中）なら「即戻し」ではなくアニメ終了後に戻す（保留）
+		if(_changeTimeActive)
+		{
+			if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
+			{
+				// ここでは即戻しせず、アニメ終了を待ってから戻す
+				_tanukiReturnPending = true;
+			}
+			else
+			{
+				// 変身中で残り時間が5秒より多い場合、攻撃で残り時間を5秒にする（点滅開始）
+				_changeTimeLimit = timelimit::START_TIME_LIMIT;
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = true;
+			}
+		}
+		else
+		{
+			// 変身していなければ、新たに「攻撃による5秒点滅」を開始する
+			_changeTimeActive = true;
+			_changeTimeLimit = timelimit::START_TIME_LIMIT;
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = true;
+		}
+
 		_tanukiAttackAnimId = player->PlayAnimation("shippokougeki", false);
 		auto soundAttack = gGlobal._soundServer->Get("10");
 		if(soundAttack)
@@ -1069,41 +1107,6 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			soundAttack->Play();
 		}
 		_isTanukiAttackPlaying = (_tanukiAttackAnimId != -1);
-
-		if(_isTanukiAttackPlaying && _tanukiAttackAnimId != -1)
-		{
-			float totalSec = AnimationManager::GetInstance()->GetTotalTime(_tanukiAttackAnimId);
-			// 点滅演出用に ModeGame の変数を設定（既存の点滅ロジックを利用）
-			_changeTimeActive = true;
-			_changeTimeLimit = totalSec;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-		}
-		else
-		{
-			// フォールバック：再生時間が取れない場合は短めの点滅を入れておく
-			_changeTimeActive = true;
-			_changeTimeLimit = 0.5f;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-		}
-
-		// 攻撃ヒット回数をカウントし、2回目で人間表示 -> タヌキへ即時戻し要求
-		_tanukiAttackCount++;
-		if(_tanukiAttackCount >= 2)
-		{
-			_tanukiAttackCount = 0;
-
-			// 2回目：3秒の遅延で戻す（点滅は継続）
-			_tanukiReturnPending = true;
-			_tanukiReturnTimer = 3.0f;
-
-			// 点滅用の表示時間を遅延時間に合わせる
-			_changeTimeActive = true;
-			_changeTimeLimit = _tanukiReturnTimer;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-		}
 	}
 
 	return false;
@@ -1253,13 +1256,21 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 				SavePlayer(checkPlayer);
 				_lastSavedPoint = savePoint;
 
-				// 抑制フラグが立っていて、かつ同じセーブポイントなら効果音を再生しない
-				if(!(_suppressSavePoint && _suppressedSavePoint == savePoint))
+				// 先に「一回だけ抑制」フラグを処理する（ゲーム開始直後の誤再生対策）
+				if(_suppressNextSavePointSound)
 				{
-					auto save = gGlobal._soundServer->Get("71");
-					if(save)
+					_suppressNextSavePointSound = false;
+				}
+				else
+				{
+					// 抑制フラグが立っていて、かつ同じセーブポイントなら効果音を再生しない
+					if(!(_suppressSavePoint && _suppressedSavePoint == savePoint))
 					{
-						save->Play();
+						auto save = gGlobal._soundServer->Get("71");
+						if(save)
+						{
+							save->Play();
+						}
 					}
 				}
 			}
