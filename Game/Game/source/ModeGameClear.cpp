@@ -97,8 +97,6 @@ bool ModeGameClear::Process()
 			ModeServer::GetInstance()->Add(new ModeGameClearLoad(nullptr, currentStageId), 100, "gameclearload");
 		}
 
-		// 削除・追加は次フレームの ModeServer::ProcessInit() で実行されるため、
-		// ここでは早期リターンして安全に終了する。
 		return true;
 	}
 	return true;

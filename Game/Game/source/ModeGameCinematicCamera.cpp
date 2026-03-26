@@ -27,7 +27,7 @@ bool ModeGame::DebugCinematicCameraControl()
 		_savedCamera = _camera;
 	}
 
-	// --- F1 : Zoom（既存）---
+	// ズーム処理をする
 	if(CheckHitKey(KEY_INPUT_F1))
 	{
 		if(!_debugF1KeyPressed)
@@ -74,9 +74,9 @@ bool ModeGame::DebugCinematicCameraControl()
 					_cinematicCamera->StartZoom(target, 0.5f, targetDist, endDist);
 				}
 			}
+			// ズーム解除
 			else
 			{
-				// ズーム解除
 				_debugZoomActive = false;
 
 				if(_cinematicCamera)
@@ -97,7 +97,7 @@ bool ModeGame::DebugCinematicCameraControl()
 		_debugF1KeyPressed = false;
 	}
 
-	// --- F2 : Shake（追加）---
+	// カメラを揺らす
 	if(CheckHitKey(KEY_INPUT_F2))
 	{
 		if(!_debugF2KeyPressed)
@@ -117,7 +117,7 @@ bool ModeGame::DebugCinematicCameraControl()
 				_useCinematicCamera = true;
 				_camera = _cinematicCamera.get();
 
-				// 揺れ開始（既存APIを利用）
+				// 揺れ開始
 				const float intensity = 50.0f;   // 揺れ幅（適宜調整）
 				const float durationSec = 0.50f; // 揺れ時間（適宜調整）
 				_cinematicCamera->StartShake(intensity, durationSec);
@@ -413,7 +413,7 @@ bool ModeGame::ProcessIntroSequence()
 		}
 	}
 
-	// 時間経過でイントロ終了（保険）
+	// 時間経過でイントロ終了
 	_introTimer += 1.0f / 60.0f;
 	if(_introTimer >= INTRO_DURATION)
 	{
@@ -438,7 +438,7 @@ bool ModeGame::ProcessIntroSequence()
 
 	return true;
 }
-// EndIntroSequence()関数を追加
+
 bool ModeGame::EndIntroSequence()
 {
 	if(!_isIntroActive)

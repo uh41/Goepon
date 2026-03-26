@@ -241,6 +241,7 @@ public:
 
 	const at::vec<EnemyBase*>& GetEnemiesInAttackRangees() const { return _enemiesInAttackRange; }
 
+	auto GetPlayerBase() const { return _playerBase; }
 	auto GetPlayer() const { return _player; }
 	auto GetPlayerTanuki() const { return _playerTanuki; }
 	auto GetPlayerMono() const { return _playerMono; }
@@ -353,8 +354,8 @@ protected:
 	
 	bool anyDetected;	// プレイヤー検出フラグ
 	bool _bTransCancel;	// 変身キャンセルフラグ
-	bool _bResolveOnY;// Y方向のコリジョン解決を行うかどうか
-	bool _bLandedOnUp;// 上方向に着地したかどうか
+	bool _bResolveOnY;  // Y方向のコリジョン解決を行うかどうか
+	bool _bLandedOnUp;  // 上方向に着地したかどうか
 
 	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
 	bool _showMonoPlayer;// モノプレイヤー表示フラグ

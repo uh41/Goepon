@@ -20,6 +20,7 @@ bool HenshinUi::Initialize()
 {
 	base::Initialize();
 	_handle = LoadGraph(ui::UI_Hito);
+	_handleNotCg = LoadGraph(ui::UI_Hito_Makimono_0);
 	_handleTanubito = LoadGraph(ui::UI_Tanubito_no);
 	_handleMono = LoadGraph(ui::UI_Mono);
 	return true;
@@ -33,6 +34,11 @@ bool HenshinUi::Terminate()
 	{
 		DeleteGraph(_handle);
 		_handle = -1;
+	}
+	if(_handle != -1)
+	{
+		DeleteGraph(_handleNotCg);
+		_handleNotCg = -1;
 	}
 	if(_handleTanubito != -1)
 	{
@@ -120,25 +126,47 @@ bool HenshinUi::Render()
 		mg = StCas<ModeGame*>(_owner);
 	}
 	// 表示側も「変身要求保留中」を考慮して選択表示を抑止
-	bool effectivePad5 = _padInput5Active && !(mg && (mg->IsTransforming() || mg->IsTransformRequested()));
+	// bool effectivePad5 = _padInput5Active && !(mg && (mg->IsTransforming() || mg->IsTransformRequested()));
+
+	bool hasMakimono = false;
+	if(mg)
+	{
+		PlayerBase* currentPlayer = nullptr;
+
+		if(mg->IsShowingTanuki())
+		{
+			currentPlayer = mg->GetPlayerTanuki().get();
+		}
+		else if(mg->IsShowingMono())
+		{
+			currentPlayer = mg->GetPlayerMono().get();
+		}
+		else
+		{
+			currentPlayer = mg->GetPlayer().get();
+		}
+
+		hasMakimono = (currentPlayer != nullptr) && (currentPlayer->GetMakimonoCount() > 0);
+	}
 
 	// タヌビト画像
 	if(_select == Select::TANUBITO)
 	{
+		const int handle = hasMakimono ? _handle : _handleNotCg;
 		if(_handle != -1)
 		{
-			DrawGraph(henshin::HENSHIN_X, henshin::HENSHIN_Y, _handle, TRUE);
+			DrawGraph(henshin::HENSHIN_X, henshin::HENSHIN_Y, handle, TRUE);
 		}
 	}
 
-	if(_showPlayerUi)
+	if(_showPlayerUi && hasMakimono)
 	{
 		if(_handleTanubito != -1)
 		{
 			DrawGraph(henshin::TANUBITO_X, henshin::TANUBITO_Y, _handleTanubito, TRUE);
 		}
 	}
-	if(_showPlayerMonoUi)
+	if(_showPlayerMonoUi && hasMakimono)
 	{
 		if(_handleMono != -1)
 		{

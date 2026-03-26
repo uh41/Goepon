@@ -28,7 +28,7 @@ ApplicationBase::ApplicationBase()
 	_gKey = 0;
 	_gTrg = 0;
 	_serverMode = nullptr;
-	_frameRateController = std::make_unique<FrameRateController>(60.0);  // 追加
+	_frameRateController = std::make_unique<FrameRateController>(60.0);  
 	_requestExit = false;
 }
 

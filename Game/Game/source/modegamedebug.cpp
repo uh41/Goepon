@@ -104,7 +104,7 @@ bool ModeGame::DebugProcess()
 		ModeServer::GetInstance()->Add(modemenu, 99, "menu");
 		// オーナーにこの ModeGame を設定
 		modemenu->SetOwner(this);
-		// ModeMenuにメニュー項目を追加する
+		// ModeMenuにメニュー項目を追加
 		modemenu->Add(NEW MenuItemViewCollision(this, "ViewCollision"));
 		modemenu->Add(NEW MenuItemUseCollision(this, "UseCollision"));
 		modemenu->Add(NEW MenuItemViewCameraInfo(this, "ViewCameraInfo"));
@@ -115,7 +115,6 @@ bool ModeGame::DebugProcess()
 		modemenu->Add(NEW MenuItemViewFps(this, "ViewFps"));
 	}
 
-	//
 	MapBase* _map = (_objectServer ? _objectServer->GetMap() : nullptr);
 
 	// デバッグ機能
@@ -477,7 +476,7 @@ bool ModeGame::DebugRender()
 		DrawString(600, 500, alertMsg, GetColor(255, 0, 0));
 	}
 
-	// --- ここに変身時間表示を追加 ---
+	// 変身残り時間の表示
 	if(_changeTimeActive)
 	{
 		// 点滅制御がある場合は点滅フラグが true のときだけ表示
