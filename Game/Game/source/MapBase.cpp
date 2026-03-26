@@ -189,7 +189,7 @@ bool MapBase::Render()
 
 	// ライト方向を固定
 	VECTOR lightdir = VGet(1.0f, -10.0f, 0.5f); // より自然な斜め上からの光
-
+	_mainLight.SetDir(lightdir);
 #if 1 // 平行ライト
 	SetGlobalAmbientLight(GetColorF(0.03f, 0.025f, 0.02f, 1.0f)); // 少し明るく
 	ChangeLightTypeDir(lightdir);
@@ -202,21 +202,18 @@ bool MapBase::Render()
 	// シャドウマップを投射するライトの方向をセット
 	SetShadowMapLightDirection(_iHandleShadowMap, lightdir);
 
-	// シャドウマップの範囲を大幅に縮小（解像度向上のため）
-	const float shadowRange = 800.0f; // 5000 -> 800に変更
-	const float shadowHeight = 400.0f; // 高さ方向の範囲を制限
-	VECTOR shadowCenter = VGet(0.0f, 0.0f, 0.0f); // シャドウマップの中心位置（固定）
+	// シャドウマップの範囲を大幅に縮小
+	const float shadowRange = 3000.0f;
+	const float shadowHeight = 1200.0f;
+	const auto shadowCenter = _cam->GetTarget();
 
-	// シャドウマップの描画範囲を設定（Near/Farを適切に）
-	VECTOR shadowMin = VAdd(shadowCenter, VGet(-shadowRange, -shadowHeight * 0.5f, -shadowRange));
-	VECTOR shadowMax = VAdd(shadowCenter, VGet(shadowRange, shadowHeight * 0.5f, shadowRange));
-
-	// DxLibのVECTORをvec3::Vec3に変換してから渡す
-	SetShadowMapDrawArea(_iHandleShadowMap, shadowMin, shadowMax);
-
-	// ライト設定をシャドウマップ用に設定
-	const int extent = 5000; // 5000 -> 800に変更
-	_mainLight.ApplyShadowMap(_iHandleShadowMap, shadowCenter, extent);
+	// シャドウマップの範囲を設定
+	DxlibConverter::SetShadowMapDrawArea
+	(
+		_iHandleShadowMap,
+		vec3::VAdd(shadowCenter, vec3::VGet(-shadowRange, -shadowHeight * 0.5f, -shadowRange)),
+		vec3::VAdd(shadowCenter, vec3::VGet(shadowRange, shadowHeight * 0.5f, shadowRange))
+	);
 
 	// 2回まわして、path = 0: シャドウマップへの描画、path = 1: モデルの描画
 	for(int path = 0; path < 2; path++)
@@ -257,6 +254,7 @@ bool MapBase::Render()
 				//	MV1DrawModel(block.modelHandle);
 				//}
 
+				// 外部のシャドウキャスター描画
 				if(_externalShadowCasters)
 				{
 					_externalShadowCasters();
