@@ -885,12 +885,6 @@ bool ModeGame::ObjectRender()
 	SetUseZBuffer3D(FALSE);
 	SetWriteZBuffer3D(FALSE);
 
-	// UIを描画（巻物UIを最初に、その後に残りのUIを描画）
-	if(_treasureUi)
-	{
-		_treasureUi->GetHandleMakimono();
-	}
-
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Render();
