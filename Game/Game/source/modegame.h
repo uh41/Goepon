@@ -64,7 +64,6 @@
 #include "savepointeffect.h"
 #include "makimonogeteffect.h"
 #include "goaleffect.h"
-#include "particleeffect.h"
 
 // 定数定義
 
@@ -80,11 +79,11 @@ namespace GAMEOVER
 	static constexpr float GAMEOVER_CINEMATIC_DURATION = 3.0f; // ゲームオーバー演出の総時間（秒）
 }
 
-constexpr float CHECK_OPEN_TIME = 1.0f; // 宝箱が開くまでの時間（秒）
+constexpr float CHECK_OPEN_TIME = 5.0f; // 宝箱が開くまでの時間（秒）
 
 namespace timelimit
 {
-	static constexpr auto START_TIME_LIMIT = 5.0f; // 制限時間（秒）
+	static constexpr auto START_TIME_LIMIT = 5.0f;	// 制限時間（秒）
 	static constexpr auto MIDDLE_TIME_LIMIT = 2.0f; // 制限時間の半分（秒）
 }
 
@@ -328,7 +327,6 @@ protected:
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
 	at::spc<MakimonoGetEffect> _makimonoGetEffect;
-	at::spc<ParticleEffect> _particleEffect;
 	at::spc<GoalEffect> _goalEffect;
 	
 

@@ -13,7 +13,5 @@ public:
 	virtual bool Render() override;
 
 	void PlayEffect(const vec::Vec3& pos);
-
-
 };
 
