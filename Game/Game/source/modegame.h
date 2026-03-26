@@ -182,6 +182,8 @@ public:
 	bool StartIntroSequence();      // イントロシーケンス開始
 	bool ProcessIntroSequence();    // イントロシーケンスの更新
 	bool EndIntroSequence();        // イントロシーケンス終了
+	void StartSpotLightFadeIn();    // スポットライトフェードイン開始
+
 	// ゲームクリア演出			    
 	bool StartClearSequence();      // クリアシーケンス開始
 	bool ProcessClearSequence();    // クリアシーケンスの更新
@@ -482,6 +484,18 @@ private:
 	float _gameOverCinematicTimer;    // ゲームオーバー演出の経過時間
 	int   _gameOverSequencePhase;     // ゲームオーバー演出のフェーズ管理用変数
 	int   _gameOverDimAlpha;		  // ゲームオーバー演出の暗転アルファ値
+	// ゲームオーバー → ゲーム復帰時のスポットライトフェードイン（円形）
+	bool  _spotFadeInActive = false;
+	float _spotFadeInSec = 0.0f;
+	float _spotFadeInDurationSec = 2.0f; // フェードインの総時間（秒）
+	float _spotFadeInRadius = 0.0f;
+	int   _spotFadeInCx = 0;
+	int   _spotFadeInCy = 0;
+	static constexpr int SPOT_FADE_IN_STEP_DEG = 6;
+
+	void ProcessSpotlightFadeIn();
+	void DrawSpotLightFadeIn() const;
+	bool UpdateSpotLightCenterFromActivePlayer();
 
 	// プレイヤー回転演出用
 	bool _isPlayerRotating = false;		  // プレイヤー回転演出が有効か

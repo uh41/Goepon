@@ -32,6 +32,10 @@ public:
 	bool Process() override;
 	bool Render() override;
 
+	// 通常の自動アニメ有効化無効化
+	void SetStatusAnimationEnabled(bool enabled) { _statusAnimationEnabled = enabled; }
+	bool IsStatusAnimationEnabled() const { return _statusAnimationEnabled; }
+
 	void SetCamera(Camera* cam)  override { _cam = cam; if(_cam) { _camOffset = vec3::VSub(_cam->GetPos(), _vPos); _camTargetOffset = vec3::VSub(_cam->GetTarget(), _vPos); } }
 	bool SoundWalk();// 歩行音の再生
 
@@ -88,5 +92,7 @@ private:
 	int _gameClearModelHandle; // クリア後のモデルハンドル
 	int _gameOverModelHandle; // ゲームオーバー時のモデルハンドル
 
+	// （追加）通常の状態アニメ更新（idle/walk）を行うか
+	bool _statusAnimationEnabled = true;
 };
 

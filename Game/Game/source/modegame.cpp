@@ -1769,8 +1769,9 @@ bool ModeGame::Process()
 		}
 	}
 
+	// ゲームオーバー復帰の円形フェイドイン
+	ProcessSpotlightFadeIn();
 	// BGM変更処理
-
 	ChangeBGM();
 
 	return true;
@@ -1853,9 +1854,6 @@ bool ModeGame::Render()
 			}
 			ObjectRender();
 
-			// ここから先は影なし（Effekseer 等）
-			//SetUseShadowMap(0, -1);
-
 			// Effekseer（必ず影なしで描く）
 			EffekseerManager::GetInstance()->Render();
 			//xRenderEffects();
@@ -1917,6 +1915,9 @@ bool ModeGame::Render()
 	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
 	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
 	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
+
+	// ゲームオーバー復帰時の円形フェードイン
+	DrawSpotLightFadeIn();
 	return true;
 }
 
