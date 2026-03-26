@@ -4,13 +4,22 @@
 SavePointEffect::SavePointEffect()
 {
 	_savePointEffectHandle.clear();
+	_savePointEffectIsKirakira.clear();
+	_efSaveHandle = -1;
+	_efKirakiraHandle = -1;
+	_targetPlayer = nullptr;
 	Initialize();
 }
 
 bool SavePointEffect::Initialize()
 {
 	base::Initialize();
-	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::Savepoint);
+	auto em = EffekseerManager::GetInstance();
+	if(em)
+	{
+		_efSaveHandle = em->LoadEffect(ef::Savepoint);
+		_efKirakiraHandle = em->LoadEffect(ef::EF_Kirakira);
+	}
 	_playHandle = -1;
 	return true;
 }
@@ -21,6 +30,7 @@ bool SavePointEffect::Terminate()
 	auto em = EffekseerManager::GetInstance();
 	if(em)
 	{
+		// 停止してからプレイヤブルエフェクトインスタンスをクリア
 		for(auto& kv : _savePointEffectHandle)
 		{
 			const int playHandle = kv.second;
@@ -29,8 +39,21 @@ bool SavePointEffect::Terminate()
 				em->StopEffect(playHandle);
 			}
 		}
+
+		// ロード済みのエフェクトは削除
+		if(_efSaveHandle != -1)
+		{
+			em->DeleteEffect(_efSaveHandle);
+			_efSaveHandle = -1;
+		}
+		if(_efKirakiraHandle != -1)
+		{
+			em->DeleteEffect(_efKirakiraHandle);
+			_efKirakiraHandle = -1;
+		}
 	}
 	_savePointEffectHandle.clear();
+	_savePointEffectIsKirakira.clear();
 	return true;
 }
 
@@ -41,7 +64,7 @@ bool SavePointEffect::Process()
 	auto em = EffekseerManager::GetInstance();
 	if(!em) { return true; }
 
-	// ハンドル停止のユーティリティ
+	// 一括停止用ラムダ
 	auto stopHandle = [&](int& h) {
 		if(h != -1) {
 			em->StopEffect(h);
@@ -49,7 +72,7 @@ bool SavePointEffect::Process()
 		}
 		};
 
-	// SavePoint が空なら全停止して終了
+	// SavePoint が無ければ全停止
 	if(_savePoint.empty())
 	{
 		for(auto& kv : _savePointEffectHandle)
@@ -57,19 +80,20 @@ bool SavePointEffect::Process()
 			stopHandle(kv.second);
 		}
 		_savePointEffectHandle.clear();
+		_savePointEffectIsKirakira.clear();
 		return true;
 	}
 
-	// 現在の SavePoint ポインタ集合を作る
 	std::unordered_set<SavePoint*> current;
 	current.reserve(_savePoint.size());
+
 	for(const auto& spv : _savePoint)
 	{
 		SavePoint* sp = spv.get();
 		if(!sp) continue;
 		current.insert(sp);
 
-		// マップにエントリがなければ作成
+		// マップにエントリが無ければ追加
 		auto it = _savePointEffectHandle.find(sp);
 		if(it == _savePointEffectHandle.end())
 		{
@@ -77,35 +101,94 @@ bool SavePointEffect::Process()
 		}
 		int& playHandle = it->second;
 
-		// モデルハンドルが有効なら再生／位置更新、無効なら停止
+		// 初期種別フラグ（false = Savepoint）
+		auto itType = _savePointEffectIsKirakira.find(sp);
+		if(itType == _savePointEffectIsKirakira.end())
+		{
+			_savePointEffectIsKirakira.emplace(sp, false);
+			itType = _savePointEffectIsKirakira.find(sp);
+		}
+		bool& isKirakiraPlaying = itType->second;
+
+		// モデルが有効なら位置更新／当たり判定
 		if(sp->GetHandle() != -1)
 		{
-			if(_handle != -1 && playHandle == -1)
+			// MV1行列を更新してコリジョン情報を更新
+			int h = sp->GetHandle();
+			int f = sp->GetSavePointCollisionFrame();
+			MATRIX model = sp->MakeModelMatrix();
+			MV1SetMatrix(h, model);
+			MV1RefreshCollInfo(h, f);
+
+			// プレイヤーとの接触判定（ターゲットプレイヤーは EffectBase::_targetPlayer を使用）
+			bool touching = false;
+			if(_targetPlayer)
 			{
-				playHandle = em->PlayEffect3DPos(_handle, sp->GetPos());
+				vec::Vec3 hitPos;
+				if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
+					_targetPlayer->GetPos(),
+					h,
+					f,
+					_targetPlayer->GetColSubY(),
+					hitPos
+				))
+				{
+					touching = true;
+				}
 			}
-			else if(playHandle != -1)
+
+			// 再生すべきエフェクトを決定
+			int desiredEfHandle = touching ? _efKirakiraHandle : _efSaveHandle;
+			bool desiredIsKirakira = touching;
+
+			// まだ再生ハンドルが無ければ再生、既にある場合は種類が一致するなら位置更新、違えば差し替え
+			if(playHandle == -1)
 			{
-				em->SetPosEffect(playHandle, sp->GetPos());
+				if(desiredEfHandle != -1)
+				{
+					playHandle = em->PlayEffect3DPos(desiredEfHandle, sp->GetPos());
+					isKirakiraPlaying = desiredIsKirakira;
+				}
+			}
+			else
+			{
+				// 既に再生中だが種類が変わっていたら差し替え
+				if(isKirakiraPlaying != desiredIsKirakira)
+				{
+					stopHandle(playHandle);
+					if(desiredEfHandle != -1)
+					{
+						playHandle = em->PlayEffect3DPos(desiredEfHandle, sp->GetPos());
+						isKirakiraPlaying = desiredIsKirakira;
+					}
+				}
+				else
+				{
+					// 同じ種類なら位置更新
+					em->SetPosEffect(playHandle, sp->GetPos());
+				}
 			}
 		}
 		else
 		{
+			// モデル負荷されていないなら停止
 			stopHandle(playHandle);
+			_savePointEffectIsKirakira.erase(sp);
 		}
 	}
 
-	// マップ内で現在リストにないものを削除（停止して消す）
-	for(auto it = _savePointEffectHandle.begin(); it != _savePointEffectHandle.end(); )
+	// マップに無くなったもののクリーンアップ
+	for(auto it2 = _savePointEffectHandle.begin(); it2 != _savePointEffectHandle.end(); )
 	{
-		if(current.find(it->first) == current.end())
+		if(current.find(it2->first) == current.end())
 		{
-			stopHandle(it->second);
-			it = _savePointEffectHandle.erase(it);
+			stopHandle(it2->second);
+			_savePointEffectIsKirakira.erase(it2->first);
+			it2 = _savePointEffectHandle.erase(it2);
 		}
 		else
 		{
-			++it;
+			++it2;
 		}
 	}
 
