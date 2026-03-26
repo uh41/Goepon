@@ -64,6 +64,7 @@
 #include "savepointeffect.h"
 #include "makimonogeteffect.h"
 #include "goaleffect.h"
+#include "particleeffect.h"
 
 // 定数定義
 
@@ -165,6 +166,7 @@ public:
 	void SetLoadComplete(bool b) { _isLoadComplete = b; }
 	bool IsTransformRequested() const;
 	bool IsShowingTanuki() const { return _bShowTanuki; }
+	bool IsTanukiAttackPlaying() const { return _isTanukiAttackPlaying; }
 
 	// カメラ操作公開API（メニューから呼び出すため）
 	void CameraMoveBy(const vec::Vec3& delta);
@@ -180,6 +182,8 @@ public:
 	bool StartIntroSequence();      // イントロシーケンス開始
 	bool ProcessIntroSequence();    // イントロシーケンスの更新
 	bool EndIntroSequence();        // イントロシーケンス終了
+	void StartSpotLightFadeIn();    // スポットライトフェードイン開始
+
 	// ゲームクリア演出			    
 	bool StartClearSequence();      // クリアシーケンス開始
 	bool ProcessClearSequence();    // クリアシーケンスの更新
@@ -324,7 +328,9 @@ protected:
 	at::spc<ShirimochiEffect> _shirimochiEffect;
 	at::spc<SavePointEffect> _savePointEffect;
 	at::spc<MakimonoGetEffect> _makimonoGetEffect;
+	at::spc<ParticleEffect> _particleEffect;
 	at::spc<GoalEffect> _goalEffect;
+	
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
@@ -357,9 +363,13 @@ protected:
 	int _transformAnimId = -1;
 	bool _isTanukiAttackPlaying = false;
 	int _tanukiAttackAnimId = -1;
+	bool _tanukiReturnPending = false; // タヌキへの戻りが保留されているかどうか
+	float _tanukiReturnTimer = 0.0f;   // タヌキへの戻りが保留されている場合のタイマー
 
 	// Effekseer を既に起動済みかどうか（メニューから二重起動を防ぐ）
 	bool _effekseerLaunched = false;
+
+	int _tanukiAttackCount;
 
 	// 索敵システム
 	at::spc<EnemySensor> _enemySensor;
@@ -474,6 +484,18 @@ private:
 	float _gameOverCinematicTimer;    // ゲームオーバー演出の経過時間
 	int   _gameOverSequencePhase;     // ゲームオーバー演出のフェーズ管理用変数
 	int   _gameOverDimAlpha;		  // ゲームオーバー演出の暗転アルファ値
+	// ゲームオーバー → ゲーム復帰時のスポットライトフェードイン（円形）
+	bool  _spotFadeInActive = false;
+	float _spotFadeInSec = 0.0f;
+	float _spotFadeInDurationSec = 2.0f; // フェードインの総時間（秒）
+	float _spotFadeInRadius = 0.0f;
+	int   _spotFadeInCx = 0;
+	int   _spotFadeInCy = 0;
+	static constexpr int SPOT_FADE_IN_STEP_DEG = 6;
+
+	void ProcessSpotlightFadeIn();
+	void DrawSpotLightFadeIn() const;
+	bool UpdateSpotLightCenterFromActivePlayer();
 
 	// プレイヤー回転演出用
 	bool _isPlayerRotating = false;		  // プレイヤー回転演出が有効か

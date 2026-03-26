@@ -45,6 +45,7 @@ private:
 	MenuItem _menu = MenuItem::Start; // デフォルトは「スタート」
 
 
+	// ハンドル関係
 	// タイトルロゴと背景のハンドル
 	int _bgHandle;
 	int _titleHandle;
@@ -55,6 +56,10 @@ private:
 	int _exitYesHandle  = -1;
 	int _exitNoHandle	= -1;
 
+	// ふすまハンドル
+	int _fusumaRighetHandle = -1;
+	int _fusumaLeftHandle   = -1;
+
 	// ロゴ落下アニメ用
 	float _titleX		 = 30.0f;    // タイトルロゴのX位置
 	float _titleY		 = -130.0f;  // タイトルロゴのY位置
@@ -63,5 +68,31 @@ private:
 	float _titleVY       = 0.0f;     // タイトルロゴの落下速度
 	float _titleTargetY  = -120.0f;  // タイトルロゴの最終的なY位置
 	bool  _titleLanding  = false;    // タイトルロゴが落下中かどうか
+
+	// ふすま演出
+	enum class FusumaState
+	{
+		None,
+		closing,
+		closed,	
+	};
+	FusumaState _fusumaState = FusumaState::None;
+
+	// ふすま演出関連
+	void StartFusumaClose();	// ふすまを閉じる演出開始
+	bool ProcessFusumaClose();  // ふすまを閉じる演出処理。演出中はtrueを返す
+	void RenderFusuma() const;  // ふすまを描画する
+
+	int   _fusumaW = 0;			        // ふすまの幅
+	int   _fusumaH = 0;			        // ふすまの高さ
+	float _fusumaLeftX  = 0.0f;         // 左のふすまのX位置
+	float _fusumaRightX = 0.0f;         // 右のふすまのX位置
+	float _fusumaY		 = 0.0f;        // ふすまのY位置	
+	float _fusumaCnt = 0.0f;            // 経過フレーム
+	float _fusumaFrames = 30.0f;        // 閉じるのにかけるフレーム
+	int   _fusumaClosedWaitCnt = 0;     // ふすまが閉じた状態での待機フレーム
+	int   _fusumaClosedWaitFrames = 30; // ふすまが閉じた状態で待機するフレーム
+
+	bool _startedGlobalInit = false;
 };
 

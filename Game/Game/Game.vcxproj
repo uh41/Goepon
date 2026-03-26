@@ -73,6 +73,7 @@
     <ClInclude Include="source\nakieffect.h" />
     <ClInclude Include="source\objectbase.h" />
     <ClInclude Include="source\ObjectServer.h" />
+    <ClInclude Include="source\particleeffect.h" />
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\playermono.h" />
@@ -129,6 +130,7 @@
     <ClCompile Include="source\MapFactory.cpp" />
     <ClCompile Include="source\modeAffterScenario.cpp" />
     <ClCompile Include="source\modecredit.cpp" />
+    <ClCompile Include="source\modeGameCinematic.cpp" />
     <ClCompile Include="source\ModeGameCinematicCamera.cpp" />
     <ClCompile Include="source\ModeGameClear.cpp" />
     <ClCompile Include="source\ModeGameClearLoad.cpp" />
@@ -159,6 +161,7 @@
     <ClCompile Include="source\nakieffect.cpp" />
     <ClCompile Include="source\objectbase.cpp" />
     <ClCompile Include="source\ObjectServer.cpp" />
+    <ClCompile Include="source\particleeffect.cpp" />
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\playermono.cpp" />

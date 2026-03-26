@@ -144,9 +144,12 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_savePointEffect);
 	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
 	_effectBase.emplace_back(_makimonoGetEffect);
+	_particleEffect = std::make_shared<ParticleEffect>();
+	_effectBase.emplace_back(_particleEffect);
 	_goalEffect = std::make_shared<GoalEffect>();
 	_goalEffect->SetGoal(_goal);
 	_effectBase.emplace_back(_goalEffect);
+
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
@@ -276,6 +279,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = false;
 			_player->SetPos(_playerTanuki->GetPos());
 			_player->SetDir(_playerTanuki->GetDir());
+			_player->SetRotationY(atan2f(-_playerTanuki->GetDir().x, -_playerTanuki->GetDir().z));
 			_player->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_player->GetPos());
 			_walkEffect->SetPlayerPos(_player.get());
@@ -317,6 +321,7 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 			_showMonoPlayer = true;
 			_playerMono->SetPos(_playerTanuki->GetPos());
 			_playerMono->SetDir(_playerTanuki->GetDir());
+			_playerMono->SetRotationY(atan2f(-_playerTanuki->GetDir().x, -_playerTanuki->GetDir().z));
 			_playerMono->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
 			_hensinEffect->PlayEffect(_playerMono->GetPos());
 			_walkEffect->SetPlayerPos(_playerMono.get());
@@ -428,6 +433,7 @@ bool ModeGame::PlayerTransform()
 			_playerTanuki->SetDir(_playerMono->GetDir());
 			_playerTanuki->_status = CharaBase::STATUS::WAIT;
 			_playerTanuki->SetMakimonoCount(_playerMono->GetMakimonoCount());
+			_playerTanuki->SetRotationY(atan2f(-_playerMono->GetDir().x, -_playerMono->GetDir().z));
 			_playerTanuki->PlayAnimation("idle", true);
 			_playerTanuki->Process();
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
@@ -471,6 +477,7 @@ bool ModeGame::PlayerTransform()
 			{
 				_playerTanuki->SetPos(srcPlayer->GetPos());
 				_playerTanuki->SetDir(srcPlayer->GetDir());
+				_playerTanuki->SetRotationY(atan2f(-srcPlayer->GetDir().x, -srcPlayer->GetDir().z));
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 
 				_playerTanuki->SetMakimonoCount(srcPlayer->GetMakimonoCount());
@@ -647,7 +654,6 @@ bool ModeGame::ObjectProcess()
 	return true;
 }
 
-// BGMチェンジ処理
 bool ModeGame::ObjectRender()
 {
 	PlayerBase* currentPlayer = nullptr;
@@ -670,9 +676,9 @@ bool ModeGame::ObjectRender()
 	}
 
 	// 宝箱の描画
-	for (auto& t : _treasureBase)
+	for(auto& t : _treasureBase)
 	{
-		if (t) t->Render();
+		if(t) t->Render();
 	}
 
 	// 巻物の描画
@@ -682,9 +688,9 @@ bool ModeGame::ObjectRender()
 	}
 
 	// 宝箱の描画
-	for (auto& t : _treasure)
+	for(auto& t : _treasure)
 	{
-		if (t) t->Render();
+		if(t) t->Render();
 	}
 
 	// オブジェクトを描画
@@ -761,22 +767,21 @@ bool ModeGame::ObjectRender()
 	}
 
 	// UIが参照するプレイヤーを「現在表示中」に合わせる
-	
-	if (_bShowTanuki)
+	if(_bShowTanuki)
 	{
 		currentPlayer = _playerTanuki.get();
 	}
 	else if(_showMonoPlayer)
 	{
-		currentPlayer = _playerMono.get(); 
+		currentPlayer = _playerMono.get();
 	}
 	else
 	{
-		currentPlayer = _player.get(); 
+		currentPlayer = _player.get();
 	}
 
 	if(_uiHp)
-	{ 
+	{
 		_uiHp->SetPlayer(currentPlayer);
 	}
 	if(_uiMakimono)
@@ -795,20 +800,27 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
+	// ---- ここから先は「演出/ゲージ/UI」なので必ず影なしにする ----
+	//SetUseShadowMap(0, -1);
+	SetUseLighting(FALSE);
+
+	// Effekseer（3D/2D）を影なしで描画（ワールドの後、UIの前）
+	EffekseerManager::GetInstance()->Render();
+
 	// 各敵のセンサーを個別に描画
 	// プレイヤーから半径内にいる敵だけ索敵範囲を描画
-	if (currentPlayer)
+	if(currentPlayer)
 	{
-		const float detectionRadius = 1000.0f; 
-		for (auto& enemy : _enemyBase)
+		const float detectionRadius = 1000.0f;
+		for(auto& enemy : _enemyBase)
 		{
-			if (!enemy || !enemy->IsAlive())
+			if(!enemy || !enemy->IsAlive())
 			{
 				continue;
 			}
 
 			auto sensor = enemy->GetEnemySensor();
-			if (!sensor)
+			if(!sensor)
 			{
 				continue;
 			}
@@ -818,7 +830,7 @@ bool ModeGame::ObjectRender()
 			vecToPlayer.y = 0.0f;
 			const float dist = vec3::VSize(vecToPlayer);
 
-			if (dist <= detectionRadius)
+			if(dist <= detectionRadius)
 			{
 				sensor->Render();
 			}
@@ -827,45 +839,45 @@ bool ModeGame::ObjectRender()
 	else
 	{
 		// プレイヤー不在なら従来どおり全部描画（安全策）
-		for (auto& enemy : _enemyBase)
+		for(auto& enemy : _enemyBase)
 		{
-			if (enemy->IsAlive() && enemy->GetEnemySensor())
+			if(enemy->IsAlive() && enemy->GetEnemySensor())
 			{
 				enemy->GetEnemySensor()->Render();
 			}
 		}
 	}
 
-	if (_player)
+	if(_player)
 	{
-		//長押し宝箱のゲージ描画
-		for (const auto& treasureBase : _treasureBase)
+		// 長押し宝箱のゲージ描画
+		for(const auto& treasureBase : _treasureBase)
 		{
-			if (treasureBase && treasureBase->IsVisible() && !treasureBase->IsOpen())
+			if(treasureBase && treasureBase->IsVisible() && !treasureBase->IsOpen())
 			{
 				float treasureProgress = 0.0f;
 				auto it = _treasureProgressMap.find(treasureBase.get());
-				if (it != _treasureProgressMap.end())
+				if(it != _treasureProgressMap.end())
 				{
 					treasureProgress = it->second;
 				}
-				
+
 				treasureBase->RenderGauge(_player->GetPos(), treasureProgress);
 			}
 		}
 
 		// 連打宝箱のゲージ描画
-		for (const auto& treasureRapidFire : _treasureRapidFire)
+		for(const auto& treasureRapidFire : _treasureRapidFire)
 		{
-			if (treasureRapidFire && treasureRapidFire->IsVisible() && !treasureRapidFire->IsOpen())
+			if(treasureRapidFire && treasureRapidFire->IsVisible() && !treasureRapidFire->IsOpen())
 			{
 				treasureRapidFire->RenderGaugeRF(_player->GetPos(), 0.0f);
 			}
 		}
 	}
 
-	// エフェクト
-	for (auto& effectBase : _effectBase)
+	// エフェクト（各 EffectBase の Render は現状“描画自体”ではない想定）
+	for(auto& effectBase : _effectBase)
 	{
 		effectBase->Render();
 	}
@@ -874,17 +886,19 @@ bool ModeGame::ObjectRender()
 	SetWriteZBuffer3D(FALSE);
 
 	// UIを描画（巻物UIを最初に、その後に残りのUIを描画）
-	// 巻物アイコンを最背面に描画
 	if(_treasureUi)
 	{
 		_treasureUi->GetHandleMakimono();
 	}
 
-	// 他のUIをその上に描画
 	for(auto& ui_base : _uiBase)
 	{
 		ui_base->Render();
 	}
+
+	// 状態復帰（次の描画に影響を残さない）
+	SetUseLighting(TRUE);
+	//SetUseShadowMap(0, -1);
 
 	return true;
 }
@@ -1122,6 +1136,7 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 
 					_playerTanuki->SetPos(player->GetPos());
 					_playerTanuki->SetDir(player->GetDir());
+					_playerTanuki->SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 					_playerTanuki->PlayAnimation("goepon_idle", true);
@@ -1154,6 +1169,7 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 
 					_playerTanuki->SetPos(player->GetPos());
 					_playerTanuki->SetDir(player->GetDir());
+					_playerTanuki->SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
 					_playerTanuki->_status = CharaBase::STATUS::WAIT;
 					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
 					_playerTanuki->PlayAnimation("idle", true);
@@ -1260,14 +1276,14 @@ void ModeGame::RenderShadowCastersFromModeGame()
 		}
 	}
 
-	// 巻物
-	for(auto& m : _makimono)
-	{
-		if(m)
-		{
-			m->Render();
-		}
-	}
+	//// 巻物
+	//for(auto& m : _makimono)
+	//{
+	//	if(m)
+	//	{
+	//		m->Render();
+	//	}
+	//}
 
 	// プレイヤー（表示中のみ）
 	if(_bShowTanuki)

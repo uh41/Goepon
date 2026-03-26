@@ -13,6 +13,9 @@ bool ModeGameClear::Initialize()
 		// 全BGMを停止（既存）
 		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
 
+		_handle = LoadGraph(ui::Gameclear);
+
+		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
 		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
 		{
 			s->Stop();
@@ -20,6 +23,15 @@ bool ModeGameClear::Initialize()
 		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
 		{
 			s2->Stop();
+		}
+
+		// クリアBGMが鳴っていなければ再生
+		if(auto clearBgm = gGlobal._soundServer->Get("160"))
+		{
+			if(!clearBgm->IsPlay())
+			{
+				clearBgm->Play();
+			}
 		}
 	}
 	return true;
@@ -52,10 +64,21 @@ bool ModeGameClear::Process()
 			}
 		}
 
-		//if(_ownerGame)
-		//{
-		//	ModeServer::GetInstance()->Del(_ownerGame); // ゲームモードを削除
-		//}
+		// 次ステージがある場合のみ、クリアBGMを止める
+		if(gGlobal._soundServer)
+		{
+			StageManager sm;
+			sm.SetStages(gGlobal.GetStageList());
+			const bool hasNextStage = !sm.GetNextStageId(currentStageId).empty();
+
+			if(hasNextStage)
+			{
+				if(auto clearBgm = gGlobal._soundServer->Get("160"))
+				{
+					clearBgm->Stop();
+				}
+			}
+		}
 
 		// 名前"game" で登録されているモードがあれば削除予約
 		ModeBase* existing = ModeServer::GetInstance()->Get("game");
@@ -85,41 +108,14 @@ bool ModeGameClear::Render()
 {
 	base::Render();
 
-	// 背景(半透明に設定)
-	SetDrawBlendMode(DX_BLENDMODE_ALPHA, BackgroundAlpha);
-	DrawBox
-	(
-		BgLeft, BgTop, BgRight, BgBottom,
-		GetColor(BlackR, BlackG, BlackB),
-		TRUE
-	);
-	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	if(!_handle)
+	{
+		return false;
+	}
 
-	// 枠
-	DrawBox
-	(
-		BgLeft, BgTop, BgRight, BgBottom,
-		GetColor(255, 255, 255),
-		FALSE
-	);
+	int x = 250, y = 100;
 
-	// クリアメッセージ
-	SetFontSize(TitleFontSize);
-	DrawString
-	(
-		TitlePosX, TitlePosY,
-		ClearMessage,
-		GetColor(WhiteR, WhiteG, WhiteB)
-	);
-
-	// ヒントメッセージ
-	SetFontSize(HintFontSize);
-	DrawString
-	(
-		HintPosX, HintPosY,
-		HintMessage,
-		GetColor(HintR, HintG, HintB)
-	);
+	DrawGraph(x, y, _handle, TRUE);
 
 	return true;
 }

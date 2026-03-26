@@ -38,7 +38,8 @@ private:
 	float _rmWalkTraveledDistance;	// 移動した距離
 
 	// 方向転換時の待機用:_dc
-	bool _isDirectionChange;			// 方向転換待機中フラグ
+	bool _isDirectionChange;		// 方向転換待機中フラグ
+	bool _isTurnWait;				// 向き変更後の待機フラグ
 	float _dcWaitTimer;				// 方向転換待機タイマー
 	static constexpr float DC_WAIT_TIME = 1.0f; // 待機時間
 
@@ -59,5 +60,8 @@ private:
 
 	// 指定した位置が移動範囲内かチェック
 	bool IsPosInArea(const vec::Vec3& pos) const;
+
+	// 目標方向へ徐々に回転。完了時 true
+	bool UpdateTurnToWalkDirection();
 };
 

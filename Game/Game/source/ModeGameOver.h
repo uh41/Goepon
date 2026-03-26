@@ -41,4 +41,5 @@ private:
 	int   _spotRingStepDeg = 6;		   // 360度を何度ごとに分割してポリゴンを描くか
 	int   _spotAlpha = 0;			   // 暗転のアルファ値（0-255）
 	bool  _hasValidSpotCenter = false; // playerのワールド座標からスクリーン座標変化が成功したか
+	bool  _transitionStarted = false; // ゲームオーバーから次のモードへの遷移が要求されたか
 };

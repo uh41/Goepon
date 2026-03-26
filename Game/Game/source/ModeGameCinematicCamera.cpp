@@ -195,6 +195,15 @@ bool ModeGame::TreasureOpeningCameraControl()
 			_savedCamera = _camera;
 			_useCinematicCamera = true;
 			_camera = _cinematicCamera.get();
+
+			// Map 側が保持しているカメラ参照も合わせる（SkySphere/Shadow等のズレ防止）
+			if(_objectServer)
+			{
+				if(auto* map = _objectServer->GetMap())
+				{
+					map->SetCamera(_camera);
+				}
+			}
 		}
 		else
 		{
@@ -234,24 +243,8 @@ bool ModeGame::TreasureOpeningCameraControl()
 
 bool ModeGame::EndCinematicCamera()
 {
-	// シネマティックカメラが使用されていない場合は処理しない
-	if(!_useCinematicCamera || !_cinematicCamera)
-	{
-		return false;
-	}
-
-	// 元のカメラに戻す
-	if(_savedCamera)
-	{
-		_camera = _savedCamera;
-		_savedCamera = nullptr;
-	}
-
-	_useCinematicCamera = false;
-
-	//　シネマティックカメラをリセット
-	_cinematicCamera->StopAll();
-	return true;
+	// 宝箱などの演出終了は「必ずメインカメラへ戻す」
+	return EndCinematicSequence(true);
 }
 
 bool ModeGame::StartIntroSequence()
@@ -482,6 +475,12 @@ bool ModeGame::StartClearSequence()
 		{
 			s2->Stop();
 		}
+
+		// ゲームクリア演出用
+		if(auto clearBgm = gGlobal._soundServer->Get("160"))
+		{
+			clearBgm->Play();
+		}
 	}
 
 	_isGameClearCinematicActive = true;
@@ -677,35 +676,21 @@ bool ModeGame::EndCinematicSequence(bool restoreToMainCamera)
 		// メインカメラに切り替え
 		_camera = _savedCamera;
 
+		// Map 側の参照も戻す
+		if(_objectServer)
+		{
+			if(auto* map = _objectServer->GetMap())
+			{
+				map->SetCamera(_camera);
+			}
+		}
+
+		// 次回の演出開始時に再保存できるようにクリア
+		_savedCamera = nullptr;
 	}
+
 	_useCinematicCamera = false;
-
 	return true;
-}
-
-bool ModeGame::StartPlayerRotation()
-{
-	// ★★★ タヌキプレイヤーのみを対象に回転演出を初期化 ★★★
-	PlayerTanuki* targetPlayer = _playerTanuki.get();
-
-	if(!targetPlayer)
-	{
-		return false; // タヌキプレイヤーが存在しない場合は処理しない
-	}
-
-	// 回転演出の初期化
-	_isPlayerRotating = true;
-	_playerRotationTimer = 0.0f;
-	_playerRotationDuration = 2.0f; // 回転演出の総時間（秒）
-
-	// 現在の回転角度を取得
-	_playerInitialRotation = targetPlayer->GetRotationY();
-
-	// 目標角度: dir.z = 1 の方向 = 0度（正面）
-	_playerTargetRotation = 0.0f;
-
-	// タヌキプレイヤーの操作を無効化
-	targetPlayer->SetInputEnabled(false);
 
 	return true;
 }
@@ -783,7 +768,25 @@ bool ModeGame::StartGameOverSequence()
 	{
 		return true;
 	}
-	
+	if(gGlobal._soundServer)
+	{
+		// 全BGMを停止（既存）
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
+		{
+			s->Stop();
+		}
+		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
+		{
+			s2->Stop();
+		}
+
+		// ゲームオーバー演出用BGM
+		if(auto overBgm = gGlobal._soundServer->Get("170"))
+		{
+			overBgm->Play();
+		}
+	}
 	_isGameOverCinematicActive  = true;
 	_gameOverCinematicTimer		= 0.0f;
 
@@ -925,11 +928,26 @@ bool ModeGame::ProcessGameOverSequence()
 	// フェーズ1：倒れた状態のアニメーション(ループ)に切り替える
 	if(_gameOverSequencePhase == 1 && _playerTanuki)
 	{
-		if(!_playerTanuki->IsAnimationPlaying())
+		bool shouldSwitch = false;
+
+		const int animId = _playerTanuki->GetAnimId();
+		if(animId != -1)
+		{
+			const float total = AnimationManager::GetInstance()->GetTotalTime(animId);
+			const float play = AnimationManager::GetInstance()->GetPlayTime(animId);
+
+			// DxLibのアニメ時間は「フレーム相当」のことが多いので、まずは 6.0f くらい前で切替
+			const float kLead = 6.0f;
+
+			if(total > 0.0f && (total - play) <= kLead)
+			{
+				shouldSwitch = true;
+			}
+		}
+
+		if(shouldSwitch || !_playerTanuki->IsAnimationPlaying())
 		{
 			_gameOverSequencePhase = 2;
-
-			// 倒れるアニメーション
 			_playerTanuki->PlayGameOverAnimation("tanuki_taore", true);
 		}
 	}

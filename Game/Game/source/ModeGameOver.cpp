@@ -47,7 +47,33 @@ bool ModeGameOver::Initialize()
 	_spotRadius = _spotStartRadius;
 	_hasValidSpotCenter = false;
 
+	_transitionStarted = false;
+
 	UpdateSpotCenterFromPlayer();
+
+	if(gGlobal._soundServer)
+	{
+		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
+
+		// ゲーム中BGMだけは明示的に停止
+		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
+		{
+			s->Stop();
+		}
+		if(auto s2 = gGlobal._soundServer->Get("bgmChenge"))
+		{
+			s2->Stop();
+		}
+
+		// ゲームオーバーBGMが鳴っていなければ再生
+		if(auto clearBgm = gGlobal._soundServer->Get("170"))
+		{
+			if(!clearBgm->IsPlay())
+			{
+				clearBgm->Play();
+			}
+		}
+	}
 
 	return true;
 }
@@ -82,66 +108,70 @@ bool ModeGameOver::Process()
 
 	// 暗さを増やす（0→255）
 	_spotAlpha = StCas<int>(Lerp(0.0f, 255.0f, t));
-
-	int trg = ApplicationMain::GetInstance()->GetTrg();
-	if(trg & PAD_INPUT_1)
+	// フェードアウト完了まで待つ（ボタン不要）
+	if(_transitionStarted || t < 1.0f)
 	{
-		if(gGlobal._soundServer)
+		return true;
+	}
+
+	// 完了したフレームで1回だけ遷移処理
+	_transitionStarted = true;
+
+	if(gGlobal._soundServer)
+	{
+		auto se = gGlobal._soundServer->Get("73");
+		if(se)
 		{
-			auto se = gGlobal._soundServer->Get("73");
-			if(se)
+			se->Stop();
+		}
+	}
+
+	SaveData sd{};
+	if(SaveManager::TryLoad(sd, SaveManager::GetDefaultPath()))
+	{
+		ModeBase* existing = ModeServer::GetInstance()->Get("game");
+		if(existing)
+		{
+			auto* game = dynamic_cast<ModeGame*>(existing);
+			if(game)
 			{
-				se->Stop();
+				game->ApplySaveData(sd);
+				game->ResetEnemiesToInitialPositions();
+				game->StartSpotLightFadeIn();
+				ModeServer::GetInstance()->Del(this);
+				return true;
 			}
 		}
 
-		SaveData sd{};
-		if(SaveManager::TryLoad(sd, SaveManager::GetDefaultPath()))
+		auto* newGame = new ModeGame();
+		newGame->SetInitialStageId(sd.stageId);
+		ModeServer::GetInstance()->Add(newGame, 0, "game");
+		ModeServer::GetInstance()->ProcessInit();
+
 		{
-			ModeBase* existing = ModeServer::GetInstance()->Get("game");
-			if(existing)
+			ModeBase* gm = ModeServer::GetInstance()->Get("game");
+			if(gm)
 			{
-				auto* game = dynamic_cast<ModeGame*>(existing);
+				auto* game = dynamic_cast<ModeGame*>(gm);
 				if(game)
 				{
 					game->ApplySaveData(sd);
 					game->ResetEnemiesToInitialPositions();
-					ModeServer::GetInstance()->Del(this);
-					return true;
 				}
 			}
-
-			auto* newGame = new ModeGame();
-			newGame->SetInitialStageId(sd.stageId);
-			ModeServer::GetInstance()->Add(newGame, 0, "game");
-			ModeServer::GetInstance()->ProcessInit();
-
-			{
-				ModeBase* gm = ModeServer::GetInstance()->Get("game");
-				if(gm)
-				{
-					auto* game = dynamic_cast<ModeGame*>(gm);
-					if(game)
-					{
-						game->ApplySaveData(sd);
-						game->ResetEnemiesToInitialPositions();
-					}
-				}
-			}
-
-			ModeServer::GetInstance()->Del(this);
-			return true;
 		}
 
-		if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
-		{
-			ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, _debugCurrentStageId), 300, "gameoverload");
-			ModeServer::GetInstance()->ProcessInit();
-		}
 		ModeServer::GetInstance()->Del(this);
 		return true;
 	}
 
+	// ロードに失敗した場合は、デバッグ用に現在のステージIDを渡してリロードする
+	if(ModeServer::GetInstance()->Get("gameoverload") == nullptr)
+	{
+		ModeServer::GetInstance()->Add(new ModeGameOverLoad(nullptr, _debugCurrentStageId), 300, "gameoverload");
+		ModeServer::GetInstance()->ProcessInit();
+	}
+	ModeServer::GetInstance()->Del(this);
 	return true;
 }
 
@@ -154,13 +184,22 @@ bool ModeGameOver::Render()
 	DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // ブレンドモードを元に戻す
 
+	//	プレイヤーだけ暗くしないように
+	if(_ownerGame)
+	{
+		auto player = _ownerGame->GetPlayerTanuki();
+		if(player)
+		{
+			player->Render();
+		}
+	}
+
 	// 既存の黒背景UIは残しつつ、サンシャイン風暗転を上に載せる
 	// ※ 文字は暗転の上に描く（読みやすさ優先）にする場合は順序を入れ替える
 	DrawSpotlightFade();
 
-	int x = 0, y = 0;
-
-	DrawGraph(x, y, _gameoverLogoHandle, TRUE);
+	/*int x = 0, y = 0;
+	DrawGraph(x, y, _gameoverLogoHandle, TRUE);*/
 	return true;
 }
 
@@ -206,6 +245,7 @@ void ModeGameOver::DrawSpotlightFade() const
 	GetScreenState(&screenW, &screenH, nullptr);
 
 	// まず全画面を黒くする
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180); // 半透明の黒
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, _spotAlpha);
 	DrawBox(0, 0, screenW, screenH, GetColor(0, 0, 0), TRUE);
 

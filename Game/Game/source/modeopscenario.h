@@ -25,6 +25,31 @@ private:
 	int _fadeTimer;					   // フェード用タイマー
 	static const int FADE_FRAME = 30;  // フェード時間
 
-	
+	// ふすまの状態(ここで開くようになりたい)
+	enum class FusumaState
+	{
+		None,
+		Opening,
+		Opened,
+	};
+
+	FusumaState _fusumaState = FusumaState::None;
+
+	void StartFusumaOpen();
+	bool ProcessFusumaOpen();
+	void RenderFusuma() const;
+
+	int _fusumaRighetHandle = -1;
+	int _fusumaLeftHandle = -1;
+	int _fusumaW = 0;
+	int _fusumaH = 0;
+
+	float _fusumaLeftX = 0.0f;
+	float _fusumaRightX = 0.0f;
+	float _fusumaY = 0.0f;
+
+	float _fusumaCnt = 0.0f;
+	float _fusumaFrames = 100.0f;
+
 };
 

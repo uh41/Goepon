@@ -65,6 +65,7 @@ bool ModeGameOverLoad::Process()
 	// �V�����ǉ����ꂽ ModeGame �����[�h����������I�[�o�[���C��폜����
 	if(game->IsLoadComplete())
 	{
+		game->StartSpotLightFadeIn();
 		ModeServer::GetInstance()->Del(this); // �������g��폜�\��	
 	}
 	return true;

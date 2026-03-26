@@ -389,11 +389,11 @@ bool ApplicationGlobal::EnsureStageDataLoad(const std::string& stageId)
 		// Map2 / map JSON は Init と同じに合わせる（MapとStageでファイル名が異なる実装）
 		if(GetMapData("Map2") == nullptr)
 		{
-			LoadMapData("Map2", "stage2_0323.json", "stage");
+			LoadMapData("Map2", "stage2_0325.json", "stage");
 		}
 		if(GetStageData("Stage2") == nullptr)
 		{
-			LoadStageData("Stage2", "stage2_0323.json", "stage");
+			LoadStageData("Stage2", "stage2_0325.json", "stage");
 		}
 	}
 	else if(stageId == "Stage3")
@@ -426,12 +426,12 @@ bool ApplicationGlobal::Init()
 
 	// マップ用
 	LoadMapData("Map1", "stage1_0319x.json", "stage");	// 1ステージ目
-	LoadMapData("Map2", "stage2_0323.json", "stage");	// 2ステージ目
+	LoadMapData("Map2", "stage2_0325.json", "stage");	// 2ステージ目
 	LoadMapData("Map3", "stage3_0323_2.json", "stage");	// 3ステージ目
 
 	//マーカー用
 	LoadStageData("Stage1", "stage1_0319x.json", "stage"); // 1ステージ目
-	LoadStageData("Stage2", "stage2_0323.json", "stage");     // 2ステージ目
+	LoadStageData("Stage2", "stage2_0325.json", "stage");     // 2ステージ目
 	LoadStageData("Stage3", "stage3_0323_2.json", "stage");     // 3ステージ目
 
 	SetUseASyncLoadFlag(TRUE);
@@ -500,9 +500,13 @@ bool ApplicationGlobal::Init()
 	_soundServer->Add("72", std::make_shared<soundserver::SoundItemSE>(mp3::wafu_clear));
 	_soundServer->Add("73", std::make_shared<soundserver::SoundItemSE>(mp3::wafu_gameover));
 	_soundServer->Add("74", std::make_shared<soundserver::SoundItemBGM>(mp3::BGM_EndCredits));
+	_soundServer->Add("160", std::make_shared<soundserver::SoundItemBGM>(mp3::GameClear));
+	_soundServer->Add("170", std::make_shared<soundserver::SoundItemBGM>(mp3::GameOver));
+
 	_soundServer->Add("voice1", std::make_shared<soundserver::SoundItemVoice>(mp3::voice1, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice2", std::make_shared<soundserver::SoundItemVoice>(mp3::voice2, soundserver::SoundItemBase::FLG_3D));
 	_soundServer->Add("voice3", std::make_shared<soundserver::SoundItemVoice>(mp3::voice3, soundserver::SoundItemBase::FLG_3D));
+
 
 	return true;
 }

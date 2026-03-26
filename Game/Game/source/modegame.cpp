@@ -52,6 +52,8 @@ bool ModeGame::Initialize()
 	_debugF2KeyPressed  = false;
 	_debugShakeActive   = false;
 
+	_tanukiAttackCount = 0;
+
 	// ステージマネージャーにステージを登録
 	_stageManager.SetStages(gGlobal.GetStageList());
 
@@ -1328,9 +1330,6 @@ bool ModeGame::Process()
 	if (_isIntroActive)
 	{
 		ProcessIntroSequence();
-
-		// イントロ中はプレイヤー入力を無効化（必要に応じて）
-		// ここでプレイヤーの操作フラグを制御できます
 	}
 
 	// カメラ処理
@@ -1604,9 +1603,6 @@ bool ModeGame::Process()
 	
 
 	// 3Dサウンド処理
-
-	// 3Dサウンド処理
-
 	if(_sound3D)
 	{
 		// 全ての EnemyBase 系に対して、歩行中のみ3D音を再生する
@@ -1657,11 +1653,58 @@ bool ModeGame::Process()
 	// 変身時間制限処理
 	if(_changeTimeActive)
 	{
-		float dt = 1.0f / 60.0f; // 60FPS想定
+		const float dt = 1.0f / 60.0f; // 60FPS想定
+
+		// 既存の残り時間を減算して保持（他用途と共用）
 		_changeTimeLimit -= dt;
-		// 変更箇所: changeTimeLimit <= 0.0f のブロック内
+		if(_changeTimeLimit < 0.0f) _changeTimeLimit = 0.0f;
+
+		// 追加: 2回攻撃時の遅延戻りタイマーを管理
+		if(_tanukiReturnPending)
+		{
+			_tanukiReturnTimer -= dt;
+			if(_tanukiReturnTimer <= 0.0f)
+			{
+				_tanukiReturnPending = false;
+				_tanukiReturnTimer = 0.0f;
+
+				// 3秒経過でリクエストを立てる
+				_requestedReturnToTanuki = true;
+
+				// 点滅状態をリセット
+				_changeTimeActive = false;
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = true;
+			}
+		}
+
+		// 元の「残り時間に応じた点滅」ロジックを保持しつつ、遅延時は最後の1秒で加速
+		float currentBlinkInterval = _changeBlinkInterval;
+
+		// 既存の閾値で加速（例: 残り <= 2秒 で 2倍速）
+		if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
+		{
+			currentBlinkInterval *= 0.5f;
+		}
+
+		// 2回攻撃の遅延中かつ残り1秒以下なら更に速く点滅させる
+		if(_tanukiReturnPending && _tanukiReturnTimer <= 1.0f)
+		{
+			currentBlinkInterval *= 0.25f; // さらに速く（必要なら調整）
+		}
+
+		// ブリンクタイマー更新（トグル）
+		_changeBlinkTimer += dt;
+		if(_changeBlinkTimer >= currentBlinkInterval)
+		{
+			_changeBlinkTimer = 0.0f;
+			_changeBlinkVisible = !_changeBlinkVisible;
+		}
+
+		// 既存: 変身の残り時間がゼロの場合の復帰処理（従来の挙動を維持）
 		if(_changeTimeLimit <= 0.0f)
 		{
+			// 以下は既存の変身解除処理（コピペで元の処理を維持）
 			_changeTimeActive = false;
 			_changeTimeLimit = 0.0f;
 			_changeBlinkTimer = 0.0f;
@@ -1691,6 +1734,7 @@ bool ModeGame::Process()
 			{
 				_playerTanuki->SetPos(prevActive->GetPos());
 				_playerTanuki->SetDir(prevActive->GetDir());
+				_playerTanuki->SetRotationY(atan2f(-prevActive->GetDir().x, -prevActive->GetDir().z));
 				_playerTanuki->_status = CharaBase::STATUS::WAIT;
 				_playerTanuki->PlayAnimation("idle", true);
 				_playerTanuki->Process(); // 変身直後の1フレーム更新
@@ -1723,30 +1767,11 @@ bool ModeGame::Process()
 				}
 			}
 		}
-		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
-		{
-			// 残り時間に応じて点滅間隔を短くする
-			_changeBlinkTimer += dt;
-
-			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
-			float currentBlinkInterval = _changeBlinkInterval;
-
-			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
-			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
-			{
-				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
-			}
-
-			if(_changeBlinkTimer >= currentBlinkInterval)
-			{
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = !_changeBlinkVisible;
-			}
-		}
 	}
 
+	// ゲームオーバー復帰の円形フェイドイン
+	ProcessSpotlightFadeIn();
 	// BGM変更処理
-
 	ChangeBGM();
 
 	return true;
@@ -1777,15 +1802,6 @@ bool ModeGame::Render()
 	auto* map = (_objectServer != nullptr) ? _objectServer->GetMap()   : nullptr;
 	const int shadowMapHandle = (map != nullptr) ? map->GetHandleShadowMap() : -1;
 
-	// シャドウマップが無いなら従来描画
-	if(shadowMapHandle < 0)
-	{
-		EffekseerManager::GetInstance()->Render();		// Effekseer描画
-		if(_objectServer) { _objectServer->Render(); }  // 通常描画（UI含む）
-		ObjectRender();									// モード内オブジェクトの描画
-		return true;
-	}
-
 	// ---- マップ側の実装に合わせたライト設定(マップと同じ処理)
 	VECTOR lightdir = VGet(-1.0f, -1.0f, 0.5f);           // ライトの向き
 	SetGlobalAmbientLight(GetColorF(0.f, 0.f, 0.f, 0.f)); 
@@ -1808,25 +1824,19 @@ bool ModeGame::Render()
 	{
 		if(path == 0)
 		{
-			// --- シャドウマップへ「影を落とすもの」を描く ---
-			ShadowMap_DrawSetup(shadowMapHandle);
-
-			// まずマップ（地形・ブロック）を描く
-			if(_objectServer)
-			{
-				_objectServer->Render(); // Map::Render は「本描画」もやってしまう場合があるので、本当は避けたい
-				// → 下の補足参照。現状最短で動かすために呼びます。
-			}
-
 			if(auto* map = _objectServer->GetMap())
 			{
 				map->SetCamera(_camera);
-
-				// マップのシャドウマップにキャラ/宝箱も描く
-				map->SetExternalShadowCasters([this]()
-				{
-					RenderShadowCastersFromModeGame();
-				});
+				map->SetExternalShadowCasters([this]() 
+					{
+						RenderShadowCastersFromModeGame(); 
+					}
+				);
+			}
+			ShadowMap_DrawSetup(shadowMapHandle);
+			if(_objectServer) 
+			{
+				_objectServer->Render();
 			}
 		}
 		else
@@ -1844,14 +1854,12 @@ bool ModeGame::Render()
 			}
 			ObjectRender();
 
-			// ここから先は影なし（Effekseer 等）
-			SetUseShadowMap(0, -1);
-
 			// Effekseer（必ず影なしで描く）
 			EffekseerManager::GetInstance()->Render();
+			//xRenderEffects();
 
 			// シャドウ解除（保険）
-			SetUseShadowMap(0, -1);
+			//SetUseShadowMap(0, -1);
 
 			// ゲームオーバー演出（既存）
 			if(_isGameOverCinematicActive)
@@ -1866,11 +1874,11 @@ bool ModeGame::Render()
 				}
 			}
 
-			//int key = ApplicationBase::GetInstance()->GetKey();
-			//if(key & PAD_INPUT_12)
-			//{
-			//	DebugRender();
-			//}
+			int key = ApplicationBase::GetInstance()->GetKey();
+			if(key & PAD_INPUT_12)
+			{
+				DebugRender();
+			}
 		}
 	}
 
@@ -1907,66 +1915,41 @@ bool ModeGame::Render()
 	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
 	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
 	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
+
+	// ゲームオーバー復帰時の円形フェードイン
+	DrawSpotLightFadeIn();
 	return true;
 }
 
 bool ModeGame::UpdateGoalConfirm(PlayerBase* player)
 {
 	// プレイヤーがいて、未クリア状態で、ゴールに触れているか
-	bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
-
-	// ゴールから離れたら抑制解除（＝次に踏んだらまた確認OK）
+	const bool hitGoal = (!_isGameClear && player && PlayerToGoalHitCollision(player, _goal.get()));
 	if(!hitGoal)
-	{
-		_notGoalFlag = false;
-	}
-
-	// 抑制中は確認を開かない（No直後に乗りっぱなしでも再表示しない）
-	if(_notGoalFlag)
 	{
 		return false;
 	}
 
-	// 踏んだ瞬間に確認モードを開く
-	if(hitGoal && !_goalConfirmOpened)
-	{
-		_goalConfirmOpened = true;
-		_goalConfirmResult = ModeGoalConfirm::Result::None;
+	// 以降のゴール判定を止める（多重開始防止）
+	_isGameClear = true;
 
-		ModeServer::GetInstance()->Add(NEW ModeGoalConfirm(&_goalConfirmResult), 256, "ModeGoalConfirm");
-		return true;
+	// 旧「確認UI」関連の状態は念のためクリア
+	_goalConfirmOpened = false;
+	_goalConfirmResult = ModeGoalConfirm::Result::None;
+	_notGoalFlag = false;
+
+	// ゴールを踏んだら即クリア演出へ
+	if(!_isGameClearCinematicActive)
+	{
+		if(!StartClearSequence())
+		{
+			// 演出開始に失敗した場合はロックを戻す（詰み防止）
+			_isGameClear = false;
+			return false;
+		}
 	}
 
-	// 確認結果を受けて処理を行う
-	if(_goalConfirmOpened)
-	{
-		if(_goalConfirmResult == ModeGoalConfirm::Result::Yes)
-		{
-			_goalConfirmOpened = false;
-			_goalConfirmResult = ModeGoalConfirm::Result::None;
-
-			/*_isGameClear = true;
-			ModeServer::GetInstance()->Add(NEW ModeGameClear(this), 255, "ModeGameClear");*/
-
-			// クリア演出を開始
-			if (!_isGameClearCinematicActive)
-			{
-				StartClearSequence();
-			}
-			return true;
-		}
-		if(_goalConfirmResult == ModeGoalConfirm::Result::No)
-		{
-			_goalConfirmOpened = false;
-			_goalConfirmResult = ModeGoalConfirm::Result::None;
-
-			// 抑制フラグを立てる（ゴールから離れたら解除される）
-			_notGoalFlag = true;
-		}
-
-	}
-
-	return false;
+	return true;
 }
 
 

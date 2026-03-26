@@ -45,6 +45,9 @@ bool PlayerTanuki::Initialize()
 
 	_gameClearModelHandle = -1;
 	_gameOverModelHandle  = -1;
+
+	_statusAnimationEnabled = true;
+
 	return true;
 }
 
@@ -418,83 +421,91 @@ bool PlayerTanuki::Process()
 		SoundWalk();
 	}
 	
-	// アニメーションの名前取得
-	auto GetAnimName = [this](STATUS name) -> std::string
-		{
-			switch(name)
+	if(_statusAnimationEnabled)
+	{
+		// アニメーションの名前取得
+		auto GetAnimName = [this](STATUS name) -> std::string
 			{
-			case STATUS::WAIT:
-				return "idle";
-			case STATUS::WALK:
-				return "walk";
-			default:
-				return std::string();
-			}
-		};
-
-	auto PlayAnim = [&](bool change)
-		{
-			std::string name = GetAnimName(_status);
-			if(name.empty()) { return; }
-
-			_animId = AnimationManager::GetInstance()->Play(_handle, name, true);
-			_fPlayTime = 0.0f;
-
-			if(change)
-			{
-				switch(_status)
+				switch(name)
 				{
-				case STATUS::WAIT:
-					_fPlayTime += rand() % 30;
-					break;
+					case STATUS::WAIT:
+						return "idle";
+					case STATUS::WALK:
+						return "walk";
+					default:
+						return std::string();
 				}
-			}
+			};
 
+		auto PlayAnim = [&](bool change)
+			{
+				std::string name = GetAnimName(_status);
+				if(name.empty()) { return; }
+
+				_animId = AnimationManager::GetInstance()->Play(_handle, name, true);
+				_fPlayTime = 0.0f;
+
+				if(change)
+				{
+					switch(_status)
+					{
+						case STATUS::WAIT:
+							_fPlayTime += rand() % 30;
+							break;
+					}
+				}
+
+				if(_animId != -1)
+				{
+					AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+				}
+			};
+
+		if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
+		{
+			_animId = -1;
+			PlayAnim(false);
+		}
+
+		if(old_status == _status)
+		{
+			float anim_speed = 0.5f;
+			if(_dash && _status == STATUS::WALK)
+			{
+				anim_speed *= dash::DASH_SPEED;
+			}
+			_fPlayTime += anim_speed;
+			switch(_status)
+			{
+				case STATUS::WAIT:
+					_fPlayTime += (float)(rand() % 10) / 100.0f;
+					break;
+			}
+		}
+		else
+		{
 			if(_animId != -1)
 			{
-				AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
+				AnimationManager::GetInstance()->Stop(_animId);
+				_animId = -1;
 			}
-		};
-
-	if(_animId != -1 && !AnimationManager::GetInstance()->IsPlaying(_animId))
-	{
-		_animId = -1;
-		PlayAnim(false);
-	}
-
-	if(old_status == _status)
-	{
-		float anim_speed = 0.5f;
-		if(_dash && _status == STATUS::WALK)
-		{
-			anim_speed *= dash::DASH_SPEED; // ダッシュ中はアニメーション速度も速くする
+			PlayAnim(true);
 		}
-		_fPlayTime += anim_speed;
-		switch(_status)
+
+		if(_fPlayTime >= _fTotalTime)
 		{
-		case STATUS::WAIT:
-			_fPlayTime += (float)(rand() % 10) / 100.0f;
-			break;
+			_fPlayTime = 0.0f;
 		}
 	}
 	else
 	{
-		if(_animId != -1)
-		{
-			AnimationManager::GetInstance()->Stop(_animId);
-			_animId = -1;
-		}
-		PlayAnim(true);
-	}
-
-	if(_fPlayTime >= _fTotalTime)
-	{
-		_fPlayTime = 0.0f;
+		// 演出中：通常アニメ更新はしない（止まっていたらIDだけ掃除）
+		ClearAnimIdIfStopped();
 	}
 
 	if(rel & PAD_INPUT_4)
 	{
-		if(_transformPlayerButtonDown && !_transformPlayerMove)
+		if(((rel & PAD_INPUT_3) == 0) && _transformPlayerButtonDown && !_transformPlayerMove)
 		{
 			ModeBase* base = ModeServer::GetInstance()->Get("game");
 			if(base)
@@ -535,7 +546,7 @@ bool PlayerTanuki::Process()
 
 	if(rel & PAD_INPUT_3)
 	{
-		if(_transformPlayerMonoButtonDown && !_transformPlayerMonoMove)
+		if(((rel & PAD_INPUT_4) == 0) && _transformPlayerMonoButtonDown && !_transformPlayerMonoMove)
 		{
 			ModeBase* base = ModeServer::GetInstance()->Get("game");
 			if(base)
@@ -703,6 +714,8 @@ bool PlayerTanuki::SetGameOverHandle(const std::string& animName, bool loop)
 	}
 	_handle = _gameOverModelHandle;
 
+	// ゲームオーバー演出中は通常の状態アニメは更新しないようにする
+	_statusAnimationEnabled = false;
 	// 切り替え後にアニメーション再生
 	if(!animName.empty())
 	{
@@ -757,6 +770,8 @@ bool PlayerTanuki::RestoreDefaultModel(const std::string& animName, bool loop)
 	_gameClearModelHandle = -1;
 	_gameOverModelHandle = -1;
 
+	// 通常の状態アニメ更新を再び有効化する
+	_statusAnimationEnabled = true;
 	// 通常アニメ再生
 	if(!animName.empty())
 	{
@@ -769,3 +784,4 @@ bool PlayerTanuki::RestoreDefaultModel(const std::string& animName, bool loop)
 
 	return true;
 }
+

@@ -7,6 +7,8 @@ namespace img
   inline constexpr const char* BG_niwa = "res/BG_niwa.png";
   inline constexpr const char* BG_stageclear = "res/BG_stageclear.png";
   inline constexpr const char* BG_stone = "res/BG_stone.png";
+  inline constexpr const char* Fusuma_L = "res/Fusuma_L.png";
+  inline constexpr const char* Fusuma_R = "res/Fusuma_R.png";
   inline constexpr const char* Loading_1start = "res/Loading_1start.png";
   inline constexpr const char* Loading_2start = "res/Loading_2start.png";
   inline constexpr const char* Loading_3gameover = "res/Loading_3gameover.png";
@@ -98,7 +100,7 @@ namespace ui
   inline constexpr const char* UI_8 = "res/UI/UI_8.png";
   inline constexpr const char* UI_9 = "res/UI/UI_9.png";
   inline constexpr const char* UI_Hito = "res/UI/UI_Hito.png";
-  inline constexpr const char* UI_HitoBK = "res/UI/UI_HitoBK.png";
+  inline constexpr const char* UI_Hito_Makimono_0 = "res/UI/UI_Hito_Makimono_0.png";
   inline constexpr const char* UI_Mono = "res/UI/UI_Mono.png";
   inline constexpr const char* UI_Tanubito_no = "res/UI/UI_Tanubito_no.png";
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
@@ -120,6 +122,7 @@ namespace ui
 
 namespace ef
 {
+  inline constexpr const char* EF_Kirakira = "res/Effect/EF_Kirakira.efkefc";
   inline constexpr const char* EF_Kizetsu = "res/Effect/EF_Kizetsu.efkefc";
   inline constexpr const char* EF_Shirimoti = "res/Effect/EF_Shirimoti.efkefc";
   inline constexpr const char* EF_Treasureopen = "res/Effect/EF_Treasureopen.efkefc";
@@ -157,6 +160,7 @@ namespace mv1
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
   inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";
   inline constexpr const char* S_Savepoint = "res/map/S_Savepoint.mv1";
+  inline constexpr const char* S_Savepoint_2 = "res/map/S_Savepoint_2.mv1";
   inline constexpr const char* SK_busi_multimotion = "res/PoorEnemyMelee/SK_busi_multimotion.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_multimotionTanuHuman_06 = "res/Tanuhuman/SK_multimotionTanuHuman_06.mv1";
@@ -174,6 +178,8 @@ namespace mp3
   inline constexpr const char* BGM_enemy_found = "res/BGM/BGM_enemy_found.mp3";
   inline constexpr const char* BGM_stage_normal = "res/BGM/BGM_stage_normal.mp3";
   inline constexpr const char* Ending = "res/BGM/Ending.mp3";
+  inline constexpr const char* GameClear = "res/BGM/GameClear.mp3";
+  inline constexpr const char* GameOver = "res/BGM/GameOver.mp3";
   inline constexpr const char* Prologe = "res/BGM/Prologe.mp3";
   inline constexpr const char* Title = "res/BGM/Title.mp3";
   inline constexpr const char* henshin = "res/OneShot/henshin.mp3";

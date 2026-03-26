@@ -50,8 +50,7 @@ bool AttackUi::Render()
 		return false;
 	}
 
-	// ‚½‚Ê‚«ó‘Ô‚ª•\Ž¦‚³‚ê‚Ä‚¢‚éê‡‚Í•`‰æ‚µ‚È‚¢
-	if(modeGame->GetShowTanuki())
+	if(modeGame->GetShowTanuki() || modeGame->IsShowingMono())
 	{
 		return false;
 	}

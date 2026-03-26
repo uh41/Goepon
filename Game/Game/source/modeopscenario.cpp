@@ -1,7 +1,7 @@
 #include "modeopscenario.h"
 #include "modegame.h"
 #include "modegameload.h"
-
+#include "mymath.h"
 #ifdef _DEBUG
 #include <crtdbg.h>
 #define NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
@@ -12,8 +12,6 @@
 ModeOpScenario::ModeOpScenario()
 {
 	Initialize();
-
-	Fade::GetInstance()->ColorMask(0, 0, 0, 0);		// �J���[�}�X�N�̐ݒ�
 	_state = ModeBase::State::WAIT;
 	_fadeTimer = 0;
 }
@@ -25,6 +23,7 @@ ModeOpScenario::~ModeOpScenario()
 
 bool ModeOpScenario::Initialize()
 {
+	Fade::GetInstance()->ColorMask(0, 0, 0, 0);
 	base::Initialize();
 	_soundServer = std::make_shared<soundserver::SoundServer>();
 
@@ -76,12 +75,27 @@ bool ModeOpScenario::Initialize()
 		auto bgm = gGlobal._soundServer->Get("110");
 		if(bgm)
 		{
+			bgm->Stop();
 			bgm->Play();
 		}
 	}
 
 	_moveHandle = LoadGraph(ui::prologe_config);
 
+	// ふすまの初期化(開く前)
+	_fusumaRighetHandle = LoadGraph(img::Fusuma_R);
+	_fusumaLeftHandle = LoadGraph(img::Fusuma_L);
+
+	if (_fusumaLeftHandle != -1)
+	{
+		GetGraphSize(_fusumaLeftHandle, &_fusumaW, &_fusumaH);
+	}
+	_fusumaY            = 0.0f;
+	const float screenW = 1920.0f;
+	_fusumaLeftX        = 0.0f;
+	_fusumaRightX       = screenW - StCas<float>(_fusumaW);
+
+	StartFusumaOpen();
 	return true;
 }
 
@@ -104,6 +118,11 @@ bool ModeOpScenario::Terminate()
 bool ModeOpScenario::Process()
 {
 	base::Process();
+
+	// 裏ロード
+	gGlobal.UpdateLoadProgress();
+
+	ProcessFusumaOpen();
 
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
@@ -228,6 +247,66 @@ bool ModeOpScenario::Render()
 
 	DrawGraph(ui::MOVE_X, ui::MOVE_Y, _moveHandle, TRUE);
 
+	RenderFusuma();
+
 	Fade::GetInstance()->Render();	// �t�F�[�h�`��
 	return true;
+}
+
+void ModeOpScenario::StartFusumaOpen()
+{
+	_fusumaState = FusumaState::Opening;
+	_fusumaCnt = 0.0f;
+}
+
+bool ModeOpScenario::ProcessFusumaOpen()
+{
+	if (_fusumaState != FusumaState::Opening)
+	{
+		return false;
+	}
+
+	_fusumaCnt += 1.0f;
+	if (_fusumaCnt > _fusumaFrames)
+	{
+		_fusumaCnt = _fusumaFrames;
+	}
+
+	const float screenW = 1920.0f;
+
+	// 開始：閉じている位置
+	const float leftStartX = 0.0f;
+	const float rightStartX = screenW - StCas<float>(_fusumaW);
+
+	// 終了：画面外へ退避（開いた状態）
+	const float leftEndX = -StCas<float>(_fusumaW);
+	const float rightEndX = screenW;
+
+	_fusumaLeftX  = mymath::EasingLinear(_fusumaCnt, leftStartX, leftEndX, _fusumaFrames);
+	_fusumaRightX = mymath::EasingLinear(_fusumaCnt, rightStartX, rightEndX, _fusumaFrames);
+
+	if (_fusumaCnt >= _fusumaFrames)
+	{
+		_fusumaState = FusumaState::Opened;
+		return true;
+	}
+
+	return false;
+}
+
+void ModeOpScenario::RenderFusuma() const
+{
+	if (_fusumaLeftHandle == -1 || _fusumaRighetHandle == -1)
+	{
+		return;
+	}
+
+	// Opening中だけ描画（Openedになったら描かない）
+	if (_fusumaState == FusumaState::Opened || _fusumaState == FusumaState::None)
+	{
+		return;
+	}
+
+	DrawGraph(StCas<int>(_fusumaLeftX), StCas<int>(_fusumaY), _fusumaLeftHandle, TRUE);
+	DrawGraph(StCas<int>(_fusumaRightX), StCas<int>(_fusumaY), _fusumaRighetHandle, TRUE);
 }
