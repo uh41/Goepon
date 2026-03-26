@@ -100,7 +100,8 @@ namespace ui
   inline constexpr const char* UI_8 = "res/UI/UI_8.png";
   inline constexpr const char* UI_9 = "res/UI/UI_9.png";
   inline constexpr const char* UI_Hito = "res/UI/UI_Hito.png";
-  inline constexpr const char* UI_HitoBK = "res/UI/UI_HitoBK.png";
+  inline constexpr const char* UI_HitoBK_1 = "res/UI/UI_HitoBK_1.png";
+  inline constexpr const char* UI_HitoBK_2 = "res/UI/UI_HitoBK_2.png";
   inline constexpr const char* UI_Mono = "res/UI/UI_Mono.png";
   inline constexpr const char* UI_Tanubito_no = "res/UI/UI_Tanubito_no.png";
   inline constexpr const char* UI_nokori = "res/UI/UI_nokori.png";
@@ -122,6 +123,7 @@ namespace ui
 
 namespace ef
 {
+  inline constexpr const char* EF_Kirakira = "res/Effect/EF_Kirakira.efkefc";
   inline constexpr const char* EF_Kizetsu = "res/Effect/EF_Kizetsu.efkefc";
   inline constexpr const char* EF_Shirimoti = "res/Effect/EF_Shirimoti.efkefc";
   inline constexpr const char* EF_Treasureopen = "res/Effect/EF_Treasureopen.efkefc";
@@ -159,6 +161,7 @@ namespace mv1
   inline constexpr const char* SM_stage3 = "res/map/SM_stage3.mv1";
   inline constexpr const char* S_Marker_Event = "res/map/S_Marker_Event.mv1";
   inline constexpr const char* S_Savepoint = "res/map/S_Savepoint.mv1";
+  inline constexpr const char* S_Savepoint_2 = "res/map/S_Savepoint_2.mv1";
   inline constexpr const char* SK_busi_multimotion = "res/PoorEnemyMelee/SK_busi_multimotion.mv1";
   inline constexpr const char* skysphere = "res/SkySphere/skysphere.mv1";
   inline constexpr const char* SK_multimotionTanuHuman_06 = "res/Tanuhuman/SK_multimotionTanuHuman_06.mv1";

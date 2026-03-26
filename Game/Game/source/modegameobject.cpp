@@ -145,6 +145,7 @@ bool ModeGame::ObjectInitialize()
 	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
 	_effectBase.emplace_back(_makimonoGetEffect);
 	_particleEffect = std::make_shared<ParticleEffect>();
+	_particleEffect->SetGoal(_goal);
 	_effectBase.emplace_back(_particleEffect);
 	_goalEffect = std::make_shared<GoalEffect>();
 	_goalEffect->SetGoal(_goal);

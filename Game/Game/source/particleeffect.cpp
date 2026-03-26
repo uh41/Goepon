@@ -1,4 +1,5 @@
 #include "particleeffect.h"
+#include "Goal.h"
 
 ParticleEffect::ParticleEffect()
 {
@@ -10,7 +11,7 @@ bool ParticleEffect::Initialize()
 	base::Initialize();
 	_handle = EffekseerManager::GetInstance()->LoadEffect(ef::EF_Kirakira, 1.0f);
 	_playHandle = -1;
-	_targetPlayer = nullptr;
+	_goal = nullptr;
 	return true;
 }
 
@@ -26,7 +27,7 @@ bool ParticleEffect::Terminate()
 	}
 
 	StopPlaying();
-	_targetPlayer = nullptr;
+	_goal = nullptr;
 	return true;
 }
 
@@ -39,9 +40,9 @@ void ParticleEffect::PlayEffect(const vec::Vec3& pos)
 	}
 	_playHandle = em->PlayEffect3DPos(_handle, pos);
 
-	if (_playHandle != -1 && _targetPlayer)
+	if (_playHandle != -1)
 	{
-		em->SetPosEffect(_playHandle, _targetPlayer->GetPos());
+		em->SetPosEffect(_playHandle, _goal->GetPos());
 	}
 }
 
@@ -50,12 +51,12 @@ bool ParticleEffect::Process()
 {
 	base::Process();
 
-	if (_playHandle != -1 && _targetPlayer)
+	if (_playHandle != -1)
 	{
 		auto em = EffekseerManager::GetInstance();
 		if (em)
 		{
-			em->SetPosEffect(_playHandle, _targetPlayer->GetPos());
+			em->SetPosEffect(_playHandle, _goal->GetPos());
 		}
 	}
 

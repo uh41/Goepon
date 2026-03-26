@@ -1,6 +1,8 @@
 #pragma once
 #include "effectbase.h"
 
+class Goal;
+
 class ParticleEffect : public EffectBase
 {
 	typedef EffectBase base;
@@ -14,5 +16,7 @@ public:
 
 	void PlayEffect(const vec::Vec3& pos);
 
-
+	void SetGoal(at::spc<Goal> goal) { _goal = goal; }
+protected:
+	at::spc<Goal> _goal;
 };
