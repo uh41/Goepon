@@ -38,6 +38,7 @@
     <ClInclude Include="source\Goal.h" />
     <ClInclude Include="source\goaleffect.h" />
     <ClInclude Include="source\henshinui.h" />
+    <ClInclude Include="source\IntroUi.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\makimonogeteffect.h" />
     <ClInclude Include="source\Map1.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="source\Goal.cpp" />
     <ClCompile Include="source\goaleffect.cpp" />
     <ClCompile Include="source\henshinui.cpp" />
+    <ClCompile Include="source\IntroUi.cpp" />
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\makimonogeteffect.cpp" />
     <ClCompile Include="source\Map1.cpp" />

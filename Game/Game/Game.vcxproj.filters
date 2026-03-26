@@ -291,6 +291,7 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\modeGameCinematic.cpp" />
+    <ClCompile Include="source\IntroUi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -389,6 +390,7 @@
     <ClInclude Include="source\particleeffect.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\IntroUi.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />

@@ -1,5 +1,6 @@
 #include "treasureui.h"
 #include "applicationmain.h"
+#include "modegame.h"
 
 TreasureUi::TreasureUi()
 {
@@ -48,7 +49,7 @@ bool TreasureUi::Terminate()
 		_handleNokori = -1;
 	}
 
-	if(_handleGoDeguti)
+	if(_handleGoDeguti != -1)
 	{
 		DeleteGraph(_handleGoDeguti);
 		_handleGoDeguti = -1;

@@ -29,7 +29,8 @@
 #include "enemysensor.h"
 #include "uibase.h"
 #include "uihp.h"
-#include "UiMakimono.h"	
+#include "UiMakimono.h"
+#include "IntroUi.h"
 #include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
@@ -183,6 +184,9 @@ public:
 	bool ProcessIntroSequence();    // イントロシーケンスの更新
 	bool EndIntroSequence();        // イントロシーケンス終了
 	void StartSpotLightFadeIn();    // スポットライトフェードイン開始
+	bool IsIntroActive() const { return _isIntroActive; } // イントロシーケンスがアクティブかどうか
+	float GetIntroTimerSec() const { return _introTimer; } // イントロ経過秒
+	float GetIntroDurationSec() const { return INTRO_DURATION; } // イントロ総秒
 
 	// ゲームクリア演出			    
 	bool StartClearSequence();      // クリアシーケンス開始
@@ -312,7 +316,7 @@ protected:
 	at::spc<TreasureOpenUi> _treasureOpenUi;
 	at::spc<DashUi> _dashUi;
 	at::spc<StunEffect> _stunEffect;
-
+	at::spc<IntroUi> _introUi;
 	// エフェクト
 	at::vspc<EffectBase> _effectBase;
 	at::spc<TreasureEffect> _treasureEffect;

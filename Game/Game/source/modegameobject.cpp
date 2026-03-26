@@ -118,6 +118,9 @@ bool ModeGame::ObjectInitialize()
 	_treasureUi = std::make_shared<TreasureUi>();
 	_treasureUi->SetTreasureList(_treasureBase);
 	_uiBase.emplace_back(_treasureUi);
+	_introUi = std::make_shared<IntroUi>();
+	_introUi->SetOwner(this);
+	_uiBase.emplace_back(_introUi);
 
 	// エフェクト初期化
 	_treasureEffect = std::make_shared<TreasureEffect>();

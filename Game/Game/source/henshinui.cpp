@@ -113,8 +113,6 @@ bool HenshinUi::Process()
 	return true;
 }
 
-
-
 bool HenshinUi::Render()
 {
 	base::Render();

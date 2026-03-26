@@ -155,6 +155,8 @@ namespace mymath
 
 	float EasingInBack(float cnt, float start, float end, float frames);
 	void TestEasing();
+
+	// 値をmin～maxの範囲にクランプする関数
 	template<typename T>
 	static T Clamp(T min, T max, T n)
 	{
