@@ -1244,13 +1244,21 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 				SavePlayer(checkPlayer);
 				_lastSavedPoint = savePoint;
 
-				// 抑制フラグが立っていて、かつ同じセーブポイントなら効果音を再生しない
-				if(!(_suppressSavePoint && _suppressedSavePoint == savePoint))
+				// 先に「一回だけ抑制」フラグを処理する（ゲーム開始直後の誤再生対策）
+				if(_suppressNextSavePointSound)
 				{
-					auto save = gGlobal._soundServer->Get("71");
-					if(save)
+					_suppressNextSavePointSound = false;
+				}
+				else
+				{
+					// 抑制フラグが立っていて、かつ同じセーブポイントなら効果音を再生しない
+					if(!(_suppressSavePoint && _suppressedSavePoint == savePoint))
 					{
-						save->Play();
+						auto save = gGlobal._soundServer->Get("71");
+						if(save)
+						{
+							save->Play();
+						}
 					}
 				}
 			}

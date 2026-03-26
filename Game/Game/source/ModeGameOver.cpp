@@ -136,6 +136,7 @@ bool ModeGameOver::Process()
 			if(game)
 			{
 				game->ApplySaveData(sd);
+				game->SuppressNextSavePointSound();
 				game->ResetEnemiesToInitialPositions();
 				game->StartSpotLightFadeIn();
 				ModeServer::GetInstance()->Del(this);
@@ -156,6 +157,7 @@ bool ModeGameOver::Process()
 				if(game)
 				{
 					game->ApplySaveData(sd);
+					game->SuppressNextSavePointSound();
 					game->ResetEnemiesToInitialPositions();
 				}
 			}

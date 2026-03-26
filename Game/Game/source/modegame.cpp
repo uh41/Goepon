@@ -476,6 +476,12 @@ bool ModeGame::Terminate()
 	return true;
 }
 
+void ModeGame::SuppressNextSavePointSound()
+{
+	// 次回セーブポイントでの効果音再生を1回だけ抑制する
+	_suppressNextSavePointSound = true;
+}
+
 void ModeGame::SavePlayer(PlayerBase* player)
 {
 	PlayerBase* p;
