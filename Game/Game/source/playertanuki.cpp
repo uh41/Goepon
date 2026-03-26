@@ -119,6 +119,29 @@ bool PlayerTanuki::SoundWalk()
 	return true;
 }
 
+void PlayerTanuki::BlockDashFor(float seconds)
+{
+	if(seconds <= 0.0f) return;
+
+	// ダッシュ状態をリセットしてクールダウンを強制
+	_dash = false;
+	_dashTimer = 0.0f;
+	_dashCount = 0;
+	_dashCoolDownTime = seconds;
+	_dashRecoverTime = 0.0f;
+	_dashRecoverActive = false;
+	_fMvSpeed = _normalSpeed;
+
+	// 再生中のダッシュ音があれば止める
+	if(gGlobal._soundServer)
+	{
+		auto s = gGlobal._soundServer->Get("5");
+		if(s && s->IsPlay())
+		{
+			s->Stop();
+		}
+	}
+}
 
 bool PlayerTanuki::Process()
 {
