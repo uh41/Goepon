@@ -120,6 +120,7 @@ bool ModeGame::ObjectInitialize()
 	_uiBase.emplace_back(_treasureUi);
 
 	// エフェクト初期化
+	
 	_treasureEffect = std::make_shared<TreasureEffect>();
 	_effectBase.emplace_back(_treasureEffect);
 	_hensinEffect = std::make_shared<HensinEffect>();
@@ -144,13 +145,9 @@ bool ModeGame::ObjectInitialize()
 	_effectBase.emplace_back(_savePointEffect);
 	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
 	_effectBase.emplace_back(_makimonoGetEffect);
-	_particleEffect = std::make_shared<ParticleEffect>();
-	_particleEffect->SetGoal(_goal);
-	_effectBase.emplace_back(_particleEffect);
 	_goalEffect = std::make_shared<GoalEffect>();
 	_goalEffect->SetGoal(_goal);
 	_effectBase.emplace_back(_goalEffect);
-
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
