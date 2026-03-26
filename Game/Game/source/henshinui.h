@@ -7,8 +7,8 @@ namespace henshin
 	static constexpr auto HENSHIN_Y = 800; //800
 	static constexpr auto TANUBITO_X = 1557;
 	static constexpr auto TANUBITO_Y = 799;
-	static constexpr auto TANUMONO_X = 1425;
-	static constexpr auto TANUMONO_Y = 890;
+	static constexpr auto TANUMONO_X = 1432;
+	static constexpr auto TANUMONO_Y = 895;
 }
 
 class HenshinUi : public UiBase

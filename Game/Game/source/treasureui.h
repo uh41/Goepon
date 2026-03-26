@@ -6,9 +6,9 @@ class ModeGame;
 
 namespace treasure
 {
-	static constexpr auto DEGUTI_X = 1600;   // 出口のX座標
+	static constexpr auto DEGUTI_X = 70;   // 出口のX座標
 	static constexpr auto DEGUTI_Y = 50;     // 出口のY座標
-	static constexpr auto NOKORI_X = 1600;   // 残りのX座標
+	static constexpr auto NOKORI_X = 70;   // 残りのX座標
 	static constexpr auto NOKORI_Y = 50;     // 残りのY座標
 	static constexpr auto KAKERU_X = 1500;   // 掛けるのX座標
 	static constexpr auto KAKERU_Y = 50;     // 掛けるのY座標
