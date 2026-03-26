@@ -111,7 +111,7 @@ bool ModeGameClear::Render()
 		return false;
 	}
 
-	int x = 100, y = 0;
+	int x = 250, y = 100;
 
 	DrawGraph(x, y, _handle, TRUE);
 
