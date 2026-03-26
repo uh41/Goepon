@@ -1653,58 +1653,11 @@ bool ModeGame::Process()
 	// 変身時間制限処理
 	if(_changeTimeActive)
 	{
-		const float dt = 1.0f / 60.0f; // 60FPS想定
-
-		// 既存の残り時間を減算して保持（他用途と共用）
+		float dt = 1.0f / 60.0f; // 60FPS想定
 		_changeTimeLimit -= dt;
-		if(_changeTimeLimit < 0.0f) _changeTimeLimit = 0.0f;
-
-		// 追加: 2回攻撃時の遅延戻りタイマーを管理
-		if(_tanukiReturnPending)
-		{
-			_tanukiReturnTimer -= dt;
-			if(_tanukiReturnTimer <= 0.0f)
-			{
-				_tanukiReturnPending = false;
-				_tanukiReturnTimer = 0.0f;
-
-				// 3秒経過でリクエストを立てる
-				_requestedReturnToTanuki = true;
-
-				// 点滅状態をリセット
-				_changeTimeActive = false;
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = true;
-			}
-		}
-
-		// 元の「残り時間に応じた点滅」ロジックを保持しつつ、遅延時は最後の1秒で加速
-		float currentBlinkInterval = _changeBlinkInterval;
-
-		// 既存の閾値で加速（例: 残り <= 2秒 で 2倍速）
-		if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
-		{
-			currentBlinkInterval *= 0.5f;
-		}
-
-		// 2回攻撃の遅延中かつ残り1秒以下なら更に速く点滅させる
-		if(_tanukiReturnPending && _tanukiReturnTimer <= 1.0f)
-		{
-			currentBlinkInterval *= 0.25f; // さらに速く（必要なら調整）
-		}
-
-		// ブリンクタイマー更新（トグル）
-		_changeBlinkTimer += dt;
-		if(_changeBlinkTimer >= currentBlinkInterval)
-		{
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = !_changeBlinkVisible;
-		}
-
-		// 既存: 変身の残り時間がゼロの場合の復帰処理（従来の挙動を維持）
+		// 変更箇所: changeTimeLimit <= 0.0f のブロック内
 		if(_changeTimeLimit <= 0.0f)
 		{
-			// 以下は既存の変身解除処理（コピペで元の処理を維持）
 			_changeTimeActive = false;
 			_changeTimeLimit = 0.0f;
 			_changeBlinkTimer = 0.0f;
@@ -1765,6 +1718,26 @@ bool ModeGame::Process()
 				{
 					_hatenaEffect->PlayOnce(enemy.get());
 				}
+			}
+		}
+		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
+		{
+			// 残り時間に応じて点滅間隔を短くする
+			_changeBlinkTimer += dt;
+
+			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
+			float currentBlinkInterval = _changeBlinkInterval;
+
+			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
+			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
+			{
+				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
+			}
+
+			if(_changeBlinkTimer >= currentBlinkInterval)
+			{
+				_changeBlinkTimer = 0.0f;
+				_changeBlinkVisible = !_changeBlinkVisible;
 			}
 		}
 	}

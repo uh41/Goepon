@@ -444,6 +444,10 @@ bool ModeGame::PlayerTransform()
 				soundHenshin->Play();
 			}
 
+			//_playerTanuki->SetInputEnabled(false);
+			//_tanukiReturnPending = true;
+			//_tanukiReturnTimer = 5.0f; // 1秒
+
 			// タイマーが動いてたらリセット
 			_changeTimeActive = false; // 時間制限を無効化
 			_changeTimeLimit = 0.0f;
@@ -485,6 +489,8 @@ bool ModeGame::PlayerTransform()
 				// モノから戻る場合もタヌキの待機アニメーションを再生する
 				_playerTanuki->PlayAnimation("idle", true);
 				_playerTanuki->Process();
+
+				_playerTanuki->BlockDashFor(2.0f);
 			}
 
 			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
