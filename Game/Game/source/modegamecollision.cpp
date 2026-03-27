@@ -363,11 +363,11 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 		const float mHalf = makimono->GetColSubY();
 		const float mR = StCas<float>(makimono->GetCollisionR());
 
-		const vec::Vec3 mTop	= vec3::VAdd(mPos, vec3::VGet(0.0f, mHalf, 0.0f));
-		const vec::Vec3 mBottom = vec3::VAdd(mPos, vec3::VGet(0.0f, -mHalf, 0.0f));
+		const vec::Vec3 mTop	= vec3::VAdd(mPos, vec3::VGet(0.0f, mHalf  - 10, 0.0f));
+		const vec::Vec3 mBottom = vec3::VAdd(mPos, vec3::VGet(0.0f, -mHalf + 50, 0.0f));
 		
 		//　カプセル同士の当たり判定
-		if(DxlibConverter::HitCheckCapsuleToCapsule(pTop, pBottom, pR, mTop, mBottom, mR))
+		if(DxlibConverter::HitCheckCapsuleToCapsule(pTop, pBottom, pR, mTop, mBottom, mR + 30))
 		{
 			makimono->SetVisible(false); // 巻物を消す
 
