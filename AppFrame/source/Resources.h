@@ -22,6 +22,7 @@ namespace img
   inline constexpr const char* cursor = "res/cursor.png";
   inline constexpr const char* ending_completed1 = "res/ending_completed1.png";
   inline constexpr const char* ending_completed2 = "res/ending_completed2.png";
+  inline constexpr const char* ending_completed3 = "res/ending_completed3.png";
   inline constexpr const char* gameoverload = "res/gameoverload.png";
   inline constexpr const char* oshimai = "res/oshimai.png";
   inline constexpr const char* shadow_ = "res/shadow_.png";

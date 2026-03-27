@@ -19,10 +19,10 @@ HenshinUi::HenshinUi()
 bool HenshinUi::Initialize()
 {
 	base::Initialize();
-	_handle = LoadGraph(ui::UI_Hito);
-	_handleNotCg = LoadGraph(ui::UI_Hito_Makimono_0);
-	_handleTanubito = LoadGraph(ui::UI_Tanubito_no);
-	_handleMono = LoadGraph(ui::UI_Mono);
+	_handle			= LoadGraph(ui::UI_Hito           );
+	_handleNotCg	= LoadGraph(ui::UI_Hito_Makimono_0);
+	_handleTanubito = LoadGraph(ui::UI_Tanubito_no    );
+	_handleMono	    = LoadGraph(ui::UI_Mono           );
 	return true;
 }
 

@@ -32,8 +32,8 @@ bool ModeAfScenario::Initialize()
 	_page =
 	{
 		{ LoadGraph(img::ending_completed1), mp3::UI_Henshin_pon },// ‰æ‘œ“Ç‚İ‚İ, ‰¹ºƒtƒ@ƒCƒ‹
-		{ LoadGraph(img::ending_completed2), mp3::UI_Henshin_pon },
-		{ LoadGraph(img::oshimai), mp3::UI_Henshin_pon },
+		{ LoadGraph(img::ending_completed2), mp3::UI_savepoint},
+		{ LoadGraph(img::ending_completed3), mp3::UI_Henshin_pon },
 	};
 	_pageNo = 0;
 

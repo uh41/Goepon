@@ -34,21 +34,19 @@ bool ModeOpScenario::Initialize()
 		{ LoadGraph("res/Prologue/1.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/2.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/3.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/4.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/4.png"), mp3::bush_found},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/5.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/6.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/7.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/8.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/7.png"), mp3::UI_Itemget},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/8.png"), mp3::dog_howling},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/9.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/10.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/11.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/12.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/13.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/12.png"), mp3::bush_found},// �摜�ǂݍ���, �����t�@�C��
+		{ LoadGraph("res/Prologue/13.png"), mp3::tanuki_run},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/14.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
 		{ LoadGraph("res/Prologue/15.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/16.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/17.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
-		{ LoadGraph("res/Prologue/18.png"), mp3::UI_Henshin_pon},// �摜�ǂݍ���, �����t�@�C��
+
 	};
 
 	// �y�[�W�̕\���f�[�^��ݒ�
