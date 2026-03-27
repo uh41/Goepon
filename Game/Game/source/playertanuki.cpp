@@ -345,14 +345,7 @@ bool PlayerTanuki::Process()
 				_dashRecoverTime = 0.0f;
 			}
 
-			if(gGlobal._soundServer)
-			{
-				auto s = gGlobal._soundServer->Get("5"); // ApplicationGlobal で "5" に tanuki_run を登録済み
-				if(s && !s->IsPlay())
-				{
-					s->Play();
-				}
-			}
+
 		}
 	}
 
@@ -363,6 +356,14 @@ bool PlayerTanuki::Process()
 
 	if(_dash)
 	{
+		if(gGlobal._soundServer)
+		{
+			auto s = gGlobal._soundServer->Get("5"); // ApplicationGlobal で "5" に tanuki_run を登録済み
+			if(s && !s->IsPlay())
+			{
+				s->Play();
+			}
+		}
 		_dashTimer -= 1.0f/ 60.0f; // 仮に60FPSで更新されると想定してタイマーを進める
 		if(_dashTimer <= 0.0f)
 		{

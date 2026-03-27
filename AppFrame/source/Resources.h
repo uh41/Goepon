@@ -41,7 +41,15 @@ namespace texture
   inline constexpr const char* TR_10 = "res/Texture/TR_10.png";
   inline constexpr const char* TR_11 = "res/Texture/TR_11.png";
   inline constexpr const char* TR_12 = "res/Texture/TR_12.png";
+  inline constexpr const char* TR_13 = "res/Texture/TR_13.png";
+  inline constexpr const char* TR_14 = "res/Texture/TR_14.png";
+  inline constexpr const char* TR_15 = "res/Texture/TR_15.png";
+  inline constexpr const char* TR_16 = "res/Texture/TR_16.png";
+  inline constexpr const char* TR_17 = "res/Texture/TR_17.png";
+  inline constexpr const char* TR_18 = "res/Texture/TR_18.png";
+  inline constexpr const char* TR_19 = "res/Texture/TR_19.png";
   inline constexpr const char* TR_2 = "res/Texture/TR_2.png";
+  inline constexpr const char* TR_20 = "res/Texture/TR_20.png";
   inline constexpr const char* TR_3 = "res/Texture/TR_3.png";
   inline constexpr const char* TR_4 = "res/Texture/TR_4.png";
   inline constexpr const char* TR_5 = "res/Texture/TR_5.png";
@@ -148,6 +156,13 @@ namespace ef
   inline constexpr const char* Savepoint = "res/Effect/Savepoint.efkefc";
   inline constexpr const char* hennsin = "res/Effect/hennsin.efkefc";
   inline constexpr const char* tutorial_1 = "res/Effect/tutorial_1.efkefc";
+  inline constexpr const char* tutorial_10 = "res/Effect/tutorial_10.efkefc";
+  inline constexpr const char* tutorial_11 = "res/Effect/tutorial_11.efkefc";
+  inline constexpr const char* tutorial_12 = "res/Effect/tutorial_12.efkefc";
+  inline constexpr const char* tutorial_13 = "res/Effect/tutorial_13.efkefc";
+  inline constexpr const char* tutorial_14 = "res/Effect/tutorial_14.efkefc";
+  inline constexpr const char* tutorial_15 = "res/Effect/tutorial_15.efkefc";
+  inline constexpr const char* tutorial_16 = "res/Effect/tutorial_16.efkefc";
   inline constexpr const char* tutorial_2 = "res/Effect/tutorial_2.efkefc";
   inline constexpr const char* tutorial_3 = "res/Effect/tutorial_3.efkefc";
   inline constexpr const char* tutorial_4 = "res/Effect/tutorial_4.efkefc";
@@ -155,6 +170,7 @@ namespace ef
   inline constexpr const char* tutorial_6 = "res/Effect/tutorial_6.efkefc";
   inline constexpr const char* tutorial_7 = "res/Effect/tutorial_7.efkefc";
   inline constexpr const char* tutorial_8 = "res/Effect/tutorial_8.efkefc";
+  inline constexpr const char* tutorial_9 = "res/Effect/tutorial_9.efkefc";
 }
 
 namespace mv1
