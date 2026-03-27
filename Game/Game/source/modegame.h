@@ -80,7 +80,7 @@ namespace GAMEOVER
 	static constexpr float GAMEOVER_CINEMATIC_DURATION = 3.0f; // ゲームオーバー演出の総時間（秒）
 }
 
-constexpr float CHECK_OPEN_TIME = 5.0f; // 宝箱が開くまでの時間（秒）
+constexpr float CHECK_OPEN_TIME = 2.5f; // 宝箱が開くまでの時間（秒）
 
 namespace timelimit
 {

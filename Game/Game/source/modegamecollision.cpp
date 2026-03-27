@@ -601,7 +601,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EnemySoundManager::GetInstance()->EmitSound(
 					treasure->GetPos(),
 					5,
-					400.0f,
+					200.0f,
 					10.0f
 				);
 
@@ -642,7 +642,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					EnemySoundManager::GetInstance()->EmitSound(
 						treasure->GetPos(),
 						5,
-						400.0f,
+						200.0f,
 						10.0f
 					);
 
@@ -737,7 +737,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EnemySoundManager::GetInstance()->EmitSound(
 					currentTreasure->GetPos(),
 					5,
-					400.0f,
+					200.0f,
 					10.0f
 				);
 			}
@@ -827,7 +827,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EnemySoundManager::GetInstance()->EmitSound(
 					currentTreasure->GetPos(),
 					5,
-					400.0f,
+					200.0f,
 					10.0f
 				);
 
