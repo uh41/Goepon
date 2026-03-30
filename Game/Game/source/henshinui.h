@@ -21,8 +21,8 @@ public:
 		TANUKI = 0,
 		TANUBITO = 1,
 		TANUMONO = 2,
-		Count = 3,
-		_EOT_
+		Count = 3, 
+		_EOT_ 
 	};
 
 	HenshinUi();
@@ -38,17 +38,17 @@ public:
 	void SetShowPlayerMonoUi(bool show) { _showPlayerMonoUi = show; }
 
 protected:
-	Makimono* _makimono;  // 巻物を取得
-	Select _select;      // 変身UIの選択肢
-	int _handleTanubito; // タヌキ人間UIのグラフィックハンドル
-	int _handleMono;     // モノUIのグラフィックハンドル
-	int _handleNotCg;    // 変身ができないときに表示するUIのグラフィックハンドル
+	Makimono* _makimono;       // 巻物を取得
+	Select    _select;         // 変身UIの選択肢
+	int       _handleTanubito; // タヌキ人間UIのグラフィックハンドル
+	int       _handleMono;     // モノUIのグラフィックハンドル
+	int       _handleNotCg;    // 変身ができないときに表示するUIのグラフィックハンドル
 
-	bool _padInput5Active;	// パッド入力5Aが有効かどうか
+	bool _padInput5Active;	   // パッド入力5Aが有効かどうか
 
-	void* _owner; // このUIを所有するオブジェクトへのポインタ
+	void* _owner;              // このUIを所有するオブジェクトへのポインタ
 
-	bool _showPlayerUi; // プレイヤーUIを表示するかどうか
-	bool _showPlayerMonoUi;  // ものUIを表示するかどうか
+	bool _showPlayerUi;        // プレイヤーUIを表示するかどうか
+	bool _showPlayerMonoUi;    // ものUIを表示するかどうか
 };
 
