@@ -39,7 +39,9 @@ bool ModeTitle::Initialize()
 		return false;
 	}
 
-	_menu = MenuItem::Start; // デフォルトは「スタート」
+	// デフォルトは「スタート」
+	_menu = MenuItem::Start; 
+
 	// ロゴ落下への初期化
 	_titleX = 70.0f;
 	_titleW = 0;
@@ -71,7 +73,7 @@ bool ModeTitle::Initialize()
 	// 画面外上から開始
 	_titleY = -StCas<float>(_titleH);
 
-	// �K�L�����f�[�^��쐬
+	// プレイヤーの生成
 	_player = std::make_shared<TitleTanuki>();
 	if(_player)
 	{
@@ -81,19 +83,19 @@ bool ModeTitle::Initialize()
 			return false;
 		}
 
-		// �Œ�ʒu�ɔz�u�iY���W��K�؂ɐݒ�j
+		// プレイヤーの初期位置と向きの設定
 		_player->SetPos(vec::Vec3(70.0f, -70.0f, 0.0f));
 		_player->SetDir(vec::Vec3(1.0f, 0.0f, 0.0f));
 	}
 
-	// �^�C�g���p�̃J������쐬
+	// カメラの作成
 	_cam = new TitleCamera();
 	if(_cam)
 	{
 		_cam->Initialize();
 	}
 
-	// �t�F�[�h�Ȃ� - �����ɕ\��
+	// フェード、初期は待機状態
 	_state = ModeBase::State::WAIT;
 
 	if(!_soundServer && gGlobal._soundServer)
@@ -107,7 +109,7 @@ bool ModeTitle::Initialize()
 		auto bgm = _soundServer->Get("102");
 		if(bgm)
 		{
-			bgm->Play(); // 追加後に明示的に再生
+			bgm->Play(); // 再生
 		}
 	}
 
@@ -149,14 +151,12 @@ bool ModeTitle::Terminate()
 		_exitNoHandle = -1;
 	}
 
-	// �K�L�����J��
 	if(_player)
 	{
 		_player->Terminate();
 		_player.reset();
 	}
 
-	// �J�����J��
 	if(_cam)
 	{
 		_cam->Terminate();
@@ -189,115 +189,27 @@ bool ModeTitle::Process()
 		return false;
 	}
 
-	// �^�C�g���͍őO�ʃ��C���[�Ƃ��ĉ�ʂ̏����ƕ`��X�L�b�v
+	// このモードは、下のレイヤーの処理や描画を呼ばない
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
-	// �J�����ƃv���C���[�̏���
+	// カメラとプレイヤーの更新
 	if(_cam) { _cam->Process(); }
 	if(_player) { _player->Process(); }
 
-	if(_titleHandle != -1 && !_titleLanding)
-	{
-		const float gravity = 1.2f;  // 重力加速度
-		const float maxVY   = 40.0f; // 落下速度の上限
-		const float bounce  = 0.55f; // 反発係数
+	// タイトルロゴの落下アニメーションの更新
+	UpdateTitleLogoFall();
 
-		_titleVY += gravity; // 重力を加算
-		if(_titleVY > maxVY)
-		{
-			_titleVY = maxVY; // 落下速度の上限を適用
-		}
+	// メニュー選択の更新
+	SelectMenu(trg);
 
-		_titleY += _titleVY; // 位置を更新
-
-		// 着地判定
-		if(_titleY >= _titleTargetY)
-		{
-			_titleY = _titleTargetY; // 位置を修正
-
-			// バウンド
-			if(std::abs(_titleVY) > 6.0f && bounce > 0.0f)
-			{
-				_titleVY = -_titleVY * bounce;
-				_titleY += _titleVY; // 1フレーム分だけ戻す
-			}
-			else
-			{
-				_titleVY = 0.0f;
-				_titleLanding = true;
-			}
-		}
-	}
-
-	// 選択移動
-	MenuItem prevMenu = _menu;
-	if(trg & PAD_INPUT_LEFT)
-	{
-		_menu = MenuItem::Start;
-	}
-	else if(trg & PAD_INPUT_RIGHT)
-	{
-		_menu = MenuItem::Exit;
-	}
-
-	if(prevMenu != _menu)
-	{
-		if(_soundServer)
-		{
-			_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
-			auto se = std::make_shared<soundserver::SoundItemSE>(mp3::UI_Henshin_pon);
-			_soundServer->Add("se_title", se);
-			se->Play();
-		}
-	}
-
-	// ふすま閉じの更新（閉じ終わったら true）
+	// ふすま閉じの更新
 	const bool fusumaClosedNow = ProcessFusumaClose();
 
-	switch (_state)
-	{
-	case ModeBase::State::WAIT:
-		if (trg & PAD_INPUT_1)
-		{
-			if (_menu == MenuItem::Start)
-			{
-				// まずふすまを閉じる
-				StartFusumaClose();
-			}
-			else
-			{
-				ModeServer::GetInstance()->Del(this);
-				if (ApplicationBase::GetInstance())
-				{
-					ApplicationBase::GetInstance()->RequestExit();
-				}
-			}
-		}
-
-		// ふすまが閉じきったら遷移
-		if (_fusumaState == FusumaState::closed)
-		{
-			_fusumaClosedWaitCnt++;	
-
-			// 閉じた状態で少し待つ
-			if(_fusumaClosedWaitCnt >= _fusumaClosedWaitFrames)
-			{
-				_state = ModeBase::State::DONE;
-			}
-		}
-		break;
-
-	case ModeBase::State::DONE:
-		//ModeServer::GetInstance()->Add(NEW ModeLoading(), 1, "loading");
-		ModeServer::GetInstance()->Add(NEW ModeOpScenario(), 1, "opscenario");
-		ModeServer::GetInstance()->ProcessInit();
-		ModeServer::GetInstance()->Del(this);
-		break;
-	}
-
+	// 状態遷移の処理
+	ProcessStateTransition(trg);
 	return true;
 }
 
@@ -310,21 +222,22 @@ bool ModeTitle::Render()
 
 	base::Render();
 
-	// �w�i�摜�`��
+	// 背景の描画
 	if(_bgHandle != -1)
 	{
 		DrawGraph(0, 0, _bgHandle, TRUE);
 	}
-	// �J�����ݒ�X�V
+
+	// カメラの設定
 	SetCameraPositionAndTarget_UpVecY(DxlibConverter::VecToDxLib(_cam->GetPos()), DxlibConverter::VecToDxLib(_cam->GetTarget()));
 	SetCameraNearFar(_cam->GetClipNear(), _cam->GetClipFar());
 
-	// ����p�ݒ�
+	// 視野角の設定
 	float fov_deg = 30.0f;
 	float fov_rad = DEG2RAD(fov_deg);
 	SetupCamera_Perspective(fov_rad);
 
-	// �K���f���`��
+	// プレイヤーの描画
 	if(_player)
 	{
 		_player->Render();
@@ -337,24 +250,8 @@ bool ModeTitle::Render()
 	}
 	
 	// メニューの描画
-	int startW = 0, startH = 0;
-	GetGraphSize(_startYesHandle, &startW, &startH);
-
-	const int x = ui::MENU_UI_X;
-	const int y = ui::MENU_UI_Y; // タイトルロゴの下に配置
-
-	const int spacing = ui::MENU_ITEM_SPACING;	
-	if(_menu == MenuItem::Start)
-	{
-		DrawGraph(x, y, _startYesHandle, TRUE);
-		DrawGraph(x + spacing, y, _exitNoHandle, TRUE);
-	}
-	else
-	{
-		DrawGraph(x, y, _startNoHandle, TRUE);
-		DrawGraph(x + spacing, y, _exitYesHandle, TRUE);
-	}
-
+	RenderMenu();
+	
 	// ふすまの描画
 	RenderFusuma();
 	return true;
@@ -427,4 +324,129 @@ void ModeTitle::RenderFusuma() const
 
 	DrawGraph(StCas<int>(_fusumaLeftX), StCas<int>(_fusumaY), _fusumaLeftHandle, TRUE);
 	DrawGraph(StCas<int>(_fusumaRightX), StCas<int>(_fusumaY), _fusumaRighetHandle, TRUE);
+}
+
+void ModeTitle::UpdateTitleLogoFall()
+{
+	if (_titleHandle != -1 && !_titleLanding)
+	{
+		const float gravity = 1.2f;  // 重力加速度
+		const float maxVY   = 40.0f; // 落下速度の上限
+		const float bounce  = 0.55f; // 反発係数
+
+		_titleVY += gravity; // 重力を加算
+		if (_titleVY > maxVY)
+		{
+			_titleVY = maxVY; // 落下速度の上限を適用
+		}
+
+		_titleY += _titleVY; // 位置を更新
+
+		// 着地判定
+		if (_titleY >= _titleTargetY)
+		{
+			_titleY = _titleTargetY; // 位置を修正
+
+			// バウンド
+			if (std::abs(_titleVY) > 6.0f && bounce > 0.0f)
+			{
+				_titleVY = -_titleVY * bounce;
+				_titleY += _titleVY; // 1フレーム分だけ戻す
+			}
+			else
+			{
+				_titleVY = 0.0f;
+				_titleLanding = true;
+			}
+		}
+	}
+}
+
+void ModeTitle::SelectMenu(int trg)
+{
+	// 選択移動
+	MenuItem prevMenu = _menu;
+	if (trg & PAD_INPUT_LEFT)
+	{
+		_menu = MenuItem::Start;
+	}
+	else if (trg & PAD_INPUT_RIGHT)
+	{
+		_menu = MenuItem::Exit;
+	}
+
+	if (prevMenu != _menu)
+	{
+		if (_soundServer)
+		{
+			_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+			auto se = std::make_shared<soundserver::SoundItemSE>(mp3::UI_Henshin_pon);
+			_soundServer->Add("se_title", se);
+			se->Play();
+		}
+	}
+}
+
+void ModeTitle::RenderMenu() const
+{
+	int startW = 0, startH = 0;
+	GetGraphSize(_startYesHandle, &startW, &startH);
+
+	const int x = ui::MENU_UI_X;
+	const int y = ui::MENU_UI_Y; // タイトルロゴの下に配置
+
+	const int spacing = ui::MENU_ITEM_SPACING;
+	if (_menu == MenuItem::Start)
+	{
+		DrawGraph(x, y, _startYesHandle, TRUE);
+		DrawGraph(x + spacing, y, _exitNoHandle, TRUE);
+	}
+	else
+	{
+		DrawGraph(x, y, _startNoHandle, TRUE);
+		DrawGraph(x + spacing, y, _exitYesHandle, TRUE);
+	}
+}
+
+void ModeTitle::ProcessStateTransition(int trg)
+{
+	switch (_state)
+	{
+	case ModeBase::State::WAIT:
+		if (trg & PAD_INPUT_1)
+		{
+			if (_menu == MenuItem::Start)
+			{
+				// まずふすまを閉じる
+				StartFusumaClose();
+			}
+			else
+			{
+				ModeServer::GetInstance()->Del(this);
+				if (ApplicationBase::GetInstance())
+				{
+					ApplicationBase::GetInstance()->RequestExit();
+				}
+			}
+		}
+
+		// ふすまが閉じきったら遷移
+		if (_fusumaState == FusumaState::closed)
+		{
+			_fusumaClosedWaitCnt++;
+
+			// 閉じた状態で少し待つ
+			if (_fusumaClosedWaitCnt >= _fusumaClosedWaitFrames)
+			{
+				_state = ModeBase::State::DONE;
+			}
+		}
+		break;
+
+	case ModeBase::State::DONE:
+		ModeServer::GetInstance()->Add(NEW ModeOpScenario(), 1, "opscenario");
+		ModeServer::GetInstance()->ProcessInit();
+		ModeServer::GetInstance()->Del(this);
+		break;
+	}
 }
