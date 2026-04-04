@@ -118,8 +118,8 @@ bool ModeGame::DebugCinematicCameraControl()
 				_camera = _cinematicCamera.get();
 
 				// 揺れ開始
-				const float intensity = 50.0f;   // 揺れ幅（適宜調整）
-				const float durationSec = 0.50f; // 揺れ時間（適宜調整）
+				const float intensity = 50.0f;   // 揺れ幅
+				const float durationSec = 0.50f; // 揺れ時間
 				_cinematicCamera->StartShake(intensity, durationSec);
 			}
 			else
@@ -196,7 +196,7 @@ bool ModeGame::TreasureOpeningCameraControl()
 			_useCinematicCamera = true;
 			_camera = _cinematicCamera.get();
 
-			// Map 側が保持しているカメラ参照も合わせる（SkySphere/Shadow等のズレ防止）
+			// Map 側が保持しているカメラ参照も合わせる
 			if(_objectServer)
 			{
 				if(auto* map = _objectServer->GetMap())
@@ -226,13 +226,14 @@ bool ModeGame::TreasureOpeningCameraControl()
 			targetPlayer = _player.get();
 		}
 
+		// ズーム処理
 		if(targetPlayer && _cinematicCamera)
 		{
 			vec::Vec3 target = targetPlayer->GetPos();
 			vec::Vec3 currentPos = _cinematicCamera->GetPos();
 			float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
-			float endDist = currentDist * 0.5f; // 最終的な距離（半分にする例）
-			if(endDist < 50.0f) endDist = 50.0f; // 最小距離を設定（近すぎないように）
+			float endDist = currentDist * 0.5f;  // 距離に設定
+			if(endDist < 50.0f) endDist = 50.0f; // 最小距離の制限
 
 			// ズーム演出：現在距離から近距離へ
 			_cinematicCamera->StartZoom(target, 0.5f, currentDist, endDist);
@@ -243,7 +244,7 @@ bool ModeGame::TreasureOpeningCameraControl()
 
 bool ModeGame::EndCinematicCamera()
 {
-	// 宝箱などの演出終了は「必ずメインカメラへ戻す」
+	// 宝箱などの演出終了はメインカメラへ戻す
 	return EndCinematicSequence(true);
 }
 
@@ -325,7 +326,7 @@ bool ModeGame::StartIntroSequence()
 	}
 	_introPhase = IntroPhase::RotateForward;
 
-	// Rotate は _vTarget 周りに回る＝ここで SetTarget 済みの「顔位置」中心になる
+	// プレイヤーを中心に前方から後方へ回る
 	const float rotateAngleRad = DX_PI_F * (35.0f / 180.0f);
 	const float rotateDurationSec = 1.5f;
 	const float rotateSpeed = rotateAngleRad / rotateDurationSec;
@@ -354,8 +355,7 @@ bool ModeGame::ProcessIntroSequence()
 	// イントロ中は演出カメラの更新を回す
 	_cinematicCamera->Process();
 
-	// イントロ中はプレイヤー位置を追従（ただし回転中心が動くと軌道が乱れるので注意）
-	// ここは「回転フェーズ中は固定 / ズーム中だけ追従」がおすすめ
+	// イントロ中はプレイヤー位置を追従
 	PlayerTanuki* tanuki = _playerTanuki.get();
 	if(tanuki && tanuki->IsAlive())
 	{
@@ -388,12 +388,12 @@ bool ModeGame::ProcessIntroSequence()
 			{
 				_introPhase = IntroPhase::Zoom;
 
-				// ズーム（現在距離→少し寄る）
+				// ズーム処理
 				vec::Vec3 target = _cinematicCamera->GetTarget();
 				vec::Vec3 currentPos = _cinematicCamera->GetPos();
 				float currentDist = vec3::VSize(vec3::VSub(currentPos, target));
 				float endDist = currentDist * 0.7f;
-				// あまり近すぎないように最低距離を設定
+				// 最低距離を設定
 				if(endDist < 80.0f)
 				{
 					endDist = 80.0f;
@@ -456,8 +456,8 @@ bool ModeGame::EndIntroSequence()
 		_playerTanuki->SetInputEnabled(true);
 	}
 
-	// 汎用関数でカメラを戻す
-	return EndCinematicSequence(true); // true = メインカメラに戻す
+	//カメラを戻す
+	return EndCinematicSequence(true); 
 }
 
 bool ModeGame::StartClearSequence()
@@ -585,7 +585,7 @@ bool ModeGame::ProcessClearSequence()
 			// 回転終了後、カメラズーム演出を開始
 			_clearSequencePhase = 1;
 
-			// ★★★ タヌキプレイヤーの位置でズーム演出を開始 ★★★
+			//　タヌキプレイヤーの位置でズーム演出を開始
 			if(_playerTanuki && _cinematicCamera)
 			{
 				vec::Vec3 playerPos = _playerTanuki->GetPos();
@@ -608,7 +608,7 @@ bool ModeGame::ProcessClearSequence()
 		{
 			_cinematicCamera->Process();
 
-			// ★★★ タヌキプレイヤーの位置を追跡 ★★★
+			// タヌキプレイヤーの位置を追跡
 			if(_playerTanuki)
 			{
 				vec::Vec3 targetPos = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
@@ -719,17 +719,15 @@ bool ModeGame::ProcessPlayerRotation()
 	// 回転が完了したかチェック
 	if(progress >= 1.0f)
 	{
-		// 回転完了 - 目標角度に正確にセット
 		targetPlayer->SetTargetRotationY(_playerTargetRotation);
 		targetPlayer->SetRotationY(_playerTargetRotation);
 		_isPlayerRotating = false;
 
-		// 狸プレイヤーの操作を再度有効化
 		targetPlayer->SetInputEnabled(true);
 		return true; // 回転完了
 	}
 
-	// 最短経路で回転するため角度差を計算
+	// 最短距離で回転するための角度を計算
 	float angleDiff = _playerTargetRotation - _playerInitialRotation;
 
 	// 角度を-π〜πの範囲に正規化（最短経路を選択）
@@ -742,13 +740,13 @@ bool ModeGame::ProcessPlayerRotation()
 		angleDiff += DX_TWO_PI_F;
 	}
 
-	// イージング関数を適用（滑らかな回転）
+	// イージング
 	float easedProgress = mymath::EasingInCubic
 	(
 		progress, // 現在の進捗度（0.0〜1.0）
-		0.0f,	  // 開始値（0%）
-		1.0f,	  // 終了値（100%）
-		1.0f	  // 総時間（1.0で正規化）
+		0.0f,	  // 開始値
+		1.0f,	  // 終了値
+		1.0f	  // 総時間
 
 	);
 
@@ -792,7 +790,7 @@ bool ModeGame::StartGameOverSequence()
 
 	_gameOverDimAlpha = 0; // 画面暗転用のアルファ値
 
-	// 0: ズーム中, 1: モデル切替＆アニメ, 2: 余韻
+	// 0 = ズーム中, 1 = モデル切替＆アニメ, 2 = 余韻
 	_gameOverSequencePhase		= 0;
 
 	// 操作している表示しているプレイヤーを取得
@@ -804,6 +802,7 @@ bool ModeGame::StartGameOverSequence()
 	_bShowTanuki = true;
 	_showMonoPlayer = false;
 
+	// タヌキプレイヤーに切り替え＆位置と向きを引き継ぐ
 	if(_playerTanuki && targetPlayer && targetPlayer != _playerTanuki.get())
 	{
 		_playerTanuki->SetPos(targetPlayer->GetPos());
@@ -836,6 +835,7 @@ bool ModeGame::StartGameOverSequence()
 		}
 	}
 
+	// カメラ切り替え
 	if(!_useCinematicCamera)
 	{
 		if(!_camera)
@@ -890,9 +890,9 @@ bool ModeGame::ProcessGameOverSequence()
 		return EndGameOverSequence();
 	}
 
-	const int   targetAlpha = 180;          // 目標の暗転アルファ値
-	const float fadeSec     = 0.5f;         // フェードインにかける時間（秒）
-	const float dt		    = 1.0f / 60.0f; // フレーム時間（秒）
+	const int   targetAlpha = 180;          // 暗転アルファ値
+	const float fadeSec     = 0.5f;         // フェードインにかける時間
+	const float dt		    = 1.0f / 60.0f; // フレーム時間
 
 	if(_gameOverDimAlpha < targetAlpha)
 	{
@@ -914,7 +914,7 @@ bool ModeGame::ProcessGameOverSequence()
 
 	_gameOverCinematicTimer += 1.0f / 60.0f;
 
-	// フェーズ0：ズームが終わったら、モデル切替＋アニメ開始
+	// ズームが終わったら、モデル切替＋アニメ開始
 	if(_gameOverSequencePhase == 0 && _cinematicCamera && _cinematicCamera->GetState() == CinematicCamera::State::Idle)
 	{
 		_gameOverSequencePhase = 1;
@@ -925,7 +925,7 @@ bool ModeGame::ProcessGameOverSequence()
 		}
 	}
 
-	// フェーズ1：倒れた状態のアニメーション(ループ)に切り替える
+	// 倒れた状態のアニメーション(ループ)に切り替える
 	if(_gameOverSequencePhase == 1 && _playerTanuki)
 	{
 		bool shouldSwitch = false;
@@ -952,7 +952,7 @@ bool ModeGame::ProcessGameOverSequence()
 		}
 	}
 
-	// フェーズ2：倒れループに切り替わったことが確認できたら、ゲームオーバーへ
+	// 倒れループに切り替わったことが確認できたら、ゲームオーバーへ
 	if (_gameOverSequencePhase == 2 && _playerTanuki)
 	{
 		if (_playerTanuki->IsAnimationPlaying())
@@ -973,11 +973,10 @@ bool ModeGame::EndGameOverSequence()
 
 	_gameOverDimAlpha = 0; // 演出カメラの停止とリセット
 
-	// 演出カメラは戻さずに、ゲームオーバーUIへ遷移する（好み）
-	// ここで戻したいなら EndCinematicSequence(true) を呼ぶ
+	// プレイヤーの操作を再度有効化
 	EndCinematicSequence(false);
 
+	// ゲームオーバー画面へ遷移
 	ModeServer::GetInstance()->Add(new ModeGameOver(this), 255, "ModeGameOver");
-
 	return true;
 }
