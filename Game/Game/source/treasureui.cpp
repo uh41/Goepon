@@ -62,7 +62,7 @@ bool TreasureUi::Process()
 {
 	base::Process();
 
-	// 宝のリストがセットされていない場合は、残り数と宝箱数を０にして終了
+	// お宝リストがセットされていない場合はカウントを0にしてUIも非表示にする
 	if(!_isTreasureListAssigned)
 	{
 		_remainCount		  = 0;
@@ -72,11 +72,12 @@ bool TreasureUi::Process()
 		return true;
 	}
 
-	const int oldRemainCount = _remainCount;
+	const int oldRemainCount = _remainCount; // お宝の残り数を更新するために古い値を保存
 
 	int remainCount   = 0;	
 	int treasureCount = 0;
 
+	// 残りの数と総数をカウントする
 	for(const auto& treasure : _treasure)
 	{
 		if(!treasure)
@@ -105,9 +106,9 @@ bool TreasureUi::Process()
 	// 巻物UIの表示時間制御
 	if(_isGoDegutiShowActive)
 	{
-		_goDegutiShowElapsed += 1.0 / 60.0f; // 1フレームの経過時間を加算（60FPS想定）
+		_goDegutiShowElapsed += 1.0 / 60.0f; 
 		
-		// 表示時間が経過したら非表示にする
+		// 表示時間が経過したらフラグを立てる
 		if(_goDegutiShowElapsed >= treasure::GO_DEGUTI_DURATION)
 		{
 			_isGoDegutiShowActive = false;
@@ -130,21 +131,24 @@ bool TreasureUi::Render()
 		return false;
 	}
 
-	// お宝をすべて獲得している場合は出口UIを表示
+	// 全て取れていないときにUIを表示
 	if(_remainCount > 0)
 	{
-		DrawGraph(treasure::NOKORI_X, treasure::KAKERU_Y, _handleNokori, TRUE);
+		DrawGraph(treasure::NOKORI_X, treasure::NOKORI_Y, _handleNokori, TRUE);
 		RenderNumber(_remainCount, counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y, false);
+		return true;
 	}
-	else
+
+	// 全て取ったときにUIの切り替え
+	if(_handleDeguti != -1)
 	{
 		DrawGraph(treasure::DEGUTI_X, treasure::DEGUTI_Y, _handleDeguti, TRUE);
+	}
 
-		// 全部取った直後だけ巻物UIを一定時間表示
-		if(_treasureCount > 0 && _isGoDegutiShowActive)
-		{
-			DrawGraph(treasure::GOEXIT_X, treasure::GOEXIT_Y, _handleGoDeguti, TRUE);
-		}
+	// 全部取った直後だけメッセージを一定時間表示
+	if(_isGoDegutiShowActive && _handleGoDeguti != -1)
+	{
+		DrawGraph(treasure::GOEXIT_X, treasure::GOEXIT_Y, _handleGoDeguti, TRUE);
 	}
 	return true;
 }
