@@ -53,11 +53,9 @@
     <ClCompile Include="source\playertanuki.cpp" />
     <ClCompile Include="source\soundserver3D.cpp" />
     <ClCompile Include="source\TitleCamera.cpp" />
-    <ClCompile Include="source\TitleTanuki.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
     <ClCompile Include="source\treasureeffect.cpp" />
     <ClCompile Include="source\UIActionButton.cpp" />
-    <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
     <ClCompile Include="source\UiMakimono.cpp" />
     <ClCompile Include="source\walkeffect.cpp" />
@@ -265,10 +263,7 @@
     </ClCompile>
     <ClCompile Include="source\Map3.cpp" />
     <ClCompile Include="source\TreasureBase.cpp" />
-    <ClCompile Include="source\counterui.cpp" />
-    <ClCompile Include="source\attackui.cpp" />
     <ClCompile Include="source\treasureopenui.cpp" />
-    <ClCompile Include="source\dashui.cpp" />
     <ClCompile Include="source\shirimochieffect.cpp" />
     <ClCompile Include="source\stuneffect.cpp">
       <Filter>ソースファイル</Filter>
@@ -288,9 +283,29 @@
       <Filter>ソースファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\modeGameCinematic.cpp" />
-    <ClCompile Include="source\IntroUi.cpp" />
     <ClCompile Include="source\UiMakimonoCnt.cpp">
-      <Filter>ソースファイル\UIベース\巻物の所持数</Filter>
+      <Filter>ソースファイル\UI関連\巻物の所持数</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TitleTanuki.cpp">
+      <Filter>ソースファイル\タイトル\ゴエポン_タイトル用</Filter>
+    </ClCompile>
+    <ClCompile Include="source\AttackUi.cpp">
+      <Filter>ソースファイル\UI関連\攻撃可能</Filter>
+    </ClCompile>
+    <ClCompile Include="source\HenshinUi.cpp">
+      <Filter>ソースファイル\UI関連\メインUI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\uibase.cpp">
+      <Filter>ソースファイル\UI関連\UIベース</Filter>
+    </ClCompile>
+    <ClCompile Include="source\CounterUi.cpp">
+      <Filter>ソースファイル\UI関連\数</Filter>
+    </ClCompile>
+    <ClCompile Include="source\IntroUi.cpp">
+      <Filter>ソースファイル\UI関連\イントロ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\DashUi.cpp">
+      <Filter>ソースファイル\UI関連\ダッシュ</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -350,11 +365,9 @@
     <ClInclude Include="source\soundserver3D.h" />
     <ClInclude Include="source\StageManager.h" />
     <ClInclude Include="source\TitleCamera.h" />
-    <ClInclude Include="source\TitleTanuki.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
     <ClInclude Include="source\UIActionButton.h" />
-    <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
     <ClInclude Include="source\UiMakimono.h" />
     <ClInclude Include="source\walkeffect.h" />
@@ -367,9 +380,7 @@
     </ClInclude>
     <ClInclude Include="source\Map3.h" />
     <ClInclude Include="source\TreasureBase.h" />
-    <ClInclude Include="source\attackui.h" />
     <ClInclude Include="source\treasureopenui.h" />
-    <ClInclude Include="source\dashui.h" />
     <ClInclude Include="source\shirimochieffect.h" />
     <ClInclude Include="source\stuneffect.h">
       <Filter>ヘッダーファイル</Filter>
@@ -387,9 +398,29 @@
     <ClInclude Include="source\treasureopen.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\IntroUi.h" />
     <ClInclude Include="source\UiMakimonoCnt.h">
-      <Filter>ヘッダーファイル\UIベース\巻物の所持数</Filter>
+      <Filter>ヘッダーファイル\UI関連\巻物の所持数</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TitleTanuki.h">
+      <Filter>ヘッダーファイル\タイトル\ゴエポン_タイトル用</Filter>
+    </ClInclude>
+    <ClInclude Include="source\AttackUi.h">
+      <Filter>ヘッダーファイル\UI関連\攻撃可能</Filter>
+    </ClInclude>
+    <ClInclude Include="source\HenshinUi.h">
+      <Filter>ヘッダーファイル\UI関連\メインUI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\uibase.h">
+      <Filter>ヘッダーファイル\UI関連\UIベース</Filter>
+    </ClInclude>
+    <ClInclude Include="source\CounterUi.h">
+      <Filter>ヘッダーファイル\UI関連\数</Filter>
+    </ClInclude>
+    <ClInclude Include="source\IntroUi.h">
+      <Filter>ヘッダーファイル\UI関連\イントロ</Filter>
+    </ClInclude>
+    <ClInclude Include="source\DashUi.h">
+      <Filter>ヘッダーファイル\UI関連\ダッシュ</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,7 +453,6 @@
       <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
     <ClInclude Include="source\treasureui.h" />
-    <ClInclude Include="source\counterui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -865,12 +895,6 @@
     <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\泣きエフェクト">
       <UniqueIdentifier>{eeafd3d3-0e68-4111-b8a2-92da78d147f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\モードゲーム\オブジェクトベース">
-      <UniqueIdentifier>{1058fe0e-64c9-442e-9233-e8c18074b3b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\モードゲーム\オブジェクトベース\オブジェクトサーバー">
-      <UniqueIdentifier>{046399df-7d27-41db-8396-470dc8e28194}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\プレイヤーベース">
       <UniqueIdentifier>{c58c19d0-7c4c-4e2c-b9e5-f9ff58e45034}</UniqueIdentifier>
     </Filter>
@@ -937,29 +961,65 @@
     <Filter Include="ヘッダーファイル\モードゲーム\マップベース\マップファクトリー">
       <UniqueIdentifier>{f036e790-f92c-4f5f-a453-09b578168688}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\UIベース">
-      <UniqueIdentifier>{bda12baf-0c1b-461a-a023-cdd52e529e97}</UniqueIdentifier>
+    <Filter Include="ヘッダーファイル\モードゲーム\お宝\オブジェクトベース">
+      <UniqueIdentifier>{1058fe0e-64c9-442e-9233-e8c18074b3b8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\UIベース\解除アクション">
-      <UniqueIdentifier>{7b8a5d8f-3633-4b27-a83d-93be03de4215}</UniqueIdentifier>
+    <Filter Include="ヘッダーファイル\モードゲーム\お宝\オブジェクトベース\オブジェクトサーバー">
+      <UniqueIdentifier>{046399df-7d27-41db-8396-470dc8e28194}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\UIベース\変身UI">
-      <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
+    <Filter Include="ソースファイル\タイトル\ゴエポン_タイトル用">
+      <UniqueIdentifier>{b7bcad68-3d05-48f2-82f9-54f378d68a14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソースファイル\UIベース">
+    <Filter Include="ヘッダーファイル\タイトル\ゴエポン_タイトル用">
+      <UniqueIdentifier>{0f8c8f5e-d5ff-45c6-9ef9-fa2244d00f8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連">
       <UniqueIdentifier>{16dbc8fe-289c-47e0-a215-cc96c1661854}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソースファイル\UIベース\お宝解除">
-      <UniqueIdentifier>{e30bc10d-98eb-4716-a3fe-de69bf843063}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\UIベース\変身UI">
+    <Filter Include="ソースファイル\UI関連\メインUI">
       <UniqueIdentifier>{9e3a64ac-2b11-4273-99cc-087347527541}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソースファイル\UIベース\巻物の所持数">
+    <Filter Include="ソースファイル\UI関連\巻物の所持数">
       <UniqueIdentifier>{3ff1088d-b16a-4072-a6ba-79543d1130e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\UIベース\巻物の所持数">
+    <Filter Include="ヘッダーファイル\UI関連">
+      <UniqueIdentifier>{bda12baf-0c1b-461a-a023-cdd52e529e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\メインUI">
+      <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\巻物の所持数">
       <UniqueIdentifier>{b3ca04ba-57e7-4bc1-bafd-4c9c23d705db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\攻撃可能">
+      <UniqueIdentifier>{e6dda7a3-34a1-42ba-b7e7-224d6cdf2fba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連\攻撃可能">
+      <UniqueIdentifier>{22f1859e-97cd-4694-885d-6b49f6a9c1a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\UIベース">
+      <UniqueIdentifier>{05a5c6e6-0a26-481b-a556-22b43af64e82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連\UIベース">
+      <UniqueIdentifier>{8f82edb4-59b4-4cdc-85b3-63cab67e8cdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\数">
+      <UniqueIdentifier>{3d8b31de-99e2-4135-88bf-007a1f61932c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連\数">
+      <UniqueIdentifier>{4232381d-db46-4a21-98a7-5e5bd20d2f29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連\イントロ">
+      <UniqueIdentifier>{0322a5ea-8d0a-4278-a92d-51afe41ecc62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\イントロ">
+      <UniqueIdentifier>{5a9176f2-9135-4efc-a1c8-11a5ea238fe4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\ダッシュ">
+      <UniqueIdentifier>{8a692843-25c4-4990-9223-b4549c414a7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連\ダッシュ">
+      <UniqueIdentifier>{16e69094-2c62-4661-aab7-5e5993d01d52}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

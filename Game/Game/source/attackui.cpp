@@ -1,10 +1,11 @@
-#include "attackui.h"
+#include "AttackUi.h"
 #include "modegame.h"
 #include "playertanuki.h"
 
 AttackUi::AttackUi()
 {
 	_handle = -1;
+
 	_pos = vec::Vec3(0.0f, 0.0f, 0.0f);
 	_visible = false;
 	_size = 100.0f;
@@ -50,29 +51,32 @@ bool AttackUi::Render()
 		return false;
 	}
 
+	// タヌキやモノの表示中は攻撃UIを表示しない
 	if(modeGame->GetShowTanuki() || modeGame->IsShowingMono())
 	{
 		return false;
 	}
 
+	// プレイヤーの情報を取得
 	auto player = modeGame->GetPlayer();
 	if(!player)
 	{
 		return false;
 	}
 
+	// 攻撃範囲内の敵を取得
 	auto& enemy = modeGame->GetEnemiesInAttackRangees();
 
+	// プレイヤーの座標を取得し、Y座標を上にオフセット
 	if(!enemy.empty())
 	{
-		// プレイヤーの座標を取得し、Y座標を上にオフセット
 		vec::Vec3 playerPos = player->GetPos();
-		playerPos.z += attack::PLAYER_HEAD_Y; // プレイヤーの頭上に表示
+		playerPos.z += attack::PLAYER_HEAD_Y;
+		VECTOR pos = DxlibConverter::VecToDxLib(playerPos); 
 
-		VECTOR pos = DxlibConverter::VecToDxLib(playerPos);
 
+		// 3D空間上に描画
 		DrawBillboard3D(pos, 0.5f, 0.5f, _size, _angle, _handle, TRUE);
 	}
-
 	return true;
 }

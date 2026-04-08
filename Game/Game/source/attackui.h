@@ -5,7 +5,7 @@ class ModeGame;
 
 namespace attack
 {
-	static constexpr auto PLAYER_HEAD_Y = 200.0f; // プレイヤーの頭の高さ（UIの位置調整用）
+	static constexpr auto PLAYER_HEAD_Y = 200.0f; // プレイヤーの頭の高さ
 }
 
 class AttackUi : public UiBase
@@ -18,9 +18,5 @@ public:
 	virtual bool Terminate() override;
 	virtual bool Process() override;
 	virtual bool Render() override;
-
-protected:
-
-
 };
 

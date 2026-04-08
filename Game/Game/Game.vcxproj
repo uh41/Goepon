@@ -21,13 +21,13 @@
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
     <ClInclude Include="source\applicationmain.h" />
-    <ClInclude Include="source\attackui.h" />
+    <ClInclude Include="source\AttackUi.h" />
     <ClInclude Include="source\camera.h" />
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\CinematicCamera.h" />
-    <ClInclude Include="source\counterui.h" />
+    <ClInclude Include="source\CounterUi.h" />
     <ClInclude Include="source\cube.h" />
-    <ClInclude Include="source\dashui.h" />
+    <ClInclude Include="source\DashUi.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
     <ClInclude Include="source\enemy.h" />
@@ -37,7 +37,7 @@
     <ClInclude Include="source\enemysoundmanager.h" />
     <ClInclude Include="source\Goal.h" />
     <ClInclude Include="source\goaleffect.h" />
-    <ClInclude Include="source\henshinui.h" />
+    <ClInclude Include="source\HenshinUi.h" />
     <ClInclude Include="source\IntroUi.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\makimonogeteffect.h" />
@@ -95,7 +95,6 @@
     <ClInclude Include="source\TreasureRapidFire.h" />
     <ClInclude Include="source\treasureui.h" />
     <ClInclude Include="source\tutorial.h" />
-    <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
     <ClInclude Include="source\UiMakimonoCnt.h" />
@@ -104,13 +103,13 @@
   <ItemGroup>
     <ClCompile Include="source\applicationglobal.cpp" />
     <ClCompile Include="source\applicationmain.cpp" />
-    <ClCompile Include="source\attackui.cpp" />
+    <ClCompile Include="source\AttackUi.cpp" />
     <ClCompile Include="source\camera.cpp" />
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
-    <ClCompile Include="source\counterui.cpp" />
+    <ClCompile Include="source\CounterUi.cpp" />
     <ClCompile Include="source\cube.cpp" />
-    <ClCompile Include="source\dashui.cpp" />
+    <ClCompile Include="source\DashUi.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
     <ClCompile Include="source\enemy.cpp" />
@@ -120,7 +119,7 @@
     <ClCompile Include="source\enemysoundmanager.cpp" />
     <ClCompile Include="source\Goal.cpp" />
     <ClCompile Include="source\goaleffect.cpp" />
-    <ClCompile Include="source\henshinui.cpp" />
+    <ClCompile Include="source\HenshinUi.cpp" />
     <ClCompile Include="source\IntroUi.cpp" />
     <ClCompile Include="source\Makimono.cpp" />
     <ClCompile Include="source\makimonogeteffect.cpp" />
@@ -182,7 +181,6 @@
     <ClCompile Include="source\TreasureRapidFire.cpp" />
     <ClCompile Include="source\treasureui.cpp" />
     <ClCompile Include="source\tutorial.cpp" />
-    <ClCompile Include="source\UIActionButton.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
     <ClCompile Include="source\UiMakimonoCnt.cpp" />
