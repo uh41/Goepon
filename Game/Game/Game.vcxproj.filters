@@ -254,7 +254,6 @@
     <ClCompile Include="source\walkeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
-    <ClCompile Include="source\treasureui.cpp" />
     <ClCompile Include="source\Map2.cpp">
       <Filter>ソースファイル\モードゲーム\マップベース\マップ2</Filter>
     </ClCompile>
@@ -306,6 +305,9 @@
     </ClCompile>
     <ClCompile Include="source\DashUi.cpp">
       <Filter>ソースファイル\UI関連\ダッシュ</Filter>
+    </ClCompile>
+    <ClCompile Include="source\TreasureUi.cpp">
+      <Filter>ソースファイル\UI関連\お宝状況</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -422,6 +424,9 @@
     <ClInclude Include="source\DashUi.h">
       <Filter>ヘッダーファイル\UI関連\ダッシュ</Filter>
     </ClInclude>
+    <ClInclude Include="source\TreasureUi.h">
+      <Filter>ヘッダーファイル\UI関連\お宝状況</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -452,7 +457,6 @@
     <ClInclude Include="source\modegameoverload.h">
       <Filter>ヘッダーファイル\モードゲーム\ゲームオーバーロード画面</Filter>
     </ClInclude>
-    <ClInclude Include="source\treasureui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\cube.h">
@@ -1020,6 +1024,12 @@
     </Filter>
     <Filter Include="ソースファイル\UI関連\ダッシュ">
       <UniqueIdentifier>{16e69094-2c62-4661-aab7-5e5993d01d52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UI関連\お宝状況">
+      <UniqueIdentifier>{1ba0138d-b9bc-4130-bafd-5d8e52e66521}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UI関連\お宝状況">
+      <UniqueIdentifier>{5b95ffbe-2e59-48aa-a844-8d77c876033b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
