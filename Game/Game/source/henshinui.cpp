@@ -5,20 +5,25 @@
 
 HenshinUi::HenshinUi()
 {
-	_handle = -1;
-	_handleTanubito = -1;
-	_handleMono = -1;
-	_select = Select::TANUBITO;
-	_padInput5Active = true;  // 初期状態で選択状態を有効化
-	_owner = nullptr;
-	_showPlayerUi = false;
+	_makimono        = nullptr;
+	_select			 = Select::TANUBITO;
+	_padInput5Active = true;
+	_owner			 = nullptr;
+
+	_showPlayerUi	  = false;
 	_showPlayerMonoUi = false;
-	Initialize();
+
+	_handle         = -1;
+	_handleNotCg    = -1;
+	_handleTanubito = -1;
+	_handleMono     = -1;
+
 }
 
 bool HenshinUi::Initialize()
 {
 	base::Initialize();
+
 	_handle			= LoadGraph(ui::UI_Hito           );
 	_handleNotCg	= LoadGraph(ui::UI_Hito_Makimono_0);
 	_handleTanubito = LoadGraph(ui::UI_Tanubito_no    );
@@ -61,14 +66,14 @@ bool HenshinUi::Process()
 	int key = ApplicationBase::GetInstance()->GetKey();
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
-	// オーナー（ModeGame）を参照して変身中かどうかを確認
+	// ModeGameを参照して変身中かどうかを確認
 	ModeGame* mg = nullptr;
 	if(_owner)
 	{
 		mg = StCas<ModeGame*>(_owner);
 	}
 
-	// 変身中または変身要求が保留中は選択を無効化する（開閉/切替/決定 すべて無効）
+	// 変身中または変身要求が保留中は選択を無効化する
 	if(mg && (mg->IsTransforming() || mg->IsTransformRequested()))
 	{
 		_padInput5Active = false;
@@ -86,7 +91,6 @@ bool HenshinUi::Process()
 		_padInput5Active = false;
 
 		// 人間表示時は PAD_INPUT_4 を押すことで UI 経由で即時タヌキへ戻す要求を出せるようにする
-		// （ModeGame 側でモノ表示時は無視されるため安全）
 		if(mgCheck && !mgCheck->IsShowingMono() && (trg & PAD_INPUT_4))
 		{
 			mgCheck->RequestReturnToTanukiFromHuman();
@@ -103,7 +107,7 @@ bool HenshinUi::Process()
 		return true;
 	}
 
-	// タヌキに戻った時、選択状態を自動的に有効化（TANUBITO を選択状態にする）
+	// タヌキに戻った時、選択状態を自動的に有効化
 	if(mgCheck && mgCheck->IsShowingTanuki() && !_padInput5Active)
 	{
 		_padInput5Active = true;
@@ -123,9 +127,8 @@ bool HenshinUi::Render()
 	{
 		mg = StCas<ModeGame*>(_owner);
 	}
-	// 表示側も「変身要求保留中」を考慮して選択表示を抑止
-	// bool effectivePad5 = _padInput5Active && !(mg && (mg->IsTransforming() || mg->IsTransformRequested()));
-
+	
+	// まきものの所持数をチェック
 	bool hasMakimono = false;
 	if(mg)
 	{
