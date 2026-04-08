@@ -23,6 +23,7 @@ public:
 	void SetPlayer(PlayerTanuki* player) { _player = player; } // プレイヤーへのポインタをセットするセッター
 
 protected:
+	int _noDashHandle;
 	PlayerTanuki* _player; // プレイヤーへのポインタ
 };
 
