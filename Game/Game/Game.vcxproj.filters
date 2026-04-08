@@ -55,9 +55,7 @@
     <ClCompile Include="source\TitleCamera.cpp" />
     <ClCompile Include="source\Treasure.cpp" />
     <ClCompile Include="source\treasureeffect.cpp" />
-    <ClCompile Include="source\UIActionButton.cpp" />
     <ClCompile Include="source\uihp.cpp" />
-    <ClCompile Include="source\UiMakimono.cpp" />
     <ClCompile Include="source\walkeffect.cpp" />
     <ClCompile Include="source\ModeGameClearLoad.cpp" />
     <ClCompile Include="source\enemysoundmanager.cpp" />
@@ -245,9 +243,6 @@
     <ClCompile Include="source\UIActionButton.cpp">
       <Filter>ソースファイル\モードゲーム\UIベース\お宝解除</Filter>
     </ClCompile>
-    <ClCompile Include="source\uibase.cpp">
-      <Filter>ソースファイル\モードゲーム\UIベース</Filter>
-    </ClCompile>
     <ClCompile Include="source\UiMakimono.cpp">
       <Filter>ソースファイル\モードゲーム\UIベース\巻物UI</Filter>
     </ClCompile>
@@ -309,6 +304,7 @@
     <ClCompile Include="source\TreasureUi.cpp">
       <Filter>ソースファイル\UI関連\お宝状況</Filter>
     </ClCompile>
+    <ClCompile Include="source\uibase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -325,7 +321,6 @@
     <ClInclude Include="source\enemysensor.h" />
     <ClInclude Include="source\enemysoundmanager.h" />
     <ClInclude Include="source\Goal.h" />
-    <ClInclude Include="source\henshinui.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\Map1.h" />
     <ClInclude Include="source\MapBase.h" />
@@ -369,9 +364,7 @@
     <ClInclude Include="source\TitleCamera.h" />
     <ClInclude Include="source\Treasure.h" />
     <ClInclude Include="source\treasureeffect.h" />
-    <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uihp.h" />
-    <ClInclude Include="source\UiMakimono.h" />
     <ClInclude Include="source\walkeffect.h" />
     <ClInclude Include="source\ModeGameClearLoad.h" />
     <ClInclude Include="source\Map2.h">
@@ -403,9 +396,6 @@
     <ClInclude Include="source\UiMakimonoCnt.h">
       <Filter>ヘッダーファイル\UI関連\巻物の所持数</Filter>
     </ClInclude>
-    <ClInclude Include="source\TitleTanuki.h">
-      <Filter>ヘッダーファイル\タイトル\ゴエポン_タイトル用</Filter>
-    </ClInclude>
     <ClInclude Include="source\AttackUi.h">
       <Filter>ヘッダーファイル\UI関連\攻撃可能</Filter>
     </ClInclude>
@@ -426,6 +416,12 @@
     </ClInclude>
     <ClInclude Include="source\TreasureUi.h">
       <Filter>ヘッダーファイル\UI関連\お宝状況</Filter>
+    </ClInclude>
+    <ClInclude Include="source\HenshinUi.h">
+      <Filter>ヘッダーファイル\UI関連\メインUI</Filter>
+    </ClInclude>
+    <ClInclude Include="source\TitleTanuki.h">
+      <Filter>ヘッダーファイル\タイトル\ゴエポン_タイトル用</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
