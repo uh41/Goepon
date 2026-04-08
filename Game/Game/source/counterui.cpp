@@ -84,8 +84,5 @@ void CounterUi::RenderNumber(int number,int x, int y, bool drawZero)
 bool CounterUi::Render()
 {
 	base::Render();
-
-	//RenderNumber(_treasureCount, counter::COUNTER_TREASURE_X, counter::COUNTER_TREASURE_Y);
-
 	return true;
 }
