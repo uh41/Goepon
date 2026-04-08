@@ -29,7 +29,7 @@
 #include "enemysensor.h"
 #include "uibase.h"
 #include "uihp.h"
-#include "UiMakimono.h"
+#include "UiMakimonoCnt.h"
 #include "IntroUi.h"
 #include "playermono.h"
 #include "effectbase.h"
@@ -308,7 +308,7 @@ protected:
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
-	at::spc<UiMakimono> _uiMakimono;
+	at::spc<UiMakimonoCnt> _uiMakimonoCnt;
 	at::spc<HenshinUi> _henshinUi;
 	at::spc<CounterUi> _counterUi;
 	at::spc<TreasureUi> _treasureUi;

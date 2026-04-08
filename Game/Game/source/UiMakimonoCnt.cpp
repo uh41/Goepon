@@ -1,26 +1,26 @@
 
-#include "UiMakimono.h"
+#include "UiMakimonoCnt.h"
 #include "playerbase.h"
 #include "applicationglobal.h"
 #include "appframe.h"
 
-UiMakimono::UiMakimono()
+UiMakimonoCnt::UiMakimonoCnt()
 {
 	_player = nullptr;
 	_handleMakimono = -1;
 	_handleUiX = -1;
 }
 
-UiMakimono::~UiMakimono()
+UiMakimonoCnt::~UiMakimonoCnt()
 {
 
 }
 
-bool UiMakimono::Initialize()
+bool UiMakimonoCnt::Initialize()
 {
 	base::Initialize();
-	_handle = LoadGraph("res/Makimono/Makimono (1).png");
 
+	// 数字ハンドルの読み込む
 	const char* makiNumPath[10] =
 	{
 		ui::MUI_0,
@@ -45,12 +45,10 @@ bool UiMakimono::Initialize()
 		_handleNum[i] = LoadGraph(makiNumPath[i]);
 	}
 
-	//_handleMakimono = LoadGraph(ui::Item_Makimono);
-	//_handleUiX = LoadGraph(ui::UI_x);
 	return true;
 }
 
-bool UiMakimono::Terminate()
+bool UiMakimonoCnt::Terminate()
 {
 	base::Terminate();
 	if(_handleMakimono)
@@ -66,24 +64,15 @@ bool UiMakimono::Terminate()
 	return true;
 }
 
-bool UiMakimono::Process()
+bool UiMakimonoCnt::Process()
 {
 	base::Process();
 	return true;
 }
 
-bool UiMakimono::Render()
+bool UiMakimonoCnt::Render()
 {
 	base::Render();
-
-	//// 画像が未ロードなら描画しない
-	//if(_handleMakimono == -1 || _handleUiX == -1 || _handle == -1)
-	//{
-	//	return false;
-	//}
-
-	DrawGraph(makimono::MAKIMONO_X, makimono::MAKIMONO_Y, _handleMakimono, TRUE);
-	DrawGraph(makimono::KAKERU_X, makimono::KAKERU_Y, _handleUiX, TRUE);
 
 	// 復帰直後などで _player が未設定の可能性がある
 	if(_player == nullptr)
@@ -91,6 +80,7 @@ bool UiMakimono::Render()
 		return true;
 	}
 
+	// 巻物の所有数を描画
 	RenderNumber(_player->GetMakimonoCount(), makimono::MAKIMONO_COUNT_X, makimono::MAKIMONO_COUNT_Y, true);
 
 	return true;

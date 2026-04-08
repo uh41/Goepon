@@ -13,7 +13,7 @@ HenshinUi::HenshinUi()
 	_showPlayerUi	  = false;
 	_showPlayerMonoUi = false;
 
-	_handle         = -1;
+	_handleMain = -1;
 	_handleNotCg    = -1;
 	_handleTanubito = -1;
 	_handleMono     = -1;
@@ -24,7 +24,7 @@ bool HenshinUi::Initialize()
 {
 	base::Initialize();
 
-	_handle			= LoadGraph(ui::UI_Hito           );
+	_handleMain     = LoadGraph(ui::UI_Hito           );
 	_handleNotCg	= LoadGraph(ui::UI_Hito_Makimono_0);
 	_handleTanubito = LoadGraph(ui::UI_Tanubito_no    );
 	_handleMono	    = LoadGraph(ui::UI_Mono           );
@@ -35,10 +35,10 @@ bool HenshinUi::Terminate()
 {
 	base::Terminate();
 
-	if(_handle != -1)
+	if(_handleMain != -1)
 	{
-		DeleteGraph(_handle);
-		_handle = -1;
+		DeleteGraph(_handleMain);
+		_handleMain = -1;
 	}
 	if(_handle != -1)
 	{
@@ -153,8 +153,8 @@ bool HenshinUi::Render()
 	// ƒ^ƒkƒrƒg‰æ‘œ
 	if(_select == Select::TANUBITO)
 	{
-		const int handle = hasMakimono ? _handle : _handleNotCg;
-		if(_handle != -1)
+		const int handle = hasMakimono ? _handleMain : _handleNotCg;
+		if(_handleMain != -1)
 		{
 			DrawGraph(henshin::HENSHIN_X, henshin::HENSHIN_Y, handle, TRUE);
 		}

@@ -47,6 +47,7 @@ protected:
 	Select    _select;         
 
 	// グラフィックハンドル
+	int       _handleMain;
 	int       _handleTanubito; 
 	int       _handleMono;     
 	int       _handleNotCg;    // 変身ができないときに表示するUIのグラフィックハンドル

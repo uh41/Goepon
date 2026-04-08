@@ -286,7 +286,7 @@ bool ModeGame::Terminate()
 
 	// 個別 UI ポインタを安全に解放（存在していれば Terminate を呼ぶ）
 	if(_uiHp) { _uiHp->Terminate(); _uiHp.reset(); }
-	if(_uiMakimono) { _uiMakimono->Terminate(); _uiMakimono.reset(); }
+	if(_uiMakimonoCnt) { _uiMakimonoCnt->Terminate(); _uiMakimonoCnt.reset(); }
 	if(_henshinUi) { _henshinUi->Terminate(); _henshinUi.reset(); }
 	if(_counterUi) { _counterUi->Terminate(); _counterUi.reset(); }
 	if(_treasureUi) { _treasureUi->Terminate(); _treasureUi.reset(); }

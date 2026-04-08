@@ -98,7 +98,7 @@
     <ClInclude Include="source\UIActionButton.h" />
     <ClInclude Include="source\uibase.h" />
     <ClInclude Include="source\uihp.h" />
-    <ClInclude Include="source\UiMakimono.h" />
+    <ClInclude Include="source\UiMakimonoCnt.h" />
     <ClInclude Include="source\walkeffect.h" />
   </ItemGroup>
   <ItemGroup>
@@ -185,7 +185,7 @@
     <ClCompile Include="source\UIActionButton.cpp" />
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\uihp.cpp" />
-    <ClCompile Include="source\UiMakimono.cpp" />
+    <ClCompile Include="source\UiMakimonoCnt.cpp" />
     <ClCompile Include="source\walkeffect.cpp" />
   </ItemGroup>
   <ItemGroup>

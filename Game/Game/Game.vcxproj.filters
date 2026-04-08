@@ -289,6 +289,9 @@
     </ClCompile>
     <ClCompile Include="source\modeGameCinematic.cpp" />
     <ClCompile Include="source\IntroUi.cpp" />
+    <ClCompile Include="source\UiMakimonoCnt.cpp">
+      <Filter>ソースファイル\UIベース\巻物の所持数</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -384,10 +387,10 @@
     <ClInclude Include="source\treasureopen.h">
       <Filter>ヘッダーファイル</Filter>
     </ClInclude>
-    <ClInclude Include="source\particleeffect.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\IntroUi.h" />
+    <ClInclude Include="source\UiMakimonoCnt.h">
+      <Filter>ヘッダーファイル\UIベース\巻物の所持数</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -742,15 +745,6 @@
     <Filter Include="ソースファイル\モードゲーム\エフェクトベース\お宝エフェクト">
       <UniqueIdentifier>{844b0959-6936-41d0-b3a3-1bb68bfe8384}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソースファイル\モードゲーム\UIベース">
-      <UniqueIdentifier>{16dbc8fe-289c-47e0-a215-cc96c1661854}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\モードゲーム\UIベース\お宝解除">
-      <UniqueIdentifier>{e30bc10d-98eb-4716-a3fe-de69bf843063}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\モードゲーム\UIベース\巻物UI">
-      <UniqueIdentifier>{d669e55b-83c2-4776-ab61-edfd415088b1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト">
       <UniqueIdentifier>{934de3cf-a780-474d-a9c6-2e0a17a9a0f9}</UniqueIdentifier>
     </Filter>
@@ -901,15 +895,6 @@
     <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\お宝エフェクト">
       <UniqueIdentifier>{7771cf82-dd67-4a75-ad54-95a4dfd5e0af}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\モードゲーム\UIベース">
-      <UniqueIdentifier>{bda12baf-0c1b-461a-a023-cdd52e529e97}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\解除アクション">
-      <UniqueIdentifier>{7b8a5d8f-3633-4b27-a83d-93be03de4215}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\UI巻物">
-      <UniqueIdentifier>{926712af-5599-4caa-bfb9-ced2a2493427}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\歩きエフェクト">
       <UniqueIdentifier>{684496c2-d409-4df1-8be2-12f651d4c870}</UniqueIdentifier>
     </Filter>
@@ -934,12 +919,6 @@
     <Filter Include="ソースファイル\チームロゴ">
       <UniqueIdentifier>{0414adbc-00e7-484a-bc64-b74c5165aab8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダーファイル\モードゲーム\UIベース\変身UI">
-      <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\モードゲーム\UIベース\変身UI">
-      <UniqueIdentifier>{9e3a64ac-2b11-4273-99cc-087347527541}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\ゲームオーバーロード画面">
       <UniqueIdentifier>{106278e3-da51-4381-a398-f7a7a8e86ffa}</UniqueIdentifier>
     </Filter>
@@ -957,6 +936,30 @@
     </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\マップベース\マップファクトリー">
       <UniqueIdentifier>{f036e790-f92c-4f5f-a453-09b578168688}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UIベース">
+      <UniqueIdentifier>{bda12baf-0c1b-461a-a023-cdd52e529e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UIベース\解除アクション">
+      <UniqueIdentifier>{7b8a5d8f-3633-4b27-a83d-93be03de4215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UIベース\変身UI">
+      <UniqueIdentifier>{708423a3-9af5-451a-b9d9-fec36ec9a9a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UIベース">
+      <UniqueIdentifier>{16dbc8fe-289c-47e0-a215-cc96c1661854}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UIベース\お宝解除">
+      <UniqueIdentifier>{e30bc10d-98eb-4716-a3fe-de69bf843063}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UIベース\変身UI">
+      <UniqueIdentifier>{9e3a64ac-2b11-4273-99cc-087347527541}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\UIベース\巻物の所持数">
+      <UniqueIdentifier>{3ff1088d-b16a-4072-a6ba-79543d1130e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\UIベース\巻物の所持数">
+      <UniqueIdentifier>{b3ca04ba-57e7-4bc1-bafd-4c9c23d705db}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
