@@ -30,6 +30,8 @@
     <ClInclude Include="source\DashUi.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
+    <ClInclude Include="source\effectmanager.h" />
+    <ClInclude Include="source\effectpool.h" />
     <ClInclude Include="source\enemy.h" />
     <ClInclude Include="source\enemybase.h" />
     <ClInclude Include="source\enemydog.h" />
@@ -46,6 +48,7 @@
     <ClInclude Include="source\Map3.h" />
     <ClInclude Include="source\MapBase.h" />
     <ClInclude Include="source\MapFactory.h" />
+    <ClInclude Include="source\markermanager.h" />
     <ClInclude Include="source\modeAffterScenario.h" />
     <ClInclude Include="source\modecredit.h" />
     <ClInclude Include="source\ModeGameClear.h" />
@@ -76,6 +79,7 @@
     <ClInclude Include="source\player.h" />
     <ClInclude Include="source\playerbase.h" />
     <ClInclude Include="source\PlayerFactory.h" />
+    <ClInclude Include="source\playermanager.h" />
     <ClInclude Include="source\playermono.h" />
     <ClInclude Include="source\playertanuki.h" />
     <ClInclude Include="source\savemanager.h" />
@@ -112,6 +116,7 @@
     <ClCompile Include="source\DashUi.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
+    <ClCompile Include="source\effectmanager.cpp" />
     <ClCompile Include="source\enemy.cpp" />
     <ClCompile Include="source\enemybase.cpp" />
     <ClCompile Include="source\enemydog.cpp" />
@@ -128,6 +133,7 @@
     <ClCompile Include="source\Map3.cpp" />
     <ClCompile Include="source\MapBase.cpp" />
     <ClCompile Include="source\MapFactory.cpp" />
+    <ClCompile Include="source\markermanager.cpp" />
     <ClCompile Include="source\modeAffterScenario.cpp" />
     <ClCompile Include="source\modecredit.cpp" />
     <ClCompile Include="source\modeGameCinematic.cpp" />
@@ -163,6 +169,7 @@
     <ClCompile Include="source\player.cpp" />
     <ClCompile Include="source\playerbase.cpp" />
     <ClCompile Include="source\PlayerFactory.cpp" />
+    <ClCompile Include="source\playermanager.cpp" />
     <ClCompile Include="source\playermono.cpp" />
     <ClCompile Include="source\playertanuki.cpp" />
     <ClCompile Include="source\savemanager.cpp" />

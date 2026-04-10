@@ -677,14 +677,6 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 	_isLoadComplete = true; // ロード完了フラグを立てる
 
-	for(auto& effectBase : _effectBase)
-	{
-		if(effectBase)
-		{
-			effectBase->StopPlaying(); // 各 Effect クラスの停止処理（内部 state クリア）
-		}
-	}
-
 	// EffectManager を使用してエフェクトを設定
 	if(tanuki)
 	{
@@ -701,11 +693,6 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		if(savePointEffect) savePointEffect->SetTargetPlayer(tanuki);
 	}
 
-	// 敵リストを参照するエフェクトに最新の敵配列を渡す
-	// 注：FindEffect と HatenaEffect をプールから取得する場合、ここでは既存のインスタンスを参照
-	if(_findEffect) _findEffect->SetEnemy(_enemyBase);
-	if(_hatenaEffect) _hatenaEffect->Enemy(_enemyBase);
-
 	// 宝箱／セーブポイント等の参照を再設定（念のため）
 	auto* treasureEffect = EffectManager::GetTreasureEffect();
 	if(treasureEffect) treasureEffect->SetTreasure(_treasureBase);
@@ -715,15 +702,6 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 	auto* goalEffect = EffectManager::GetGoalEffect();
 	if(goalEffect) goalEffect->SetGoal(_goal);
-
-	// HatenaEffect の内部フラグをリセット（既に再生済み扱いを解除して、必要な箇所で再生できるようにする）
-	if(_hatenaEffect)
-	{
-		for(auto& e : _enemyBase)
-		{
-			if(e) _hatenaEffect->ResetEnemyEffect(e.get());
-		}
-	}
 
 	// NakiEffect の一時状態をクリア
 	auto* nakiEffect = EffectManager::GetNakiEffect();

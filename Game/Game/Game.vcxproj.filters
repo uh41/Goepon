@@ -300,6 +300,9 @@
     </ClCompile>
     <ClCompile Include="source\uibase.cpp" />
     <ClCompile Include="source\PlayerFactory.cpp" />
+    <ClCompile Include="source\effectmanager.cpp" />
+    <ClCompile Include="source\markermanager.cpp" />
+    <ClCompile Include="source\playermanager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -419,6 +422,10 @@
       <Filter>ヘッダーファイル\タイトル\ゴエポン_タイトル用</Filter>
     </ClInclude>
     <ClInclude Include="source\PlayerFactory.h" />
+    <ClInclude Include="source\effectmanager.h" />
+    <ClInclude Include="source\effectpool.h" />
+    <ClInclude Include="source\markermanager.h" />
+    <ClInclude Include="source\playermanager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
