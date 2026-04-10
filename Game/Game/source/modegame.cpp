@@ -3,10 +3,6 @@
 // * \brief  モードゲームクラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
-//				: UI HP追加	鈴木裕稀 2026/01/06
-//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #include "modegame.h"
@@ -18,6 +14,7 @@
 #include "ModeTitle.h"
 #include "ModeAffterScenario.h"
 #include "savemanager.h"
+#include "effectmanager.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -158,15 +155,7 @@ bool ModeGame::Initialize()
 		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
 		// 初期表示プレイヤー（タヌキ／人間）に合わせる
-		PlayerBase* startPlayer = nullptr;
-		if (_bShowTanuki)
-		{
-			startPlayer = _playerTanuki.get();
-		}
-		else
-		{
-			startPlayer = _player.get();
-		}
+		PlayerBase* startPlayer = PlayerFactory::GetTanukiPlayer();
 
 		if (startPlayer != nullptr)
 		{
@@ -183,26 +172,16 @@ bool ModeGame::Initialize()
 		map->SetCamera(_camera);
 	}
 	
-	// フラグ初期化
-	// 最初はタヌキ
-	_bShowTanuki = true;
+	PlayerManager::GetInstance()->SetInitialPlayerState(PlayerManager::PlayerState::TANUKI);
 
 	// プレイヤーとエフェクトにカメラをセット
-	_player->SetCamera(_camera);
-	_playerTanuki->SetCamera(_camera);
-	_playerMono->SetCamera(_camera);
-	_treasureEffect->SetTreasure(_treasureBase);
-	_savePointEffect->SetSavePoint(_savePoint);
-	_walkEffect->SetPlayerPos(_playerTanuki.get());
-	_findEffect->SetEnemy(_enemyBase);
-	_hatenaEffect->Enemy(_enemyBase);
+	PlayerFactory::GetTanukiPlayer()->SetCamera(_camera);
+	PlayerFactory::GetHumanPlayer()->SetCamera(_camera);
+	PlayerFactory::GetMonoPlayer()->SetCamera(_camera);
 
-	if(_savePointEffect)
-	{
-		if(_bShowTanuki) _savePointEffect->SetTargetPlayer(_playerTanuki.get());
-		else if(_showMonoPlayer) _savePointEffect->SetTargetPlayer(_playerMono.get());
-		else _savePointEffect->SetTargetPlayer(_player.get());
-	}
+	EffectManager::GetTreasureEffect()->SetCamera(_camera);
+	EffectManager::GetSavePointEffect()->SetSavePoint(_savePoint);
+	EffectManager::GetWalkEffect()->SetPlayerPos(PlayerFactory::GetTanukiPlayer());
 
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
@@ -294,26 +273,6 @@ bool ModeGame::Terminate()
 	if(_treasureOpenUi) { _treasureOpenUi->Terminate(); _treasureOpenUi.reset(); }
 	if(_dashUi) { _dashUi->Terminate(); _dashUi.reset(); }
 
-	// エフェクト（コンテナ）
-	for(auto& effectBase : _effectBase)
-	{
-		if(effectBase) effectBase->Terminate();
-	}
-	_effectBase.clear();
-
-	// 個別エフェクトポインタを Terminate して解放
-	if(_treasureEffect) { _treasureEffect->Terminate(); _treasureEffect.reset(); }
-	if(_hensinEffect) { _hensinEffect->Terminate(); _hensinEffect.reset(); }
-	if(_walkEffect) { _walkEffect->Terminate(); _walkEffect.reset(); }
-	if(_findEffect) { _findEffect->Terminate(); _findEffect.reset(); }
-	if(_hatenaEffect) { _hatenaEffect->Terminate(); _hatenaEffect.reset(); }
-	if(_doyaEffect) { _doyaEffect->Terminate(); _doyaEffect.reset(); }
-	if(_nakiEffect) { _nakiEffect->Terminate(); _nakiEffect.reset(); }
-	if(_shirimochiEffect) { _shirimochiEffect->Terminate(); _shirimochiEffect.reset(); }
-	if(_savePointEffect) { _savePointEffect->Terminate(); _savePointEffect.reset(); }
-	if(_makimonoGetEffect) { _makimonoGetEffect->Terminate(); _makimonoGetEffect.reset(); }
-	if(_goalEffect) { _goalEffect->Terminate(); _goalEffect.reset(); }
-
 	// チュートリアル
 	for(auto& tutorial : _tutorial)
 	{
@@ -331,23 +290,6 @@ bool ModeGame::Terminate()
 	}
 	_savePoint.clear();
 	_lastSavedPoint = nullptr;
-
-	// プレイヤー系（個別ポインタがあれば Terminate -> reset）
-	if(_player)
-	{
-		_player->Terminate();
-		_player.reset();
-	}
-	if(_playerTanuki)
-	{
-		_playerTanuki->Terminate();
-		_playerTanuki.reset();
-	}
-	if(_playerMono)
-	{
-		_playerMono->Terminate();
-		_playerMono.reset();
-	}
 
 	// 敵（コンテナと個別カテゴリ）を確実に終了・解放
 	for(auto& enemy : _enemyBase)
@@ -491,14 +433,14 @@ void ModeGame::SavePlayer(PlayerBase* player)
 	}
 	else
 	{
-		p = _playerTanuki.get();
+		p = PlayerFactory::GetTanukiPlayer();
 	}
 
 	SaveData saveData{};
 	saveData.version = 1;
 	saveData.stageId = _stageManager.GetCurrentStageId();
 
-	if(_playerTanuki)
+	if(p)
 	{
 		saveData.playerPos = p->GetPos();
 		saveData.playerDir = p->GetDir();
@@ -574,8 +516,12 @@ void ModeGame::SavePlayer(PlayerBase* player)
 
 void ModeGame::ApplySaveData(const SaveData& saveData)
 {
-	_bShowTanuki = true; // タヌキ状態でロードする
-	_showMonoPlayer = false; // モノプレイヤーは非表示にする
+	PlayerManager::GetInstance()->SetInitialPlayerState(PlayerManager::PlayerState::TANUKI);
+
+	if(!saveData.stageId.empty() && saveData.stageId != _stageManager.GetCurrentStageId())
+	{
+		_initialStageId = saveData.stageId;
+	}
 
 	if(!saveData.stageId.empty() && saveData.stageId != _stageManager.GetCurrentStageId())
 	{
@@ -591,26 +537,27 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 	_isGameOverCinematicActive = false;
 
-	if(_playerTanuki)
+	auto tanuki = PlayerFactory::GetTanukiPlayer();
+	if(tanuki)
 	{
-		_playerTanuki->SetPos(saveData.playerPos);
-		_playerTanuki->SetDir(saveData.playerDir);
-		_playerTanuki->SetMakimonoCount(saveData.makimonoCount);
-		_playerTanuki->_status = PlayerBase::STATUS::WAIT; // ロード後は待機状態にする
-		_playerTanuki->RestoreDefaultModel("idle", true); // ロード後はアイドルアニメーションをループ再生する)
-		_playerTanuki->SetInputEnabled(true);
-		_playerTanuki->Process(); // 状態を更新して位置を反映させる
-		_playerTanuki->ResetDash();
+		tanuki->SetPos(saveData.playerPos);
+		tanuki->SetDir(saveData.playerDir);
+		tanuki->SetMakimonoCount(saveData.makimonoCount);
+		tanuki->_status = PlayerBase::STATUS::WAIT;
+		tanuki->RestoreDefaultModel("idle", true);
+		tanuki->SetInputEnabled(true);
+		tanuki->Process();
+		tanuki->ResetDash();
 	}
 
 	// メモリ上にも保存しておく（必要に応じて参照可能）
 	_saveData = saveData;
 
 	// カメラをタヌキに合わせる（即時表示性確保）
-	if(_camera && _playerTanuki)
+	if(_camera && tanuki)
 	{
 		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
-		vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+		vec::Vec3 target = vec3::VAdd(tanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 		_camera->SetTarget(target);
 		_camera->SetPos(vec3::VAdd(target, camDelta));
 	}
@@ -738,22 +685,36 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		}
 	}
 
-	if(_playerTanuki)
+	// EffectManager を使用してエフェクトを設定
+	if(tanuki)
 	{
-		if(_doyaEffect) _doyaEffect->SetTargetPlayer(_playerTanuki.get());
-		if(_nakiEffect) _nakiEffect->SetTargetPlayer(_playerTanuki.get());
-		if(_walkEffect) _walkEffect->SetPlayerPos(_playerTanuki.get());
-		if(_savePointEffect) _savePointEffect->SetTargetPlayer(_playerTanuki.get()); // ←追加
+		auto* doyaEffect = EffectManager::GetDoyaEffect();
+		if(doyaEffect) doyaEffect->SetTargetPlayer(tanuki);
+
+		auto* nakiEffect = EffectManager::GetNakiEffect();
+		if(nakiEffect) nakiEffect->SetTargetPlayer(tanuki);
+
+		auto* walkEffect = EffectManager::GetWalkEffect();
+		if(walkEffect) walkEffect->SetPlayerPos(tanuki);
+
+		auto* savePointEffect = EffectManager::GetSavePointEffect();
+		if(savePointEffect) savePointEffect->SetTargetPlayer(tanuki);
 	}
 
 	// 敵リストを参照するエフェクトに最新の敵配列を渡す
+	// 注：FindEffect と HatenaEffect をプールから取得する場合、ここでは既存のインスタンスを参照
 	if(_findEffect) _findEffect->SetEnemy(_enemyBase);
 	if(_hatenaEffect) _hatenaEffect->Enemy(_enemyBase);
 
 	// 宝箱／セーブポイント等の参照を再設定（念のため）
-	if(_treasureEffect) _treasureEffect->SetTreasure(_treasureBase);
-	if(_savePointEffect) _savePointEffect->SetSavePoint(_savePoint);
-	if(_goalEffect) _goalEffect->SetGoal(_goal);
+	auto* treasureEffect = EffectManager::GetTreasureEffect();
+	if(treasureEffect) treasureEffect->SetTreasure(_treasureBase);
+
+	auto* savePointEffect = EffectManager::GetSavePointEffect();
+	if(savePointEffect) savePointEffect->SetSavePoint(_savePoint);
+
+	auto* goalEffect = EffectManager::GetGoalEffect();
+	if(goalEffect) goalEffect->SetGoal(_goal);
 
 	// HatenaEffect の内部フラグをリセット（既に再生済み扱いを解除して、必要な箇所で再生できるようにする）
 	if(_hatenaEffect)
@@ -765,14 +726,15 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 	}
 
 	// NakiEffect の一時状態をクリア
-	if(_nakiEffect)
+	auto* nakiEffect = EffectManager::GetNakiEffect();
+	if(nakiEffect)
 	{
-		_nakiEffect->ResetEffect();
+		nakiEffect->ResetEffect();
 	}
 
 	_suppressSavePoint = false; // セーブポイントの再出現を抑制するフラグをリセット
 	_suppressedSavePoint = nullptr; // 抑制中のセーブポイント参照もクリア
-	if(_playerTanuki && !_savePoint.empty())
+	if(tanuki && !_savePoint.empty())
 	{
 		for(auto& sp : _savePoint)
 		{
@@ -794,14 +756,14 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 			vec::Vec3 hitPos;
 			if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
-				_playerTanuki->GetPos(),
+				tanuki->GetPos(),
 				h,
 				f,
-				_playerTanuki->GetColSubY(),
+				tanuki->GetColSubY(),
 				hitPos
 			))
 			{
-				_suppressSavePoint= true;
+				_suppressSavePoint = true;
 				_suppressedSavePoint = sp.get();
 				break;
 			}

@@ -12,53 +12,9 @@
 #include "player.h"
 #include "cube.h"
 #include "map.h"
-
-void ModeGame::RequestTransformToMono()
-{
-	if(_bTransCancel)
-	{
-		return;
-	}
-	// 要求フラグを立てるだけ。実際の消費/変身は PlayerTransform() 内で行う
-	_requestedTransformToMono = true;
-}
-
-void ModeGame::RequestTransformToHuman()
-{
-	if(_bTransCancel)
-	{
-		return;
-	}
-
-	_requestedTransformToHuman = true;
-}
-
-void ModeGame::RequestReturnToTanukiFromHuman()
-{
-	_requestedReturnToTanuki = true;
-}
-
-bool ModeGame::IsTransforming() const
-{
-	return _isTransformToHuman || _isTransformToMono ||  (_transformAnimId != -1);
-}
-
-bool ModeGame::IsTransformRequested() const
-{
-	return _requestedTransformToMono || _requestedTransformToHuman || _requestedReturnToTanuki;
-}
-
-void ModeGame::CancelRequestedTransform()
-{
-	if(IsTransforming())
-	{
-		return;
-	}
-
-	_requestedTransformToMono = false;
-	_requestedTransformToHuman = false;
-	_requestedReturnToTanuki = false;
-}
+#include "PlayerFactory.h"
+#include "effectmanager.h"
+#include "markermanager.h"
 
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
@@ -75,24 +31,6 @@ bool ModeGame::ObjectInitialize()
 	// 演出カメラの初期化
 	_cinematicCamera = std::make_unique<CinematicCamera>();
 	_cinematicCamera->Initialize();
-	
-
-	//// マップ初期化
-	//_map = std::make_shared<Map>();
-	//_object.emplace_back(_map);
-
-	//auto makimono = std::make_shared<Makimono>();
-	//makimono->Initialize();          // モデル読み込み・当たり判定フレーム設定
-	//makimono->SetCamera(_camera);
-	//_makimono.emplace_back(makimono);
-
-	// プレイヤー初期化
-	_player = std::make_shared<Player>();
-	_playerBase.emplace_back(_player);
-	_playerTanuki = std::make_shared<PlayerTanuki>();
-	_playerBase.emplace_back(_playerTanuki);
-	_playerMono = std::make_shared<PlayerMono>();
-	_playerBase.emplace_back(_playerMono);
 
 	// ゴール初期化
 	_goal = std::make_shared<Goal>();
@@ -122,42 +60,23 @@ bool ModeGame::ObjectInitialize()
 	_introUi->SetOwner(this);
 	_uiBase.emplace_back(_introUi);
 
-	// エフェクト初期化
-	
-	_treasureEffect = std::make_shared<TreasureEffect>();
-	_effectBase.emplace_back(_treasureEffect);
-	_hensinEffect = std::make_shared<HensinEffect>();
-	_effectBase.emplace_back(_hensinEffect);
-	_walkEffect = std::make_shared<WalkEffect>();
-	_effectBase.emplace_back(_walkEffect);
-	_findEffect = std::make_shared<FindEffect>();
-	_effectBase.emplace_back(_findEffect);
-	_hatenaEffect = std::make_shared<HatenaEffect>();
-	_effectBase.emplace_back(_hatenaEffect);
-	_doyaEffect = std::make_shared<DoyaEffect>();
-	_effectBase.emplace_back(_doyaEffect);
-	_TreasureOpenEffect = std::make_shared<TreasureopenEffect>();
-	_effectBase.emplace_back(_TreasureOpenEffect);
-	_nakiEffect = std::make_shared<NakiEffect>();
-	_effectBase.emplace_back(_nakiEffect);
-	_shirimochiEffect = std::make_shared<ShirimochiEffect>();
-	_effectBase.emplace_back(_shirimochiEffect);
-	_stunEffect = std::make_shared<StunEffect>();
-	_effectBase.emplace_back(_stunEffect);
-	_savePointEffect = std::make_shared<SavePointEffect>();
-	_effectBase.emplace_back(_savePointEffect);
-	_makimonoGetEffect = std::make_shared<MakimonoGetEffect>();
-	_effectBase.emplace_back(_makimonoGetEffect);
-	_goalEffect = std::make_shared<GoalEffect>();
-	_goalEffect->SetGoal(_goal);
-	_effectBase.emplace_back(_goalEffect);
+	PlayerFactory::Initialize();
+	EffectManager::Initialize();
+	MarkerManager::Initialize();
+
+	// プレイヤー参照登録
+	_playerBase.clear();
+	_playerBase.emplace_back(PlayerFactory::GetHumanPlayer());
+	_playerBase.emplace_back(PlayerFactory::GetTanukiPlayer());
+	_playerBase.emplace_back(PlayerFactory::GetMonoPlayer());
+
+	// エフェクト初期設定
+	EffectManager::SetInitialPlayer(PlayerFactory::GetTanukiPlayer());
+	EffectManager::SetGoal(_goal);
+	EffectManager::SetTreasure(_treasureBase);
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);
-
-	_doyaEffect->SetTargetPlayer(_playerTanuki.get());
-	_nakiEffect->SetTargetPlayer(_playerTanuki.get());
-
 	// キャラ
 	for(auto& chara : _chara)
 	{
@@ -187,21 +106,6 @@ bool ModeGame::ObjectInitialize()
 	{
 		ui_base->Initialize();
 	}
-
-	// エフェクト
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Initialize();
-	}
-
-	// 点滅間隔の初期化（秒） — 明示的に初期化しておく
-	_changeBlinkInterval = 0.1f; // 0.5秒ごとに点滅
-	_changeBlinkTimer = 0.0f;
-	_changeBlinkVisible = true;
-
-	_requestedTransformToMono = false;
-	_requestedTransformToHuman = false;
-	_requestedReturnToTanuki = false;
 	return true;
 }
 
@@ -278,27 +182,27 @@ bool ModeGame::PlayerTransformToTanuki(bool player)
 
 			_bShowTanuki = false; // 人間表示に切替
 			_showMonoPlayer = false;
-			_player->SetPos(_playerTanuki->GetPos());
-			_player->SetDir(_playerTanuki->GetDir());
-			_player->SetRotationY(atan2f(-_playerTanuki->GetDir().x, -_playerTanuki->GetDir().z));
-			_player->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
-			_hensinEffect->PlayEffect(_player->GetPos());
-			_walkEffect->SetPlayerPos(_player.get());
-			_doyaEffect->SetTargetPlayer(_player.get());
-			_nakiEffect->SetTargetPlayer(_player.get());
-			_savePointEffect->SetTargetPlayer(_player.get()); // ←追加
-			_player->Process();
-
-			// たぬ人間変身時の処理
-			_changeTimeActive = true;// 時間制言を有効化
-			_changeTimeLimit = 17.0f; // 変身時間をリセット
-			_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
-			_changeBlinkVisible = true; // 点滅表示フラグリセット
-			auto s = gGlobal._soundServer->Get("1");
-			if(s && s->IsPlay())
-			{
-				s->Stop();
-			}
+			PlayerFactory::TransitonPlayer(
+				PlayerBase::PlayerType::HUMAN,
+				PlayerFactory::GetTanukiPlayer(),
+				[this](PlayerBase* newPlayer)
+				{
+					_hensinEffect->PlayEffect(newPlayer->GetPos());
+					_walkEffect->SetPlayerPos(newPlayer);
+					_doyaEffect->SetTargetPlayer(newPlayer);
+					_nakiEffect->SetTargetPlayer(newPlayer);
+					_savePointEffect->SetTargetPlayer(newPlayer);
+					_changeTimeActive = true;
+					_changeTimeLimit = 17.0f;
+					_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
+					_changeBlinkVisible = true; // 点滅表示フラグリセット
+					auto s = gGlobal._soundServer->Get("1");
+					if(s && s->IsPlay())
+					{
+						s->Stop();
+					}
+				}
+			);			
 			return true;
 		}
 	}
@@ -455,131 +359,6 @@ bool ModeGame::PlayerTransform()
 			return true;
 		}
 	}
-
-	// human 表示時 -> tanuki 即時戻し（UI 経由）
-	if(_requestedReturnToTanuki)
-	{
-		_requestedReturnToTanuki = false;
-		// タヌキでない表示（人間 or モノ）の場合、どちらからでも即時タヌキへ戻す
-		if(!_bShowTanuki)
-		{
-			// 元の表示状態を保持しておく（モノか人か）
-			bool wasMono = _showMonoPlayer;
-			bool wasHuman = (!_bShowTanuki && !_showMonoPlayer);
-
-			// タヌキ表示へ切替（モノ表示は解除）
-			_bShowTanuki = true;
-			_showMonoPlayer = false;
-
-			// 位置・向きを元の表示からタヌキに引き継ぐ
-			PlayerBase* srcPlayer = nullptr;
-			if(wasMono && _playerMono) srcPlayer = _playerMono.get();
-			else if(wasHuman && _player) srcPlayer = _player.get();
-
-			if(srcPlayer && _playerTanuki)
-			{
-				_playerTanuki->SetPos(srcPlayer->GetPos());
-				_playerTanuki->SetDir(srcPlayer->GetDir());
-				_playerTanuki->SetRotationY(atan2f(-srcPlayer->GetDir().x, -srcPlayer->GetDir().z));
-				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-
-				_playerTanuki->SetMakimonoCount(srcPlayer->GetMakimonoCount());
-
-				// モノから戻る場合もタヌキの待機アニメーションを再生する
-				_playerTanuki->PlayAnimation("idle", true);
-				_playerTanuki->Process();
-
-				_playerTanuki->BlockDashFor(2.0f);
-			}
-
-			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_savePointEffect->SetTargetPlayer(_playerTanuki.get()); // ←追加
-
-
-			auto soundFinish = gGlobal._soundServer->Get("3");
-			if(soundFinish && !soundFinish->IsPlay())
-			{
-				soundFinish->Play();
-			}
-
-			_changeTimeActive = false;
-			_changeTimeLimit = 0.0f;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-
-			return true;
-		}
-	}
-
-	// UI 経由の変身要求処理（パッド入力分岐は廃止）
-	if(_requestedTransformToMono)
-	{
-		_requestedTransformToMono = false;
-		// タヌキ表示中のみ許可
-		if(_bShowTanuki)
-		{
-			if(_playerTanuki && _playerTanuki->GetMakimonoCount() > 0)
-			{
-				// 巻物消費して変身開始
-				_playerTanuki->SubMakimono(1);
-				if(PlayerTransformToTanuki(false))
-				{
-					return true;
-				}
-			}
-			else
-			{
-				auto soundNoMakimono = gGlobal._soundServer->Get("61");
-				if(soundNoMakimono && !soundNoMakimono->IsPlay())
-				{
-					soundNoMakimono->Play();
-				}
-			}
-		}
-	}
-
-	if(_requestedTransformToHuman)
-	{
-		_requestedTransformToHuman = false;
-		// タヌキ表示中のみ開始
-		if(_bShowTanuki)
-		{
-			// 巻物がある時だけ人間へ変身（巻物消費）
-			if(_playerTanuki && _playerTanuki->GetMakimonoCount() > 0)
-			{
-				_playerTanuki->SubMakimono(1);
-				if(PlayerTransformToTanuki(true))
-				{
-					return true;
-				}
-			}
-			else
-			{
-				// 巻物がない場合は効果音のみ
-				auto soundNoMakimono = gGlobal._soundServer->Get("61");
-				if(soundNoMakimono && !soundNoMakimono->IsPlay())
-				{
-					soundNoMakimono->Play();
-				}
-			}
-		}
-	}
-
-	// プレイヤーの処理（現在表示中のプレイヤーのみ）
-	if(_bShowTanuki)
-	{
-		_playerTanuki->Process();
-	}
-	else if(_showMonoPlayer)
-	{
-		_playerMono->Process();
-	}
-	else
-	{
-		_player->Process();
-	}
-
 	return true;
 }
 // オブジェクト処理

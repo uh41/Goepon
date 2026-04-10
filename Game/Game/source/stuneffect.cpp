@@ -27,6 +27,7 @@ bool StunEffect::Terminate()
 	}
 
 	StopPlaying(); // 再生中のエフェクトを停止
+	StopMultiEffect(); // 複数再生中のエフェクトも停止
 	return true;
 }
 
@@ -52,6 +53,55 @@ void StunEffect::PlayEffect(const vec::Vec3& pos)
 
 	// 未再生なら開始
 	_playHandle = em->PlayEffect3DPos(_handle, pos);
+}
+
+bool StunEffect::PlayeMultiEffect(const at::vet<vec::Vec3>& positions)
+{
+	if(_handle == -1 || positions.empty())
+	{
+		return false;
+	}
+
+	auto em = EffekseerManager::GetInstance();
+	if(!em)
+	{
+		return false;
+	}
+
+	StopMultiEffect(); // 既に再生中のエフェクトがあれば停止
+
+	for(auto& pos : positions)
+	{
+		int playHandle = em->PlayEffect3DPos(_handle, pos);
+		if(playHandle != -1)
+		{
+			_playHandles.push_back(playHandle);
+		}
+	}
+
+	return !_playHandles.empty();
+}
+
+bool StunEffect::StopMultiEffect()
+{
+	if(_playHandles.empty())
+	{
+		return false;
+	}
+	auto em = EffekseerManager::GetInstance();
+	if(!em)
+	{
+		return false;
+	}
+	for(auto& handle : _playHandles)
+	{
+		if(handle != -1)
+		{
+			em->StopEffect(handle);
+		}
+	}
+	_playHandles.clear();
+	return true;
 }
 
 bool StunEffect::StopPlaying()

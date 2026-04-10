@@ -23,9 +23,14 @@ public:
 
 	void SetTargetPlayer(PlayerBase* player) { _targetPlayer = player; }
 
+	virtual bool PlayeMultiEffect(const at::vet<vec::Vec3>& pos);// 複数の位置でエフェクトを再生する
+	virtual bool StopMultiEffect(); // 複数のエフェクトを停止する
+	bool IsMultiEffectPlaying() const; // 複数のエフェクトが再生中かどうかを確認する
+
 protected:
 	bool _effekseerLaunche;
 	int _playHandle;
+	at::vet<int> _playHandles; // 複数再生用のハンドルリスト
 
 	PlayerBase* _targetPlayer; // エフェクトの対象となるプレイヤー
 };

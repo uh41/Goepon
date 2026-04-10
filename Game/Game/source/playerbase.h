@@ -16,10 +16,20 @@ class PlayerBase : public CharaBase
 {
 	typedef CharaBase base;
 public:
+
+	enum class PlayerType
+	{
+		TANUKI,
+		HUMAN,
+		MONO,
+	};
+
 	virtual bool Initialize();
 	virtual bool Terminate();
 	virtual bool Process();
 	virtual bool Render();
+
+	void CopyStateFrom(PlayerBase* player); // 別のプレイヤーから状態をコピーする関数
 
 	void SetCamera(Camera* cam)  override { _cam = cam; }
 

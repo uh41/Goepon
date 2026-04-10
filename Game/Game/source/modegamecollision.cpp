@@ -1057,7 +1057,19 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 			if(trg & PAD_INPUT_2)
 			{
 				anyhit = true;
-				enemy->StartDamage();
+				at::vet<vec::Vec3> stunPositions;
+				for(auto& e : _enemiesInAttackRange)
+				{
+					e->StartDamage();
+					stunPositions.push_back(e->GetPos());
+				}
+
+				// 複数敵に対してスタンエフェクトを再生
+				auto stunEffect = EffectManager::GetInstance()->GetStunEffect();
+				if(stunEffect && !stunPositions.empty())
+				{
+					stunEffect->PlayMultipleEffects(stunPositions);
+				}
 				_showKnockdownMessage = true;
 				_knockdownMessageSec = 1.0f; // 表示時間 1秒
 			}

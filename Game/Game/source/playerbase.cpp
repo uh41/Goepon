@@ -32,6 +32,23 @@ bool PlayerBase::Terminate()
 	return true;
 }
 
+void PlayerBase::CopyStateFrom(PlayerBase* player)
+{
+	if(player)
+	{
+		return;
+	}
+
+	// プレイヤーの状態をコピーする処理
+	SetPos(player->GetPos());
+	SetDir(player->GetDir());
+	SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
+	SetMakimonoCount(player->GetMakimonoCount());
+	_status = CharaBase::STATUS::WAIT;
+	PlayAnimation("idle", true);
+	Process();
+}
+
 // 計算処理
 bool PlayerBase::Process()
 {

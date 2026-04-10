@@ -240,12 +240,6 @@
     <ClCompile Include="source\treasureeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\お宝エフェクト</Filter>
     </ClCompile>
-    <ClCompile Include="source\UIActionButton.cpp">
-      <Filter>ソースファイル\モードゲーム\UIベース\お宝解除</Filter>
-    </ClCompile>
-    <ClCompile Include="source\UiMakimono.cpp">
-      <Filter>ソースファイル\モードゲーム\UIベース\巻物UI</Filter>
-    </ClCompile>
     <ClCompile Include="source\walkeffect.cpp">
       <Filter>ソースファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>
     </ClCompile>
@@ -305,6 +299,7 @@
       <Filter>ソースファイル\UI関連\お宝状況</Filter>
     </ClCompile>
     <ClCompile Include="source\uibase.cpp" />
+    <ClCompile Include="source\PlayerFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -423,12 +418,12 @@
     <ClInclude Include="source\TitleTanuki.h">
       <Filter>ヘッダーファイル\タイトル\ゴエポン_タイトル用</Filter>
     </ClInclude>
+    <ClInclude Include="source\PlayerFactory.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
     <ClInclude Include="source\walkeffect.h" />
     <ClInclude Include="source\Makimono.h" />
-    <ClInclude Include="source\UiMakimono.h" />
     <ClInclude Include="source\enemysoundmanager.h" />
     <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modegameload.h" />
@@ -602,9 +597,6 @@
     <ClInclude Include="source\treasureeffect.h">
       <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\お宝エフェクト</Filter>
     </ClInclude>
-    <ClInclude Include="source\UIActionButton.h">
-      <Filter>ヘッダーファイル\モードゲーム\UIベース\解除アクション</Filter>
-    </ClInclude>
     <ClInclude Include="source\uibase.h">
       <Filter>ヘッダーファイル\モードゲーム\UIベース</Filter>
     </ClInclude>
@@ -726,9 +718,6 @@
     </Filter>
     <Filter Include="ソースファイル\モードゲーム\エフェクトベース\変身エフェクト">
       <UniqueIdentifier>{35233593-8efa-4d7a-8aac-d8bc252f27c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソースファイル\ローディング">
-      <UniqueIdentifier>{8a73d731-58bf-40db-952f-cd1ac54326b6}</UniqueIdentifier>
     </Filter>
     <Filter Include="ソースファイル\モードゲーム\モードメニュー">
       <UniqueIdentifier>{2191d2df-05b3-4525-9435-d5560436b421}</UniqueIdentifier>
@@ -870,9 +859,6 @@
     </Filter>
     <Filter Include="ヘッダーファイル\ロゴ">
       <UniqueIdentifier>{cf859520-36fc-41e0-a9e8-2694c74de6b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダーファイル\ローディング">
-      <UniqueIdentifier>{87d6a8ab-6680-44d7-95bd-7ce9cba2329c}</UniqueIdentifier>
     </Filter>
     <Filter Include="ヘッダーファイル\モードゲーム\メニュー">
       <UniqueIdentifier>{77c60e09-2c59-485e-8080-96afed3355f4}</UniqueIdentifier>
