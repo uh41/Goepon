@@ -1,5 +1,6 @@
 #include "playermono.h"
 #include "applicationglobal.h"
+#include "playermanager.h"
 
 PlayerMono::PlayerMono()
 {
@@ -209,6 +210,14 @@ bool PlayerMono::Process()
 	{
 		_fPlayTime = 0.0f;
 	}
+
+	int rel = ApplicationBase::GetInstance()->GetRel();
+	if((rel & PAD_INPUT_4) || (rel & PAD_INPUT_3))
+	{
+		auto* pm = PlayerManager::GetInstance();
+		pm->TransformToTanukiImmediate();
+	}
+
 
 	return true;
 }

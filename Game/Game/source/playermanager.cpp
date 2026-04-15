@@ -8,7 +8,10 @@
 #include "playermanager.h"
 #include "PlayerFactory.h"
 #include "effectmanager.h"
+#include "playerform.h"
 #include "appframe.h"
+#include "playertanuki.h"
+#include "applicationglobal.h"
 
 PlayerManager* PlayerManager::GetInstance()
 {
@@ -53,6 +56,8 @@ void PlayerManager::TransformToHuman()
 
 	ApplyTransition(PlayerState::HUMAN);
 
+	PlayerForm::GetInstance()->ChangeState(PlayerBase::PlayerType::HUMAN);
+
 	_transformTimeActive = true;
 	_transformTimeLimit = PlayerConstant::TRANSORM_TIME_LIMIT;
 	_transformTimer = 0.0f;
@@ -63,24 +68,27 @@ void PlayerManager::TransformToHuman()
 void PlayerManager::TransformToTanuki()
 {
 	auto tanuki = PlayerFactory::GetTanukiPlayer();
-
+	auto human = PlayerFactory::GetHumanPlayer();
+	auto mono = PlayerFactory::GetMonoPlayer();
 	if(!tanuki)
 	{
 		return;
 	}
 
-	if(_playerState == PlayerState::HUMAN)
+	// 現在の状態から状態を保存
+	if(human && _playerState == PlayerState::HUMAN)
 	{
-		tanuki->CopyStateFrom(PlayerFactory::GetHumanPlayer());
+		tanuki->CopyStateFrom(human);
 	}
-	else if(_playerState == PlayerState::MONO)
+	else if(mono && _playerState == PlayerState::MONO)
 	{
-		tanuki->CopyStateFrom(PlayerFactory::GetMonoPlayer());
+		tanuki->CopyStateFrom(mono);
 	}
 
 	EffectManager::UpdatePlayerPosition(tanuki);
-
 	ApplyTransition(PlayerState::TANUKI);
+
+	PlayerForm::GetInstance()->ChangeState(PlayerBase::PlayerType::TANUKI);
 
 	_transformTimeActive = false;
 	_transformTimeLimit = 0.0f;
@@ -100,6 +108,7 @@ void PlayerManager::TransformToMono()
 	mono->CopyStateFrom(tanuki);
 	EffectManager::UpdatePlayerPosition(mono);
 	ApplyTransition(PlayerState::MONO);
+	PlayerForm::GetInstance()->ChangeState(PlayerBase::PlayerType::MONO);
 	_transformTimeActive = true;
 	_transformTimeLimit = PlayerConstant::TRANSORM_TIME_LIMIT;
 	_transformTimer = 0.0f;
@@ -201,6 +210,102 @@ void PlayerManager::CancelTransformRequest()
 	_requestedTransformToTanuki = false;
 }
 
+void PlayerManager::StartTransformAnimation()
+{
+	if(IsTransforming())
+	{
+		return;
+	}
+
+	if(!IsTransformRequest())
+	{
+		return;
+	}
+
+	auto* tanuki = dynamic_cast<PlayerTanuki*>(PlayerFactory::GetTanukiPlayer());
+	if(!tanuki)
+	{
+		return;
+	}
+
+	int animId = tanuki->PlayAnimation("henge", false);
+	SetTransformAnimation(animId);
+
+	// 変身音を再生
+	auto henshinSound = gGlobal._soundServer->Get("2");
+	if(henshinSound && !henshinSound->IsPlay())
+	{
+		henshinSound->Play();
+	}
+}
+
+void PlayerManager::CompleteTransform()
+{
+	// アニメーションIDをリセット
+	_transformAnimId = -1;
+
+	// リクエストに基づいて変身を完了
+	if(_requestedTransformToMono)
+	{
+		_requestedTransformToMono = false;
+		TransformToMono();
+		return;
+	}
+
+	if(_requestedTransformToHuman)
+	{
+		_requestedTransformToHuman = false;
+		TransformToHuman();
+		return;
+	}
+
+	if(_requestedTransformToTanuki)
+	{
+		_requestedTransformToTanuki = false;
+		TransformToTanuki();
+		return;
+	}
+}
+
+void PlayerManager::ProcessTransformRequest()
+{
+	// 変身アニメーション再生中は処理しない
+	if(IsTransforming())
+	{
+		return;
+	}
+
+	// リクエストがない場合は処理しない
+	if(!IsTransformRequest())
+	{
+		return;
+	}
+
+	// モノへの変身リクエスト
+	if(_requestedTransformToMono)
+	{
+		_requestedTransformToMono = false;
+		TransformToMono();
+		return;
+	}
+
+	// 人間への変身リクエスト
+	if(_requestedTransformToHuman)
+	{
+		_requestedTransformToHuman = false;
+		TransformToHuman();
+		return;
+	}
+
+	// タヌキへの変身リクエスト
+	if(_requestedTransformToTanuki)
+	{
+		_requestedTransformToTanuki = false;
+		TransformToTanuki();
+		return;
+	}
+}
+
 bool PlayerManager::GetBlinkVisible()
 {
 	return _blinkVisible;
@@ -260,6 +365,39 @@ bool PlayerManager::IsTransformAnimationPlaying()
 	}
 
 	return am->IsPlaying(_transformAnimId);
+}
+
+void PlayerManager::TransformToTanukiImmediate()
+{
+	auto tanuki = PlayerFactory::GetTanukiPlayer();
+	auto human = PlayerFactory::GetHumanPlayer();
+	auto mono = PlayerFactory::GetMonoPlayer();
+	if(!tanuki)
+	{
+		return;
+	}
+
+	// 現在の状態から状態を保存
+	if(human && _playerState == PlayerState::HUMAN)
+	{
+		tanuki->CopyStateFrom(human);
+	}
+	else if(mono && _playerState == PlayerState::MONO)
+	{
+		tanuki->CopyStateFrom(mono);
+	}
+
+	EffectManager::UpdatePlayerPosition(tanuki);
+	ApplyTransition(PlayerState::TANUKI);
+
+	PlayerForm::GetInstance()->ChangeState(PlayerBase::PlayerType::TANUKI);
+	_transformTimeActive = false;
+	_transformTimeLimit = 0.0f;
+	_transformTimer = 0.0f;
+	_blinkTimer = 0.0f;
+	_blinkVisible = true;
+	_transformAnimId = -1;
+	_requestedTransformToTanuki = false;
 }
 
 void PlayerManager::ApplyTransition(PlayerState newState)

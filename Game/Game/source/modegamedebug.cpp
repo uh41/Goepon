@@ -388,33 +388,30 @@ bool ModeGame::DebugRender()
 	//}
 
 	// タヌキプレイヤーのカプセル当たり判定を表示
-	if(_bShowTanuki && _d_view_collision)
+	if(PlayerManager::GetInstance()->IsShowTanuki() && _d_view_collision)
 	{
 		// タヌキプレイヤーの参照を取得
-		if(_playerTanuki)
+		PlayerBase* p = PlayerFactory::GetTanukiPlayer();
+		if(p && p->IsAlive())
 		{
-			PlayerBase* p = _playerTanuki.get();
-			if(p && p->IsAlive())
-			{
-				// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
-				vec::Vec3 currentPos = p->GetPos();
-				float rad            = StCas<float>(p->GetCollisionR());
-				float half           = p->GetColSubY();
-
-				// カプセルの上下端を計算
-				vec::Vec3 capTop    = vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f));
-				vec::Vec3 capBottom = vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f));
-
-				// DxLib の描画用に変換
-				VECTOR top    = DxlibConverter::VecToDxLib(capTop);
-				VECTOR bottom = DxlibConverter::VecToDxLib(capBottom);
-
-				int color = GetColor(0, 255, 255); // シアン
-
-				// カプセルの描画
-				const int divNum = 16; // 分割数（見た目の滑らかさ）
-				DrawCapsule3D(top, bottom, rad, divNum, color, color, TRUE);
-			}
+			// プレイヤーの現在位置とカプセルパラメータを再計算（CharaToTreasureHitCollision と同じ式）
+			vec::Vec3 currentPos = p->GetPos();
+			float rad = StCas<float>(p->GetCollisionR());
+			float half = p->GetColSubY();
+	
+			// カプセルの上下端を計算
+			vec::Vec3 capTop = vec3::VAdd(currentPos, vec3::VGet(0.0f, half, 0.0f));
+			vec::Vec3 capBottom = vec3::VAdd(currentPos, vec3::VGet(0.0f, -half, 0.0f));
+	
+			// DxLib の描画用に変換
+			VECTOR top = DxlibConverter::VecToDxLib(capTop);
+			VECTOR bottom = DxlibConverter::VecToDxLib(capBottom);
+	
+			int color = GetColor(0, 255, 255); // シアン
+	
+			// カプセルの描画
+			const int divNum = 16; // 分割数（見た目の滑らかさ）
+			DrawCapsule3D(top, bottom, rad, divNum, color, color, TRUE);
 		}
 	}
 
@@ -477,32 +474,34 @@ bool ModeGame::DebugRender()
 	}
 
 	// 変身残り時間の表示
-	if(_changeTimeActive)
+	PlayerManager* pm = PlayerManager::GetInstance();
+	if(pm->IsTransformTimeLimitActive())
 	{
 		// 点滅制御がある場合は点滅フラグが true のときだけ表示
-		if(_changeBlinkVisible)
+		if(pm->GetBlinkVisible())
 		{
 			// フォントサイズ / 描画位置
 			int fontSize = 28;
 			SetFontSize(fontSize);
 
+			float timeLimit = pm->GetTransformTimeLimit();
 			// 5秒以下で注意色、それ以外は白
-			unsigned int color = (_changeTimeLimit <= 5.0f) ? GetColor(255, 64, 64) : GetColor(255, 255, 255);
+			unsigned int color = (timeLimit <= 5.0f) ? GetColor(255, 64, 64) : GetColor(255, 255, 255);
 
 			// 表示位置（左上に余白を確保）
 			int x = 20;
 			int y = 20;
 
 			// 60秒以上なら MM:SS 表示、未満は秒（小数）表示
-			if(_changeTimeLimit >= 60.0f)
+			if(timeLimit >= 60.0f)
 			{
-				int minutes = static_cast<int>(_changeTimeLimit) / 60;
-				int seconds = static_cast<int>(_changeTimeLimit) % 60;
+				int minutes = static_cast<int>(timeLimit) / 60;
+				int seconds = static_cast<int>(timeLimit) % 60;
 				DrawFormatString(x, y, color, "変身残り: %d:%02d", minutes, seconds);
 			}
 			else
 			{
-				DrawFormatString(x, y, color, "変身残り: %.1f s", _changeTimeLimit);
+				DrawFormatString(x, y, color, "変身残り: %.1f s", timeLimit);
 			}
 		}
 	}

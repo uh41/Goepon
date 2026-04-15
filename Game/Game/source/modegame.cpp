@@ -15,6 +15,7 @@
 #include "ModeAffterScenario.h"
 #include "savemanager.h"
 #include "effectmanager.h"
+#include "playerform.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>
@@ -154,12 +155,12 @@ bool ModeGame::Initialize()
 		// カメラの現在のオフセット（pos - target）を保存しておき、プレイヤーに合わせて再設定する
 		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
-		// 初期表示プレイヤー（タヌキ／人間）に合わせる
+		// 初期表示プレイヤー（タヌキ）に合わせる
 		PlayerBase* startPlayer = PlayerFactory::GetTanukiPlayer();
 
-		if (startPlayer != nullptr)
+		if(startPlayer != nullptr)
 		{
-			// ターゲットはプレイヤーの高さを少し上げて注視する（元のカメラ設定に合わせる）
+			// ターゲットはプレイヤーの高さを少し上げて注視する
 			vec::Vec3 target = vec3::VAdd(startPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 			_camera->SetTarget(target);
 			_camera->SetPos(vec3::VAdd(target, camDelta));
@@ -537,27 +538,20 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 	_isGameOverCinematicActive = false;
 
-	auto tanuki = PlayerFactory::GetTanukiPlayer();
-	if(tanuki)
-	{
-		tanuki->SetPos(saveData.playerPos);
-		tanuki->SetDir(saveData.playerDir);
-		tanuki->SetMakimonoCount(saveData.makimonoCount);
-		tanuki->_status = PlayerBase::STATUS::WAIT;
-		tanuki->RestoreDefaultModel("idle", true);
-		tanuki->SetInputEnabled(true);
-		tanuki->Process();
-		tanuki->ResetDash();
-	}
+	// PlayerForm を使用してプレイヤーをセーブデータから復帰
+	auto* playerForm = PlayerForm::GetInstance();
+	playerForm->RestoreFromSaveData(saveData);
+
+	PlayerBase* player = playerForm->GetPlayer();
 
 	// メモリ上にも保存しておく（必要に応じて参照可能）
 	_saveData = saveData;
 
 	// カメラをタヌキに合わせる（即時表示性確保）
-	if(_camera && tanuki)
+	if(_camera && player)
 	{
 		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
-		vec::Vec3 target = vec3::VAdd(tanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+		vec::Vec3 target = vec3::VAdd(player->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 		_camera->SetTarget(target);
 		_camera->SetPos(vec3::VAdd(target, camDelta));
 	}
@@ -678,19 +672,19 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 	_isLoadComplete = true; // ロード完了フラグを立てる
 
 	// EffectManager を使用してエフェクトを設定
-	if(tanuki)
+	if(player)
 	{
 		auto* doyaEffect = EffectManager::GetDoyaEffect();
-		if(doyaEffect) doyaEffect->SetTargetPlayer(tanuki);
+		if(doyaEffect) doyaEffect->SetTargetPlayer(player);
 
 		auto* nakiEffect = EffectManager::GetNakiEffect();
-		if(nakiEffect) nakiEffect->SetTargetPlayer(tanuki);
+		if(nakiEffect) nakiEffect->SetTargetPlayer(player);
 
 		auto* walkEffect = EffectManager::GetWalkEffect();
-		if(walkEffect) walkEffect->SetPlayerPos(tanuki);
+		if(walkEffect) walkEffect->SetPlayerPos(player);
 
 		auto* savePointEffect = EffectManager::GetSavePointEffect();
-		if(savePointEffect) savePointEffect->SetTargetPlayer(tanuki);
+		if(savePointEffect) savePointEffect->SetTargetPlayer(player);
 	}
 
 	// 宝箱／セーブポイント等の参照を再設定（念のため）
@@ -712,7 +706,7 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 	_suppressSavePoint = false; // セーブポイントの再出現を抑制するフラグをリセット
 	_suppressedSavePoint = nullptr; // 抑制中のセーブポイント参照もクリア
-	if(tanuki && !_savePoint.empty())
+	if(player && !_savePoint.empty())
 	{
 		for(auto& sp : _savePoint)
 		{
@@ -734,10 +728,10 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 
 			vec::Vec3 hitPos;
 			if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
-				tanuki->GetPos(),
+				player->GetPos(),
 				h,
 				f,
-				tanuki->GetColSubY(),
+				player->GetColSubY(),
 				hitPos
 			))
 			{
@@ -899,8 +893,7 @@ at::spc<EnemySensor> ModeGame::CreateEnemySensor(float soundArea, MapBase* map)
 	return sensor;	
 }
 
-void ModeGame::CreateEnemy
-(
+void ModeGame::CreateEnemy(
 	const nlohmann::json& object,
 	const enemygroup& patrolGroup,
 	const enemygroup& dogMovementArea,
@@ -926,11 +919,10 @@ void ModeGame::CreateEnemy
 		enemy->Initialize();
 		enemy->SetJsonDataUE(object);
 		enemy->SetEnemySensor(sensor);
-		enemy->SetEffect(_hensinEffect);
-		enemy->SetEffect(_shirimochiEffect);
-		enemy->SetStunEffect(_stunEffect);
 		enemy->SetEnemyId(nextEnemyId++);
 		enemy->SetDirSequenceFromJson(object);
+		enemy->SetEffect(EffectManager::GetEnemyReturnEffect());
+		enemy->SetStunEffect(EffectManager::GetEnemyStunEffect());
 
 		_enemyBase.emplace_back(std::move(enemy));
 		return;
@@ -946,11 +938,10 @@ void ModeGame::CreateEnemy
 		enemyMove->Initialize();
 		enemyMove->SetJsonDataUE(object);
 		enemyMove->SetEnemySensor(sensor);
-		enemyMove->SetEffect(_hensinEffect);
-		enemyMove->SetEffect(_shirimochiEffect);
-		enemyMove->SetStunEffect(_stunEffect);
 		enemyMove->SetEnemyId(nextEnemyId++);
 		enemyMove->SetDirSequenceFromJson(object);
+		enemyMove->SetEffect(EffectManager::GetEnemyReturnEffect());
+		enemyMove->SetStunEffect(EffectManager::GetEnemyStunEffect());
 
 		// 巡回グループの割り当て
 		const ApplicationGlobal::StageData* stageData = gGlobal.GetStageData(_stageManager.GetCurrentStageId());
@@ -966,7 +957,7 @@ void ModeGame::CreateEnemy
 			}
 		}
 
-		// フォールバック（従来の座標のみ）
+		// フォールバック
 		auto it = patrolGroup.find(gid);
 		if(it != patrolGroup.end() && !it->second.empty())
 		{
@@ -978,7 +969,6 @@ void ModeGame::CreateEnemy
 		return;
 	}
 
-
 	// 犬
 	if(name == "Dog")
 	{
@@ -989,14 +979,15 @@ void ModeGame::CreateEnemy
 		dog->Initialize();
 		dog->SetJsonDataUE(object);
 		dog->SetEnemySensor(sensor);
-		dog->SetEffect(_hensinEffect);
 		dog->SetEnemyId(nextEnemyId++);
+		dog->SetEffect(EffectManager::GetEnemyReturnEffect());
+		dog->SetStunEffect(EffectManager::GetEnemyStunEffect());
 
 		// 犬の移動範囲の割り当て
 		auto it = dogMovementArea.find(gid);
 		if(it != dogMovementArea.end() && !it->second.empty())
 		{
-			dog->SetMovementArea(it->second);// 犬の移動範囲を設定
+			dog->SetMovementArea(it->second);
 		}
 
 		_enemyBase.emplace_back(std::move(dog));
@@ -1062,7 +1053,8 @@ bool ModeGame::LoadStageData()
 		//プレイヤー開始位置の設定
 		if(name == "S_MarkerA")
 		{
-			_playerTanuki->SetJsonDataUE(object);
+			auto* tanuki = PlayerFactory::GetTanukiPlayer();
+			tanuki->SetJsonDataUE(object);
 			continue;
 		}
 
@@ -1202,6 +1194,10 @@ bool ModeGame::IsHitCircle(CharaBase* c1, CharaBase* c2)
 // プレイヤーのカメラ情報表示
 bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 {
+	if(!player || !_camera)
+	{
+		return false;
+	}
 	// カメラの位置/視点の移動を、プレイヤーの移動量に追従する
 	vec::Vec3 playermove = vec3::VSub(player->GetPos(), player->GetOldPos());
 	vec::Vec3 newPos = vec3::VAdd(_camera->GetPos(), playermove);
@@ -1209,6 +1205,26 @@ bool ModeGame::PlayerCameraInfo(PlayerBase* player)
 	_camera->SetPos(newPos);
 	_camera->SetTarget(newTarget);
 	return true;
+}
+
+void ModeGame::ProcessPlayerCollision(PlayerBase* player)
+{
+	if(!player)
+	{
+		return;
+	}
+
+	auto* map = _objectServer->GetMap();
+	if(!map)
+	{
+		return;
+	}
+
+	// 衝突判定処理
+	EscapeCollision(player, map);
+	CharaToTreasureHitCollision(player, _treasureBase);
+	CharaToTreasureOpenCollision(player, _treasureBase);
+	PlayerCameraInfo(player);
 }
 
 // 計算処理
@@ -1227,51 +1243,10 @@ bool ModeGame::Process()
 		return true;
 	}
 
-	//// **ロード完了後の最初のフレームでロード画面を削除**
-	//if(!_isLoadComplete)
-	//{
-	//	_isLoadComplete = true;
-	//	if(_modeGameLoad)
-	//	{
-	//		ModeServer::GetInstance()->Del(_modeGameLoad);
-	//		_modeGameLoad = nullptr;
-	//	}
-	//	return true; // 最初のフレームは他の処理をスキップ
-	//}
-
-
-	//// ★クリア画面が消えた後にここが回り始める想定なので、ここで実行するのが安全
-	//if (_requestNextStage)
-	//{
-	//	_requestNextStage = false;
-
-	//	// 次のステージがあるなら進めて再構築
-	//	if(_stageManager.GoNext())
-	//	{
-	//		ResetStage();
-	//	}
-	//	// 次のステージがないならタイトルに戻る
-	//	else
-	//	{
-	//		ModeServer::GetInstance()->Add(new ModeAfScenario(), 0, "ModeTitle");
-
-	//		// 自分自身のモードを削除して遷移する
-	//		ModeServer::GetInstance()->Del(this);
-	//	}
-
-	//	return true;
-	//}
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 	ModeServer::GetInstance()->SkipRenderUnderLayer();
 
-	/*if(_requestResetStage)
-	{
-		_requestResetStage = false;
-		ResetStage();
-		return true;
-	}*/
-
-	if (_isGameClearCinematicActive)
+	if(_isGameClearCinematicActive)
 	{
 		ProcessClearSequence();
 		AnimationManager::GetInstance()->Update(1.0f);
@@ -1285,7 +1260,7 @@ bool ModeGame::Process()
 		return true;
 	}
 
-	if (_isIntroActive)
+	if(_isIntroActive)
 	{
 		ProcessIntroSequence();
 	}
@@ -1301,7 +1276,6 @@ bool ModeGame::Process()
 	AnimationManager::GetInstance()->Update(1.0f);
 
 	// Effekseer 更新
-
 	EffekseerManager::GetInstance()->Update();
 
 	// 敵サウンド処理
@@ -1330,26 +1304,48 @@ bool ModeGame::Process()
 		}
 	}
 
-
 	// オブジェクトサーバー処理
 	_objectServer->ProcessInit();
 	_objectServer->Process();
 
+	// アクティブプレイヤーの取得と処理
+	ProcessActivePlayer();
 
-	// 3Dサウンドリスナー位置の設定（毎フレーム更新）
-	PlayerBase* activePlayer = nullptr;
-	if(_bShowTanuki)
+	// オブジェクト処理
+	ObjectProcess();
+
+	// 敵との当たり判定処理（生存している敵のみ）
+	if(_d_use_collision)
 	{
-		activePlayer = _playerTanuki.get();
+		CheckAllDetections();
 	}
-	else if(_showMonoPlayer)
-	{
-		activePlayer = _playerMono.get();
-	}
-	else
-	{
-		activePlayer = _player.get();
-	}
+
+	// プレイヤーの衝突判定と処理
+	ProcessPlayerCollisionAndInteraction();
+
+	// プレイヤーと敵の接触処理
+	ProcessPlayerEnemyCollision();
+
+	// 3Dサウンド処理
+	Process3DSound();
+
+	// 変身時間制限処理
+	ProcessTransformTimeLimit();
+
+	// ゲームオーバー復帰の円形フェイドイン
+	ProcessSpotlightFadeIn();
+
+	// BGM変更処理
+	ChangeBGM();
+
+	return true;
+}
+
+// アクティブプレイヤーの取得と処理
+void ModeGame::ProcessActivePlayer()
+{
+	// 3Dサウンドリスナー位置の設定
+	PlayerBase* activePlayer = PlayerForm::GetInstance()->GetPlayer();
 
 	if(activePlayer)
 	{
@@ -1360,157 +1356,98 @@ bool ModeGame::Process()
 			DxlibConverter::VecToDxLib(listenerFront)
 		);
 	}
+}
 
-	// プレイヤー変身処理
-	PlayerTransform();
+// プレイヤーの衝突判定と相互作用処理
+void ModeGame::ProcessPlayerCollisionAndInteraction()
+{
+	PlayerBase* player = PlayerForm::GetInstance()->GetPlayer();
 
-
-	// オブジェクト処理
-	ObjectProcess();
-
-	// 敵との当たり判定処理（生存している敵のみ）
-	// 	...
-	// 当たり判定の処理をここに書く
-
-	if(_d_use_collision)
+	if(!player)
 	{
-		CheckAllDetections();
+		return;
 	}
 
-	// 敵AI（追跡/移動はここで実行される）
-	if (_bShowTanuki)
+	auto* map = _objectServer->GetMap();
+	if(!map)
 	{
-		EscapeCollision(_playerTanuki.get(), _objectServer->GetMap());
-		//CheckTanukiHeadCollision(_playerTanuki.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerTanuki.get(), _treasureBase);
-		CharaToTreasureOpenCollision(_playerTanuki.get(), _treasureBase);
-		PlayerCameraInfo(_playerTanuki.get());
-	}
-	else if (_showMonoPlayer)
-	{
-		EscapeCollision(_playerMono.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_playerMono.get(), _treasureBase);
-		CharaToTreasureOpenCollision(_playerMono.get(), _treasureBase);
-		PlayerCameraInfo(_playerMono.get());
-	}
-	else
-	{
-		EscapeCollision(_player.get(), _objectServer->GetMap());
-		const bool hitTreasure = CharaToTreasureHitCollision(_player.get(), _treasureBase);
-		CharaToTreasureOpenCollision(_player.get(), _treasureBase);
-		PlayerCameraInfo(_player.get());
+		return;
 	}
 
-	PlayerBase* playerBase = nullptr;
+	// 衝突判定処理
+	EscapeCollision(player, map);
+	CharaToTreasureHitCollision(player, _treasureBase);
+	CharaToTreasureOpenCollision(player, _treasureBase);
+	PlayerCameraInfo(player);
 
-	// 表示中のプレイヤーを明示的に選択（タヌキ / Mono / 通常）
-	if(_bShowTanuki)
+	// オブジェクト相互作用処理
+	PlayerToMakimonoCollision(player, _makimono);
+	PlayerToTutorialCollision(player, _tutorial);
+	PlayerToSavePointCollision(player);
+
+	// ゴールとの当たり判定
+	if(CanGoal() && !_isGameClear)
 	{
-		playerBase = _playerTanuki.get();
+		UpdateGoalConfirm(player);
 	}
-	else if(_showMonoPlayer)
+
+	// 攻撃判定は「表示中のプレイヤーが人間プレイヤーのときのみ」実行する
+	if(player == PlayerFactory::GetHumanPlayer())
 	{
-		playerBase = _playerMono.get();
+		IsPlayerAttack(player, _enemyBase);
 	}
-	else
+}
+
+// プレイヤーと敵の接触処理
+void ModeGame::ProcessPlayerEnemyCollision()
+{
+	PlayerBase* player = PlayerForm::GetInstance()->GetPlayer();
+
+	if(!player || !player->IsAlive())
 	{
-		playerBase = _player.get();
+		return;
 	}
-
-	// ここで呼ぶ（playerBase が確定してから）
-	PlayerToMakimonoCollision(playerBase, _makimono);
-
-	PlayerToTutorialCollision(playerBase, _tutorial);
-
-	PlayerToSavePointCollision(playerBase);
 
 	bool hasCollision = false;
 
-	// プレイヤーと敵の接触処理
-	if(playerBase && playerBase->IsAlive())
+	for(auto& enemy : _enemyBase)
 	{
-		for(auto& enemy : _enemyBase)
+		if(!enemy || !enemy->IsAlive())
 		{
-			if(!enemy || !enemy->IsAlive())
-			{
-				continue;
-			}
+			continue;
+		}
 
-			// 軽量な早期判定（XZ円）
-			if(CharaToCharaCollision(playerBase, enemy.get()))
+		// 軽量な早期判定（XZ円）
+		if(CharaToCharaCollision(player, enemy.get()))
+		{
+			// プレイヤーが敵に見つかっていなかったら捕まらない
+			if(enemy->IsPlayerChasing())
 			{
-				// プレイヤーが敵に見つかっていなかったら捕まらない
-				if(enemy->IsPlayerChasing())
+				// 犬の場合はゲームオーバーにしない
+				if(dynamic_cast<EnemyDog*>(enemy.get()) != nullptr)
 				{
-
-					// 犬の場合はゲームオーバーにしない
-					if (dynamic_cast<EnemyDog*>(enemy.get()) != nullptr)
-					{
-						continue; // 犬の場合は次の敵へ
-					}
-
-					if(gGlobal._soundServer)
-					{
-						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
-						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
-						gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
-
-						// 明示的にキーで登録されているループ音を停止
-						auto walkSound = gGlobal._soundServer->Get("1");
-						if(walkSound && walkSound->IsPlay()) walkSound->Stop();
-						auto walkSound11 = gGlobal._soundServer->Get("11");
-						if(walkSound11 && walkSound11->IsPlay()) walkSound11->Stop();
-
-						// 保持しているBGMハンドルがあるなら停止
-						if(_bgmInitialize && _bgmInitialize->IsPlay()) _bgmInitialize->Stop();
-						if(_bgmChenge && _bgmChenge->IsPlay()) _bgmChenge->Stop();
-					}
-
-					// モード内サウンドサーバーがあれば停止（存在するなら）
-					if(_soundServer)
-					{
-						_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
-						_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
-						_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
-						_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
-					}
-
-					// 3Dサウンドの停止
-					if(_sound3D)
-					{
-						_sound3D->StopAll();
-					}
-
-					for(auto& effectBase : _effectBase)
-					{
-						if(effectBase)
-						{
-							effectBase->StopPlaying();
-						}
-					}
-
-					_hasRenderOnce = false;
-
-					//ResetEnemyRoot();
-
-					//ここでゲームオーバー処理へ移行
-					StartGameOverSequence();
-
-					break;
+					continue; // 犬の場合は次の敵へ
 				}
-				// 実際の押し出し（カプセル）
-				// 敵に接触したときに実際に行う処理はここで記入
-				hasCollision = true;
+
+				StopAllSounds();
+
+				_hasRenderOnce = false;
+
+				//ここでゲームオーバー処理へ移行
+				StartGameOverSequence();
+
+				break;
 			}
+			// 実際の押し出し（カプセル）
+			hasCollision = true;
 		}
 	}
 
 	// プレイヤーと敵の接触があった場合、敵の音を発生させる
-	if (hasCollision && playerBase&& _bShowTanuki)
+	if(hasCollision && player && PlayerManager::GetInstance()->IsShowTanuki())
 	{
 		EnemySoundManager::GetInstance()->EmitSound(
-			playerBase->GetPos(),  // 位置
+			player->GetPos(),  // 位置
 			1,					// 音の大きさレベル
 			400.0f,				// 音波の最大半径
 			10.0f				// 音波の速度
@@ -1528,38 +1465,11 @@ bool ModeGame::Process()
 			_knockdownMessageSec = 0.0f;
 		}
 	}
+}
 
-	// ゴールとの当たり判定
-	if(CanGoal() && !_isGameClear)
-	{
-		// いま操作/表示しているプレイヤーで判定
-		PlayerBase* goalPlayer = nullptr;
-
-		// ゴール判定を行うプレイヤーを明示的に選択（タヌキ / Mono / 通常）
-		if(_bShowTanuki)
-		{
-			goalPlayer = _playerTanuki.get();
-		}
-		else if(_showMonoPlayer)
-		{
-			goalPlayer = _playerMono.get();
-		}
-		else
-		{
-			goalPlayer = _player.get();
-		}
-
-		// ゴール判定を行うプレイヤーが有効なら当たり判定をチェック
-		UpdateGoalConfirm(goalPlayer);
-	}
-
-	// 攻撃判定は「表示中のプレイヤーが人間プレイヤー(_player) のときのみ」実行する
-	if(playerBase == _player.get())
-	{
-		IsPlayerAttack(_player.get(), _enemyBase);
-	}
-	
-
+// 3Dサウンド処理
+void ModeGame::Process3DSound()
+{
 	// 3Dサウンド処理
 	if(_sound3D)
 	{
@@ -1607,149 +1517,71 @@ bool ModeGame::Process()
 			}
 		}
 	}
+}
 
-	// 変身時間制限処理
-	if(_changeTimeActive)
+// 変身時間制限処理
+void ModeGame::ProcessTransformTimeLimit()
+{
+	PlayerManager* pm = PlayerManager::GetInstance();
+
+	if(!pm->IsTransformTimeLimitActive())
 	{
-		float dt = 1.0f / 60.0f; // 60FPS想定
-		_changeTimeLimit -= dt;
-		if(_changeTimeLimit < 0.0f) _changeTimeLimit = 0.0f;
-
-		// 2回攻撃時の遅延戻りタイマーを管理
-		if(_tanukiReturnPending)
-		{
-			_tanukiReturnTimer -= dt;
-			if(_tanukiReturnTimer <= 0.0f)
-			{
-				_tanukiReturnPending = false;
-				_tanukiReturnTimer = 0.0f;
-
-				// 3秒経過でリクエストを立てる
-				_requestedReturnToTanuki = true;
-
-				// 点滅状態をリセット
-				_changeTimeActive = false;
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = true;
-			}
-		}
-
-		// 元の「残り時間に応じた点滅」ロジックを保持しつつ、遅延時は最後の1秒で加速
-		float currentBlinkInterval = _changeBlinkInterval;
-
-		// 既存の閾値で加速（例: 残り <= 2秒 で 2倍速）
-		if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
-		{
-			currentBlinkInterval *= 0.5f;
-		}
-
-		// 2回攻撃の遅延中かつ残り1秒以下なら更に速く点滅させる
-		if(_tanukiReturnPending && _tanukiReturnTimer <= 1.0f)
-		{
-			currentBlinkInterval *= 0.25f; // さらに速く（必要なら調整）
-		}
-
-		// ブリンクタイマー更新（トグル）
-		_changeBlinkTimer += dt;
-		if(_changeBlinkTimer >= currentBlinkInterval)
-		{
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = !_changeBlinkVisible;
-		}
-
-		// 既存: 変身の残り時間がゼロの場合の復帰処理（従来の挙動を維持）
-		if(_changeTimeLimit <= 0.0f)
-		{
-			_changeTimeActive = false;
-			_changeTimeLimit = 0.0f;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-
-			// 変身解除前に「直前に表示されていたプレイヤー」を取得しておく
-			PlayerBase* prevActive = nullptr;
-			if(_bShowTanuki)
-			{
-				prevActive = _playerTanuki.get();
-			}
-			else if(_showMonoPlayer)
-			{
-				prevActive = _playerMono.get();
-			}
-			else
-			{
-				prevActive = _player.get();
-			}
-
-			// タヌキ表示へ切替
-			_bShowTanuki = true;
-			_showMonoPlayer = false;
-
-			// prevActive が有効ならその位置／向きをタヌキに引き継ぐ
-			if(prevActive && _playerTanuki)
-			{
-				_playerTanuki->SetPos(prevActive->GetPos());
-				_playerTanuki->SetDir(prevActive->GetDir());
-				_playerTanuki->SetRotationY(atan2f(-prevActive->GetDir().x, -prevActive->GetDir().z));
-				_playerTanuki->_status = CharaBase::STATUS::WAIT;
-				_playerTanuki->PlayAnimation("idle", true);
-				_playerTanuki->Process(); // 変身直後の1フレーム更新
-			}
-
-			// カメラを新しいプレイヤー位置に合わせる（オフセットは維持）
-			if(_camera && _playerTanuki)
-			{
-				vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
-				vec::Vec3 target = vec3::VAdd(_playerTanuki->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
-				_camera->SetTarget(target);
-				_camera->SetPos(vec3::VAdd(target, camDelta));
-			}
-
-			// エフェクト再設定
-			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-			_walkEffect->SetPlayerPos(_playerTanuki.get());
-
-			if(_soundFinish && !_soundFinish->IsPlay())
-			{
-				_soundFinish->Play();
-			}
-
-			// 周囲の敵に対する音波／エフェクト
-			for(auto& enemy : _enemyBase)
-			{
-				if(enemy && enemy->IsAlive())
-				{
-					_hatenaEffect->PlayOnce(enemy.get());
-				}
-			}
-		}
-		else if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
-		{
-			// 残り時間に応じて点滅間隔を短くする
-			_changeBlinkTimer += dt;
-
-			// 基本の間隔は初期設定の _changeBlinkInterval を使う（ObjectInitializeで設定）
-			float currentBlinkInterval = _changeBlinkInterval;
-
-			// ここで残り3秒以下なら点滅を速くする（例: 2倍速）
-			if(_changeTimeLimit <= timelimit::MIDDLE_TIME_LIMIT)
-			{
-				currentBlinkInterval *= 0.5f; // 2倍速にする（必要なら値を調整）
-			}
-
-			if(_changeBlinkTimer >= currentBlinkInterval)
-			{
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = !_changeBlinkVisible;
-			}
-		}
+		return;
 	}
 
-	// ゲームオーバー復帰の円形フェイドイン
-	ProcessSpotlightFadeIn();
-	// BGM変更処理
-	ChangeBGM();
+	float dt = 1.0f / 60.0f; // 60FPS想定
+	pm->UpdateTransformTimer(dt);
 
-	return true;
+	// 2回攻撃時の遅延戻りタイマーを管理
+	if(_tanukiReturnPending)
+	{
+		_tanukiReturnTimer -= dt;
+		if(_tanukiReturnTimer <= 0.0f)
+		{
+			_tanukiReturnPending = false;
+			_tanukiReturnTimer = 0.0f;
+
+			// 攻撃アニメーションが終了したら、人間からタヌキに戻す
+			pm->TransformToTanuki();
+		}
+	}
+}
+
+// サウンド停止ヘルパー関数
+void ModeGame::StopAllSounds()
+{
+	if(gGlobal._soundServer)
+	{
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+
+		// 明示的にキーで登録されているループ音を停止
+		auto walkSound = gGlobal._soundServer->Get("1");
+		if(walkSound && walkSound->IsPlay()) walkSound->Stop();
+		auto walkSound11 = gGlobal._soundServer->Get("11");
+		if(walkSound11 && walkSound11->IsPlay()) walkSound11->Stop();
+
+		// 保持しているBGMハンドルがあるなら停止
+		if(_bgmInitialize && _bgmInitialize->IsPlay()) _bgmInitialize->Stop();
+		if(_bgmChenge && _bgmChenge->IsPlay()) _bgmChenge->Stop();
+	}
+
+	// モード内サウンドサーバーがあれば停止（存在するなら）
+	if(_soundServer)
+	{
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::SE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::VOICE);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::ONESHOT);
+		_soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
+	}
+
+	// 3Dサウンドの停止
+	if(_sound3D)
+	{
+		_sound3D->StopAll();
+	}
 }
 
 // 描画処理
@@ -1831,10 +1663,6 @@ bool ModeGame::Render()
 
 			// Effekseer（必ず影なしで描く）
 			EffekseerManager::GetInstance()->Render();
-			//xRenderEffects();
-
-			// シャドウ解除（保険）
-			//SetUseShadowMap(0, -1);
 
 			// ゲームオーバー演出（既存）
 			if(_isGameOverCinematicActive)
@@ -1843,9 +1671,10 @@ bool ModeGame::Render()
 				DrawBox(0, 0, 1920, 1080, GetColor(0, 0, 0), TRUE);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-				if(_playerTanuki)
+				PlayerBase* tanukiPlayer = PlayerFactory::GetTanukiPlayer();
+				if(tanukiPlayer)
 				{
-					_playerTanuki->Render();
+					tanukiPlayer->Render();
 				}
 			}
 
@@ -1866,31 +1695,6 @@ bool ModeGame::Render()
 		_hasRenderOnce = true;
 		_isLoadComplete = true;
 	}
-
-
-	//DrawFormatString(10, y, colorYellow, "=== Performance Monitor ==="); y += lineHeight;
-
-	//// 処理時間が0.5ms以上の項目は赤色で表示
-	//DrawFormatString(10, y, _processTotalMs >= 0.5f ? colorRed : colorYellow, "Total Process: %.3f ms", _processTotalMs); y += lineHeight;
-	//DrawFormatString(10, y, _processCameraMs >= 0.5f ? colorRed : colorWhite, "  Camera: %.3f ms", _processCameraMs); y += lineHeight;
-	//DrawFormatString(10, y, _processAnimationMs >= 0.5f ? colorRed : colorWhite, "  Animation: %.3f ms", _processAnimationMs); y += lineHeight;
-	//DrawFormatString(10, y, _processEffekseerMs >= 0.5f ? colorRed : colorWhite, "  Effekseer: %.3f ms", _processEffekseerMs); y += lineHeight;
-	//DrawFormatString(10, y, _processEnemySoundMs >= 0.5f ? colorRed : colorWhite, "  EnemySound: %.3f ms", _processEnemySoundMs); y += lineHeight;
-	//DrawFormatString(10, y, _processObjectServerMs >= 0.5f ? colorRed : colorWhite, "  ObjectServer: %.3f ms", _processObjectServerMs); y += lineHeight;
-	//DrawFormatString(10, y, _processSoundListenerMs >= 0.5f ? colorRed : colorWhite, "  SoundListener: %.3f ms", _processSoundListenerMs); y += lineHeight;
-	//DrawFormatString(10, y, _processPlayerTransformMs >= 0.5f ? colorRed : colorWhite, "  PlayerTransform: %.3f ms", _processPlayerTransformMs); y += lineHeight;
-	//DrawFormatString(10, y, _processObjectProcessMs >= 0.5f ? colorRed : colorWhite, "  ObjectProcess: %.3f ms", _processObjectProcessMs); y += lineHeight;
-	//DrawFormatString(10, y, _processCollisionMs >= 0.5f ? colorRed : colorWhite, "  Collision: %.3f ms", _processCollisionMs); y += lineHeight;
-	//DrawFormatString(10, y, _processEnemyAIMs >= 0.5f ? colorRed : colorWhite, "  EnemyAI: %.3f ms", _processEnemyAIMs); y += lineHeight;
-	//DrawFormatString(10, y, _processPlayerCollisionMs >= 0.5f ? colorRed : colorWhite, "  PlayerCollision: %.3f ms", _processPlayerCollisionMs); y += lineHeight;
-	//DrawFormatString(10, y, _processPlayerEnemyMs >= 0.5f ? colorRed : colorWhite, "  PlayerEnemy: %.3f ms", _processPlayerEnemyMs); y += lineHeight;
-	//DrawFormatString(10, y, _processGoalMs >= 0.5f ? colorRed : colorWhite, "  Goal: %.3f ms", _processGoalMs); y += lineHeight;
-	//DrawFormatString(10, y, _processAttackMs >= 0.5f ? colorRed : colorWhite, "  Attack: %.3f ms", _processAttackMs); y += lineHeight;
-	//DrawFormatString(10, y, _process3DSoundMs >= 0.5f ? colorRed : colorWhite, "  3DSound: %.3f ms", _process3DSoundMs); y += lineHeight;
-	//DrawFormatString(10, y, _processChangeTimeMs >= 0.5f ? colorRed : colorWhite, "  ChangeTime: %.3f ms", _processChangeTimeMs); y += lineHeight;
-	//DrawFormatString(10, y, _processBGMMs >= 0.5f ? colorRed : colorWhite, "  BGM: %.3f ms", _processBGMMs); y += lineHeight;
-	//DrawFormatString(10, y, _processSectorDetectionMs >= 0.5f ? colorRed : colorWhite, "  SectorDetection: %.3f ms", _processSectorDetectionMs); y += lineHeight;
-
 	// ゲームオーバー復帰時の円形フェードイン
 	DrawSpotLightFadeIn();
 	return true;

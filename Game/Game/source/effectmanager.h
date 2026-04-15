@@ -38,8 +38,10 @@ public:
 	static ShirimochiEffect* GetShirimochiEffect(); // しりもちエフェクトを取得
 	static SavePointEffect* GetSavePointEffect(); // セーブポイントエフェクトを取得
 	static GoalEffect* GetGoalEffect(); // ゴールエフェクトを取得
-
+	static HatenaEffect* GetHatenaEffect(); // はてなエフェクトを取得
 	static TreasureEffect* GetTreasureEffect(); // 宝箱エフェクトを取得
+	static ShirimochiEffect* GetEnemyReturnEffect();  // 敵が初期位置に戻るエフェクト
+	static StunEffect* GetEnemyStunEffect();           // 敵のスタンエフェクト
 
 	static HensinEffect* PlayeHensinEffect(const vec::Vec3& pos); // 変身エフェクトを取得
 	static FindEffect* PlayFindEffect(const vec::Vec3& pos); // 発見エフェクトを取得

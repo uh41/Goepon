@@ -1,7 +1,7 @@
 #pragma once
 #include "uibase.h"
 
-class PlayerTanuki;
+class PlayerBase;
 
 namespace dash
 {
@@ -20,10 +20,10 @@ public:
 	bool Process() override;
 	bool Render() override;
 
-	void SetPlayer(PlayerTanuki* player) { _player = player; } // プレイヤーへのポインタをセットするセッター
+	void SetPlayer(PlayerBase* player) { _player = player; } // プレイヤーへのポインタをセットするセッター
 
 protected:
 	int _noDashHandle;
-	PlayerTanuki* _player; // プレイヤーへのポインタ
+	PlayerBase* _player; // プレイヤーへのポインタ
 };
 

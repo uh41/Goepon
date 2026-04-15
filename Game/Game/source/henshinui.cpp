@@ -2,6 +2,8 @@
 #include "appframe.h"
 #include "applicationglobal.h"
 #include "modegame.h"
+#include "playermanager.h"
+#include "playerform.h"
 
 HenshinUi::HenshinUi()
 {
@@ -73,8 +75,10 @@ bool HenshinUi::Process()
 		mg = StCas<ModeGame*>(_owner);
 	}
 
+	auto* playerManager = PlayerManager::GetInstance();
+
 	// 変身中または変身要求が保留中は選択を無効化する
-	if(mg && (mg->IsTransforming() || mg->IsTransformRequested()))
+	if(playerManager->IsTransforming() || playerManager->IsTransformRequest())
 	{
 		_padInput5Active = false;
 		return true;
@@ -90,18 +94,19 @@ bool HenshinUi::Process()
 	{
 		_padInput5Active = false;
 
-		// 人間表示時は PAD_INPUT_4 を押すことで UI 経由で即時タヌキへ戻す要求を出せるようにする
-		if(mgCheck && !mgCheck->IsShowingMono() && (trg & PAD_INPUT_4))
-		{
-			mgCheck->RequestReturnToTanukiFromHuman();
-			return true;
-		}
+		//// 人間表示時は PAD_INPUT_4 を押すことで UI 経由で即時タヌキへ戻す要求を出せるようにする
+		//if(playerManager->GetPlayerState() == PlayerManager::PlayerState::HUMAN && (trg & PAD_INPUT_4))
+		//{
+		//	playerManager->RequestTransformToTanuki();
+		//	return true;
+		//}
 
-		if(mgCheck && mgCheck->IsShowingMono() && (trg & PAD_INPUT_3))
-		{
-			mgCheck->RequestReturnToTanukiFromHuman(); // 既存の戻す要求を利用
-			return true;
-		}
+		//// モノ表示時は PAD_INPUT_3 を押すことでタヌキへ戻す要求を出せるようにする
+		//if(playerManager->GetPlayerState() == PlayerManager::PlayerState::MONO && (trg & PAD_INPUT_3))
+		//{
+		//	playerManager->RequestTransformToTanuki();
+		//	return true;
+		//}
 
 		// 表示がタヌキでないなら以降の入力は無視
 		return true;
@@ -132,21 +137,7 @@ bool HenshinUi::Render()
 	bool hasMakimono = false;
 	if(mg)
 	{
-		PlayerBase* currentPlayer = nullptr;
-
-		if(mg->IsShowingTanuki())
-		{
-			currentPlayer = mg->GetPlayerTanuki().get();
-		}
-		else if(mg->IsShowingMono())
-		{
-			currentPlayer = mg->GetPlayerMono().get();
-		}
-		else
-		{
-			currentPlayer = mg->GetPlayer().get();
-		}
-
+		PlayerBase* currentPlayer = PlayerForm::GetInstance()->GetPlayer();
 		hasMakimono = (currentPlayer != nullptr) && (currentPlayer->GetMakimonoCount() > 0);
 	}
 

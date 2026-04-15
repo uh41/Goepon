@@ -122,6 +122,7 @@ bool PlayerTanuki::SoundWalk()
 void PlayerTanuki::BlockDashFor(float seconds)
 {
 	if(seconds <= 0.0f) return;
+	_dashBlockTimer = seconds;
 
 	// ダッシュ状態をリセットしてクールダウンを強制
 	_dash = false;
@@ -143,6 +144,81 @@ void PlayerTanuki::BlockDashFor(float seconds)
 	}
 }
 
+void PlayerTanuki::PlayNoMakimonoSound()
+{
+	auto soundNoMakimono = gGlobal._soundServer->Get("61");
+	if(soundNoMakimono && !soundNoMakimono->IsPlay())
+	{
+		soundNoMakimono->Play();
+	}
+}
+
+bool PlayerTanuki::RequestTransformWithMakimono(PlayerManager::PlayerState targetState)
+{
+	if(GetMakimonoCount() > 0)
+	{
+		SubMakimono(1);
+		if(targetState == PlayerManager::PlayerState::HUMAN)
+		{
+			PlayerManager::GetInstance()->RequestTransformToHuman();
+		}
+		else if(targetState == PlayerManager::PlayerState::MONO)
+		{
+			PlayerManager::GetInstance()->RequestTransformToMono();
+		}
+		return true;
+	}
+	else
+	{
+		PlayNoMakimonoSound();
+		return false;
+	}
+}
+
+void PlayerTanuki::HandleTransformToHuman()
+{
+	auto* pm = PlayerManager::GetInstance();
+
+	if(pm->IsTransforming())
+	{
+		// 変身中：要求中ならキャンセル、そうでなければ人間に
+		if(pm->IsTransformRequest())
+		{
+			pm->TransformToTanukiImmediate();
+		}
+		else
+		{
+			pm->TransformToHuman();
+		}
+	}
+	else if(pm->GetPlayerState() == PlayerManager::PlayerState::TANUKI)
+	{
+		// タヌキ状態のみ変身可能
+		RequestTransformWithMakimono(PlayerManager::PlayerState::HUMAN);
+	}
+}
+
+void PlayerTanuki::HandleTransformToMono()
+{
+	auto* pm = PlayerManager::GetInstance();
+
+	if(pm->GetPlayerState() != PlayerManager::PlayerState::MONO && !pm->IsTransforming())
+	{
+		// タヌキ状態のみモノに変身可能
+		RequestTransformWithMakimono(PlayerManager::PlayerState::MONO);
+	}
+	else if(pm->IsTransformRequest())
+	{
+		// 変身要求中：キャンセル
+		pm->TransformToTanukiImmediate();
+	}
+	else if(pm->IsTransforming())
+	{
+		// 変身中：モノに変身
+		pm->TransformToTanukiImmediate();
+	}
+}
+
 bool PlayerTanuki::Process()
 {
 	base::Process();
@@ -156,6 +232,15 @@ bool PlayerTanuki::Process()
 	CharaBase::STATUS old_status = _status;
 
 	_v = { 0,0,0 };
+
+	if(_dashBlockTimer > 0.0f)
+	{
+		_dashBlockTimer -= 1.0f / 60.0f;
+		if(_dashBlockTimer < 0.0f)
+		{
+			_dashBlockTimer = 0.0f;
+		}
+	}
 
 	// 押している状態を記録する
 
@@ -314,11 +399,11 @@ bool PlayerTanuki::Process()
 			_vDir = _v;
 			_status = STATUS::WALK;
 
-			if(!_dash && (trg & PAD_INPUT_2) && moving && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+			if(!_dash && (trg & PAD_INPUT_2) && moving && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f && _dashBlockTimer <= 0.0f)
 			{
 				_dash = true;
 				_dashTimer = dash::DASH_DURATION;
-				_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
+				_fMvSpeed = _normalSpeed * dash::DASH_SPEED;
 				_dashCount++;
 				if(_dashRecoverActive)
 				{
@@ -333,19 +418,17 @@ bool PlayerTanuki::Process()
 			_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
 			_status = STATUS::WAIT;
 		}
-		if(!_dash && (trg & PAD_INPUT_2) && moving && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f)
+		if(!_dash && (trg & PAD_INPUT_2) && moving && _dashCount < dash::DASH_MAX && _dashCoolDownTime <= 0.0f && _dashBlockTimer <= 0.0f)
 		{
 			_dash = true;
 			_dashTimer = dash::DASH_DURATION;
-			_fMvSpeed = _normalSpeed * dash::DASH_SPEED; // ダッシュ開始時に速度を上げる
+			_fMvSpeed = _normalSpeed * dash::DASH_SPEED;
 			_dashCount++;
 			if(_dashRecoverActive)
 			{
 				_dashRecoverActive = false;
 				_dashRecoverTime = 0.0f;
 			}
-
-
 		}
 	}
 
@@ -531,40 +614,17 @@ bool PlayerTanuki::Process()
 	{
 		if(((rel & PAD_INPUT_3) == 0) && _transformPlayerButtonDown && !_transformPlayerMove)
 		{
-			ModeBase* base = ModeServer::GetInstance()->Get("game");
-			if(base)
-			{
-				auto* game = dynamic_cast<ModeGame*>(base);
-				if(!game->IsTransformRequested() && !game->IsTransforming())
-				{
-					game->RequestTransformToHuman();
-				}
-				else
-				{
-					if(game->IsTransformRequested() && !game->IsTransforming())
-					{
-						game->CancelRequestedTransform();
-					}
-					else if(game->IsTransforming())
-					{
-						game->RequestReturnToTanukiFromHuman();
-					}
-				}
-			}
+			HandleTransformToHuman();
 		}
 
 		_transformPlayerButtonDown = false;
 		_transformPlayerMove = false;
 		_transformPlayerCandidate = false;
 
-		ModeBase* base = ModeServer::GetInstance()->Get("game");
-		if(base)
+		auto* game = dynamic_cast<ModeGame*>(ModeServer::GetInstance()->Get("game"));
+		if(game)
 		{
-			auto* game = dynamic_cast<ModeGame*>(base);
-			if(game)
-			{
-				game->ShowHenshinPlayer(false);
-			}
+			game->ShowHenshinPlayer(false);
 		}
 	}
 
@@ -572,41 +632,18 @@ bool PlayerTanuki::Process()
 	{
 		if(((rel & PAD_INPUT_4) == 0) && _transformPlayerMonoButtonDown && !_transformPlayerMonoMove)
 		{
-			ModeBase* base = ModeServer::GetInstance()->Get("game");
-			if(base)
-			{
-				auto* game = dynamic_cast<ModeGame*>(base);
-				if(!game->IsTransformRequested() && !game->IsTransforming())
-				{
-					game->RequestTransformToMono();
-				}
-				else
-				{
-					if(game->IsTransformRequested() && !game->IsTransforming())
-					{
-						game->CancelRequestedTransform();
-					}
-					else if(game->IsTransforming())
-					{
-						game->RequestReturnToTanukiFromHuman();
-					}
-				}
-			}
-		}
-
-		ModeBase* base = ModeServer::GetInstance()->Get("game");
-		if(base)
-		{
-			auto* game = dynamic_cast<ModeGame*>(base);
-			if(game)
-			{
-				game->ShowHenshinMonoUi(false);
-			}
+			HandleTransformToMono();
 		}
 
 		_transformPlayerMonoButtonDown = false;
 		_transformPlayerMonoMove = false;
 		_transformPlayerMonoCandidate = false;
+
+		auto* game = dynamic_cast<ModeGame*>(ModeServer::GetInstance()->Get("game"));
+		if(game)
+		{
+			game->ShowHenshinMonoUi(false);
+		}
 	}
 
 	return true;

@@ -1,5 +1,6 @@
 #include "dashui.h"
 #include "playertanuki.h"
+#include "playerfactory.h"
 
 DashUi::DashUi()
 {
@@ -35,12 +36,24 @@ bool DashUi::Render()
 {
 	base::Render();
 
-	// クールタイム中に表示する
-	if(_player != nullptr && _noDashHandle != -1)
+	PlayerBase* tanuki = PlayerFactory::GetTanukiPlayer();
+	if(!tanuki)
 	{
-		float cd = _player->GetDashCoolDownTime();
+		return false;
+	}
 
-		if(cd > 0.0f)
+	auto* tanukiPlayer = dynamic_cast<PlayerTanuki*>(tanuki);
+	if(!tanukiPlayer)
+	{
+		return false;
+	}
+
+	// クールタイム中に表示する
+	if(tanukiPlayer != nullptr && _noDashHandle != -1)
+	{
+		float cd = tanukiPlayer->GetDashCoolDownTime();
+
+		if(cd > 0.0f || _player == nullptr)
 		{
 			DrawGraph(dash::DASH_ICON_X, dash::DASH_ICON_Y, _noDashHandle, TRUE);
 		}

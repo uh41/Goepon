@@ -36,7 +36,6 @@
     <ClCompile Include="source\modegamecollision.cpp" />
     <ClCompile Include="source\modegamedebug.cpp" />
     <ClCompile Include="source\modegameobject.cpp" />
-    <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modemenu.cpp" />
     <ClCompile Include="source\modeopscenario.cpp" />
     <ClCompile Include="source\modescenariobase.cpp" />
@@ -303,6 +302,7 @@
     <ClCompile Include="source\effectmanager.cpp" />
     <ClCompile Include="source\markermanager.cpp" />
     <ClCompile Include="source\playermanager.cpp" />
+    <ClCompile Include="source\playerform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -342,7 +342,6 @@
     <ClInclude Include="source\menuitembase.h" />
     <ClInclude Include="source\modeeffekseer.h" />
     <ClInclude Include="source\modegame.h" />
-    <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modemenu.h" />
     <ClInclude Include="source\modeopscenario.h" />
     <ClInclude Include="source\modescenariobase.h" />
@@ -426,6 +425,7 @@
     <ClInclude Include="source\effectpool.h" />
     <ClInclude Include="source\markermanager.h" />
     <ClInclude Include="source\playermanager.h" />
+    <ClInclude Include="source\playerform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -606,9 +606,6 @@
     </ClInclude>
     <ClInclude Include="source\uibase.h">
       <Filter>ヘッダーファイル\モードゲーム\UIベース</Filter>
-    </ClInclude>
-    <ClInclude Include="source\UiMakimono.h">
-      <Filter>ヘッダーファイル\モードゲーム\UIベース\UI巻物</Filter>
     </ClInclude>
     <ClInclude Include="source\walkeffect.h">
       <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\歩きエフェクト</Filter>

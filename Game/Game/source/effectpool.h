@@ -31,6 +31,7 @@ public:
 			}
 			_availableEffect.push(std::move(effect)); // 初期エフェクトを利用可能なプールに追加
 		}
+		return true;
 	}
 	virtual bool Terminate()
 	{

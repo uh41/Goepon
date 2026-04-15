@@ -1,6 +1,7 @@
 #include "AttackUi.h"
 #include "modegame.h"
 #include "playertanuki.h"
+#include "playerform.h"
 
 AttackUi::AttackUi()
 {
@@ -52,13 +53,15 @@ bool AttackUi::Render()
 	}
 
 	// タヌキやモノの表示中は攻撃UIを表示しない
-	if(modeGame->GetShowTanuki() || modeGame->IsShowingMono())
+	auto* playerManager = PlayerManager::GetInstance();
+	if(playerManager->IsShowTanuki() || playerManager->IsShowMono())
 	{
 		return false;
 	}
 
 	// プレイヤーの情報を取得
-	auto player = modeGame->GetPlayer();
+	PlayerBase* player = PlayerForm::GetInstance()->GetPlayer();
+
 	if(!player)
 	{
 		return false;
@@ -73,7 +76,6 @@ bool AttackUi::Render()
 		vec::Vec3 playerPos = player->GetPos();
 		playerPos.z += attack::PLAYER_HEAD_Y;
 		VECTOR pos = DxlibConverter::VecToDxLib(playerPos); 
-
 
 		// 3D空間上に描画
 		DrawBillboard3D(pos, 0.5f, 0.5f, _size, _angle, _handle, TRUE);

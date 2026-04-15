@@ -34,7 +34,7 @@ bool PlayerBase::Terminate()
 
 void PlayerBase::CopyStateFrom(PlayerBase* player)
 {
-	if(player)
+	if(!player)
 	{
 		return;
 	}

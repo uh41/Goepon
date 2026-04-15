@@ -3,8 +3,6 @@
 // * \brief  モードゲームクラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -152,9 +150,20 @@ public:
 	bool ObjectRender();
 
 	// プレイヤー変身関数
-	bool PlayerTransform();
 	bool PlayerTransformToTanuki(bool player);
+	bool CompleteTransformToHuman(PlayerTanuki* tanuki, PlayerBase* player);
+	bool CompleteTransformToMono(PlayerTanuki* tanuki, PlayerBase* player);
+	bool UpdateMonoTimeLimit();
+	bool UpdateHumanTimeLimit();
 	bool RequestTransform(HenshinUi::Select select);
+
+	void ProcessPlayerCollision(PlayerBase* player); // プレイヤーの当たり判定処理をまとめた関数
+	void ProcessActivePlayer();// 現在アクティブなプレイヤーの処理をまとめた関数
+	void ProcessPlayerCollisionAndInteraction();// プレイヤーの当たり判定と相互作用処理
+	void ProcessPlayerEnemyCollision();// プレイヤーと敵の当たり判定をまとめた関数
+	void Process3DSound();// 3Dサウンドの処理
+	void ProcessTransformTimeLimit();// 変身タイムリミットの処理
+	void StopAllSounds();
 
 	bool IsLoadComplete() const { return _isLoadComplete; }
 	void SetLoadComplete(bool b) { _isLoadComplete = b; }
@@ -243,10 +252,8 @@ public:
 	bool IsShowingHuman() const { return PlayerManager::GetInstance()->IsShowHuman(); }
 	bool GetBlinkVisible() const { return PlayerManager::GetInstance()->GetBlinkVisible(); }
 
-	void CancelRequestedTransform();
 	void ShowHenshinPlayer(bool show) { if(_henshinUi) _henshinUi->SetShowPlayerUi(show); }
 	void ShowHenshinMonoUi(bool show) { if(_henshinUi) _henshinUi->SetShowPlayerMonoUi(show); }
-
 
 	void SavePlayer(PlayerBase* player);
 	void ApplySaveData(const SaveData& data);

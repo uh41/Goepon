@@ -216,7 +216,10 @@ void EnemyBase::ReturnInitialPos()
 		_soundDetectionActive = false;
 		_soundDetectionTimer = 0.0f;
 
-		_effect->PlayEffect(_vPos); // 戻り始める位置でエフェクトを再生
+		if(_effect)
+		{
+			_effect->PlayEffect(_vPos); // 戻り始める位置でエフェクトを再生
+		}
 	}
 	ResetChasedSearch();
 }
@@ -572,7 +575,11 @@ void EnemyBase::UpdateReturnInitialPos()
 		if(_teleportTimer <= 0.0f)
 		{
 			// 3秒経過したので初期位置にテレポート
-			_effect->PlayEffect(_vPos); // テレポート前のエフェクト
+			if(_effect)
+			{
+				_effect->PlayEffect(_vPos); // テレポート前のエフェクト
+			}
+			
 			_vPos = _initialPos;
 			if(!IsStun())
 			{

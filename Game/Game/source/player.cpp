@@ -132,6 +132,7 @@ bool Player::Process()
 	lStickX = fLx;
 	lStickZ = fLz;
 
+
 	// ローカル入力ベクトル（キーボード）
 	vec3::Vec3 inputLocal = vec3::VGet(0.0f, 0.0f, 0.0f);
 
@@ -477,6 +478,14 @@ bool Player::Process()
 	{
 		AnimationManager::GetInstance()->SetTime(_animId, _fPlayTime);
 	}
+
+	int rel = ApplicationBase::GetInstance()->GetRel();
+	if((rel & PAD_INPUT_4) || (rel & PAD_INPUT_3))
+	{
+		auto* pm = PlayerManager::GetInstance();
+		pm->TransformToTanukiImmediate();
+	}
+
 
 	return true;
 }

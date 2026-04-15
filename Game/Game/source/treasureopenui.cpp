@@ -1,5 +1,6 @@
 #include "treasureopenui.h"
 #include "modegame.h"
+#include "playerform.h"
 
 TreasureOpenUi::TreasureOpenUi()
 {
@@ -43,40 +44,13 @@ bool TreasureOpenUi::Render()
 		return false;
 	}
 
-	auto modeGame = dynamic_cast<ModeGame*>(ModeServer::GetInstance()->Get("game"));
-	if(!modeGame)
-	{
-		return false;
-	}
+	// 現在表示中のプレイヤーを取得（PlayerForm から）
+	PlayerBase* currentPlayer = PlayerForm::GetInstance()->GetPlayer();
 
-	// 現在表示中のプレイヤーに応じて座標を取得
-	vec::Vec3 playerPos;
-	bool hasPlayer = false;
-
-	if(modeGame->IsShowingTanuki())
-	{
-		// タヌキ状態
-		auto playerTanuki = modeGame->GetPlayerTanuki();
-		if(playerTanuki)
-		{
-			playerPos = playerTanuki->GetPos();
-			hasPlayer = true;
-		}
-	}
-	else
-	{
-		// 人間状態（またはモノ状態）
-		auto player = modeGame->GetPlayer();
-		if(player)
-		{
-			playerPos = player->GetPos();
-			hasPlayer = true;
-		}
-	}
-
-	if(hasPlayer)
+	if(currentPlayer)
 	{
 		// Y座標を上にオフセット（プレイヤーの頭上に表示）
+		vec::Vec3 playerPos = currentPlayer->GetPos();
 		playerPos.x += treasureopen::OPEN_UI_X;
 
 		VECTOR pos = DxlibConverter::VecToDxLib(playerPos);

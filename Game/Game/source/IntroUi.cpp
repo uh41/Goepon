@@ -80,4 +80,6 @@ bool IntroUi::Render()
 		DrawGraph(x, y, _handle, TRUE);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 	}
+
+	return true;
 }

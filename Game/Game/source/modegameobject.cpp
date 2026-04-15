@@ -15,6 +15,9 @@
 #include "PlayerFactory.h"
 #include "effectmanager.h"
 #include "markermanager.h"
+#include "playertanuki.h"
+#include "playerform.h"
+#include "playermono.h"
 
 // オブジェクトの初期化
 bool ModeGame::ObjectInitialize()
@@ -41,17 +44,14 @@ bool ModeGame::ObjectInitialize()
 	_henshinUi->SetOwner(this);
 	_uiBase.emplace_back(_henshinUi);
 	_uiMakimonoCnt = std::make_shared<UiMakimonoCnt>();
-	_uiMakimonoCnt->SetPlayer(_player.get());
 	_uiBase.emplace_back(_uiMakimonoCnt);
 	_counterUi = std::make_shared<CounterUi>();
 	_uiBase.emplace_back(_counterUi);
 	_attackUi = std::make_shared<AttackUi>();
-	_attackUi->Show(_player.get()->GetPos());
 	_uiBase.emplace_back(_attackUi);
 	_treasureOpenUi = std::make_shared<TreasureOpenUi>();
 	_uiBase.emplace_back(_treasureOpenUi);
 	_dashUi = std::make_shared<DashUi>();
-	_dashUi->SetPlayer(_playerTanuki.get());
 	_uiBase.emplace_back(_dashUi);
 	_treasureUi = std::make_shared<TreasureUi>();
 	_treasureUi->SetTreasureList(_treasureBase);
@@ -63,6 +63,7 @@ bool ModeGame::ObjectInitialize()
 	PlayerFactory::Initialize();
 	EffectManager::Initialize();
 	MarkerManager::Initialize();
+	PlayerForm::GetInstance()->Initialize();
 
 	// プレイヤー参照登録
 	_playerBase.clear();
@@ -119,15 +120,8 @@ bool ModeGame::CameraInfoInitialize()
 		vec::Vec3 camDelta = vec3::VSub(_camera->GetPos(), _camera->GetTarget());
 
 		// 初期表示プレイヤー（タヌキ／人間）に合わせる
-		PlayerBase* startPlayer = nullptr;
-		if(_bShowTanuki)
-		{
-			startPlayer = _playerTanuki.get();
-		}
-		else
-		{
-			startPlayer = _player.get();
-		}
+		auto* playerForm = PlayerForm::GetInstance();
+		PlayerBase* startPlayer = playerForm->GetPlayer();
 
 		if(startPlayer != nullptr)
 		{
@@ -142,127 +136,131 @@ bool ModeGame::CameraInfoInitialize()
 
 bool ModeGame::PlayerTransformToTanuki(bool player)
 {
-	auto soundHenshin = [this]()
-		{
-			auto henshinSound = gGlobal._soundServer->Get("2");
-			if(henshinSound && !henshinSound->IsPlay())
-			{
-				henshinSound->Play();
-			}
-		};
-	// 変身アニメ開始（未開始時のみ）
-	if(_transformAnimId == -1)
-	{
-		_transformAnimId = _playerTanuki->PlayAnimation("henge", false); 
-		if(player)
-		{
-			_isTransformToHuman = true;
-		}
-		else
-		{
-			_isTransformToMono = true;
-		}
-		soundHenshin();
-	}
-
-	if(player)
-	{
-		if(_isTransformToHuman)
-		{
-			// アニメ再生中はタヌキ側だけ更新して待つ
-			if(_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
-			{
-				_playerTanuki->Process();
-				return true;
-			}
-
-			// アニメ終了 → 人間へ切替
-			_isTransformToHuman = false;
-			_transformAnimId = -1;
-
-			_bShowTanuki = false; // 人間表示に切替
-			_showMonoPlayer = false;
-			PlayerFactory::TransitonPlayer(
-				PlayerBase::PlayerType::HUMAN,
-				PlayerFactory::GetTanukiPlayer(),
-				[this](PlayerBase* newPlayer)
-				{
-					_hensinEffect->PlayEffect(newPlayer->GetPos());
-					_walkEffect->SetPlayerPos(newPlayer);
-					_doyaEffect->SetTargetPlayer(newPlayer);
-					_nakiEffect->SetTargetPlayer(newPlayer);
-					_savePointEffect->SetTargetPlayer(newPlayer);
-					_changeTimeActive = true;
-					_changeTimeLimit = 17.0f;
-					_changeBlinkTimer = 0.0f; // 点滅タイマーリセット
-					_changeBlinkVisible = true; // 点滅表示フラグリセット
-					auto s = gGlobal._soundServer->Get("1");
-					if(s && s->IsPlay())
-					{
-						s->Stop();
-					}
-				}
-			);			
-			return true;
-		}
-	}
-	else
-	{
-		if(_isTransformToMono)
-		{
-			// アニメ再生中はタヌキ側だけ更新して待つ
-			if(_transformAnimId != -1 && AnimationManager::GetInstance()->IsPlaying(_transformAnimId))
-			{
-				_playerTanuki->Process();
-				return true;
-			}
-
-			// アニメ終了 → モノへ切替
-			_isTransformToMono = false;
-			_transformAnimId = -1;
-
-			_bShowTanuki = false;
-			_showMonoPlayer = true;
-			_playerMono->SetPos(_playerTanuki->GetPos());
-			_playerMono->SetDir(_playerTanuki->GetDir());
-			_playerMono->SetRotationY(atan2f(-_playerTanuki->GetDir().x, -_playerTanuki->GetDir().z));
-			_playerMono->SetMakimonoCount(_playerTanuki->GetMakimonoCount());
-			_hensinEffect->PlayEffect(_playerMono->GetPos());
-			_walkEffect->SetPlayerPos(_playerMono.get());
-			_doyaEffect->SetTargetPlayer(_playerMono.get());
-			_nakiEffect->SetTargetPlayer(_playerMono.get());
-			_savePointEffect->SetTargetPlayer(_playerMono.get());
-			_playerMono->Process(); // 変身直後の一フレーム更新
-			_hensinEffect->PlayEffect(_playerMono->GetPos());
-
-			// たぬモノ変身時の処理
-			_changeTimeActive = true;
-			_changeTimeLimit = 12.0f;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-			auto s = gGlobal._soundServer->Get("1");
-			if(s && s->IsPlay())
-			{
-				s->Stop();
-			}
-			return true;
-		}
-	}
-
-	// 変身開始も変身中でもない場合は false を返し、呼び出し元で通常処理に進むようにする
-	return false;
-}
-
-bool ModeGame::RequestTransform(HenshinUi::Select select)
-{
-	// UI からの要求はタヌキ表示中にのみ有効（表示がタヌキでない場合は無視）
-	if(!_bShowTanuki || !_playerTanuki)
+	auto* tanuki = dynamic_cast<PlayerTanuki*>(PlayerFactory::GetTanukiPlayer());
+	if(!tanuki)
 	{
 		return false;
 	}
 
-	PlayerTanuki* tanuki = _playerTanuki.get();
-	if(!tanuki)
+	auto* playerManager = PlayerManager::GetInstance();
+
+	// アニメーション開始
+	if(playerManager->GetTransformAnimation() == -1)
+	{
+		int animId = tanuki->PlayAnimation("henge", false); // 変身アニメーションを再生
+		playerManager->SetTransformAnimation(animId);
+
+		if(player)
+		{
+			playerManager->RequestTransformToHuman(); // 人間への変身要求
+		}
+		else
+		{
+			playerManager->RequestTransformToMono(); // モノへの変身要求
+		}
+
+		auto henshinSound = gGlobal._soundServer->Get("2");
+		if(henshinSound && !henshinSound->IsPlay())
+		{
+			henshinSound->Play();
+		}
+
+		return true; // 変身処理開始
+	}
+
+	int transformAnim = playerManager->GetTransformAnimation();
+	if(transformAnim != -1 && AnimationManager::GetInstance()->IsPlaying(transformAnim))
+	{
+		tanuki->Process(); // 変身アニメーションの進行を更新
+		return true; // 変身アニメーションが再生中なので処理継続
+	}
+
+	playerManager->SetTransformAnimation(-1); // 変身アニメーションIDをリセット
+
+	// 変身アニメーションが終了している場合は、プレイヤーの状態を切り替える
+	if(playerManager->IsTransformRequest())
+	{
+		PlayerBase* player = nullptr;
+		if(playerManager->GetPlayerState() == PlayerManager::PlayerState::HUMAN)
+		{
+			player = PlayerFactory::GetHumanPlayer();
+			CompleteTransformToHuman(tanuki, player);
+		}
+		else if(playerManager->GetPlayerState() == PlayerManager::PlayerState::MONO)
+		{
+			player = PlayerFactory::GetMonoPlayer();
+			CompleteTransformToMono(tanuki, player);
+		}
+	}
+
+	return true;
+}
+
+bool ModeGame::CompleteTransformToHuman(PlayerTanuki* tanuki, PlayerBase* player)
+{
+	if(!tanuki || !player)
+	{
+		return false;
+	}
+	auto* playerManager = PlayerManager::GetInstance();
+	auto* playerForm = PlayerForm::GetInstance();
+
+	// タヌキから人間へ変身完了
+	player->SetPos(tanuki->GetPos());
+	player->SetDir(tanuki->GetDir());
+	player->SetRotationY(atan2f(-tanuki->GetDir().x, -tanuki->GetDir().z));
+
+	// プレイヤーを切り替える
+	playerForm->ChangeState(PlayerBase::PlayerType::HUMAN);
+
+	// アニメーションを開始
+	player->PlayAnimation("idle", true);
+	player->_status = CharaBase::STATUS::WAIT;
+
+	EffectManager::UpdatePalyerTransformEffect(player, true);
+	EffectManager::UpdatePlayerPosition(player);
+	playerManager->SetTransformTimeLimit(17.0f);
+
+	return true;
+}
+
+bool ModeGame::CompleteTransformToMono(PlayerTanuki* tanuki, PlayerBase* mono)
+{
+	if(!tanuki || !mono)
+	{
+		return false;
+	}
+
+	auto* playerManager = PlayerManager::GetInstance();
+	auto* playerForm = PlayerForm::GetInstance();
+
+	mono->SetPos(tanuki->GetPos());
+	mono->SetDir(tanuki->GetDir());
+	mono->SetRotationY(atan2f(-tanuki->GetDir().x, -tanuki->GetDir().z));
+	mono->SetMakimonoCount(tanuki->GetMakimonoCount());
+
+	// プレイヤーを切り替える
+	playerForm->ChangeState(PlayerBase::PlayerType::MONO);
+
+	// アニメーションを開始
+	mono->PlayAnimation("idle", true);
+	mono->_status = CharaBase::STATUS::WAIT;
+
+	EffectManager::UpdatePalyerTransformEffect(mono, true);
+	EffectManager::UpdatePlayerPosition(mono);
+
+	// 時間制限を設定
+	playerManager->SetTransformTimeLimit(12.0f);
+
+	return true;
+}
+
+bool ModeGame::RequestTransform(HenshinUi::Select select)
+{
+	auto* playerForm = PlayerForm::GetInstance();
+	PlayerBase* player = playerForm->GetPlayer();
+
+	if(!player)
 	{
 		return false;
 	}
@@ -271,15 +269,14 @@ bool ModeGame::RequestTransform(HenshinUi::Select select)
 	{
 	case HenshinUi::Select::TANUMONO:
 	{
-		// モノへ変身する場合はタヌキの巻物を消費する
-		if(tanuki->GetMakimonoCount() > 0)
+		if(player->GetMakimonoCount() > 0)
 		{
-			tanuki->SubMakimono(1); // 巻物を消費して変身開始
-			return PlayerTransformToTanuki(false); // false = モノへ
+			player->SubMakimono(1);
+			playerForm->ChangeState(PlayerBase::PlayerType::MONO);
+			return true;
 		}
 		else
 		{
-			// 巻物がない場合は効果音のみ（既存挙動）
 			auto soundNoMakimono = gGlobal._soundServer->Get("61");
 			if(soundNoMakimono && !soundNoMakimono->IsPlay())
 			{
@@ -290,77 +287,72 @@ bool ModeGame::RequestTransform(HenshinUi::Select select)
 	}
 	case HenshinUi::Select::TANUBITO:
 	{
-		// タヌキ表示中のみ人間へ変身
-		return PlayerTransformToTanuki(true); // true = 人間へ
+		if(player->GetMakimonoCount() > 0)
+		{
+			player->SubMakimono(1);
+			playerForm->ChangeState(PlayerBase::PlayerType::HUMAN);
+			return true;
+		}
+		else
+		{
+			auto soundNoMakimono = gGlobal._soundServer->Get("61");
+			if(soundNoMakimono && !soundNoMakimono->IsPlay())
+			{
+				soundNoMakimono->Play();
+			}
+			return false;
+		}
 	}
 	default:
 		return false;
 	}
 }
 
-bool ModeGame::PlayerTransform()
+bool ModeGame::UpdateMonoTimeLimit()
 {
-	// AnimationManager の更新は呼び出し側で行われている前提（modegame.cpp）
-	int trg = ApplicationMain::GetInstance()->GetTrg();
+	auto* playerForm = PlayerForm::GetInstance();
+	auto* playerManager = PlayerManager::GetInstance();
 
-	// 変身進行中は入力に関係なく毎フレーム進行させる
-	if(_isTransformToHuman)
+	if(playerForm->GetPlayerType() != PlayerBase::PlayerType::MONO || 
+		!playerManager->IsTransformTimeLimitActive())
 	{
-		// true = 人間へ変身
-		if(PlayerTransformToTanuki(true))
-		{
-			// 変身処理中または変身直後の1フレーム更新を行ったのでここで終了
-			return true;
-		}
-	}
-	else if(_isTransformToMono)
-	{
-		// false = モノへ変身
-		if(PlayerTransformToTanuki(false))
-		{
-			return true;
-		}
+		return false;
 	}
 
-	// モノ表示時の自動切替（入力または時間切れ）
-	if(_showMonoPlayer)
+	playerManager->UpdateTransformTimer(1.0f / 60.0f);
+
+	if(playerManager->GetTransformTimeLimit() > 0.0f)
 	{
-		// PAD入力による切替は廃止。UI からの要求で行うようにする。
-		if((_changeTimeActive && _changeTimeLimit <= 0.0f))
-		{
-			// モノ -> タヌキ は即時切替（アニメなし）
-			_showMonoPlayer = false;
-			_bShowTanuki = true;
-			_playerTanuki->SetPos(_playerMono->GetPos());
-			_playerTanuki->SetDir(_playerMono->GetDir());
-			_playerTanuki->_status = CharaBase::STATUS::WAIT;
-			_playerTanuki->SetMakimonoCount(_playerMono->GetMakimonoCount());
-			_playerTanuki->SetRotationY(atan2f(-_playerMono->GetDir().x, -_playerMono->GetDir().z));
-			_playerTanuki->PlayAnimation("idle", true);
-			_playerTanuki->Process();
-			_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-			_walkEffect->SetPlayerPos(_playerTanuki.get());
-			_savePointEffect->SetTargetPlayer(_playerTanuki.get());
-			auto soundHenshin = gGlobal._soundServer->Get("2");
-			if(soundHenshin && !soundHenshin->IsPlay())
-			{
-				soundHenshin->Play();
-			}
-
-			//_playerTanuki->SetInputEnabled(false);
-			//_tanukiReturnPending = true;
-			//_tanukiReturnTimer = 5.0f; // 1秒
-
-			// タイマーが動いてたらリセット
-			_changeTimeActive = false; // 時間制限を無効化
-			_changeTimeLimit = 0.0f;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
-			return true;
-		}
+		return false;
 	}
+
+	// 時間切れ → タヌキに戻す
+	playerForm->ChangeState(PlayerBase::PlayerType::TANUKI);
+	playerManager->TransformToTanuki();
+
 	return true;
 }
+
+bool ModeGame::UpdateHumanTimeLimit()
+{
+	auto* playerForm = PlayerForm::GetInstance();
+	auto* playerManager = PlayerManager::GetInstance();
+	if(playerForm->GetPlayerType() != PlayerBase::PlayerType::HUMAN || 
+		!playerManager->IsTransformTimeLimitActive())
+	{
+		return false;
+	}
+	playerManager->UpdateTransformTimer(1.0f / 60.0f);
+	if(playerManager->GetTransformTimeLimit() > 0.0f)
+	{
+		return false;
+	}
+	// 時間切れ → タヌキに戻す
+	playerForm->ChangeState(PlayerBase::PlayerType::TANUKI);
+	playerManager->TransformToTanuki();
+	return true;
+}
+
 // オブジェクト処理
 bool ModeGame::ObjectProcess()
 {
@@ -379,25 +371,24 @@ bool ModeGame::ObjectProcess()
 		}
 	}
 
+	auto* playerForm = PlayerForm::GetInstance();
+	if(playerForm)
+	{
+		PlayerBase* activePlayer = playerForm->GetPlayer();
+		if(activePlayer && activePlayer->IsAlive())
+		{
+			activePlayer->Process();
+		}
+	}
+
 	// 敵（追跡/移動はここで実行される）
 	for(auto& enemy : _enemyBase)
 	{
 		if(enemy->IsAlive())
 		{
 			// プレイヤーからの距離が遠すぎる敵は思考・移動・アニメーション更新を止める
-			PlayerBase* player = nullptr;
-			if (_bShowTanuki)
-			{
-				player = _playerTanuki.get();
-			}
-			else if (_showMonoPlayer)
-			{
-				player = _playerMono.get();
-			}
-			else
-			{
-				player = _player.get();
-			}
+			auto* playerForm = PlayerForm::GetInstance();
+			PlayerBase* player = playerForm->GetPlayer();
 			if (player)
 			{
 				vec::Vec3 vecToEnemy = vec3::VSub(enemy->GetPos(), player->GetPos());
@@ -431,10 +422,33 @@ bool ModeGame::ObjectProcess()
 		ui_base->Process();
 	}
 
-	// エフェクト処理
-	for(auto& effect_base : _effectBase)
+	auto* playerManager = PlayerManager::GetInstance();
+
+	// 変身リクエストがあればアニメーション開始
+	if(playerManager->IsTransformRequest() && !playerManager->IsTransforming())
 	{
-		effect_base->Process();
+		playerManager->StartTransformAnimation();
+	}
+
+	// アニメーション進行中のプレイヤー処理
+	if(playerManager->IsTransforming())
+	{
+		auto* playerForm = PlayerForm::GetInstance();
+		if(playerForm && playerForm->GetPlayerType() == PlayerBase::PlayerType::TANUKI)
+		{
+			auto* tanuki = dynamic_cast<PlayerTanuki*>(playerForm->GetPlayer());
+			if(tanuki)
+			{
+				tanuki->Process(); // アニメーション進行を更新
+			}
+		}
+
+		// アニメーション終了確認
+		int transformAnim = playerManager->GetTransformAnimation();
+		if(transformAnim != -1 && !AnimationManager::GetInstance()->IsPlaying(transformAnim))
+		{
+			playerManager->CompleteTransform();
+		}
 	}
 	return true;
 }
@@ -492,14 +506,17 @@ bool ModeGame::ObjectRender()
 				return;
 			}
 
-			const bool useBlink = (_changeTimeActive && _changeTimeLimit <= 10.0f);
+			auto* playerManager = PlayerManager::GetInstance();
+			// 変身時間制限が10秒以下のとき点滅開始
+			bool useBlink = (playerManager->IsTransformTimeLimitActive() &&
+				playerManager->GetTransformTimeLimit() <= 10.0f);
 
 			int modelHandle = player->GetModelHandle();
 			if(modelHandle >= 0)
 			{
 				int materialNum = MV1GetMaterialNum(modelHandle);
 
-				if(useBlink && !_changeBlinkVisible)
+				if(useBlink && !playerManager->GetBlinkVisible())
 				{
 					// 各マテリアルに赤色の加算ブレンドを設定
 					for(int i = 0; i < materialNum; i++)
@@ -525,59 +542,39 @@ bool ModeGame::ObjectRender()
 			player->Render();
 		};
 
-	// プレイヤーの描画（フラグに応じて片方のみ）
-	for(auto& player_base : _playerBase)
+	// プレイヤーの描画
+	auto* playerForm = PlayerForm::GetInstance();
+	PlayerBase* player = playerForm->GetPlayer();
+
+	if(player && player->IsAlive())
 	{
-		if(_bShowTanuki)
+		auto playerType = playerForm->GetPlayerType();
+		if(playerType == PlayerBase::PlayerType::TANUKI)
 		{
-			if(player_base.get() == _playerTanuki.get() && player_base->IsAlive())
-			{
-				player_base->Render();
-			}
-		}
-		else if(_showMonoPlayer)
-		{
-			if(player_base.get() == _playerMono.get())
-			{
-				renderPlayerWithBlink(_playerMono.get());
-			}
+			// タヌキは点滅なしで描画
+			player->Render();
 		}
 		else
 		{
-			if(player_base.get() == _player.get())
-			{
-				renderPlayerWithBlink(_player.get());
-			}
+			// 人間とモノは点滅ロジックを適用
+			renderPlayerWithBlink(player);
 		}
 	}
 
 	// UIが参照するプレイヤーを「現在表示中」に合わせる
-	if(_bShowTanuki)
-	{
-		currentPlayer = _playerTanuki.get();
-	}
-	else if(_showMonoPlayer)
-	{
-		currentPlayer = _playerMono.get();
-	}
-	else
-	{
-		currentPlayer = _player.get();
-	}
-
 	if(_uiHp)
 	{
-		_uiHp->SetPlayer(currentPlayer);
+		_uiHp->SetPlayer(player);
 	}
 	if(_uiMakimonoCnt)
 	{
-		_uiMakimonoCnt->SetPlayer(currentPlayer);
+		_uiMakimonoCnt->SetPlayer(player);
 	}
 	if(_dashUi)
 	{
-		if(_bShowTanuki)
+		if(playerForm->GetPlayerType() == PlayerBase::PlayerType::TANUKI)
 		{
-			_dashUi->SetPlayer(_playerTanuki.get());
+			_dashUi->SetPlayer(player);
 		}
 		else
 		{
@@ -586,7 +583,6 @@ bool ModeGame::ObjectRender()
 	}
 
 	// ---- ここから先は「演出/ゲージ/UI」なので必ず影なしにする ----
-	//SetUseShadowMap(0, -1);
 	SetUseLighting(FALSE);
 
 	// Effekseer（3D/2D）を影なしで描画（ワールドの後、UIの前）
@@ -594,7 +590,7 @@ bool ModeGame::ObjectRender()
 
 	// 各敵のセンサーを個別に描画
 	// プレイヤーから半径内にいる敵だけ索敵範囲を描画
-	if(currentPlayer)
+	if(player)
 	{
 		const float detectionRadius = 1000.0f;
 		for(auto& enemy : _enemyBase)
@@ -611,7 +607,7 @@ bool ModeGame::ObjectRender()
 			}
 
 			// XZ平面で距離を測ってプレイヤーの半径内か判定
-			vec::Vec3 vecToPlayer = vec3::VSub(enemy->GetPos(), currentPlayer->GetPos());
+			vec::Vec3 vecToPlayer = vec3::VSub(enemy->GetPos(), player->GetPos());
 			vecToPlayer.y = 0.0f;
 			const float dist = vec3::VSize(vecToPlayer);
 
@@ -633,7 +629,7 @@ bool ModeGame::ObjectRender()
 		}
 	}
 
-	if(_player)
+	if(player)
 	{
 		// 長押し宝箱のゲージ描画
 		for(const auto& treasureBase : _treasureBase)
@@ -647,7 +643,7 @@ bool ModeGame::ObjectRender()
 					treasureProgress = it->second;
 				}
 
-				treasureBase->RenderGauge(_player->GetPos(), treasureProgress);
+				treasureBase->RenderGauge(player->GetPos(), treasureProgress);
 			}
 		}
 
@@ -656,15 +652,9 @@ bool ModeGame::ObjectRender()
 		{
 			if(treasureRapidFire && treasureRapidFire->IsVisible() && !treasureRapidFire->IsOpen())
 			{
-				treasureRapidFire->RenderGaugeRF(_player->GetPos(), 0.0f);
+				treasureRapidFire->RenderGaugeRF(player->GetPos(), 0.0f);
 			}
 		}
-	}
-
-	// エフェクト（各 EffectBase の Render は現状“描画自体”ではない想定）
-	for(auto& effectBase : _effectBase)
-	{
-		effectBase->Render();
 	}
 
 	SetUseZBuffer3D(FALSE);
@@ -677,7 +667,6 @@ bool ModeGame::ObjectRender()
 
 	// 状態復帰（次の描画に影響を残さない）
 	SetUseLighting(TRUE);
-	//SetUseShadowMap(0, -1);
 
 	return true;
 }
@@ -737,20 +726,22 @@ bool ModeGame::ChangeBGM()
 
 bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase* player, bool isHumanForm, bool& anyDetected, bool& reEffect)
 {
-	if(container.empty() || !player) return false;
+	auto* playerForm = PlayerForm::GetInstance();
+	auto* playerManager = PlayerManager::GetInstance();
 
-	// Mono の「動いたか」を判定する閾値（ワールド単位）
+	if(container.empty() || !player)
+	{
+		return false;
+	}
+
 	constexpr float kMonoMoveDetectThreshold = 0.1f;
-
-	// 分散処理用の開始インデックスを保持（関数内で static にする）
 	static size_t s_nextProcessIndex = 0;
 
 	int nonChasingProcessedCount = 0;
-	const int kMaxNormalChecksPerFrame = 1; // 1フレームに視覚判定する未発見状態の敵の数
+	const int kMaxNormalChecksPerFrame = 1;
 
 	for(size_t i = 0; i < container.size(); ++i)
 	{
-		// ラウンドロビン方式で順番にアクセスする
 		size_t currentIndex = (s_nextProcessIndex + i) % container.size();
 		auto& item = container[currentIndex];
 
@@ -766,51 +757,41 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 			continue;
 		}
 
-		// センサーに必要な情報を確実にセット（全員同期）
 		sensor->SetPos(eb->GetPos());
 		sensor->SetDir(eb->GetDir());
 		sensor->SetMap(_objectServer->GetMap());
 
-		// 現在の追跡状態を記憶しておく（これからの処理で更新される可能性があるため）
 		const bool wasChasing = sensor->IsChasing();
 
-		// 追跡中ではない敵の場合の時分割・距離スキップ判定
 		if(!wasChasing)
 		{
-			// --- 負荷軽減のための距離判定 ---
 			const float activeRadius = 1000.0f;
 			vec::Vec3 vecToEnemy = vec3::VSub(eb->GetPos(), player->GetPos());
 			vecToEnemy.y = 0.0f;
 			if(vec3::VSize(vecToEnemy) > activeRadius)
 			{
-				continue; // 遠すぎる場合は検知処理をスキップ
+				continue;
 			}
 
-			// 既にこのフレームで判定人数の上限に達している場合はスキップ
 			if(nonChasingProcessedCount >= kMaxNormalChecksPerFrame)
 			{
 				continue;
 			}
 
-			// 回数を消費し、次回のフレームで「この敵の次」から判定を始めるように記憶する
 			nonChasingProcessedCount++;
 			s_nextProcessIndex = (currentIndex + 1) % container.size();
 		}
 
-		// センサー処理（追跡タイマー更新など）
 		sensor->Process();
 
-		// 視覚検知判定
 		bool detected = false;
 		bool chaseStarted = false;
-
-		// --- 犬の場合は人間形態でも全方向から検知可能 ---
 		bool isEnemyDog = (dynamic_cast<EnemyDog*>(eb) != nullptr);
 
-		// --- PlayerMono 表示時の特別処理 ---
-		if(_showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+		// PlayerMono 表示時の特別処理
+		if(playerForm->GetPlayerType() == PlayerBase::PlayerType::MONO &&
+			dynamic_cast<PlayerMono*>(player))
 		{
-			// PlayerMono のときは「扇形内にいて、かつプレイヤーが動いた場合のみ」検知させる
 			vec::Vec3 playerPos = player->GetPos();
 			vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
 			vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
@@ -818,21 +799,16 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 
 			if(sensor->IsPlayerInDetectionRangeWithCapsule(playerPos, capsuleTop, capsuleBottom, capsuleRadius))
 			{
-				// プレイヤーの移動量をチェック（座標差だけでなく入力でも判定）
 				vec::Vec3 delta = vec3::VSub(player->GetPos(), player->GetOldPos());
 				float moved = vec3::VSize(delta);
-
-				// 入力ベクトルがあるか（アナログ/十字キー）を判定
 				bool inputMoving = (vec3::VSize(player->GetInputVector()) > 0.001f);
 
-				// 座標差が閾値超過、もしくは入力があるなら「動いた」とみなす
 				if(moved > kMonoMoveDetectThreshold || inputMoving)
 				{
 					detected = sensor->CheckPlayerDetection(player);
 				}
 				else
 				{
-					// 静止しているので検知しない（ただしセンサー追跡中は維持）
 					detected = false;
 				}
 			}
@@ -843,14 +819,12 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 		}
 		else if(!isHumanForm || isEnemyDog)
 		{
-			// 非人状態 または 犬の場合：既存の通常判定をそのまま使用
 			detected = sensor->CheckPlayerDetection(player);
 		}
 		else
 		{
 			if(player != nullptr && sensor != nullptr)
 			{
-				// 人状態（犬以外）：プレイヤーの尻尾(後方)を見られたときのみ検知する
 				vec::Vec3 playerPos = player->GetPos();
 				vec::Vec3 capsuleTop = vec3::VAdd(playerPos, vec3::VGet(0.0f, player->GetColSubY(), 0.0f));
 				vec::Vec3 capsuleBottom = vec3::VAdd(playerPos, vec3::VGet(0.0f, -player->GetColSubY(), 0.0f));
@@ -863,13 +837,11 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 					if(vec3::VSize(toEnemy) > 0.0001f)
 					{
 						vec::Vec3 toEnemyNorm = vec3::VNorm(toEnemy);
-
 						vec::Vec3 playerForward = player->GetDir();
 						playerForward.y = 0.0f;
 						if(vec3::VSize(playerForward) > 0.0001f)
 						{
 							playerForward = vec3::VNorm(playerForward);
-
 							const float backDotThreshold = 0.0f;
 							float dot = vec::Vec3::Dot(playerForward, toEnemyNorm);
 							if(dot <= backDotThreshold)
@@ -886,103 +858,54 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 			}
 		}
 
-		// 検出結果に応じた処理
 		if(detected)
 		{
 			anyDetected = true;
 			if(player != nullptr)
 			{
 				eb->OnPlayerDetected(player->GetPos());
-				_hatenaEffect->ResetEnemyEffect(eb);
+				EffectManager::GetHatenaEffect()->ResetEnemyEffect(eb);
 
 				const bool isChasingNow = sensor->IsChasing();
 				chaseStarted = (!wasChasing && isChasingNow);
 
 				if(eb->GetEnemySensor() && eb->GetEnemySensor()->IsChasing())
 				{
-					_nakiEffect->SetTargetPlayer(player);
-					_nakiEffect->PlayEffect(player->GetPos());
+					EffectManager::GetNakiEffect()->SetTargetPlayer(player);
+					EffectManager::GetNakiEffect()->PlayEffect(player->GetPos());
 				}
 			}
 
 			// PlayerMono が検知されたら即時モノ->タヌキに切替 
-			if(chaseStarted && _showMonoPlayer && dynamic_cast<PlayerMono*>(player))
+			if(chaseStarted && playerForm->GetPlayerType() == PlayerBase::PlayerType::MONO &&
+				dynamic_cast<PlayerMono*>(player))
 			{
-				if(_playerTanuki && player != _playerTanuki.get())
-				{
-					_showMonoPlayer = false;
-					_bShowTanuki = true;
-
-					_playerTanuki->SetPos(player->GetPos());
-					_playerTanuki->SetDir(player->GetDir());
-					_playerTanuki->SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
-					_playerTanuki->_status = CharaBase::STATUS::WAIT;
-					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
-					_playerTanuki->PlayAnimation("goepon_idle", true);
-					_playerTanuki->Process();
-
-					_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-					_walkEffect->SetPlayerPos(_playerTanuki.get());
-
-					// タイマー等リセット（モノ表示からの即時戻しは時間制限を扱わない）
-					_changeTimeActive = false;
-					_changeTimeLimit = 0.0f;
-					_changeBlinkTimer = 0.0f;
-					_changeBlinkVisible = true;
-
-					auto soundFinish = gGlobal._soundServer->Get("3");
-					if(soundFinish && !soundFinish->IsPlay())
-					{
-						soundFinish->Play();
-					}
-				}
+				playerManager->RequestTransformToTanuki();
+				playerForm->TransformForEnemyDetetion(
+					PlayerBase::PlayerType::TANUKI,
+					player->GetPos(),
+					player->GetDir()
+				);
 			}
 
 			// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
 			if(chaseStarted && isHumanForm)
 			{
-				if(_playerTanuki && player != _playerTanuki.get())
-				{
-					_showMonoPlayer = false;
-					_bShowTanuki = true;
-
-					_playerTanuki->SetPos(player->GetPos());
-					_playerTanuki->SetDir(player->GetDir());
-					_playerTanuki->SetRotationY(atan2f(-player->GetDir().x, -player->GetDir().z));
-					_playerTanuki->_status = CharaBase::STATUS::WAIT;
-					_playerTanuki->SetMakimonoCount(player->GetMakimonoCount());
-					_playerTanuki->PlayAnimation("idle", true);
-					_playerTanuki->Process();
-					reEffect = true;
-
-					if(reEffect)
-					{
-						_hensinEffect->PlayEffect(_playerTanuki->GetPos());
-						_walkEffect->SetPlayerPos(_playerTanuki.get());
-						//_aseEffect->SetPlayer(_playerTanuki.get());
-					}
-
-					_changeTimeActive = false;
-					_changeTimeLimit = 0.0f;
-					_changeBlinkTimer = 0.0f;
-					_changeBlinkVisible = true;
-
-					auto soundFinish = gGlobal._soundServer->Get("3");
-					if(soundFinish && !soundFinish->IsPlay())
-					{
-						soundFinish->Play();
-					}
-				}
+				playerManager->RequestTransformToTanuki();
+				playerForm->TransformForEnemyDetetion(
+					PlayerBase::PlayerType::TANUKI,
+					player->GetPos(),
+					player->GetDir()
+				);
 			}
 		}
 		else
 		{
-			// センサーが追跡状態でなければ失見処理
 			if(!sensor->IsChasing())
 			{
 				if(eb->IsDetectPlayer())
 				{
-					_hatenaEffect->PlayOnce(eb);
+					EffectManager::GetHatenaEffect()->ResetEnemyEffect(eb);
 				}
 				eb->OnPlayerLost();
 				chaseStarted = false;
@@ -996,38 +919,24 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 // すべての敵のセンサーをチェックして、プレイヤーが検知されているかどうかを判定する
 bool ModeGame::CheckAllDetections()
 {
-	// 表示中のプレイヤーを選択（タヌキ / Mono / 通常）
-	PlayerBase* player = nullptr;
-	if(_bShowTanuki)
-	{
-		player = _playerTanuki.get();
-	}
-	else if(_showMonoPlayer)
-	{
-		player = _playerMono.get();
-	}
-	else
-	{
-		player = _player.get();
-	}
+	auto* playerForm = PlayerForm::GetInstance();
+	PlayerBase* player = playerForm->GetPlayer();
 
 	if(!player)
 	{
 		return false;
 	}
 
-	// 人状態かどうかを判定
-	bool isHumanForm = (!_bShowTanuki && !_showMonoPlayer);
+	bool isHumanForm = (playerForm->GetPlayerType() == PlayerBase::PlayerType::HUMAN);
 
-	bool anyDetected = false;	// いずれかの敵が検知したかどうか
-	bool reEffect;				// エフェクト再設定フラグ
+	bool anyDetected = false;
+	bool reEffect = false;
 
 	ProcessEnemyContainer(_enemyBase, player, isHumanForm, anyDetected, reEffect);
 
-	if(!anyDetected && _nakiEffect)
+	if(!anyDetected)
 	{
-		_nakiEffect->ResetEffect();
-		reEffect = false;
+		EffectManager::GetNakiEffect()->ResetEffect();
 	}
 
 	_bTransCancel = anyDetected;
@@ -1037,6 +946,8 @@ bool ModeGame::CheckAllDetections()
 
 void ModeGame::RenderShadowCastersFromModeGame()
 {
+	auto* playerForm = PlayerForm::GetInstance();
+
 	// 敵
 	for(auto& enemy : _enemyBase)
 	{
@@ -1055,26 +966,10 @@ void ModeGame::RenderShadowCastersFromModeGame()
 		}
 	}
 
-	//// 巻物
-	//for(auto& m : _makimono)
-	//{
-	//	if(m)
-	//	{
-	//		m->Render();
-	//	}
-	//}
-
 	// プレイヤー（表示中のみ）
-	if(_bShowTanuki)
+	PlayerBase* player = playerForm->GetPlayer();
+	if(player && player->IsAlive())
 	{
-		if(_playerTanuki && _playerTanuki->IsAlive()) { _playerTanuki->Render(); }
-	}
-	else if(_showMonoPlayer)
-	{
-		if(_playerMono && _playerMono->IsAlive()) { _playerMono->Render(); }
-	}
-	else
-	{
-		if(_player && _player->IsAlive()) { _player->Render(); }
+		player->Render();
 	}
 }

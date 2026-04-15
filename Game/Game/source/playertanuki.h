@@ -10,6 +10,7 @@
 
 #pragma once
 #include "playerbase.h"
+#include "playermanager.h"
 #include "camera.h"
 
 namespace dash
@@ -61,6 +62,13 @@ public:
 
 	// デフォルトのモデルに戻す関数
 	bool RestoreDefaultModel(const std::string& animName, bool loop);
+
+	void PlayNoMakimonoSound();
+	bool RequestTransformWithMakimono(PlayerManager::PlayerState targetState);
+	void HandleTransformToHuman();
+	void HandleTransformToMono();
+
+
 protected:
 	Camera* _cam;
 
@@ -90,6 +98,9 @@ protected:
 	bool _transformPlayerMonoCandidate; // 変身モード可能な状態かどうか
 
 	float _target_Rotation_Y;
+
+	float _dashBlockTimer;
+
 private:
 	int _gameClearModelHandle; // クリア後のモデルハンドル
 	int _gameOverModelHandle; // ゲームオーバー時のモデルハンドル

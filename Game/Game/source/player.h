@@ -11,6 +11,12 @@
 #pragma once
 #include "playerbase.h"
 #include "camera.h"
+
+namespace dashblock
+{
+	static constexpr auto DASH_BLOCK_DURATION = 3.0f; // ダッシュブロックの持続時間
+}
+
 class Player : public PlayerBase
 {
 	typedef PlayerBase base;
@@ -24,6 +30,7 @@ public:
 	void SetCamera(Camera* cam)  override { _cam = cam; if(_cam) { _camOffset = vec3::VSub(_cam->GetPos(), _vPos); _camTargetOffset = vec3::VSub(_cam->GetTarget(), _vPos); } }
 
 	bool PlayerSoundMove();
+
 
 protected:
 	Camera* _cam;

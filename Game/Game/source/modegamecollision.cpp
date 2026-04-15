@@ -3,13 +3,14 @@
 // * \brief  モードゲームクラス(当たり判定処理用)
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
-//				vec::Vec3を使用するように修正　鈴木裕稀　2026/01/17
 /*********************************************************************/
 
 #include "modegame.h"
 #include "appframe.h"
+#include "playertanuki.h"
+#include "playermono.h"
+#include "effectmanager.h"
+#include "playerform.h"
 
 bool ModeGame::EscapeCollision(CharaBase* chara, ObjectBase* obj)
 {
@@ -373,10 +374,10 @@ bool ModeGame::PlayerToMakimonoCollision(PlayerBase* player, at::vspc<Makimono>&
 
 			player->AddMakimono(1); // プレイヤーの巻物所持数を増やす
 
-			if(_makimonoGetEffect)
+			if(auto* eff = EffectManager::PlayMakimonoGetEffect(player->GetPos()))
 			{
-				_makimonoGetEffect->SetTargetPlayer(player);
-				_makimonoGetEffect->PlayEffect(player->GetPos());
+				eff->SetTargetPlayer(player);
+				eff->PlayEffect(player->GetPos());
 			}
 
 			auto makimonoSe = gGlobal._soundServer->Get("70");
@@ -627,15 +628,14 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					}
 
 					// エフェクト再生
-					if (_doyaEffect)
+					if(auto* doya = EffectManager::GetDoyaEffect())
 					{
-						_doyaEffect->SetTargetPlayer(player);
-						_doyaEffect->PlayEffect(treasure->GetPos());
+						doya->SetTargetPlayer(player);
+						doya->PlayEffect(treasure->GetPos());
 					}
-
-					if(_TreasureOpenEffect)
+					if(auto* treEff = EffectManager::GetTreasureEffect())
 					{
-						_TreasureOpenEffect->PlayEffect(treasure->GetPos());
+						treEff->PlayEffect(treasure->GetPos());
 					}
 
 					// 宝箱を開けた時の音波
@@ -661,10 +661,6 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					return true;
 				}
 			}
-			/*else 
-			{
-				player->SetInputEnabled(true);
-			}*/
 			// 連打型は複数同時に処理可能なのでcontinue
 			continue;
 		}
@@ -682,17 +678,10 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		// 開けている宝箱が変わった場合はリセット
 		if (_currentOpeningTreasure != currentTreasure)
 		{
-			//// 前の宝箱が開け途中だった場合は進行度をリセット
-			//if (_currentOpeningTreasure != nullptr)
-			//{
-			//	_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
-			//}
-
 			// 新しい宝箱に切り替え
 			_currentOpeningTreasure = currentTreasure;
 			_isOpeningTreasure = false;
 			_treasureHoldSec = _treasureProgressMap[currentTreasure] * CHECK_OPEN_TIME;
-			//_treasureHoldSec = 0.0f;
 		}
 
 		// Aボタンを押していなかったら開けない
@@ -800,15 +789,14 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				}
 
 				// エフェクト再生
-				if (_doyaEffect)
+				if(auto* doya = EffectManager::GetDoyaEffect())
 				{
-					_doyaEffect->SetTargetPlayer(player);
-					_doyaEffect->PlayEffect(currentTreasure->GetPos());
+					doya->SetTargetPlayer(player);
+					doya->PlayEffect(currentTreasure->GetPos());
 				}
-
-				if (_TreasureOpenEffect)
+				if(auto* treEff = EffectManager::GetTreasureEffect())
 				{
-					_TreasureOpenEffect->PlayEffect(currentTreasure->GetPos());
+					treEff->PlayEffect(currentTreasure->GetPos());
 				}
 
 				if(gGlobal._soundServer)
@@ -844,12 +832,6 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		{
 			EndCinematicCamera();
 			_isOpeningTreasure = false;
-			//_treasureHoldSec = 0.0f;
-			//// 開けていた宝箱の進行度をリセット
-			//if (_currentOpeningTreasure != nullptr)
-			//{
-			//	_treasureProgressMap[_currentOpeningTreasure] = 0.0f;
-			//}
 			_currentOpeningTreasure = nullptr;
 			auto sound = gGlobal._soundServer->Get("60");
 			if (sound && sound->IsPlay())
@@ -862,8 +844,6 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 		{
 			_treasureOpenUi->SetVisible(false);
 		}
-
-		//progress = 0.0f;	//進行度をリセット
 
 		// 連打型宝箱もリセット
 		for (const auto& sp : treasures)
@@ -944,10 +924,12 @@ bool ModeGame::PushChara(CharaBase* move, CharaBase* stop)
 
 	vec::Vec3 actualDelta = vec3::VSub(move->GetPos(), oldpos);
 
-	// move が現在表示されているプレイヤーインスタンスのいずれかであればカメラを移動
-	bool isDisplayedPlayer = (move == _player.get() || move == _playerTanuki.get() || move == _playerMono.get());
+	PlayerBase* displayed = PlayerForm::GetInstance()->GetPlayer();
+	PlayerBase* fTanuki = PlayerFactory::GetTanukiPlayer();
+	PlayerBase* fHuman = PlayerFactory::GetHumanPlayer();
+	PlayerBase* fMono = PlayerFactory::GetMonoPlayer();
 
-	// 演出カメラ使用中は追従させない
+	bool isDisplayedPlayer = (move == displayed) || (move == fTanuki) || (move == fHuman) || (move == fMono);
 	if(isDisplayedPlayer && _camera && !_useCinematicCamera)
 	{
 		_camera->MoveBy(actualDelta);
@@ -976,7 +958,7 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 		if(_tanukiReturnPending)
 		{
 			_tanukiReturnPending = false;
-			RequestReturnToTanukiFromHuman();
+			PlayerForm::GetInstance()->ChangeState(PlayerBase::PlayerType::TANUKI);
 			// 戻し要求を発行したら他処理は不要
 			return false;
 		}
@@ -986,10 +968,12 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 
 	if(player == nullptr)
 	{
+		player = PlayerForm::GetInstance()->GetPlayer();
+	}
+	if(player == nullptr)
+	{
 		return false;
 	}
-
-	player = _player.get();
 
 	// たぬき状態なら攻撃UIを消して処理を抜ける（UIが残らないようにする）
 	if(dynamic_cast<PlayerTanuki*>(player) != nullptr)
@@ -1065,10 +1049,13 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 				}
 
 				// 複数敵に対してスタンエフェクトを再生
-				auto stunEffect = EffectManager::GetInstance()->GetStunEffect();
-				if(stunEffect && !stunPositions.empty())
+				if(!stunPositions.empty())
 				{
-					stunEffect->PlayMultipleEffects(stunPositions);
+					for(const auto& pos : stunPositions)
+					{
+						// PlayStunEffect はプールからエフェクトを取得して再生します
+						EffectManager::PlayStunEffect(pos);
+					}
 				}
 				_showKnockdownMessage = true;
 				_knockdownMessageSec = 1.0f; // 表示時間 1秒
@@ -1085,36 +1072,37 @@ bool ModeGame::IsPlayerAttack(PlayerBase* player, at::vspc<EnemyBase>& enemy)
 	// ヒットした時だけ攻撃アニメ開始＆ロックON
 	if(anyhit)
 	{
-		// 追加仕様:
-		// - 攻撃ヒット時に変身の残り時間を5秒にして点滅を開始（まだ変身中で残り>5秒なら短縮）
-		// - 既に変身中で残り時間が5秒以下（＝点滅中）なら「即戻し」ではなくアニメ終了後に戻す（保留）
-		if(_changeTimeActive)
+		PlayerManager* pm = PlayerManager::GetInstance();
+
+		// 既に変身時間が有効なら短縮／保留の判定を行う
+		if(pm->IsTransformTimeLimitActive())
 		{
-			if(_changeTimeLimit <= timelimit::START_TIME_LIMIT)
+			if(pm->GetTransformTimeLimit() <= timelimit::START_TIME_LIMIT)
 			{
-				// ここでは即戻しせず、アニメ終了を待ってから戻す
+				// 既に点滅中ならアニメ終了後に戻す
 				_tanukiReturnPending = true;
 			}
 			else
 			{
-				// 変身中で残り時間が5秒より多い場合、攻撃で残り時間を5秒にする（点滅開始）
-				_changeTimeLimit = timelimit::START_TIME_LIMIT;
-				_changeBlinkTimer = 0.0f;
-				_changeBlinkVisible = true;
+				// 残り時間を START_TIME_LIMIT に短縮して点滅開始
+				pm->SetTransformTimeLimit(timelimit::START_TIME_LIMIT);
 			}
 		}
 		else
 		{
-			// 変身していなければ、新たに「攻撃による5秒点滅」を開始する
-			_changeTimeActive = true;
-			_changeTimeLimit = timelimit::START_TIME_LIMIT;
-			_changeBlinkTimer = 0.0f;
-			_changeBlinkVisible = true;
+			// 未変身なら新たに変身時間をセット（点滅開始）
+			pm->SetTransformTimeLimit(timelimit::START_TIME_LIMIT);
 		}
 
+		auto* tanuki = dynamic_cast<PlayerTanuki*>(PlayerFactory::GetTanukiPlayer());
+		if(tanuki)
+		{
+			tanuki->BlockDashFor(3.0f);
+		}
+
+		// 攻撃アニメ再生
 		_tanukiAttackAnimId = player->PlayAnimation("shippokougeki", false);
-		auto soundAttack = gGlobal._soundServer->Get("10");
-		if(soundAttack)
+		if(auto soundAttack = gGlobal._soundServer->Get("10"))
 		{
 			soundAttack->Play();
 		}
@@ -1220,17 +1208,12 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 		return false;
 	}
 
-	PlayerBase* checkPlayer;
-	if(player)
+	if(!player)
 	{
-		checkPlayer = player;
-	}
-	else
-	{
-		checkPlayer = _player.get();
+		player = PlayerForm::GetInstance()->GetPlayer();
 	}
 
-	if(!checkPlayer)
+	if(!player)
 	{
 		return false;
 	}
@@ -1256,16 +1239,16 @@ bool ModeGame::PlayerToSavePointCollision(PlayerBase* player)
 
 		vec::Vec3 hitPos;
 		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
-			checkPlayer->GetPos(),
+			player->GetPos(),
 			h,
 			f,
-			checkPlayer->GetColSubY(),
+			player->GetColSubY(),
 			hitPos
 		))
 		{
 			if(_lastSavedPoint != savePoint)
 			{
-				SavePlayer(checkPlayer);
+				SavePlayer(player);
 				_lastSavedPoint = savePoint;
 
 				// 先に「一回だけ抑制」フラグを処理する（ゲーム開始直後の誤再生対策）

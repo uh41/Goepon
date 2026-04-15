@@ -58,6 +58,11 @@ public:
 	void RequestTransformToHuman();// 人間への変身を要求する関数
 	void RequestTransformToMono(); // モノへの変身を要求する関数
 	void CancelTransformRequest(); // 変身要求をキャンセルする関数
+	void ProcessTransformRequest(); // 変身要求を処理する関数
+
+	// 変身アニメーションの管理
+	void StartTransformAnimation(); // 変身アニメーションを開始する関数
+	void CompleteTransform(); // 変身を完了させる関数
 
 	// 点滅制御
 	bool GetBlinkVisible(); // 点滅が現在表示状態かどうかを取得する関数
@@ -70,6 +75,7 @@ public:
 	void SetTransformAnimation(int animId); // 変身アニメーションを設定する関数
 	int GetTransformAnimation(); // 変身アニメーションを取得する関数
 	bool IsTransformAnimationPlaying(); // 変身アニメーションが再生中かどうかを取得する関数
+	void TransformToTanukiImmediate(); // タヌキへの変身を即座に行う関数
 
 private:
 	PlayerManager() = default;

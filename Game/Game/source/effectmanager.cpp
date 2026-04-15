@@ -226,6 +226,32 @@ TreasureEffect* EffectManager::GetTreasureEffect()
 	return _treasureEffect.get();
 }
 
+HatenaEffect* EffectManager::GetHatenaEffect()
+{
+	if(_hatenaEffectPool)
+	{
+		auto effect = _hatenaEffectPool->Acquire();
+		return effect;
+	}
+	return nullptr;
+}
+
+// 敵が初期位置に戻るときのエフェクト
+ShirimochiEffect* EffectManager::GetEnemyReturnEffect()
+{
+	return _shirimochiEffect.get();
+}
+
+// 敵のスタンエフェクト
+StunEffect* EffectManager::GetEnemyStunEffect()
+{
+	if(_stunEffectPool)
+	{
+		return _stunEffectPool->Acquire();
+	}
+	return nullptr;
+}
+
 HensinEffect* EffectManager::PlayeHensinEffect(const vec::Vec3& pos)
 {
 	if(!_hensinEffectPool)
