@@ -36,7 +36,7 @@ jobs:
       # Debugƒrƒ‹ƒh‚Ìê‡‚Ìˆ—
       - name: Copy Debug EXE to Root
         if: github.event.inputs.build_type == 'Debug'
-        run: Copy-Item -Path "Game/x64/Debug/Game.exe" -Destination "."
+        run: Copy-Item -Path "Game/Game/x64/Debug/Game.exe" -Destination "."
 
       - name: Upload Debug Artifact
         if: github.event.inputs.build_type == 'Debug'
