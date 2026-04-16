@@ -31,12 +31,12 @@ jobs:
 
       # MSBuildでプロジェクトをビルド
       - name: Build with MSBuild
-        run: msbuild Basic3D.sln /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
+        run: msbuild Game.sln /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
 
       # Debugビルドの場合
       - name: Copy Debug EXE to Root
         if: github.event.inputs.build_type == 'Debug'
-        run: Copy-Item -Path "x64/Debug/Basic3D.exe" -Destination "."
+        run: Copy-Item -Path "x64/Debug/Game.exe" -Destination "."
 
       - name: Upload Debug Artifact
         if: github.event.inputs.build_type == 'Debug'
@@ -44,22 +44,16 @@ jobs:
         with:
           name: debug-build-${{ github.run_id }}
           path: |
-            Basic3D.exe
-            model
-            model_original
-            shader
-            texture
+            Game.exe
+            res/
 
       # Releaseビルドの場合
       - name: Package Release Build
         if: github.event.inputs.build_type == 'Release'
         run: |
           New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR
-          Copy-Item -Path "x64/Release/Basic3D.exe" -Destination $env:PACKAGE_DIR
-          Copy-Item -Path "model" -Destination $env:PACKAGE_DIR -Recurse
-          Copy-Item -Path "model_original" -Destination $env:PACKAGE_DIR -Recurse
-          Copy-Item -Path "shader" -Destination $env:PACKAGE_DIR -Recurse
-          Copy-Item -Path "texture" -Destination $env:PACKAGE_DIR -Recurse
+          Copy-Item -Path "x64/Release/Game.exe" -Destination $env:PACKAGE_DIR
+          if (Test-Path "res") { Copy-Item -Path "res" -Destination $env:PACKAGE_DIR -Recurse }
           Compress-Archive -Path "$env:PACKAGE_DIR/*" -Destination "${{ github.event.repository.name }}-release.zip"
 
       # アップロード用に現在の日付を環境変数に設定
