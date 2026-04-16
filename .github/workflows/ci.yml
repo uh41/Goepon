@@ -2,8 +2,8 @@ name: Game Build
 
 on:
   push:
-    branches: [ "main" ]    
-  workflow_dispatch:  
+    branches: [ "main" ]
+  workflow_dispatch:
     inputs:
       build_type:
         description: 'Build Type'
@@ -19,17 +19,15 @@ jobs:
     runs-on: windows-latest
     env:
       PACKAGE_DIR: release_package
-
     steps:
       - name: Checkout Main Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           lfs: true
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      # Debugビルドの場合の処理
       - name: Copy Debug EXE to Root
         if: github.event.inputs.build_type == 'Debug'
         run: Copy-Item -Path "Game/Game/x64/Debug/Game.exe" -Destination "."
@@ -43,7 +41,6 @@ jobs:
             Game.exe
             res
 
-      # Releaseビルドの場合のパッケージング
       - name: Package Release Build
         if: github.event.inputs.build_type == 'Release'
         run: |
