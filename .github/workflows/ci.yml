@@ -1,4 +1,4 @@
-name: Manual Build
+name: Game Build
 
 on:
   push:
