@@ -1,6 +1,8 @@
 name: Manual Build
 
 on:
+  push:
+    branches: [ "main" ]    
   workflow_dispatch:
     inputs:
       build_type:
