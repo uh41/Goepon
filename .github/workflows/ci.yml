@@ -3,7 +3,7 @@ name: Game Build
 on:
   push:
     branches: [ "main" ]    
-  workflow_dispatch:
+  workflow_dispatch:  
     inputs:
       build_type:
         description: 'Build Type'
