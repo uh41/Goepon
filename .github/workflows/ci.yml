@@ -15,8 +15,10 @@ jobs:
       with:
         dotnet-version: 8.0.x
         
+    # ここで「Game」フォルダの中に移動して復元させる
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore Game/Game.sln
       
+    # ここも同じように指定する
     - name: Build
-      run: dotnet build --configuration Release
+      run: dotnet build Game/Game.sln --configuration Release --no-restore
