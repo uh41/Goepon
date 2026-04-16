@@ -29,10 +29,6 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      # Game.sln をビルド
-      - name: Build with MSBuild
-        run: msbuild Game/Game.sln /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
-
       # Debugビルドの場合の処理
       - name: Copy Debug EXE to Root
         if: github.event.inputs.build_type == 'Debug'
