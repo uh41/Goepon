@@ -1,19 +1,81 @@
-name: CI Build
+name: Manual Build
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'Debug'
+        type: choice
+        options:
+        - Debug
+        - Release
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: windows-latest
+    env:
+      PACKAGE_DIR: release_package # パッケージ化用ディレクトリ名を指定
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-        
-    - name: Restore dependencies
-      run: dotnet restore Game/Game.sln
+      # リポジトリのソースコードをチェックアウト
+      - name: Checkout Main Repository
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      # MSBuildをセットアップ
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      # MSBuildでプロジェクトをビルド
+      - name: Build with MSBuild
+        run: msbuild Basic3D.sln /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
+
+      # Debugビルドの場合
+      - name: Copy Debug EXE to Root
+        if: github.event.inputs.build_type == 'Debug'
+        run: Copy-Item -Path "x64/Debug/Basic3D.exe" -Destination "."
+
+      - name: Upload Debug Artifact
+        if: github.event.inputs.build_type == 'Debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-build-${{ github.run_id }}
+          path: |
+            Basic3D.exe
+            model
+            model_original
+            shader
+            texture
+
+      # Releaseビルドの場合
+      - name: Package Release Build
+        if: github.event.inputs.build_type == 'Release'
+        run: |
+          New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR
+          Copy-Item -Path "x64/Release/Basic3D.exe" -Destination $env:PACKAGE_DIR
+          Copy-Item -Path "model" -Destination $env:PACKAGE_DIR -Recurse
+          Copy-Item -Path "model_original" -Destination $env:PACKAGE_DIR -Recurse
+          Copy-Item -Path "shader" -Destination $env:PACKAGE_DIR -Recurse
+          Copy-Item -Path "texture" -Destination $env:PACKAGE_DIR -Recurse
+          Compress-Archive -Path "$env:PACKAGE_DIR/*" -Destination "${{ github.event.repository.name }}-release.zip"
+
+      # アップロード用に現在の日付を環境変数に設定
+      - name: Set current date as env
+        if: github.event.inputs.build_type == 'Release'
+        run: echo "TIMESTAMP=$(Get-Date -Format 'yyyy-MM-dd')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      # GitHub Releases にアップロード
+      - name: Create Release
+        if: github.event.inputs.build_type == 'Release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "${{ github.event.repository.name }}-release.zip"
+          tag_name: "release-${{ env.TIMESTAMP }}-${{ github.run_attempt }}"
+          name: "Release ${{ env.TIMESTAMP }}"
+          body: "Automated release created by GitHub Actions."
+          draft: false
+          prerelease: false
