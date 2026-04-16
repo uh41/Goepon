@@ -16,53 +16,46 @@ jobs:
   build-and-deploy:
     runs-on: windows-latest
     env:
-      PACKAGE_DIR: release_package # パッケージ化用ディレクトリ名を指定
+      SLN_NAME: "Game/Game.sln"      # Gameフォルダの中にあることを指定
+      EXE_NAME: "Game.exe"           # あなたの実行ファイル名に合わせてください
+      PACKAGE_DIR: "release_package"
 
     steps:
-      # リポジトリのソースコードをチェックアウト
       - name: Checkout Main Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           lfs: true
 
-      # MSBuildをセットアップ
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      # MSBuildでプロジェクトをビルド
       - name: Build with MSBuild
-        run: msbuild Game.sln /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
+        run: msbuild ${{ env.SLN_NAME }} /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
 
-      # Debugビルドの場合
-      - name: Copy Debug EXE to Root
-        if: github.event.inputs.build_type == 'Debug'
-        run: Copy-Item -Path "x64/Debug/Game.exe" -Destination "."
-
+      # Debugビルドの場合：成果物を保存
       - name: Upload Debug Artifact
         if: github.event.inputs.build_type == 'Debug'
         uses: actions/upload-artifact@v4
         with:
           name: debug-build-${{ github.run_id }}
           path: |
-            Game.exe
+            x64/Debug/${{ env.EXE_NAME }}
             res/
 
-      # Releaseビルドの場合
+      # Releaseビルドの場合：ZIP圧縮してリリース作成
       - name: Package Release Build
         if: github.event.inputs.build_type == 'Release'
         run: |
           New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR
-          Copy-Item -Path "x64/Release/Game.exe" -Destination $env:PACKAGE_DIR
+          Copy-Item -Path "x64/Release/${{ env.EXE_NAME }}" -Destination $env:PACKAGE_DIR
           if (Test-Path "res") { Copy-Item -Path "res" -Destination $env:PACKAGE_DIR -Recurse }
           Compress-Archive -Path "$env:PACKAGE_DIR/*" -Destination "${{ github.event.repository.name }}-release.zip"
 
-      # アップロード用に現在の日付を環境変数に設定
       - name: Set current date as env
         if: github.event.inputs.build_type == 'Release'
         run: echo "TIMESTAMP=$(Get-Date -Format 'yyyy-MM-dd')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         shell: pwsh
 
-      # GitHub Releases にアップロード
       - name: Create Release
         if: github.event.inputs.build_type == 'Release'
         uses: softprops/action-gh-release@v2
@@ -71,5 +64,3 @@ jobs:
           tag_name: "release-${{ env.TIMESTAMP }}-${{ github.run_attempt }}"
           name: "Release ${{ env.TIMESTAMP }}"
           body: "Automated release created by GitHub Actions."
-          draft: false
-          prerelease: false
