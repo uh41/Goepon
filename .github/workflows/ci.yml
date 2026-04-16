@@ -1,24 +1,71 @@
-name: CI Build
+name: Manual Build
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build Type'
+        required: true
+        default: 'Debug'
+        type: choice
+        options:
+        - Debug
+        - Release
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: windows-latest
+    env:
+      PACKAGE_DIR: release_package
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-        
-    # ここで「Game」フォルダの中に移動して復元させる
-    - name: Restore dependencies
-      run: dotnet restore Game/Game.sln
-      
-    # ここも同じように指定する
-    - name: Build
-      run: dotnet build Game/Game.sln --configuration Release --no-restore
+      - name: Checkout Main Repository
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      # Game.sln をビルド
+      - name: Build with MSBuild
+        run: msbuild Game.sln /p:Configuration=${{ github.event.inputs.build_type }} /p:Platform=x64
+
+      # Debugビルドの場合の処理
+      - name: Copy Debug EXE to Root
+        if: github.event.inputs.build_type == 'Debug'
+        run: Copy-Item -Path "x64/Debug/Game.exe" -Destination "."
+
+      - name: Upload Debug Artifact
+        if: github.event.inputs.build_type == 'Debug'
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-build-${{ github.run_id }}
+          path: |
+            Game.exe
+            res
+
+      # Releaseビルドの場合のパッケージング
+      - name: Package Release Build
+        if: github.event.inputs.build_type == 'Release'
+        run: |
+          New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR
+          Copy-Item -Path "x64/Release/Game.exe" -Destination $env:PACKAGE_DIR
+          Copy-Item -Path "res" -Destination $env:PACKAGE_DIR -Recurse
+          Compress-Archive -Path "$env:PACKAGE_DIR/*" -Destination "${{ github.event.repository.name }}-release.zip"
+
+      - name: Set current date as env
+        if: github.event.inputs.build_type == 'Release'
+        run: echo "TIMESTAMP=$(Get-Date -Format 'yyyy-MM-dd')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        shell: pwsh
+
+      - name: Create Release
+        if: github.event.inputs.build_type == 'Release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "${{ github.event.repository.name }}-release.zip"
+          tag_name: "release-${{ env.TIMESTAMP }}-${{ github.run_attempt }}"
+          name: "Release ${{ env.TIMESTAMP }}"
+          body: "Automated release created by GitHub Actions."
+          draft: false
+          prerelease: false
