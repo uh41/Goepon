@@ -27,7 +27,6 @@
 // 初期化
 bool ModeGame::Initialize()
 {
-	
 	_hasRenderOnce	  = false; // 初回レンダリング前のフラグをリセット
 	_requestNextStage = false; // 次のステージへの遷移要求フラグをリセット
 
@@ -666,6 +665,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 		{
 			e->StopAnimation();
 			e->PlayAnimation("idle", true);
+		}
+		else if(auto* em = dynamic_cast<EnemyMove*>(enemyPtr.get()))
+		{
+			em->StopAnimation();
+			em->PlayAnimation("idle", true);
 		}
 	}
 

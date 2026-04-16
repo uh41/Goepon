@@ -743,12 +743,12 @@ bool EnemyMove::Process()
 	}
 
 	// ステータスが変わっていないか？
-	if (old_status == _status)
+	if(old_status == _status)
 	{
 		//再生時間を進める
 		_fPlayTime += 0.5f;
 		// 再生時間をランダムに揺らがせる
-		switch (_status)
+		switch(_status)
 		{
 		case STATUS::WAIT:
 		{
@@ -759,78 +759,31 @@ bool EnemyMove::Process()
 	}
 	else
 	{
-		// アニメーションがアタッチされていたら、デタッチする
-		if (_iAttachIndex != -1)
-		{
-			MV1DetachAnim(_handle, StCas<int>(_iAttachIndex));
-			_iAttachIndex = -1;
-		}
-		// ステータスに応じたアニメーションをアタッチする
-		switch (_status)
+		// ステータスに応じたアニメーションをPlayAnimationで再生
+		switch(_status)
 		{
 		case STATUS::WAIT:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "idle");
-			if (animIndex != -1)
-			{
-				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
-				if (_iAttachIndex != -1)
-				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
-					_fPlayTime = (float)(rand() % 30); // 少しずらす
-				}
-			}
+			PlayAnimation("idle", true);
 			break;
 		}
 		case STATUS::WALK:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "walk");
-			if (animIndex != -1)
-			{
-				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
-				if (_iAttachIndex != -1)
-				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
-					_fPlayTime = (float)(rand() % 30); // 少しずらす
-				}
-			}
+			PlayAnimation("walk", true);
 			break;
 		}
 		case STATUS::FOUND:
 		{
-			int animIndex = MV1GetAnimIndex(_handle, "okkake");
-			if (animIndex != -1)
-			{
-				_iAttachIndex = StCas<float>(MV1AttachAnim(_handle, animIndex, -1, FALSE));
-				if (_iAttachIndex != -1)
-				{
-					_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
-					_fPlayTime = (float)(rand() % 30); // 少しずらす
-				}
-			}
+			PlayAnimation("okkake", false);
 			break;
 		}
-		}
-		// アタッチしたアニメーションの総再生時間を取得する
-		if (_iAttachIndex != -1)
-		{
-			_fTotalTime = MV1GetAttachAnimTotalTime(_handle, StCas<int>(_iAttachIndex));
 		}
 		// 再生時間を初期化
 		_fPlayTime = 0.0f;
-		// 再生時間をランダムにずらす
-		switch (_status)
-		{
-		case STATUS::WAIT:
-		{
-			_fPlayTime += rand() % 30; // 0 ～ 29 の揺らぎ
-			break;
-		}
-		}
 	}
 
 	// 再生時間がアニメーションの総再生時間に達したら再生時間を0に戻す
-	if (_fPlayTime >= _fTotalTime)
+	if(_fPlayTime >= _fTotalTime)
 	{
 		_fPlayTime = 0.0f;
 	}
