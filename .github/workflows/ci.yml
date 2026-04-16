@@ -36,7 +36,7 @@ jobs:
       # DebugÉrÉãÉhÇÃèÍçáÇÃèàóù
       - name: Copy Debug EXE to Root
         if: github.event.inputs.build_type == 'Debug'
-        run: Copy-Item -Path "x64/Debug/Game.exe" -Destination "."
+        run: Copy-Item -Path "Game/x64/Debug/Game.exe" -Destination "."
 
       - name: Upload Debug Artifact
         if: github.event.inputs.build_type == 'Debug'
@@ -52,7 +52,7 @@ jobs:
         if: github.event.inputs.build_type == 'Release'
         run: |
           New-Item -ItemType Directory -Force -Path $env:PACKAGE_DIR
-          Copy-Item -Path "x64/Release/Game.exe" -Destination $env:PACKAGE_DIR
+          Copy-Item -Path "Game/x64/Release/Game.exe" -Destination $env:PACKAGE_DIR
           Copy-Item -Path "res" -Destination $env:PACKAGE_DIR -Recurse
           Compress-Archive -Path "$env:PACKAGE_DIR/*" -Destination "${{ github.event.repository.name }}-release.zip"
 
