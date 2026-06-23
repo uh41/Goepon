@@ -18,7 +18,7 @@ vec::Vec3 MovePointControll::GetTargetPoint() const
 	{
 		// デバッグ出力を追加
 		OutputDebugString("警告: _movePoints が空です！\n");
-		return vec3::VGet(0.0f, 0.0f, 0.0f); // ★ これが原因
+		return vec3::VGet(0.0f, 0.0f, 0.0f);
 	}
 
 	return _movePoints[_index];

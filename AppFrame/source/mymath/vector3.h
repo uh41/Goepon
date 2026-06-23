@@ -6,7 +6,7 @@ template <typename T>
 class Vector3
 {
 public:
-	// DxLibのVECTOR構造体のようにするのでpublicのメンバ変数にする
+
 	T x, y, z;
 
 	Vector3() { x = T(0); y = T(0); z = T(0); }
@@ -175,56 +175,6 @@ public:
 	static T LengthSquare(const Vector3<T>& v1, const Vector3<T>& v2)
 	{
 		return Vector3<T>(v1 - v2).LengthSquare();
-	}
-
-	// 内積を使用した角度の算出　度数法で返すのであれば、最後にtrueを入れる
-	static T DotAngle(Vector3<T> A, Vector3<T> B, bool isdegree = false)
-	{
-		// ベクトルの長さが0だと計算できないので注意
-
-		// ベクトルAとBの長さを計算する
-		// 内積とベクトルの長さを使ってcosθを求める
-
-		A.Normalize();
-		B.Normalize();
-
-		T cossita = Vector3::Dot(A, B);
-
-		// cosθでθを求める
-		T sita = acos(cossita);
-
-		if(isdegree)
-		{
-			sita = RAD2DEG(sita);
-		}
-
-		return sita;
-	}
-
-	// 外積を使用した角度の算出　度数法で返すのであれば、最後にtrueを入れる
-	static T CrossAngleXZ(Vector3<T> A, Vector3<T> B, bool isdegree = false)
-	{
-		Vector3<T> a(A.x, A.z, T(0));
-		Vector3<T> b(B.x, B.z, T(0));
-
-		// ベクトルAとBの長さを計算する
-		// 外積とベクトルの長さを使ってsinθを求める
-
-		a.Normalize();
-		b.Normalize();
-
-		T sinsita = Vector3::Cross(a, b).z;
-
-		// sinθでθを求める
-		T sita = asin(sinsita);
-
-		// ラジアンではなく0 ～ 180度で欲しい場合はコメントを外す
-		if(isdegree)
-		{
-			sita = RAD2DEG(sita);
-		}
-
-		return sita;
 	}
 
 	// 正規化

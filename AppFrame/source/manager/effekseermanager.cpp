@@ -178,6 +178,7 @@ bool EffekseerManager::IsPlayingEffect(int handle) const
 	return true;
 }
 
+
 bool EffekseerManager::SetPauseEffect(int handle, bool pause)
 {
 	if(handle == -1)

@@ -87,6 +87,7 @@ bool WalkEffect::Process()
 			int playHandle = em->PlayEffect3DPos(_handle, pos);
 			if(playHandle != -1)
 			{
+
 				_playHandles.emplace_back(playHandle);
 			}
 		}
@@ -118,6 +119,7 @@ bool WalkEffect::Process()
 				int playHandle = em->PlayEffect3DPos(_handle, pos);
 				if(playHandle != -1)
 				{
+					//SetSpeedPlayingEffekseer3DEffect(playHandle, 10.0f); // ‘¬“x‚ð0‚É‚µ‚ÄŒÅ’è
 					_playHandles.emplace_back(playHandle);
 				}
 			}

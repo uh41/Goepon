@@ -183,6 +183,11 @@ bool ModeGame::Initialize()
 	EffectManager::GetSavePointEffect()->SetSavePoint(_savePoint);
 	EffectManager::GetWalkEffect()->SetPlayerPos(PlayerFactory::GetTanukiPlayer());
 
+	// エフェクト初期設定
+	EffectManager::SetInitialPlayer(PlayerFactory::GetTanukiPlayer());
+	EffectManager::SetGoal(_goal);
+	EffectManager::SetTreasure(_treasureBase);
+
 	_bResolveOnY = false;
 	_bLandedOnUp = false;
 	_bCameraControlMode = false;
@@ -1281,6 +1286,9 @@ bool ModeGame::Process()
 
 	// Effekseer 更新
 	EffekseerManager::GetInstance()->Update();
+
+	// エフェクト更新
+	EffectManager::UpdateAllEffect();
 
 	// 敵サウンド処理
 	EnemySoundManager::GetInstance()->Update(1.0f / 60.0f);

@@ -20,6 +20,7 @@
 #include "savepointeffect.h"
 #include "makimonogeteffect.h"
 #include "goaleffect.h"
+#include "treasureopen.h"
 
 class PlayerBase;
 class Goal;
@@ -41,13 +42,15 @@ public:
 	static HatenaEffect* GetHatenaEffect(); // はてなエフェクトを取得
 	static TreasureEffect* GetTreasureEffect(); // 宝箱エフェクトを取得
 	static ShirimochiEffect* GetEnemyReturnEffect();  // 敵が初期位置に戻るエフェクト
-	static StunEffect* GetEnemyStunEffect();           // 敵のスタンエフェクト
+	static StunEffect* GetEnemyStunEffect();// 敵のスタンエフェクト
+	static TreasureopenEffect* GetTreasureOpenEffect(); // 宝箱オープンエフェクトを取得
 
 	static HensinEffect* PlayeHensinEffect(const vec::Vec3& pos); // 変身エフェクトを取得
 	static FindEffect* PlayFindEffect(const vec::Vec3& pos); // 発見エフェクトを取得
 	static HatenaEffect* PlayHatenaEffect(EnemyBase* enemy); // はてなエフェクトを取得
 	static StunEffect* PlayStunEffect(const vec::Vec3& pos); // スタンエフェクトを取得
 	static MakimonoGetEffect* PlayMakimonoGetEffect(const vec::Vec3& pos); // 巻物ゲットエフェクトを取得
+	static TreasureopenEffect* PlayTreasureOpenEffect(const vec::Vec3& pos); // 宝箱オープンエフェクトを取得
 
 	static void UpdatePlayerPosition(PlayerBase* player); // プレイヤーの位置を更新する関数
 	static void UpdatePalyerTransformEffect(PlayerBase* player, bool playTransform = true);// プレイヤーの位置と向きにエフェクトを合わせる関数
@@ -67,6 +70,7 @@ private:
 	static at::upc<SavePointEffect> _savePointEffect; // セーブポイントエフェクト
 	static at::upc<GoalEffect> _goalEffect; // ゴールエフェクト
 	static at::upc<TreasureEffect> _treasureEffect; // 宝箱エフェクト
+	static at::upc<TreasureopenEffect> _treasureOpenEffect; // 宝箱オープンエフェクト
 
 	// プール管理
 	static at::upc<EffectPool<HensinEffect>> _hensinEffectPool; // 変身エフェクトを再利用

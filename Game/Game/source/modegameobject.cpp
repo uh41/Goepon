@@ -71,10 +71,7 @@ bool ModeGame::ObjectInitialize()
 	_playerBase.emplace_back(PlayerFactory::GetTanukiPlayer());
 	_playerBase.emplace_back(PlayerFactory::GetMonoPlayer());
 
-	// エフェクト初期設定
-	EffectManager::SetInitialPlayer(PlayerFactory::GetTanukiPlayer());
-	EffectManager::SetGoal(_goal);
-	EffectManager::SetTreasure(_treasureBase);
+
 
 	_sound3D = std::make_shared<SoundServer3D>(gGlobal._soundServer);
 	_sound3D->SetRadius(768.0f);

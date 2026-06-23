@@ -11,6 +11,7 @@ at::upc<ShirimochiEffect> EffectManager::_shirimochiEffect = nullptr;
 at::upc<SavePointEffect> EffectManager::_savePointEffect = nullptr;
 at::upc<GoalEffect> EffectManager::_goalEffect = nullptr;
 at::upc<TreasureEffect> EffectManager::_treasureEffect = nullptr;
+at::upc<TreasureopenEffect> EffectManager::_treasureOpenEffect = nullptr;
 at::upc<EffectPool<HensinEffect>> EffectManager::_hensinEffectPool = nullptr;
 at::upc<EffectPool<FindEffect>> EffectManager::_findEffectPool = nullptr;
 at::upc<EffectPool<HatenaEffect>> EffectManager::_hatenaEffectPool = nullptr;
@@ -88,16 +89,21 @@ bool EffectManager::InitializeSingletonEffect()
 	{
 		return false;
 	}
+	_treasureOpenEffect = std::make_unique<TreasureopenEffect>();
+	if(!_treasureOpenEffect->Initialize())
+	{
+		return false;
+	}
 	return true;
 }
 
 bool EffectManager::InitializeMultiInstanceEffect()
 {
-	_treasureEffect = std::make_unique<TreasureEffect>();
-	if(!_treasureEffect->Initialize())
-	{
-		return false;
-	}
+	//_treasureEffect = std::make_unique<TreasureEffect>();
+	//if(!_treasureEffect->Initialize())
+	//{
+	//	return false;
+	//}
 	return true;
 }
 
@@ -147,6 +153,11 @@ bool EffectManager::TerminateSingletonEffect()
 	{
 		_treasureEffect->Terminate();
 		_treasureEffect.reset();
+	}
+	if(_treasureOpenEffect)
+	{
+		_treasureOpenEffect->Terminate();
+		_treasureOpenEffect.reset();
 	}
 	return true;
 }
@@ -252,6 +263,11 @@ StunEffect* EffectManager::GetEnemyStunEffect()
 	return nullptr;
 }
 
+TreasureopenEffect* EffectManager::GetTreasureOpenEffect()
+{
+	return _treasureOpenEffect.get();
+}
+
 HensinEffect* EffectManager::PlayeHensinEffect(const vec::Vec3& pos)
 {
 	if(!_hensinEffectPool)
@@ -321,6 +337,16 @@ MakimonoGetEffect* EffectManager::PlayMakimonoGetEffect(const vec::Vec3& pos)
 		effect->PlayEffect(pos);
 	}
 	return effect;
+}
+
+TreasureopenEffect* EffectManager::PlayTreasureOpenEffect(const vec::Vec3& pos)
+{
+	if(!_treasureOpenEffect)
+	{
+		return nullptr;
+	}
+	_treasureOpenEffect->PlayEffect(pos);
+	return _treasureOpenEffect.get();
 }
 
 void EffectManager::UpdatePlayerPosition(PlayerBase* player)
@@ -444,5 +470,9 @@ void EffectManager::UpdateAllEffect()
 	if(_makimonoGetEffectPool)
 	{
 		_makimonoGetEffectPool->Update();
+	}
+	if(_treasureOpenEffect)
+	{
+		_treasureOpenEffect->Process();
 	}
 }

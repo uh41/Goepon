@@ -58,7 +58,6 @@
     <ClCompile Include="source\walkeffect.cpp" />
     <ClCompile Include="source\ModeGameClearLoad.cpp" />
     <ClCompile Include="source\enemysoundmanager.cpp" />
-    <ClCompile Include="source\modeloading.cpp" />
     <ClCompile Include="source\modegameload.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp">
       <Filter>ソースファイル\モードゲーム\カメラ\演出用</Filter>
@@ -432,7 +431,6 @@
     <ClInclude Include="source\walkeffect.h" />
     <ClInclude Include="source\Makimono.h" />
     <ClInclude Include="source\enemysoundmanager.h" />
-    <ClInclude Include="source\modeloading.h" />
     <ClInclude Include="source\modegameload.h" />
     <ClInclude Include="source\StageManager.h" />
     <ClInclude Include="source\CinematicCamera.h">

@@ -1,4 +1,5 @@
 #include "TreasureBase.h"
+#include "effectmanager.h"
 
 bool TreasureBase::Initialize()
 {
@@ -109,6 +110,14 @@ void TreasureBase::SetOpen(bool isOpen)
 
 	_handle = newHandle;
 	_isVisible = true;
+
+	if(_isOpen)
+	{
+		if(EffectManager::GetTreasureOpenEffect())
+		{
+			EffectManager::GetTreasureOpenEffect()->PlayEffect(_vPos);
+		}
+	}
 
 	// 新しいモデルでコリジョンフレームを検索して設定
 	_hitCollisionFrame = MV1SearchFrame(_handle, "Collision_04");

@@ -45,20 +45,20 @@ bool TreasureEffect::Process()
 	if(!em) { return true; }
 
 	// 宝箱が一つもないなら全て停止して終了
-	if(_treasureBase.empty())
-	{
-		// 全て停止
-		for(auto& kv : _playHandles)
-		{
-			const int playHandle = kv.second; 
-			if(playHandle != -1)
-			{
-				em->StopEffect(playHandle);
-			}
-		}
-		_playHandles.clear();
-		return true;
-	}
+	//if(_treasureBase.empty())
+	//{
+	//	// 全て停止
+	//	for(auto& kv : _playHandles)
+	//	{
+	//		const int playHandle = kv.second; 
+	//		if(playHandle != -1)
+	//		{
+	//			em->StopEffect(playHandle);
+	//		}
+	//	}
+	//	_playHandles.clear();
+	//	return true;
+	//}
 
 	// 各宝箱ごとに処理
 	for(const auto& t : _treasureBase)

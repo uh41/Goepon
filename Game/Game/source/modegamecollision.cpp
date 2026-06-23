@@ -230,12 +230,12 @@ bool ModeGame::CheckTanukiHeadCollision(PlayerTanuki* player, ObjectBase* obj, v
 		if(block.modelHandle < 0) continue;
 		if(block.collisionFrame < 0) continue;
 
-		// 頭の位置で当たり判定（体より小さい半径を使用）
+		// 頭の位置で当たり判定
 		if(CollisionManager::GetInstance()->CheckPositionToMV1Collision(
 			headPos,
 			block.modelHandle,
 			block.collisionFrame,
-			player->GetColSubY() * 0.3f, // 体の30%の半径（頭のサイズ）
+			player->GetColSubY(),
 			outHitPos)) // 頭の当たり位置を出力パラメータに格納
 		{
 			headHit = true;

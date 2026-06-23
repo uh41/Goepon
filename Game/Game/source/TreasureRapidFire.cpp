@@ -85,6 +85,7 @@ bool TreasureRapidFire::Process()
 	if (!_isOpen && _objStatus != OBJSTATUS::OPEN)
 	{
 		_objStatus = OBJSTATUS::OPEN;
+
 	}
 
 	return true;
