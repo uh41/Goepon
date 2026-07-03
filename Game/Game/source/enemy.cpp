@@ -6,6 +6,7 @@
 /*********************************************************************/
 #include "enemy.h"
 #include "enemysensor.h"
+#include "effectmanager.h"
 
 // 初期化
 bool Enemy::Initialize()
@@ -136,6 +137,7 @@ bool Enemy::Process()
 			_enemySensor->SetDir(_vDir);
 
 			// UpdateChasing は EnemyBase 側で定義され、MoveToTarget を呼びます。
+
 			UpdateChasing();
 
 			// センサーの状態に応じてステータスを設定

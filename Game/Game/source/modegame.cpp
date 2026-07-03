@@ -420,6 +420,8 @@ bool ModeGame::Terminate()
 		gGlobal.UnloadStageData(curStage); // ステージ内 JSON 等を解放
 	}
 
+	EffectManager::Terminate(); // エフェクトマネージャーの終了処理
+
 	return true;
 }
 

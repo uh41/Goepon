@@ -9,6 +9,7 @@
 #include "applicationglobal.h"
 #include "enemysoundmanager.h"
 #include "shirimochieffect.h"
+#include "effectmanager.h"
 
 // 初期化
 bool EnemyBase::Initialize()
@@ -72,6 +73,7 @@ bool EnemyBase::Initialize()
 	_attachAnimGetUp = "";
 
 	_effect = nullptr;
+	_hasFindEffect = false;
 
 	// 向き変更のシーケンス関連の初期化
 	_dirSequence.clear();
@@ -122,7 +124,7 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 		return;
 	}
 
-	// 変更点：遷移検出のため、呼び出し前の状態を保存
+	// 遷移検出のため、呼び出し前の状態を保存
 	bool wasDetected = _detectedPlayer;
 
 	_detectedPlayer = true;	// プレイヤーを検出したフラグを立てる
@@ -146,6 +148,8 @@ void EnemyBase::OnPlayerDetected(const vec::Vec3& playerPos)
 	// 遷移（未検出 -> 検出）時のみ効果音を鳴らす
 	if(!wasDetected)
 	{
+		_hasFindEffect = false;
+
 		if(gGlobal._soundServer)
 		{
 			auto bushfound = gGlobal._soundServer->Get("35");
@@ -172,6 +176,7 @@ void EnemyBase::OnPlayerLost()
 	{
 		_detectedPlayer = false;
 		_isMoving = false;
+		_hasFindEffect = false;
 
 		// 検知終了後、すぐに戻らず待機状態にする
 		_waitingReturn = true;
@@ -181,6 +186,12 @@ void EnemyBase::OnPlayerLost()
 		if(_enemySensor)
 		{
 			_enemySensor->ResetDetection();
+		}
+
+		auto  hatenaEffect = EffectManager::GetHatenaEffect();
+		if(hatenaEffect)
+		{
+			hatenaEffect->PlayOnce(this);
 		}
 	}
 	ResetChasedSearch();
@@ -371,6 +382,12 @@ void EnemyBase::UpdateChasing()
 
 		const float arriveDistance = 20.0f;
 		const float arriveDistSq = arriveDistance * arriveDistance;
+
+		if(!_hasFindEffect)
+		{
+			EffectManager::PlayFindEffect(this);
+			_hasFindEffect = true;
+		}
 
 		if (toTarget.LengthSquare() > arriveDistSq)
 		{

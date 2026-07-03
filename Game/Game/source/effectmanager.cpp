@@ -283,16 +283,16 @@ HensinEffect* EffectManager::PlayeHensinEffect(const vec::Vec3& pos)
 	return effect;
 }
 
-FindEffect* EffectManager::PlayFindEffect(const vec::Vec3& pos)
+FindEffect* EffectManager::PlayFindEffect(EnemyBase* enemy)
 {
-	if(!_findEffectPool)
+	if(!_findEffectPool || !enemy)
 	{
 		return nullptr;
 	}
 	auto effect = _findEffectPool->Acquire();
 	if(effect)
 	{
-		effect->PlayEffect(pos);
+		effect->PlayOnce(enemy);
 	}
 	return effect;
 }
@@ -371,6 +371,26 @@ void EffectManager::UpdatePlayerPosition(PlayerBase* player)
 	if(_savePointEffect)
 	{
 		_savePointEffect->SetTargetPlayer(player);
+	}
+	if(_findEffectPool)
+	{
+		_findEffectPool->ProcessActive();
+	}
+	if(_hensinEffectPool)
+	{
+		_hensinEffectPool->ProcessActive();
+	}
+	if(_hatenaEffectPool)
+	{
+		_hatenaEffectPool->ProcessActive();
+	}
+	if(_stunEffectPool)
+	{
+		_stunEffectPool->ProcessActive();
+	}
+	if(_makimonoGetEffectPool)
+	{
+		_makimonoGetEffectPool->ProcessActive();
 	}
 }
 

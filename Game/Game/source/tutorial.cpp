@@ -42,9 +42,10 @@ void Tutorial::LoadEffect()
 	_eventHandle["event3"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_3);
 	_eventHandle["event4"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_4);
 	_eventHandle["event5"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_5);
-	//_eventHandle["event6"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_6);
-	//_eventHandle["event7"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_7);
-
+	_eventHandle["event6"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_6);
+	_eventHandle["event7"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_7);
+	_eventHandle["event8"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_8);
+	_eventHandle["event9"] = EffekseerManager::GetInstance()->LoadEffect(ef::tutorial_9);
 }
 
 void Tutorial::PlayTutorial()
@@ -86,6 +87,16 @@ void Tutorial::PlayTutorial()
 	case 7:
 	{
 		effectName = "event7";
+		break;
+	}
+	case 8:
+	{
+		effectName = "event8";
+		break;
+	}
+	case 9:
+	{
+		effectName = "event9";
 		break;
 	}
 	}

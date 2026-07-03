@@ -152,6 +152,7 @@ protected:
 
 	EffectBase* _effect;		// エフェクト
 	EffectBase* _stunEffect;	// スタンエフェクト
+	bool _hasFindEffect;	// 追跡時にエフェクトを再生したかどうか
 
 	bool _isInvincible;		// 無敵状態かどうか
 	float _stanTimer;		// スタン時間

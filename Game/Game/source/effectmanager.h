@@ -46,7 +46,7 @@ public:
 	static TreasureopenEffect* GetTreasureOpenEffect(); // 宝箱オープンエフェクトを取得
 
 	static HensinEffect* PlayeHensinEffect(const vec::Vec3& pos); // 変身エフェクトを取得
-	static FindEffect* PlayFindEffect(const vec::Vec3& pos); // 発見エフェクトを取得
+	static FindEffect* PlayFindEffect(EnemyBase* enemy); // 発見エフェクトを取得
 	static HatenaEffect* PlayHatenaEffect(EnemyBase* enemy); // はてなエフェクトを取得
 	static StunEffect* PlayStunEffect(const vec::Vec3& pos); // スタンエフェクトを取得
 	static MakimonoGetEffect* PlayMakimonoGetEffect(const vec::Vec3& pos); // 巻物ゲットエフェクトを取得
@@ -61,6 +61,7 @@ public:
 
 	static void UpdateAllEffect(); // 全てのエフェクトを更新する関数
 	//static void PrintPoolStatus(); // プールの状態を表示する関数
+	static void StopAllEffects();
 
 private:
 	static at::upc<WalkEffect> _walkEffect; // 足跡エフェクト

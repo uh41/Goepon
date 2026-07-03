@@ -18,6 +18,8 @@ public:
 
 	void SetEnemy(at::vspc<EnemyBase> enemy) { _enemy = enemy; }
 
+	void PlayOnce(EnemyBase* enemy); // 敵ごとにエフェクトを再生する
+
 protected:
 	at::vspc<EnemyBase> _enemy;
 	at::umtc<EnemyBase*, int> _playHandleMap;// 敵ごとのエフェクト

@@ -33,8 +33,6 @@ bool EffectBase::Process()
 {
 	base::Process();
 
-	//EffekseerManager::GetInstance()->Update();
-
 	return true;
 }
 

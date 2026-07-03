@@ -861,7 +861,20 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 			if(player != nullptr)
 			{
 				eb->OnPlayerDetected(player->GetPos());
-				EffectManager::GetHatenaEffect()->ResetEnemyEffect(eb);
+				if(playerForm->GetPlayerType() == PlayerBase::PlayerType::TANUKI)
+				{
+					// hatenaeffect を再生する
+					auto hatenaEffect = EffectManager::GetHatenaEffect();
+					if(hatenaEffect)
+					{
+						hatenaEffect->PlayOnce(eb);
+					}
+				}
+				else
+				{
+					// 通常形態の場合は既存の処理
+					EffectManager::GetHatenaEffect()->ResetEnemyEffect(eb);
+				}
 
 				const bool isChasingNow = sensor->IsChasing();
 				chaseStarted = (!wasChasing && isChasingNow);
