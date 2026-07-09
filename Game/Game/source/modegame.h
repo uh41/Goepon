@@ -3,6 +3,8 @@
 // * \brief  モードゲームクラス
 // *
 // * \author 鈴木裕稀
+// * \date   2025/12/15
+// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -12,6 +14,9 @@
 #include "objectbase.h"
 #include "camera.h"
 #include "CinematicCamera.h"
+#include "playerbase.h"
+#include "player.h"
+#include "playertanuki.h"
 #include "enemybase.h"
 #include "enemy.h"
 #include "enemymove.h"
@@ -24,8 +29,9 @@
 #include "enemysensor.h"
 #include "uibase.h"
 #include "uihp.h"
-#include "UiMakimonoCnt.h"
+#include "UiMakimono.h"
 #include "IntroUi.h"
+#include "playermono.h"
 #include "effectbase.h"
 #include "treasureeffect.h"
 #include "MapBase.h"
@@ -59,8 +65,6 @@
 #include "savepointeffect.h"
 #include "makimonogeteffect.h"
 #include "goaleffect.h"
-#include "PlayerFactory.h"
-#include "playermanager.h"
 
 // 定数定義
 
@@ -116,7 +120,7 @@ public:
 	bool IsHitCircle(CharaBase* c1, CharaBase* c2);
 	bool IsHitCircle(CharaBase* target)
 	{
-		return IsHitCircle(PlayerFactory::GetTanukiPlayer(), target);
+		return IsHitCircle(_player.get(), target);
 	}
 
 	// 当たり判定処理
@@ -150,23 +154,18 @@ public:
 	bool ObjectRender();
 
 	// プレイヤー変身関数
+	bool PlayerTransform();
 	bool PlayerTransformToTanuki(bool player);
-	bool CompleteTransformToHuman(PlayerTanuki* tanuki, PlayerBase* player);
-	bool CompleteTransformToMono(PlayerTanuki* tanuki, PlayerBase* player);
-	bool UpdateMonoTimeLimit();
-	bool UpdateHumanTimeLimit();
 	bool RequestTransform(HenshinUi::Select select);
 
-	void ProcessPlayerCollision(PlayerBase* player); // プレイヤーの当たり判定処理をまとめた関数
-	void ProcessActivePlayer();// 現在アクティブなプレイヤーの処理をまとめた関数
-	void ProcessPlayerCollisionAndInteraction();// プレイヤーの当たり判定と相互作用処理
-	void ProcessPlayerEnemyCollision();// プレイヤーと敵の当たり判定をまとめた関数
-	void Process3DSound();// 3Dサウンドの処理
-	void ProcessTransformTimeLimit();// 変身タイムリミットの処理
-	void StopAllSounds();
-
+	void RequestTransformToMono();             // タヌキ -> モノ（巻物を消費して変身）
+	void RequestTransformToHuman();            // タヌキ -> 人間（アニメあり）
+	void RequestReturnToTanukiFromHuman();     // 人間表示時にタヌキへ即時戻す（UI選択）
+	bool IsTransforming() const;
 	bool IsLoadComplete() const { return _isLoadComplete; }
 	void SetLoadComplete(bool b) { _isLoadComplete = b; }
+	bool IsTransformRequested() const;
+	bool IsShowingTanuki() const { return _bShowTanuki; }
 	bool IsTanukiAttackPlaying() const { return _isTanukiAttackPlaying; }
 
 	// カメラ操作公開API（メニューから呼び出すため）
@@ -209,6 +208,8 @@ public:
 
 	bool LoadStageData();
 
+	auto GetShowTanuki() const { return _bShowTanuki; }
+
 	// 取得数（UI等で使う想定）
 	int GetTreasureTakenCount() const { return _treasureTakenCount; }
 	// クリアに必要な宝箱数
@@ -243,17 +244,15 @@ public:
 
 	const at::vec<EnemyBase*>& GetEnemiesInAttackRangees() const { return _enemiesInAttackRange; }
 
-	auto GetPlayerTanuki() const { return PlayerFactory::GetTanukiPlayer(); }
-	auto GetPlayerHuman() const { return PlayerFactory::GetHumanPlayer(); }
-	auto GetPlayerMono() const { return PlayerFactory::GetMonoPlayer(); }
-
-	bool IsShowingTanuki() const { return PlayerManager::GetInstance()->IsShowTanuki(); }
-	bool IsShowingMono() const { return PlayerManager::GetInstance()->IsShowMono(); }
-	bool IsShowingHuman() const { return PlayerManager::GetInstance()->IsShowHuman(); }
-	bool GetBlinkVisible() const { return PlayerManager::GetInstance()->GetBlinkVisible(); }
-
+	auto GetPlayerBase() const { return _playerBase; }
+	auto GetPlayer() const { return _player; }
+	auto GetPlayerTanuki() const { return _playerTanuki; }
+	auto GetPlayerMono() const { return _playerMono; }
+	bool IsShowingMono() const { return _showMonoPlayer; }
+	void CancelRequestedTransform();
 	void ShowHenshinPlayer(bool show) { if(_henshinUi) _henshinUi->SetShowPlayerUi(show); }
 	void ShowHenshinMonoUi(bool show) { if(_henshinUi) _henshinUi->SetShowPlayerMonoUi(show); }
+
 
 	void SavePlayer(PlayerBase* player);
 	void ApplySaveData(const SaveData& data);
@@ -283,8 +282,11 @@ protected:
 	// キャラクタ管理
 	at::vspc<CharaBase> _chara;
 	at::vspc<ObjectBase> _object;
+	at::vspc<PlayerBase> _playerBase;
 	at::vspc<EnemyBase> _enemyBase;
-	at::vec<PlayerBase*> _playerBase;
+	at::spc<Player> _player;
+	at::spc<PlayerTanuki> _playerTanuki;
+	at::spc<PlayerMono> _playerMono;
 	// 宝箱(オブジェクト)
 	at::vspc<TreasureBase> _treasureBase;
 	at::vspc<Treasure>     _treasure;
@@ -306,7 +308,7 @@ protected:
 	// UI
 	at::vspc<UiBase> _uiBase;
 	at::spc<UiHp> _uiHp;
-	at::spc<UiMakimonoCnt> _uiMakimonoCnt;
+	at::spc<UiMakimono> _uiMakimono;
 	at::spc<HenshinUi> _henshinUi;
 	at::spc<CounterUi> _counterUi;
 	at::spc<TreasureUi> _treasureUi;
@@ -316,8 +318,23 @@ protected:
 	at::spc<StunEffect> _stunEffect;
 	at::spc<IntroUi> _introUi;
 	// エフェクト
+	at::vspc<EffectBase> _effectBase;
+	at::spc<TreasureEffect> _treasureEffect;
 	// オブジェクトサーバー
 	class ObjectServer* _objectServer;
+
+	at::spc<HensinEffect> _hensinEffect;
+	at::spc<WalkEffect> _walkEffect;
+	at::spc<FindEffect> _findEffect;
+	at::spc<HatenaEffect> _hatenaEffect;
+	at::spc<DoyaEffect> _doyaEffect;
+	at::spc<TreasureopenEffect> _TreasureOpenEffect;
+	at::spc<NakiEffect> _nakiEffect;
+	at::spc<ShirimochiEffect> _shirimochiEffect;
+	at::spc<SavePointEffect> _savePointEffect;
+	at::spc<MakimonoGetEffect> _makimonoGetEffect;
+	at::spc<GoalEffect> _goalEffect;
+	
 
 	at::spc<SoundServer3D> _sound3D;
 	soundserver::SoundItemBase* _soundFinish;
@@ -343,6 +360,11 @@ protected:
 	bool _bResolveOnY;  // Y方向のコリジョン解決を行うかどうか
 	bool _bLandedOnUp;  // 上方向に着地したかどうか
 
+	bool _bShowTanuki;// タヌキプレイヤー表示フラグ
+	bool _showMonoPlayer;// モノプレイヤー表示フラグ
+	bool _isTransformToHuman = false;
+	bool _isTransformToMono = false;
+	int _transformAnimId = -1;
 	bool _isTanukiAttackPlaying = false;
 	int _tanukiAttackAnimId = -1;
 	bool _tanukiReturnPending = false; // タヌキへの戻りが保留されているかどうか
@@ -391,6 +413,12 @@ protected:
 	// ゴール確認処理
 	bool UpdateGoalConfirm(PlayerBase* player);
 
+	bool _changeTimeActive;		// プレイヤーの時間制限フラグ
+	float _changeTimeLimit;		// プレイヤーの時間制限（秒）
+	float _changeBlinkTimer;	// プレイヤーの点滅タイマー
+	bool _changeBlinkVisible;	// プレイヤーの点滅表示フラグ
+	float _changeBlinkInterval; // プレイヤーの点滅間隔
+
 	// 巻物関連
 	bool _subMakimono = false; // 変身開始時に巻物を消費する予約をする
 
@@ -398,10 +426,36 @@ protected:
 	float _loadTimeMs = 0.0f; // ロードにかかった時間（ミリ秒）
 	bool _suppressNextSavePointSound = false;
 
+	// Process内の各処理セクション実行時間計測用（マイクロ秒）
+	float _processCameraMs = 0.0f;
+	float _processAnimationMs = 0.0f;
+	float _processEffekseerMs = 0.0f;
+	float _processEnemySoundMs = 0.0f;
+	float _processObjectServerMs = 0.0f;
+	float _processSoundListenerMs = 0.0f;
+	float _processPlayerTransformMs = 0.0f;
+	float _processObjectProcessMs = 0.0f;
+	float _processCollisionMs = 0.0f;
+	float _processEnemyAIMs = 0.0f;
+	float _processPlayerCollisionMs = 0.0f;
+	float _processPlayerEnemyMs = 0.0f;
+	float _processGoalMs = 0.0f;
+	float _processAttackMs = 0.0f;
+	float _process3DSoundMs = 0.0f;
+	float _processChangeTimeMs = 0.0f;
+	float _processBGMMs = 0.0f;
+	float _processTotalMs = 0.0f;
+	float _processSectorDetectionMs = 0.0f; // 扇形検出処理の時間
+
 	bool _isLoadComplete; // ロード中かどうか（デバッグ用）
 	ModeGameLoad* _modeGameLoad;
 	StageManager _stageManager; // ステージ管理
 	std::string _initialStageId; //
+
+	bool _requestedTransformToMono = false;      // タヌキ -> モノ 要求
+	bool _requestedTransformToHuman = false;     // タヌキ -> 人間 要求（アニメ）
+	bool _requestedReturnToTanuki = false;       // 人間 -> タヌキ（即時）要求
+
 	at::vec<EnemyBase*> _enemiesInAttackRange; // 攻撃範囲内の敵のリスト
 
 	// 宝箱ごとの進行度を管理するマップを追加
@@ -433,7 +487,7 @@ private:
 	// ゲームオーバー演出
 	bool  _isGameOverCinematicActive; // ゲームオーバー演出が有効か
 	float _gameOverCinematicTimer;    // ゲームオーバー演出の経過時間
-	int   _gameOverSequencePhase;     // ゲームオーバー演出のフェーズ管理用変数
+	int   _gameOverSequencePhase;     // ゲームオーバー演出のフェーズ管理用変数( 0: ズーム中, 1: モデル切替＆アニメ, 2: 余韻)
 	int   _gameOverDimAlpha;		  // ゲームオーバー演出の暗転アルファ値
 	// ゲームオーバー → ゲーム復帰時のスポットライトフェードイン（円形）
 	bool  _spotFadeInActive = false;

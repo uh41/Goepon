@@ -15,10 +15,10 @@ bool MapBase::Initialize()
 	// ライトの方向と色味（暖かめ・控えめ）
 	_mainLight.SetDir(VGet(0.5f, -1.0f, 0.2f)); // 斜め上からの暖かい光（方向は必要に応じ調整）
 
-	// アンビエント（低め・暖色）
+	// アンビエント
 	_mainLight.SetAmbient(VGet(0.02f, 0.015f, 0.01f), 1.0f); // 暖かい弱めの環境光
 
-	// 拡散光（暖色寄りだが強すぎない）
+	// 拡散光
 	_mainLight.SetDiffuse(VGet(0.98f, 0.74f, 0.48f), 1.0f); // 明るさを抑えつつ暖色を強調
 
 	// 鏡面反射（控えめで柔らかく）
@@ -33,7 +33,7 @@ bool MapBase::Terminate()
 {
 	base::Terminate();
 
-	// 外部影キャスターを先に解除（キャプチャしている参照を切る）
+	// 外部影キャスターを先に解除
 	_externalShadowCasters = nullptr;
 
 	// スカイスフィアモデルの削除
@@ -57,7 +57,7 @@ bool MapBase::Terminate()
 		_iHandleShadowMap = -1;
 	}
 
-	// 地面テクスチャハンドルの削除（※現状ここが抜けている）
+	// 地面テクスチャハンドルの削除
 	if (_ground_handle >= 0)
 	{
 		DeleteGraph(_ground_handle);
@@ -102,18 +102,16 @@ bool MapBase::Process()
 	_ground_vertex.clear();
 	_ground_index.clear();
 
-	// ?n??|???S??????_?E?C???f?b?N?X??
+	// 地面作成
 	for(int i = 0; i < GROUND_Z * GROUND_X; i++)
 	{
-		// ?s????v?Z
-		int z = i / StCas<int>(GROUND_X);// ?s
-		int x = i % StCas<int>(GROUND_X);// ??
+		int z = i / StCas<int>(GROUND_X);
+		int x = i % StCas<int>(GROUND_X);
 
-		// ?I?t?Z?b?g?v?Z
 		auto offset_x = _start_x + StCas<float>(x) * GROUND_POLYGON_SIZE;
 		auto offset_z = _start_z + StCas<float>(z) * GROUND_POLYGON_SIZE;
 
-		// 4???_???
+		// ループで4つの頂点を作成
 		for(int j = 0; j < 4; j++)
 		{
 			VERTEX3D vertex;
@@ -132,7 +130,7 @@ bool MapBase::Process()
 			_ground_vertex.push_back(vertex);
 		}
 
-		// 2????O?p?`??C???f?b?N?X
+		// インデックスを作成
 		auto index = StCas<unsigned short>(i * 4);
 		_ground_index.push_back(StCas<unsigned short>(index + 0));
 		_ground_index.push_back(StCas<unsigned short>(index + 1));
@@ -142,31 +140,30 @@ bool MapBase::Process()
 		_ground_index.push_back(StCas<unsigned short>(index + 3));
 	}
 
-	// ?u???b?N???u?E??]?E?X?P?[?????
+	// ブロックの位置・回転・スケールを更新
 	for(auto& block : _vBlockPos)
 	{
-		// ???f???n???h???????????X?L?b?v
+		// モデルハンドルが有効か確認
 		if(block.modelHandle < 0)
 		{
 			continue;
 		}
-		// ??u?E??]?E?X?P?[?????
+ 
+		// ブロックの位置・回転・スケールを設定
 		MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
 		MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
 		MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
 
-		// ?R???W???????? transform ??????X?V?i?d?v?j
+
 		MV1RefreshCollInfo(block.modelHandle, -1);
 	}
 
-	// SkySphere?i?X?P?[???E??u?j???
+	// スカイスフィアの位置をカメラに追従させる
 	if(_iHandleSkySphere >= 0)
 	{
-		// ??F200?{?i?K?v??l??????j
 		float kSkySphereScale = 200.0f;
 		MV1SetScale(_iHandleSkySphere, VGet(kSkySphereScale, kSkySphereScale, kSkySphereScale));
 
-		// ???_?????????[??????????A?J???????]??????i?????j
 		if(_cam)
 		{
 			MV1SetPosition(_iHandleSkySphere, DxlibConverter::VecToDxLib(_cam->GetPos()));
@@ -226,34 +223,6 @@ bool MapBase::Render()
 			// 地面もシャドウキャスターに追加
 			if(_ground_handle != -1)
 			{
-				//auto vertex_num = StCas<int>(_ground_vertex.size());
-				//auto index_num = StCas<int>(_ground_index.size());
-
-				//// シャドウマップへの描画は、頂点数とインデックス数が3以上必要
-				//if(vertex_num >= 3 && index_num >= 3)
-				//{
-				//	auto polygon_num = index_num / 3;
-				//	DrawPolygonIndexed3D
-				//	(
-				//		_ground_vertex.data(),
-				//		vertex_num,
-				//		_ground_index.data(),
-				//		polygon_num,
-				//		_ground_handle,
-				//		FALSE
-				//	);
-				//}
-
-				//// シャドウキャスター描画
-				//if(_iHandleMap >= 0) MV1DrawModel(_iHandleMap);
-				//for(auto& block : _vBlockPos)
-				//{
-				//	MV1SetPosition(block.modelHandle, VGet(block.x, block.y, block.z));
-				//	MV1SetRotationXYZ(block.modelHandle, VGet(block.rx, block.ry, block.rz));
-				//	MV1SetScale(block.modelHandle, VGet(block.sx, block.sy, block.sz));
-				//	MV1DrawModel(block.modelHandle);
-				//}
-
 				// 外部のシャドウキャスター描画
 				if(_externalShadowCasters)
 				{

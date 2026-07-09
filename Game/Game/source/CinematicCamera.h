@@ -41,11 +41,11 @@ public:
 protected:
 
 	State _state = State::Idle; // 現在の演出状態
-	float _timer = 0.0f;        // 演出開始からの経過時間（秒）
-	float _duration = 0.0f;     // 演出の継続時間（秒）
+	float _timer = 0.0f;        // 演出開始からの経過時間
+	float _duration = 0.0f;     // 演出の継続時間
 
 	//　共通パラメータ
-	vec::Vec3 _targetPos; // 演出の対象（ターゲット位置）
+	vec::Vec3 _targetPos; // 演出の対象
 
 	// Orbit用パラメータ
 	float _orbitStartRadius = 0.0f; // ターゲットからの距離の開始値

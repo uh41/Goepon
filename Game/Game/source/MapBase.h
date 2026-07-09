@@ -41,8 +41,10 @@ protected:
 	// 地面全体の中心を原点にする
 	float _start_x;
 	float _start_z;
+
 	// 頂点用の固定情報
 	VECTOR _ground_normal;
+
 	//地面の正方形用のテーブル
 	VECTOR _ground_pos_0;
 	VECTOR _ground_pos_1;

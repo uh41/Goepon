@@ -36,10 +36,6 @@ protected:
 	int _startHandle;
 
 private:
-	//  メニュー関数
-	void SelectMenu(int trg); // メニュー選択の更新
-	void RenderMenu() const;  // メニューの描画	
-
 	// メニュー選択の状態
 	enum class MenuItem
 	{
@@ -48,9 +44,8 @@ private:
 	};
 	MenuItem _menu = MenuItem::Start; // デフォルトは「スタート」
 
-	// 状態遷移の処理
-	void ProcessStateTransition(int trg);
 
+	// ハンドル関係
 	// タイトルロゴと背景のハンドル
 	int _bgHandle;
 	int _titleHandle;
@@ -66,7 +61,6 @@ private:
 	int _fusumaLeftHandle   = -1;
 
 	// ロゴ落下アニメ用
-	void UpdateTitleLogoFall();		 // タイトルロゴの落下アニメーションの更新
 	float _titleX		 = 30.0f;    // タイトルロゴのX位置
 	float _titleY		 = -130.0f;  // タイトルロゴのY位置
 	int   _titleW		 = 0;		 // タイトルロゴの幅

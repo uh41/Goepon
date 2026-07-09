@@ -34,7 +34,7 @@ bool CinematicCamera::Terminate()
 
 bool CinematicCamera::Process()
 {
-	const float dt = 1.0f / 60.0f; // 仮のデルタタイム（60FPS想定）。実際にはアプリケーションのフレームタイムを使用するべき。
+	const float dt = 1.0f / 60.0f; 
 
 	if (_state == State::Idle)
 	{
@@ -103,13 +103,13 @@ bool CinematicCamera::Process()
 			}
 			break;
 		}
-		// 揺れ（ランダムオフセットを加える）
+		// 揺れ
 		case State::Shake:
 		{
 			const float progress = (_duration > 0.0f) ? (_timer / _duration) : 1.0f; 
 			const float amp      = _shakeIntensity * (1.0f - progress); // 徐々に減衰させる
 
-			const float t = _timer; //seconds
+			const float t = _timer; 
 			const float yOffSet = sinf(2.0f * DX_PI_F * _shakeCyclesPerSecond * t) * amp;
 
 			_vPos = _shakeBasePos;

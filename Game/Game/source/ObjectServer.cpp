@@ -128,6 +128,7 @@ bool ObjectServer::ClearObject()
 	_addObj.clear();
 	_deleteObj.clear();
 
+	// 
 	auto destroyOne = [this](ObjectBase* obj)
 		{
 			if (!obj) return;

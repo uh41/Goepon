@@ -25,20 +25,16 @@ bool ModeGameOver::Initialize()
 	if(!base::Initialize()) return false;
 	_gameoverLogoHandle = LoadGraph(ui::GameOver_logo);
 
-	
-	_debugCurrentStageId = "Stage1";
-
-	// オーナーゲームから現在のステージIDを取得して保存しておく
+	_debugCurrentStageId = "Stage1"; // �f�t�H���g
 	if(_ownerGame)
 	{
 		auto* game = dynamic_cast<ModeGame*>(_ownerGame);
 		if(game)
 		{
-			_debugCurrentStageId = game->GetCurrentStageId(); // デバッグ用にステージIDを保存
+			_debugCurrentStageId = game->GetCurrentStageId();
 		}
 	}
 
-	// 演出関係の初期化
 	int screenW = 0;
 	int screenH = 0;
 	GetScreenState(&screenW, &screenH, nullptr);
@@ -51,14 +47,14 @@ bool ModeGameOver::Initialize()
 	_spotRadius = _spotStartRadius;
 	_hasValidSpotCenter = false;
 
-	// 遷移開始フラグをリセット
 	_transitionStarted = false;
 
 	UpdateSpotCenterFromPlayer();
 
-	// サウンドの初期化
 	if(gGlobal._soundServer)
 	{
+		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
+
 		// ゲーム中BGMだけは明示的に停止
 		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
 		{
@@ -84,7 +80,7 @@ bool ModeGameOver::Initialize()
 
 bool ModeGameOver::Terminate()
 {
-	// ロゴはもちろん、円形暗転のグラフィックも削除しておく
+	// �����`��p�Ƀ��[�h�����O���t����
 	if(_overlayHandle != -1)
 	{
 		DeleteGraph(_overlayHandle);
@@ -101,18 +97,18 @@ bool ModeGameOver::Process()
 	base::Process();
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
 
-	// フェード進行
+	// フェード進行（プレイヤー中心は毎フレーム追従）
 	UpdateSpotCenterFromPlayer();
 
 	_fadeSec += kDt;
 	const float t = Clamp01(_fadeSec / _fadeDurationSec);
 
-	// 半径を縮める
+	// 半径を縮める（最初は広く、最後は0）
 	_spotRadius = Lerp(_spotStartRadius, _spotEndRadius, t);
 
-	// 暗さを増やす
+	// 暗さを増やす（0→255）
 	_spotAlpha = StCas<int>(Lerp(0.0f, 255.0f, t));
-	// フェードアウト完了まで待つ
+	// フェードアウト完了まで待つ（ボタン不要）
 	if(_transitionStarted || t < 1.0f)
 	{
 		return true;
@@ -130,7 +126,6 @@ bool ModeGameOver::Process()
 		}
 	}
 
-	// セーブデータをロードしてゲームに反映させる
 	SaveData sd{};
 	if(SaveManager::TryLoad(sd, SaveManager::GetDefaultPath()))
 	{
@@ -201,15 +196,19 @@ bool ModeGameOver::Render()
 		}
 	}
 
-	// 円形暗転の描画
+	// 既存の黒背景UIは残しつつ、サンシャイン風暗転を上に載せる
+	// ※ 文字は暗転の上に描く（読みやすさ優先）にする場合は順序を入れ替える
 	DrawSpotlightFade();
+
+	/*int x = 0, y = 0;
+	DrawGraph(x, y, _gameoverLogoHandle, TRUE);*/
 	return true;
 }
 
 // プレイヤーの位置からスポットライトの中心を更新し、成功したかを返す
 bool ModeGameOver::UpdateSpotCenterFromPlayer()
 {
-	_hasValidSpotCenter = false; // 毎回リセットして、成功したらtrueにする
+	_hasValidSpotCenter = false; // 毎回リセットして、成功したらtrueにする方式
 
 	// オーナーゲームやプレイヤーが存在しない場合は失敗
 	if(!_ownerGame)
@@ -229,7 +228,7 @@ bool ModeGameOver::UpdateSpotCenterFromPlayer()
 	const VECTOR dxWorld = DxlibConverter::VecToDxLib(world);
 	const VECTOR scr = ConvWorldPosToScreenPos(dxWorld);
 
-	// 画面外/失敗対策
+	// 画面外/失敗対策（DXLibは失敗時の値が状況依存なので緩くチェック）
 	if(std::isfinite(scr.x) && std::isfinite(scr.y))
 	{
 		_screenCx = StCas<int>(scr.x);

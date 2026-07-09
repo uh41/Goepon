@@ -14,7 +14,7 @@ public:
 	// 現在のステージIDを取得。未設定/範囲外の場合は空文字を返す
 	const std::string& GetCurrentStageId() const
 	{
-		// 安全策：未設定/範囲外の場合は空文字を返す
+		// 未設定/範囲外の場合は空文字を返す
 		static const std::string empty;
 		if (_stages.empty() || _index >= _stages.size())
 		{

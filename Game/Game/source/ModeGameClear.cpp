@@ -10,11 +10,12 @@ bool ModeGameClear::Initialize()
 
 	if(gGlobal._soundServer)
 	{
-		// 全BGMを停止
+		// 全BGMを停止（既存）
 		gGlobal._soundServer->StopType(soundserver::SoundItemBase::TYPE::BGM);
 
-		_handle = LoadGraph(ui::Gameclear); 
+		_handle = LoadGraph(ui::Gameclear);
 
+		// ここで StopType(BGM) すると、演出で鳴らしたクリアBGMまで止まってしまうので止めない
 		if(auto s = gGlobal._soundServer->Get("bgminitialize"))
 		{
 			s->Stop();
@@ -45,9 +46,8 @@ bool ModeGameClear::Terminate()
 bool ModeGameClear::Process()
 {
 	base::Process();
-	// クリア画面が出ている間はほかのレイヤーを止める
+	// クリア画面が出ている間は「そのほかのレイヤー」を止める
 	ModeServer::GetInstance()->SkipProcessUnderLayer();
-
 	// キー取得
 	int trg = ApplicationBase::GetInstance()->GetTrg();
 
@@ -55,8 +55,6 @@ bool ModeGameClear::Process()
 	{
 		// 現在のステージIDを保存
 		std::string currentStageId = "Stage1"; // デフォルトのステージID
-
-		// オーナーゲームから現在のステージIDを取得して保存しておく
 		if (_ownerGame)
 		{
 			auto* game = dynamic_cast<ModeGame*>(_ownerGame);
@@ -82,17 +80,18 @@ bool ModeGameClear::Process()
 			}
 		}
 
-		//　"game" で登録されているモードがあれば削除予約
+		// 名前"game" で登録されているモードがあれば削除予約
 		ModeBase* existing = ModeServer::GetInstance()->Get("game");
 		if (existing)
 		{
 			ModeServer::GetInstance()->Del(existing);
 		}
 
-		// 自分自身を削除予約
+		// 自分自身を削除予約（先に削除して、ModeGameClearLoadが上に来るようにする）
 		ModeServer::GetInstance()->Del(this);
 
-		// 次のステージがある場合は、ゲームクリアロード でロードモードを登録
+		// ModeGameClearLoadを使用してゲームを再ロード
+		// layer を 100 に下げて、確実に上に描画されるようにする
 		if(ModeServer::GetInstance()->Get("gameclearload") == nullptr)
 		{
 			ModeServer::GetInstance()->Add(new ModeGameClearLoad(nullptr, currentStageId), 100, "gameclearload");
