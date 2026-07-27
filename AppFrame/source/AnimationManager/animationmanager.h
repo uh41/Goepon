@@ -1,3 +1,10 @@
+ï»¿/*********************************************************************/
+// * \file   animationmanager.h
+// * \brief  ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹
+// *
+// * \author éˆ´æœ¨è£•ç¨€
+/*********************************************************************/
+
 #pragma once
 
 #include "../container.h"
@@ -8,15 +15,15 @@ class AnimationManager
 public:
 	struct Instance
 	{
-		int id;					// ŠÇ——pID
-		int handle;				// ƒAƒjƒ[ƒVƒ‡ƒ“ƒnƒ“ƒhƒ‹
-		int attachIndex;		// ƒAƒ^ƒbƒ`ƒCƒ“ƒfƒbƒNƒX
-		std::string name;		// ƒAƒjƒ[ƒVƒ‡ƒ“–¼
-		float totalTime;		// ‘Ä¶ŠÔ
-		float playTime;			// Ä¶ŠÔ
-		float speed;			// Ä¶‘¬“x
-		bool loop;				// ƒ‹[ƒvÄ¶‚·‚é‚©‚Ç‚¤‚©
-		bool playing;			// Ä¶’†ƒtƒ‰ƒO
+		int id;					// ç®¡ç†ç”¨ID
+		int handle;				// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒ³ãƒ‰ãƒ«
+		int attachIndex;		// ã‚¢ã‚¿ãƒƒãƒã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		std::string name;		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å
+		float totalTime;		// ç·å†ç”Ÿæ™‚é–“
+		float playTime;			// å†ç”Ÿæ™‚é–“
+		float speed;			// å†ç”Ÿé€Ÿåº¦
+		bool loop;				// ãƒ«ãƒ¼ãƒ—å†ç”Ÿã™ã‚‹ã‹ã©ã†ã‹
+		bool playing;			// å†ç”Ÿä¸­ãƒ•ãƒ©ã‚°
 	};
 
 	static AnimationManager* GetInstance();
@@ -24,31 +31,31 @@ public:
 	AnimationManager();
 	~AnimationManager();
 
-	// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÄ¶
+	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å†ç”Ÿ
 	int Play(int handle, const std::string& name, bool loop = true, float speed = 1.0f);
 
-	// ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~
+	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åœæ­¢
 	void Stop(int id);
 
-	// ‘S‚Ä‚Ìƒ‚ƒfƒ‹‚ÉŠÖ‚·‚é‘SƒAƒjƒ[ƒVƒ‡ƒ“‚ğ’â~
+	// å…¨ã¦ã®ãƒ¢ãƒ‡ãƒ«ã«é–¢ã™ã‚‹å…¨ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åœæ­¢
 	void StopAllModel(int handle);
 
-	// ‘S‚Ä‚ğ’â~
+	// å…¨ã¦ã‚’åœæ­¢
 	bool Terminate();
 
-	// –ˆƒtƒŒ[ƒ€XV
+	// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ æ›´æ–°
 	void Update(float time);
 
-	// Ä¶ŠÔ‚ğİ’è
+	// å†ç”Ÿæ™‚é–“ã‚’è¨­å®š
 	bool SetTime(int id, float time);
 
-	// ˆê’â~/ÄŠJ
-	bool SetPlaying(int id, bool play);// play=true:Ä¶Aplay=false:ˆê’â~
+	// ä¸€æ™‚åœæ­¢/å†é–‹
+	bool SetPlaying(int id, bool play);// play=true:å†ç”Ÿã€play=false:ä¸€æ™‚åœæ­¢
 
-	// Ä¶’†‚©‚Ç‚¤‚©
+	// å†ç”Ÿä¸­ã‹ã©ã†ã‹
 	bool IsPlaying(int id) const;
 
-	// ‘Ä¶ŠÔ‚ğæ“¾
+	// ç·å†ç”Ÿæ™‚é–“ã‚’å–å¾—
 	float GetTotalTime(int id) const;
 
 	float GetPlayTime(int id) const;

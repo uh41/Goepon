@@ -3,8 +3,6 @@
 // * \brief  ボイスクラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/23
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/23
 /*********************************************************************/
 
 #pragma once
@@ -17,7 +15,9 @@ namespace soundserver
 		typedef SoundItemStream base;
 	public:
 		SoundItemVoice(std::string filename, int flag = 0) : base(filename, flag)	{}
+
 		virtual TYPE GetType()override { return TYPE::VOICE; }
+
 		virtual void Play()override
 		{
 			StreamLoad();	// ストリーム再生のものをロードする

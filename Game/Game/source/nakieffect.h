@@ -1,3 +1,10 @@
+/*********************************************************************/
+// * \file   nakieffect.h
+// * \brief  泣き顔エフェクトクラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
 #pragma once
 #include "effectbase.h"
 
@@ -12,10 +19,10 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void PlayEffect(const vec::Vec3& pos);
-	void ResetEffect();
+	void PlayEffect(const vec::Vec3& pos);		// エフェクト再生
+	void ResetEffect();							// エフェクトのリセット
 
 protected:
-	bool _isPlay;
+	bool _isPlay;								// エフェクトが再生中かどうか
 };
 

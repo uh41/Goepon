@@ -1,3 +1,10 @@
+/*********************************************************************/
+// * \file   walkeffect.cpp
+// * \brief  歩きエフェクトクラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
 #include "walkeffect.h"
 #include "playertanuki.h"
 #include "enemysoundmanager.h"
@@ -5,7 +12,7 @@
 WalkEffect::WalkEffect()
 {
 	_playerBase = nullptr;
-	_stepIntervalFrames = 12; // 約0.2秒(60fps想定)。必要なら調整してください。
+	_stepIntervalFrames = 12;
 	_stepCounter = 0;
 	_wasDash = false;
 	Initialize();
@@ -78,6 +85,7 @@ bool WalkEffect::Process()
 		isDash = false; // プレイヤーが PlayerTanuki でない場合はダッシュしていないとみなす
 	}
 
+	// ダッシュ開始時にエフェクトを発生させる
 	if(isDash && !_wasDash)
 	{
 		vec::Vec3 pos = _playerBase->GetPos();

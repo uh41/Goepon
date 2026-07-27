@@ -136,6 +136,12 @@
     <Filter Include="ヘッダー ファイル\エフェクト管理">
       <UniqueIdentifier>{e19e1b89-dc0f-4ab9-8fd4-bad1bce06e3f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\動画管理">
+      <UniqueIdentifier>{7f9190cc-0fed-45b2-8cb8-26b18f57c0fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\動画管理">
+      <UniqueIdentifier>{a3ed3bb9-0339-4f6b-a473-aad3baa9d0ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Application\winmain.cpp">
@@ -184,7 +190,7 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="source\manager\moviemanager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>ソース ファイル\動画管理</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -276,7 +282,7 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="source\manager\moviemanager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>ヘッダー ファイル\動画管理</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

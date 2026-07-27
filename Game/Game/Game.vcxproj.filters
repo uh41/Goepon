@@ -187,9 +187,6 @@
     <ClCompile Include="source\modeinit.cpp">
       <Filter>ソースファイル\ロゴ</Filter>
     </ClCompile>
-    <ClCompile Include="source\modeloading.cpp">
-      <Filter>ソースファイル\ローディング</Filter>
-    </ClCompile>
     <ClCompile Include="source\modemenu.cpp">
       <Filter>ソースファイル\モードゲーム\モードメニュー</Filter>
     </ClCompile>
@@ -251,9 +248,6 @@
     <ClCompile Include="source\TreasureBase.cpp" />
     <ClCompile Include="source\treasureopenui.cpp" />
     <ClCompile Include="source\shirimochieffect.cpp" />
-    <ClCompile Include="source\stuneffect.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\tutorial.cpp" />
     <ClCompile Include="source\TreasureRapidFire.cpp">
       <Filter>ソースファイル</Filter>
@@ -265,9 +259,6 @@
     <ClCompile Include="source\savepointeffect.cpp" />
     <ClCompile Include="source\makimonogeteffect.cpp" />
     <ClCompile Include="source\goaleffect.cpp" />
-    <ClCompile Include="source\treasureopen.cpp">
-      <Filter>ソースファイル</Filter>
-    </ClCompile>
     <ClCompile Include="source\modeGameCinematic.cpp" />
     <ClCompile Include="source\UiMakimonoCnt.cpp">
       <Filter>ソースファイル\UI関連\巻物の所持数</Filter>
@@ -302,6 +293,12 @@
     <ClCompile Include="source\markermanager.cpp" />
     <ClCompile Include="source\playermanager.cpp" />
     <ClCompile Include="source\playerform.cpp" />
+    <ClCompile Include="source\stuneffect.cpp">
+      <Filter>ソースファイル\モードゲーム\エフェクトベース\スタンエフェクト</Filter>
+    </ClCompile>
+    <ClCompile Include="source\treasureopen.cpp">
+      <Filter>ソースファイル\モードゲーム\エフェクトベース\お宝開きエフェクト</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\applicationglobal.h" />
@@ -373,9 +370,6 @@
     <ClInclude Include="source\TreasureBase.h" />
     <ClInclude Include="source\treasureopenui.h" />
     <ClInclude Include="source\shirimochieffect.h" />
-    <ClInclude Include="source\stuneffect.h">
-      <Filter>ヘッダーファイル</Filter>
-    </ClInclude>
     <ClInclude Include="source\tutorial.h" />
     <ClInclude Include="source\TreasureRapidFire.h">
       <Filter>ヘッダーファイル</Filter>
@@ -425,6 +419,9 @@
     <ClInclude Include="source\markermanager.h" />
     <ClInclude Include="source\playermanager.h" />
     <ClInclude Include="source\playerform.h" />
+    <ClInclude Include="source\stuneffect.h">
+      <Filter>ヘッダーファイル\モードゲーム\エフェクトベース\スタンエフェクト</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resource.py" />
@@ -547,9 +544,6 @@
     </ClInclude>
     <ClInclude Include="source\modeinit.h">
       <Filter>ヘッダーファイル\ロゴ</Filter>
-    </ClInclude>
-    <ClInclude Include="source\modeloading.h">
-      <Filter>ヘッダーファイル\ローディング</Filter>
     </ClInclude>
     <ClInclude Include="source\modemenu.h">
       <Filter>ヘッダーファイル\モードゲーム\メニュー</Filter>
@@ -1014,6 +1008,15 @@
     </Filter>
     <Filter Include="ソースファイル\UI関連\お宝状況">
       <UniqueIdentifier>{5b95ffbe-2e59-48aa-a844-8d77c876033b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダーファイル\モードゲーム\エフェクトベース\スタンエフェクト">
+      <UniqueIdentifier>{79899ecd-7735-4ee2-8884-9d5ee188bc1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\スタンエフェクト">
+      <UniqueIdentifier>{06cbf7cd-82b8-4246-a35f-25627619d7f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\お宝開きエフェクト">
+      <UniqueIdentifier>{6312f554-8bbb-4d22-a4e2-165c2766c9bf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

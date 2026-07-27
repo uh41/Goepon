@@ -3,14 +3,11 @@
 // * \brief  ストリーム再生クラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/23
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/23
 /*********************************************************************/
 
 #pragma once
 #include "sounditembase.h"
 
-// ストリーミング再生クラス
 namespace soundserver
 {
 	class SoundItemStream : public SoundItemBase
@@ -24,6 +21,7 @@ namespace soundserver
 		virtual bool IsLoad() override { return true; }		// ストリーム再生のものは、ロードされているものとする
 
 	protected:
+		// ストリーム再生のものは、ロードされているものとする
 		void StreamLoad()
 		{
 			if(_iSoundHandle == -1)
@@ -38,6 +36,7 @@ namespace soundserver
 			}
 		}
 
+		// ストリーム再生のものは、再生していなかったらメモリからアンロードする
 		virtual void Update()
 		{
 			if(_iSoundHandle != -1)

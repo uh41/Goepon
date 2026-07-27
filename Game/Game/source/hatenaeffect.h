@@ -1,3 +1,10 @@
+/*********************************************************************/
+// * \file   hatenaeffect.h
+// * \brief  ハテナエフェクトクラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
 #pragma once
 #include "effectbase.h"
 #include "enemybase.h"
@@ -13,7 +20,7 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	void Enemy(at::vspc<EnemyBase>& enemy) { _enemy = enemy; }
+	void Enemy(at::vspc<EnemyBase>& enemy) { _enemy = enemy; }// 敵のリストを設定
 
 	// 1回だけ再生
 	void PlayOnce(EnemyBase* enemy);

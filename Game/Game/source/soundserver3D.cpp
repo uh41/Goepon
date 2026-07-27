@@ -1,9 +1,16 @@
+/*********************************************************************/
+// * \file   soundserver3D.cpp
+// * \brief  3D音源管理クラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
 #include "soundserver3D.h"
 
 SoundServer3D::SoundServer3D(at::spc<soundserver::SoundServer> soundServer)
 {
 	_soundServer = soundServer;
-	_radius = 768.0f;
+	_radius = sound::DEFAULT_RADIUS;
 }
 
 void SoundServer3D::SetRadius(float rad)
@@ -40,7 +47,7 @@ void SoundServer3D::PlayLoopSound3D(void* key, const std::string& soundId, const
 		// 敵ごとに個別のハンドルを作成（メモリ読み込みモード）
 		instance.handle = LoadSoundMem(filename.c_str());
 
-		SetCreate3DSoundFlag(FALSE);
+		SetCreate3DSoundFlag(FALSE);// 3Dサウンドフラグを元に戻す
 	}
 
 	// 複製ハンドルを使って再生チェック
@@ -83,6 +90,7 @@ void SoundServer3D::StopAll()
 	_instance.clear();
 }
 
+
 void SoundServer3D::Apply3D(VoiceInstance& instance, const vec::Vec3& pos) const
 {
 	if(instance.handle == -1)
@@ -90,6 +98,6 @@ void SoundServer3D::Apply3D(VoiceInstance& instance, const vec::Vec3& pos) const
 		return;
 	}
 
-	Set3DRadiusSoundMem(instance.radius, instance.handle);
-	Set3DPositionSoundMem(DxlibConverter::VecToDxLib(pos), instance.handle);
+	Set3DRadiusSoundMem(instance.radius, instance.handle);// 3D音源の半径を設定
+	Set3DPositionSoundMem(DxlibConverter::VecToDxLib(pos), instance.handle);// 3D音源の位置を設定
 }

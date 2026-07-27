@@ -3,8 +3,6 @@
 // * \brief  自分用の数学関数
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -20,33 +18,6 @@
 constexpr float GRAVITY_COEFFICIENT = 7.5625f; // 自由落下の係数
 namespace mymath
 {
-
-	// 当たり判定用構造体
-	struct COLLISIONCAPSULE
-	{
-		VECTOR underPos;		// カプセルの下端座標
-		VECTOR overPos;			// カプセルの上端座標
-		float r;				// カプセルの半径
-		int modelHandle;		// 追従させるモデルのハンドル
-		int frameNum;			// 追従させるモデルのフレーム番号
-	};
-
-	// 攻撃判定用構造体
-	struct ATTACKCOLLISION
-	{
-		COLLISIONCAPSULE capsule; // 攻撃判定用カプセル
-		COLLISIONCAPSULE oldCapsule; // 1フレーム前の攻撃判定用カプセル
-		std::string attackChara; // 攻撃をしたキャラクターの名前
-		MATRIX modelId; // 1フレーム前の追従させるモデルのフレーム変換行列
-		VECTOR vector;	// 攻撃の向き
-		float damage;	// ダメージ量
-		int waitTime;	// 攻撃が有効になるまでの時間
-		int activeTime;	// 攻撃が有効な時間
-		bool follow;	// カメラ方向に追従するかどうか
-		bool isHit = false;		// 当たったかどうか
-	};
-
-
 	// AABB(軸に平行な境界ボックス)構造体
 	struct AABB
 	{

@@ -3,13 +3,11 @@
 // * \brief  デバックメニュークラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
 #include "appframe.h"
-#include "modeeffekseer.h"
+//#include "modeeffekseer.h"
 #include "modegame.h"
 
 #ifdef _DEBUG
@@ -106,7 +104,7 @@ public:
 			return 1; // メニューを閉じる
 		}
 		// ModeGameより上のレイヤーに登録する
-		ModeServer::GetInstance()->Add(NEW ModeEffekseer(), 100, "effectsample");
+		//ModeServer::GetInstance()->Add(NEW ModeEffekseer(), 100, "effectsample");
 		// フラグを立ててメニューを閉じる
 		game->SetEffekseerLaunched(true);
 		return 1; // メニューを閉じる

@@ -3,13 +3,11 @@
 // * \brief  コンテナ用とDXライブラリ
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #include "dxlib.h"
 #include "EffekseerForDXLib.h"
-#include <nlohmann/json.hpp>	// VC++ includeディレクトリに $(ProjectDir)include 指定
+#include <nlohmann/json.hpp>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

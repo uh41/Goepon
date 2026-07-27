@@ -3,20 +3,16 @@
 // * \brief  サウンドベースクラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/23
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/23
 /*********************************************************************/
 
 #pragma once
 #include "../container.h"
 
-// forward declare SoundServer in the soundserver namespace to avoid circular include
 namespace soundserver
 {
 	class SoundServer;
 }
 
-// サウンドアイテム基底クラス
 namespace soundserver
 {
 	class SoundItemBase
@@ -37,38 +33,38 @@ namespace soundserver
 
 		void SetSoundServer(soundserver::SoundServer* soundserver) { _soundServer = soundserver; }
 
-		virtual void Unload();						// サウンドのアンロード
-		virtual bool IsLoad();						// サウンドがロードされているか？
-		virtual void Play() = 0;					// サウンドの再生
-		virtual bool IsPlay();						// サウンドが再生中か？
-		virtual void Stop();						// サウンドの停止
+		virtual void Unload();										// サウンドのアンロード
+		virtual bool IsLoad();										// サウンドがロードされているか？
+		virtual void Play() = 0;									// サウンドの再生
+		virtual bool IsPlay();										// サウンドが再生中か？
+		virtual void Stop();										// サウンドの停止
 
 		virtual int GetVolume() { return _iVolume; }				// ボリューム取得
 		virtual int GetPan() { return _iPan; }						// パン取得
-		virtual int GetFrequency() { return _iFrequency; }					// 周波数取得
-		virtual void SetVolume(int volume);			// ボリューム設定
-		virtual void SetPan(int pan);				// パン設定
-		virtual void SetFrequency(int frequency);	// 周波数設定
-		virtual void ResetFrequency();				// 周波数リセット
+		virtual int GetFrequency() { return _iFrequency; }			// 周波数取得
+		virtual void SetVolume(int volume);							// ボリューム設定
+		virtual void SetPan(int pan);								// パン設定
+		virtual void SetFrequency(int frequency);					// 周波数設定
+		virtual void ResetFrequency();								// 周波数リセット
 
-		virtual TYPE GetType() = 0;					// サウンドタイプ取得
-		virtual std::string GetFileName() { return _sFileName; } // ファイル名取得
-		virtual int GetSoundHandle() { return _iSoundHandle; } // サウンドハンドル取得
+		virtual TYPE GetType() = 0;									// サウンドタイプ取得
+		virtual std::string GetFileName() { return _sFileName; }	// ファイル名取得
+		virtual int GetSoundHandle() { return _iSoundHandle; }		// サウンドハンドル取得
 
-		virtual void Update() {};					// サウンドの更新
+		virtual void Update() {};									// サウンドの更新
 
 	protected:
-		virtual void  PlayMem(int flat);			// メモリからサウンド再生
-		virtual int LoadMem(std::string filename);						// メモリからサウンドロード
+		virtual void  PlayMem(int flat);							// メモリからサウンド再生
+		virtual int LoadMem(std::string filename);					// メモリからサウンドロード
 
 
-		int	_iSoundHandle; // サウンドハンドル
-		std::string _sFileName; // ファイル名
-		int	_iFlag;	 // フラグ
-		int	_iVolume; // ボリューム
-		int	_iPan;	 // パン
-		int _iFrequency; // 周波数
-		soundserver::SoundServer* _soundServer; // サウンドサーバー
+		int	_iSoundHandle;							// サウンドハンドル
+		std::string _sFileName;						// ファイル名
+		int	_iFlag;									// フラグ
+		int	_iVolume;								// ボリューム
+		int	_iPan;									// パン
+		int _iFrequency;							// 周波数
+		soundserver::SoundServer* _soundServer;		// サウンドサーバー
 	};
 }
 

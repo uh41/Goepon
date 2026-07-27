@@ -1,3 +1,10 @@
+/*********************************************************************/
+// * \file   collisionmanager.cpp
+// * \brief  “–‚½‚è”»’è—pŠÇ—ƒNƒ‰ƒX
+// *
+// * \author —é–Ø—T‹H
+/*********************************************************************/
+
 #include "collisionmanager.h"
 #include "../aliastemplate.h"
 #include "../mymath.h"

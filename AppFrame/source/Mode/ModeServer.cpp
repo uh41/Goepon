@@ -3,8 +3,6 @@
 // * \brief  モードサーバークラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #include "../container.h"
@@ -212,9 +210,6 @@ const char *ModeServer::GetName(int uid)
 {
 	return GetName(Get(uid));
 }
-
-
-
 
 // プロセスを回すための初期化
 int ModeServer::ProcessInit()

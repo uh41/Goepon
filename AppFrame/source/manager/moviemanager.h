@@ -1,7 +1,18 @@
-#pragma once
+/*********************************************************************/
+// * \file   moviemanager.h
+// * \brief  ムービー管理クラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
 
+#pragma once
 #include "../container.h"
 #include "../aliastemplate.h"
+
+namespace movie
+{
+	static constexpr int MOVIE_STATE_PLAY = 1;
+}
 
 class MovieManager
 {

@@ -3,8 +3,6 @@
 // * \brief  モードベースクラス
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容: 新規作成 鈴木裕稀　2025/12/15
 /*********************************************************************/
 
 #pragma once
@@ -12,14 +10,6 @@
 #include "../gameconfig.h"
 
 class ModeServer;
-
-//namespace fade
-//{
-//	static constexpr auto FADE_FRAME = 60;
-//	static constexpr auto FADE_WAIT = 60;
-//	static constexpr auto FADE_OUT_WAIT = 30;
-//}
-
 
 namespace
 {
@@ -102,9 +92,9 @@ public:
 	unsigned long GetStepTm() { return _tmStep; }	// 前フレームからの経過時間ms
 
 	void SetCallPerFrame(int frame) { _callPerFrame = _callPerFrameCnt = frame; }	// 何フレームに1回Process()を呼ぶか(def:1)
-	void SetCallOfCount(int count) { _callOfCount = count; }		// 1回の呼び出しに何回Process()を呼ぶか(def:1)
-	int GetCallPerFrame() { return _callPerFrame; }
-	int GetCallOfCount() { return _callOfCount; }
+	void SetCallOfCount(int count) { _callOfCount = count; }						// 1回の呼び出しに何回Process()を呼ぶか(def:1)
+	int GetCallPerFrame() { return _callPerFrame; }									// 何フレームに1回Process()を呼ぶか(def:1)
+	int GetCallOfCount() { return _callOfCount; }									// 1回の呼び出しに何回Process()を呼ぶか(def:1)
 
 private:
 	friend	ModeServer;

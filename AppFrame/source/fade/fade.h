@@ -1,3 +1,10 @@
+/*********************************************************************/
+// * \file   fade.h
+// * \brief  フェードクラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
 #pragma once
 #include "../container.h"
 #include "../aliastemplate.h"
@@ -19,8 +26,8 @@ public:
 	// 指定の色のカラーマスク
 	void ColorMask(int R, int G, int B, int alpha);
 
-	void FadeIn(float frame);
-	void FadeOut(int R, int G, int B, float frame);
+	void FadeIn(float frame);// 現在のカラーマスクからフェードイン
+	void FadeOut(int R, int G, int B, float frame);// 指定の色にフェードアウト
 
 	bool IsFade();		// フェード中かどうか
 

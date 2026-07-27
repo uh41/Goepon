@@ -107,6 +107,7 @@ bool TreasureEffect::Process()
 				break;
 			}
 		}
+		// ‘¶Ý‚µ‚È‚¢‚È‚çíœ
 		if(!isInTreasureList)
 		{
 			const int playHandle = it->second;
@@ -127,12 +128,12 @@ bool TreasureEffect::Process()
 
 void TreasureEffect::StopEffect(TreasureBase* treasure)
 {
-	if(!treasure) return;
+	if(!treasure) { return; }
 	auto em = EffekseerManager::GetInstance();
-	if(!em) return;
+	if(!em) { return; }
 
 	auto it = _playHandles.find(treasure);
-	if(it == _playHandles.end()) return;
+	if(it == _playHandles.end()) { return; }
 
 	int& playHandle = it->second;
 	if(playHandle != -1)

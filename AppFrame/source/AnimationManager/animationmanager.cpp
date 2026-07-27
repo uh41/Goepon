@@ -1,3 +1,11 @@
+﻿/*********************************************************************/
+// * \file   animationmanager.h
+// * \brief  アニメーション管理クラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
+
 #include "animationmanager.h"
 
 AnimationManager* AnimationManager::GetInstance()
@@ -8,7 +16,7 @@ AnimationManager* AnimationManager::GetInstance()
 
 AnimationManager::AnimationManager()
 {
-	_nextId = 1;
+	_nextId = 1;// 管理用IDの初期値を1に設定
 }
 
 AnimationManager::~AnimationManager()
@@ -18,6 +26,7 @@ AnimationManager::~AnimationManager()
 
 bool AnimationManager::Terminate()
 {
+	// 全てのアニメーションインスタンスをデタッチ
 	for(auto& anim : _animInstance)
 	{
 		DetachInstance(anim.first);
@@ -33,32 +42,35 @@ int AnimationManager::Play(int handle, const std::string& name, bool loop, float
 		return -1;
 	}
 
-	// �A�j���[�V�����C���f�b�N�X�擾
+	// アニメーションインデックス取得
 	int animIdx = MV1GetAnimIndex(handle, name.c_str());
 	if(animIdx == -1)
 	{
 		return -1;
 	}
 
-	// �A�^�b�`�C���f�b�N�X�擾
+	// アタッチインデックス取得
 	int attachIndex = MV1AttachAnim(handle, animIdx);
 	if(attachIndex == -1)
 	{
 		return -1;
 	}
 
+	// 総再生時間取得
 	float total = StCas<float>(MV1GetAttachAnimTotalTime(handle, attachIndex));
 	if(total <= 0.0f)
 	{
 		return -1;
 	}
 
+	// アニメーションインスタンス作成
 	return CreateInstance(handle, attachIndex, name, total, loop, speed);
 
 }
 
 void AnimationManager::Stop(int id)
 {
+	// アニメーションインスタンスをデタッチして削除
 	auto it = _animInstance.find(id);
 	if(it != _animInstance.end())
 	{
@@ -69,6 +81,7 @@ void AnimationManager::Stop(int id)
 
 void AnimationManager::StopAllModel(int handle)
 {
+	// 指定ハンドルのアニメーションインスタンスを全てデタッチして削除
 	for(auto it = _animInstance.begin(); it != _animInstance.end(); )
 	{
 		if(it->second.handle == handle)
@@ -83,9 +96,10 @@ void AnimationManager::StopAllModel(int handle)
 	}
 }
 
-// �A�j���[�V�����C���X�^���X�̃f�^�b�`
+// アニメーションインスタンスのデタッチ
 void AnimationManager::DetachInstance(int id)
 {
+	// 指定IDのアニメーションインスタンスを検索
 	auto it = _animInstance.find(id);
 	if(it == _animInstance.end())
 	{
@@ -93,7 +107,7 @@ void AnimationManager::DetachInstance(int id)
 	}
 
 	Instance& instance = it->second;
-	// MV1�̃f�^�b�`
+	// MV1のデタッチ
 	if(instance.attachIndex != -1 && instance.handle != -1)
 	{
 		MV1DetachAnim(instance.handle, instance.attachIndex);
@@ -107,10 +121,11 @@ void AnimationManager::Update(float time)
 		return;
 	}
 
+	// アニメーションインスタンスの更新
 	for(auto it = _animInstance.begin(); it != _animInstance.end();)
 	{
 		Instance& instance = it->second;
-		// �Đ����łȂ���΃X�L�b�v
+		// 再生中でなければスキップ
 		if(!instance.playing)
 		{
 			++it;
@@ -119,13 +134,13 @@ void AnimationManager::Update(float time)
 
 		instance.playTime += time * instance.speed;
 
-		// �Đ����Ԃ����Đ����Ԃ𒴂�����
+		// 再生時間が総再生時間を超えたら
 		if(instance.totalTime > 0.0f && instance.playTime >= instance.totalTime)
 		{
-			// ���[�v�Đ��Ȃ�Đ����Ԃ𒲐�
+			// ループ再生なら再生時間を調整
 			if(instance.loop)
 			{
-				instance.playTime = std::fmod(instance.playTime, instance.totalTime); // ���[�v�Đ�(std::fmod�ŗ]����擾)
+				instance.playTime = std::fmod(instance.playTime, instance.totalTime); // ループ再生(std::fmodで余りを取得)
 				if(instance.playTime < 0.0f)
 				{
 					instance.playing = 0.0f;
@@ -133,7 +148,7 @@ void AnimationManager::Update(float time)
 			}
 			else
 			{
-				// �Đ��I��
+				// 再生終了
 				MV1SetAttachAnimTime(instance.handle, instance.attachIndex, instance.totalTime);
 				MV1DetachAnim(instance.handle, instance.attachIndex);
 				it = _animInstance.erase(it);
@@ -141,7 +156,7 @@ void AnimationManager::Update(float time)
 			}
 		}
 
-		// �Đ����Ԑݒ�
+		// 再生時間設定
 		MV1SetAttachAnimTime(instance.handle, instance.attachIndex, instance.playTime);
 		++it;
 	}
@@ -149,6 +164,7 @@ void AnimationManager::Update(float time)
 
 bool AnimationManager::SetTime(int id, float time)
 {
+	// 指定IDのアニメーションインスタンスを検索
 	auto it = _animInstance.find(id);
 	if(it == _animInstance.end())
 	{
@@ -158,19 +174,19 @@ bool AnimationManager::SetTime(int id, float time)
 	Instance& instance = it->second;
 	instance.playTime = time;
 
-	// �Đ����Ԑݒ�
+	// 再生時間設定
 	if(instance.playTime < 0.0f)
 	{
-		instance.playTime = 0.0f;	// ���̒l��0�ɕ␳
+		instance.playTime = 0.0f;	// 負の値は0に補正
 	}
 
-	// �Đ����Ԃ����Đ����Ԃ𒴂�����
+	// 再生時間が総再生時間を超えたら
 	if(instance.totalTime > 0.0f && instance.playTime > instance.totalTime)
 	{
-		// ���[�v�Đ��Ȃ�Đ����Ԃ𒲐�
+		// ループ再生なら再生時間を調整
 		if(instance.loop)
 		{
-			instance.playTime = std::fmod(instance.playTime, instance.totalTime); // ���[�v�Đ�(std::fmod�ŗ]����擾)
+			instance.playTime = std::fmod(instance.playTime, instance.totalTime); // ループ再生(std::fmodで余りを取得)
 			if(instance.playTime < 0.0f)
 			{
 				instance.playTime += instance.totalTime;
@@ -178,7 +194,7 @@ bool AnimationManager::SetTime(int id, float time)
 		}
 		else
 		{
-			instance.playTime = instance.totalTime; // ���Đ����Ԃ𒴂����瑍�Đ����Ԃɕ␳
+			instance.playTime = instance.totalTime; // 総再生時間を超えたら総再生時間に補正
 		}
 	}
 
@@ -187,7 +203,7 @@ bool AnimationManager::SetTime(int id, float time)
 	return true;
 }
 
-// �ꎞ��~/�ĊJ
+// 一時停止/再開
 bool AnimationManager::SetPlaying(int id, bool play)
 {
 	auto it = _animInstance.find(id);
@@ -196,11 +212,11 @@ bool AnimationManager::SetPlaying(int id, bool play)
 		return false;
 	}
 
-	it->second.playing = play;// �Đ���Ԑݒ�
+	it->second.playing = play;// 再生状態設定
 	return true;
 }
 
-// �Đ������ǂ���
+// 再生中かどうか
 bool AnimationManager::IsPlaying(int id) const
 {
 	auto it = _animInstance.find(id);
@@ -214,16 +230,16 @@ bool AnimationManager::IsPlaying(int id) const
 int AnimationManager::CreateInstance(int handle, int attachindex, const std::string& name,float totaltime, bool loop, float speed)
 {
 	Instance instance;
-	instance.id = _nextId++;
-	instance.handle = handle;
-	instance.attachIndex = attachindex;
-	instance.name = name;
-	instance.totalTime = totaltime;
-	instance.playTime = 0.0f;
-	instance.speed = speed;
-	instance.loop = loop;
-	instance.playing = true;
-	_animInstance[instance.id] = instance;
+	instance.id = _nextId++;				
+	instance.handle = handle;				
+	instance.attachIndex = attachindex;		
+	instance.name = name;					
+	instance.totalTime = totaltime;			
+	instance.playTime = 0.0f;				
+	instance.speed = speed;					
+	instance.loop = loop;					
+	instance.playing = true;				
+	_animInstance[instance.id] = instance;	
 	return instance.id;
 }
 

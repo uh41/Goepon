@@ -1,12 +1,9 @@
 ﻿/*********************************************************************/
 // * \file   soundserver.cpp
-// * \brief  サウンドサーバー
+// * \brief  サウンドサーバークラス
 // *
-// * \author ��ؗT�H
-// * \date   2025/12/23
-// * \��Ɠ�e: �V�K�쐬 ��ؗT�H�@2025/12/23
+// * \author 鈴木裕稀
 /*********************************************************************/
-
 
 #include "soundserver.h"
 #include "sounditembase.h"
@@ -78,10 +75,7 @@ void soundserver::SoundServer::Add(SoundItemOneShot* oneshot)
 
 void soundserver::SoundServer::Add(std::string name, at::spc<SoundItemBase> sound)
 {
-    // NOTE:
-    // 以前は &sound を格納していたためスタック参照が残り、Get 時に不正になっていました。
-    // マップは動的確保した at::spc<SoundItemBase>* を保持する設計になっているため、
-    // ここで new して格納します（Del では delete する実装と整合）。
+   
     at::spc<SoundItemBase>* stored = NEW at::spc<SoundItemBase>(sound);
 
     // 挿入先マップを決定し、既存のエントリがあれば先に delete してから上書きする
@@ -143,10 +137,9 @@ bool soundserver::SoundServer::Del(std::string name)
     {
         return Del(_v[name]->get());
     }
-    // もし _vAdd に存在する可能性があるならそこもチェックして削除する
     if(_vAdd.count(name) > 0)
     {
-        // _vAdd はまだ所有権を移す必要はなく直接 delete して消す
+        
         delete _vAdd[name];
         _vAdd.erase(name);
         return true;
@@ -199,7 +192,8 @@ void soundserver::SoundServer::Update()
     }
     _vAdd.clear();
 
-    _bIsUpdate = true;
+	_bIsUpdate = true;// 更新中フラグを立てる
+	// _v の各要素の Update() を呼ぶ
     for(auto&& e : _v)
     {
         if(e.second && e.second->get())
@@ -209,8 +203,7 @@ void soundserver::SoundServer::Update()
     }
     _bIsUpdate = false;
 
-    // _vDel は Del() 呼び出し時点で _v から所有権を移しているので
-    // ここで実際に解放する（double-free を避けるため delete 一回のみにする）
+	// _vDel に入っている要素を delete してからクリアする
     for(auto&& e : _vDel)
     {
         if(e.second)

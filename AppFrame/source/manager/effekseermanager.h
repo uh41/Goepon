@@ -1,3 +1,10 @@
+/*********************************************************************/
+// * \file   effekseermanager.cpp
+// * \brief  エフェクシア管理クラス
+// *
+// * \author 鈴木裕稀
+/*********************************************************************/
+
 #pragma once
 #include "../container.h"
 #include "../mymath/vectorconverter.h"
@@ -67,6 +74,7 @@ public:
 	// スケール設定
 	bool SetScaleEffect(int handle, float scale);
 
+	// マトリクス設定
 	bool SetEffectMatrix(int handle, const Effekseer::Matrix43& mat);
 
 	void Update();	// 更新
@@ -119,8 +127,6 @@ private:
 	bool _initialize;
 
 	at::umtc<std::string, int> _effect; // エフェクトパスとハンドルのマップ
-
-	//pause 復帰のために、速度を保持
 	at::umtt<int, float> _effectSpeed; // エフェクトハンドルと速度のマップ
 	at::umtt<int, vec::Vec3> _effectRotation; // エフェクトハンドルと回転のマップ
 	at::umtt<int, vec::Vec3> _effectPos; // エフェクトハンドルと位置のマップ

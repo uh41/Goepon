@@ -26,7 +26,9 @@
     <ClInclude Include="source\charabase.h" />
     <ClInclude Include="source\CinematicCamera.h" />
     <ClInclude Include="source\CounterUi.h" />
-    <ClInclude Include="source\cube.h" />
+    <ClInclude Include="source\cube.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="source\DashUi.h" />
     <ClInclude Include="source\doyaeffect.h" />
     <ClInclude Include="source\effectbase.h" />
@@ -64,7 +66,9 @@
     <ClInclude Include="source\Light.h" />
     <ClInclude Include="source\map.h" />
     <ClInclude Include="source\menuitembase.h" />
-    <ClInclude Include="source\modeeffekseer.h" />
+    <ClInclude Include="source\modeeffekseer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="source\modegame.h" />
     <ClInclude Include="source\modemenu.h" />
     <ClInclude Include="source\modeopscenario.h" />
@@ -113,7 +117,9 @@
     <ClCompile Include="source\charabase.cpp" />
     <ClCompile Include="source\CinematicCamera.cpp" />
     <ClCompile Include="source\CounterUi.cpp" />
-    <ClCompile Include="source\cube.cpp" />
+    <ClCompile Include="source\cube.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="source\DashUi.cpp" />
     <ClCompile Include="source\doyaeffect.cpp" />
     <ClCompile Include="source\effectbase.cpp" />
@@ -152,7 +158,9 @@
     <ClCompile Include="source\Light.cpp" />
     <ClCompile Include="source\map.cpp" />
     <ClCompile Include="source\menuitembase.cpp" />
-    <ClCompile Include="source\modeeffekseer.cpp" />
+    <ClCompile Include="source\modeeffekseer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="source\modegame.cpp" />
     <ClCompile Include="source\modegamecollision.cpp" />
     <ClCompile Include="source\modegamedebug.cpp" />

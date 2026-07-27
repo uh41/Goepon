@@ -3,8 +3,6 @@
 // * \brief  BGMÄ¶ƒNƒ‰ƒX
 // *
 // * \author —é–Ø—T‹H
-// * \date   2025/12/23
-// * \ì‹Æ“à—e: V‹Kì¬ —é–Ø—T‹H@2025/12/23
 /*********************************************************************/
 
 #pragma once
@@ -20,8 +18,11 @@ namespace soundserver
 	{
 		typedef SoundItemStream base;
 	public:
+
 		SoundItemBGM(std::string filename, int flag = 0) : base(filename, flag)	{}
+
 		virtual TYPE GetType()override { return TYPE::BGM; }
+
 		virtual void Play()override
 		{
 			if(_soundServer)

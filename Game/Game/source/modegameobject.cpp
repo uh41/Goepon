@@ -3,14 +3,11 @@
 // * \brief  モードゲームクラス(オブジェクト初期化)
 // *
 // * \author 鈴木裕稀
-// * \date   2025/12/15
-// * \作業内容	: 新規作成 鈴木裕稀　2025/12/15
-//				: UI HP追加	鈴木裕稀 2026/01/06
 /*********************************************************************/
 
 #include "modegame.h"
 #include "player.h"
-#include "cube.h"
+//#include "cube.h"
 #include "map.h"
 #include "PlayerFactory.h"
 #include "effectmanager.h"
