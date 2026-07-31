@@ -700,9 +700,6 @@
     <Filter Include="ソースファイル\モードゲーム\エフェクトベース">
       <UniqueIdentifier>{ad7bae16-15a7-4198-8006-79f55466e6f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソースファイル\モードゲーム\エフェクトベース\汗エフェクト">
-      <UniqueIdentifier>{10c6067a-5964-47e6-b299-787a697b76a8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソースファイル\モードゲーム\エフェクトベース\ドヤエフェクト">
       <UniqueIdentifier>{6bb772f1-eab0-4666-92c9-d49d857dd346}</UniqueIdentifier>
     </Filter>

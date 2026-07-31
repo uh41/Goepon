@@ -21,8 +21,9 @@ public:
 	virtual bool Process() override;
 	virtual bool Render() override;
 
-	virtual bool StopPlaying() override;
+	virtual bool StopPlaying() override;// エフェクト停止
 
+	// 敵のリストを設定
 	void SetEnemy(at::vspc<EnemyBase> enemy) { _enemy = enemy; }
 
 	void PlayOnce(EnemyBase* enemy); // 敵ごとにエフェクトを再生する

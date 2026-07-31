@@ -1,8 +1,8 @@
-/*********************************************************************/
+ï»¿/*********************************************************************/
 // * \file   effectmanager.h
-// * \brief  ƒGƒtƒFƒNƒgŠÇ—ƒNƒ‰ƒX
+// * \brief  ã‚¨ãƒ•ã‚§ã‚¯ãƒˆç®¡ç†ã‚¯ãƒ©ã‚¹
 // *
-// * \author —é–Ø—T‹H
+// * \author éˆ´æœ¨è£•ç¨€
 /*********************************************************************/
 
 #pragma once
@@ -30,61 +30,61 @@ class EnemyBase;
 class EffectManager
 {
 public:
-	static bool Initialize(); // ‰Šú‰»
-	static bool Terminate();  // I—¹ˆ—
+	static bool Initialize(); // åˆæœŸåŒ–
+	static bool Terminate();  // çµ‚äº†å‡¦ç†
 
-	static WalkEffect* GetWalkEffect(); // ‘«ÕƒGƒtƒFƒNƒg‚ğæ“¾
-	static DoyaEffect* GetDoyaEffect();   // ƒhƒ„ŠçƒGƒtƒFƒNƒg‚ğæ“¾
-	static NakiEffect* GetNakiEffect();   // ‹ƒ‚«ƒGƒtƒFƒNƒg‚ğæ“¾
-	static ShirimochiEffect* GetShirimochiEffect(); // ‚µ‚è‚à‚¿ƒGƒtƒFƒNƒg‚ğæ“¾
-	static SavePointEffect* GetSavePointEffect(); // ƒZ[ƒuƒ|ƒCƒ“ƒgƒGƒtƒFƒNƒg‚ğæ“¾
-	static GoalEffect* GetGoalEffect(); // ƒS[ƒ‹ƒGƒtƒFƒNƒg‚ğæ“¾
-	static HatenaEffect* GetHatenaEffect(); // ‚Í‚Ä‚ÈƒGƒtƒFƒNƒg‚ğæ“¾
-	static TreasureEffect* GetTreasureEffect(); // •ó” ƒGƒtƒFƒNƒg‚ğæ“¾
-	static ShirimochiEffect* GetEnemyReturnEffect();  // “G‚ª‰ŠúˆÊ’u‚É–ß‚éƒGƒtƒFƒNƒg
-	static StunEffect* GetEnemyStunEffect();// “G‚ÌƒXƒ^ƒ“ƒGƒtƒFƒNƒg
-	static TreasureopenEffect* GetTreasureOpenEffect(); // •ó” ƒI[ƒvƒ“ƒGƒtƒFƒNƒg‚ğæ“¾
+	static WalkEffect* GetWalkEffect(); // è¶³è·¡ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static DoyaEffect* GetDoyaEffect();   // ãƒ‰ãƒ¤é¡”ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static NakiEffect* GetNakiEffect();   // æ³£ãã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static ShirimochiEffect* GetShirimochiEffect(); // ã—ã‚Šã‚‚ã¡ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static SavePointEffect* GetSavePointEffect(); // ã‚»ãƒ¼ãƒ–ãƒã‚¤ãƒ³ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static GoalEffect* GetGoalEffect(); // ã‚´ãƒ¼ãƒ«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static HatenaEffect* GetHatenaEffect(); // ã¯ã¦ãªã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static TreasureEffect* GetTreasureEffect(); // å®ç®±ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static ShirimochiEffect* GetEnemyReturnEffect();  // æ•µãŒåˆæœŸä½ç½®ã«æˆ»ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static StunEffect* GetEnemyStunEffect();// æ•µã®ã‚¹ã‚¿ãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static TreasureopenEffect* GetTreasureOpenEffect(); // å®ç®±ã‚ªãƒ¼ãƒ—ãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
 
-	static HensinEffect* PlayeHensinEffect(const vec::Vec3& pos); // •ÏgƒGƒtƒFƒNƒg‚ğæ“¾
-	static FindEffect* PlayFindEffect(EnemyBase* enemy); // ”­Œ©ƒGƒtƒFƒNƒg‚ğæ“¾
-	static HatenaEffect* PlayHatenaEffect(EnemyBase* enemy); // ‚Í‚Ä‚ÈƒGƒtƒFƒNƒg‚ğæ“¾
-	static StunEffect* PlayStunEffect(const vec::Vec3& pos); // ƒXƒ^ƒ“ƒGƒtƒFƒNƒg‚ğæ“¾
-	static MakimonoGetEffect* PlayMakimonoGetEffect(const vec::Vec3& pos); // Šª•¨ƒQƒbƒgƒGƒtƒFƒNƒg‚ğæ“¾
-	static TreasureopenEffect* PlayTreasureOpenEffect(const vec::Vec3& pos); // •ó” ƒI[ƒvƒ“ƒGƒtƒFƒNƒg‚ğæ“¾
+	static HensinEffect* PlayeHensinEffect(const vec::Vec3& pos); // å¤‰èº«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static FindEffect* PlayFindEffect(EnemyBase* enemy); // ç™ºè¦‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static HatenaEffect* PlayHatenaEffect(EnemyBase* enemy); // ã¯ã¦ãªã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static StunEffect* PlayStunEffect(const vec::Vec3& pos); // ã‚¹ã‚¿ãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static MakimonoGetEffect* PlayMakimonoGetEffect(const vec::Vec3& pos); // å·»ç‰©ã‚²ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
+	static TreasureopenEffect* PlayTreasureOpenEffect(const vec::Vec3& pos); // å®ç®±ã‚ªãƒ¼ãƒ—ãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å–å¾—
 
-	static void UpdatePlayerPosition(PlayerBase* player); // ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğXV‚·‚éŠÖ”
-	static void UpdatePalyerTransformEffect(PlayerBase* player, bool playTransform = true);// ƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ÆŒü‚«‚ÉƒGƒtƒFƒNƒg‚ğ‡‚í‚¹‚éŠÖ”
+	static void UpdatePlayerPosition(PlayerBase* player); // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’æ›´æ–°ã™ã‚‹é–¢æ•°
+	static void UpdatePalyerTransformEffect(PlayerBase* player, bool playTransform = true);// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã¨å‘ãã«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’åˆã‚ã›ã‚‹é–¢æ•°
 
-	static void SetGoal(at::spc<Goal> goal); // ƒS[ƒ‹‚ğİ’è‚·‚éŠÖ”
-	static void SetInitialPlayer(PlayerBase* player); // ‰ŠúƒvƒŒƒCƒ„[‚ğİ’è‚·‚éŠÖ”
-	static void SetTreasure(const at::vspc<TreasureBase>& treasure); // •ó” ‚ğİ’è‚·‚éŠÖ”
+	static void SetGoal(at::spc<Goal> goal); // ã‚´ãƒ¼ãƒ«ã‚’è¨­å®šã™ã‚‹é–¢æ•°
+	static void SetInitialPlayer(PlayerBase* player); // åˆæœŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¨­å®šã™ã‚‹é–¢æ•°
+	static void SetTreasure(const at::vspc<TreasureBase>& treasure); // å®ç®±ã‚’è¨­å®šã™ã‚‹é–¢æ•°
 
-	static void UpdateAllEffect(); // ‘S‚Ä‚ÌƒGƒtƒFƒNƒg‚ğXV‚·‚éŠÖ”
-	//static void PrintPoolStatus(); // ƒv[ƒ‹‚Ìó‘Ô‚ğ•\¦‚·‚éŠÖ”
+	static void UpdateAllEffect(); // å…¨ã¦ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’æ›´æ–°ã™ã‚‹é–¢æ•°
+	//static void PrintPoolStatus(); // ãƒ—ãƒ¼ãƒ«ã®çŠ¶æ…‹ã‚’è¡¨ç¤ºã™ã‚‹é–¢æ•°
 	static void StopAllEffects();
 
 private:
-	static at::upc<WalkEffect> _walkEffect; // ‘«ÕƒGƒtƒFƒNƒg
-	static at::upc<DoyaEffect> _doyaEffect;   // ƒhƒ„ŠçƒGƒtƒFƒNƒg
-	static at::upc<NakiEffect> _nakiEffect;   // ‹ƒ‚«ƒGƒtƒFƒNƒg
-	static at::upc<ShirimochiEffect> _shirimochiEffect; // ‚µ‚è‚à‚¿ƒGƒtƒFƒNƒg
-	static at::upc<SavePointEffect> _savePointEffect; // ƒZ[ƒuƒ|ƒCƒ“ƒgƒGƒtƒFƒNƒg
-	static at::upc<GoalEffect> _goalEffect; // ƒS[ƒ‹ƒGƒtƒFƒNƒg
-	static at::upc<TreasureEffect> _treasureEffect; // •ó” ƒGƒtƒFƒNƒg
-	static at::upc<TreasureopenEffect> _treasureOpenEffect; // •ó” ƒI[ƒvƒ“ƒGƒtƒFƒNƒg
+	static at::upc<WalkEffect> _walkEffect; // è¶³è·¡ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<DoyaEffect> _doyaEffect;   // ãƒ‰ãƒ¤é¡”ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<NakiEffect> _nakiEffect;   // æ³£ãã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<ShirimochiEffect> _shirimochiEffect; // ã—ã‚Šã‚‚ã¡ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<SavePointEffect> _savePointEffect; // ã‚»ãƒ¼ãƒ–ãƒã‚¤ãƒ³ãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<GoalEffect> _goalEffect; // ã‚´ãƒ¼ãƒ«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<TreasureEffect> _treasureEffect; // å®ç®±ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	static at::upc<TreasureopenEffect> _treasureOpenEffect; // å®ç®±ã‚ªãƒ¼ãƒ—ãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
 
-	// ƒv[ƒ‹ŠÇ—
-	static at::upc<EffectPool<HensinEffect>> _hensinEffectPool; // •ÏgƒGƒtƒFƒNƒg‚ğÄ—˜—p
-	static at::upc<EffectPool<FindEffect>> _findEffectPool; // ”­Œ©ƒGƒtƒFƒNƒg‚ğÄ—˜—p
-	static at::upc<EffectPool<HatenaEffect>> _hatenaEffectPool; // ‚Í‚Ä‚ÈƒGƒtƒFƒNƒg‚ğÄ—˜—p
-	static at::upc<EffectPool<StunEffect>> _stunEffectPool; // ƒXƒ^ƒ“ƒGƒtƒFƒNƒg‚ğÄ—˜—p
-	static at::upc<EffectPool<MakimonoGetEffect>> _makimonoGetEffectPool; // Šª•¨ƒQƒbƒgƒGƒtƒFƒNƒg‚ğÄ—˜—p
+	// ãƒ—ãƒ¼ãƒ«ç®¡ç†
+	static at::upc<EffectPool<HensinEffect>> _hensinEffectPool; // å¤‰èº«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†åˆ©ç”¨
+	static at::upc<EffectPool<FindEffect>> _findEffectPool; // ç™ºè¦‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†åˆ©ç”¨
+	static at::upc<EffectPool<HatenaEffect>> _hatenaEffectPool; // ã¯ã¦ãªã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†åˆ©ç”¨
+	static at::upc<EffectPool<StunEffect>> _stunEffectPool; // ã‚¹ã‚¿ãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†åˆ©ç”¨
+	static at::upc<EffectPool<MakimonoGetEffect>> _makimonoGetEffectPool; // å·»ç‰©ã‚²ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å†åˆ©ç”¨
 
-	static bool InitializeSingletonEffect();// ƒVƒ“ƒOƒ‹ƒgƒ“ƒGƒtƒFƒNƒg‚Ì‰Šú‰»
-	static bool InitializeMultiInstanceEffect();// •¡”ƒCƒ“ƒXƒ^ƒ“ƒXƒGƒtƒFƒNƒg‚Ì‰Šú‰»
-	static bool InitializePooledEffect();// ƒv[ƒ‹ƒGƒtƒFƒNƒg‚Ì‰Šú‰»
-	static bool TerminateSingletonEffect();// ƒVƒ“ƒOƒ‹ƒgƒ“ƒGƒtƒFƒNƒg‚ÌI—¹ˆ—
-	static bool TerminateMultiInstanceEffect();// •¡”ƒCƒ“ƒXƒ^ƒ“ƒXƒGƒtƒFƒNƒg‚ÌI—¹ˆ—
-	static bool TerminatePooledEffect();// ƒv[ƒ‹ƒGƒtƒFƒNƒg‚ÌI—¹ˆ—
+	static bool InitializeSingletonEffect();// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
+	static bool InitializeMultiInstanceEffect();// è¤‡æ•°ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
+	static bool InitializePooledEffect();// ãƒ—ãƒ¼ãƒ«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åˆæœŸåŒ–
+	static bool TerminateSingletonEffect();// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®çµ‚äº†å‡¦ç†
+	static bool TerminateMultiInstanceEffect();// è¤‡æ•°ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®çµ‚äº†å‡¦ç†
+	static bool TerminatePooledEffect();// ãƒ—ãƒ¼ãƒ«ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®çµ‚äº†å‡¦ç†
 };
 

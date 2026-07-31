@@ -296,7 +296,7 @@ protected:
 	// map1
 	at::spc<Map1> _map1;
 	// キューブ
-	at::spc<Cube> _cube;
+	//at::spc<Cube> _cube;
 	// ゴール
 	at::spc<Goal> _goal;
 	// 敵

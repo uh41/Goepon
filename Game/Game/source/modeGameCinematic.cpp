@@ -1,9 +1,10 @@
 #include "modegame.h"
+#include "playerform.h"
 
 bool ModeGame::StartPlayerRotation()
 {
-	// タヌキプレイヤーのみを対象に回転演出を初期化 
-	PlayerTanuki* targetPlayer = _playerTanuki.get();
+	
+	PlayerBase* targetPlayer = PlayerFactory::GetTanukiPlayer();
 
 	if(!targetPlayer)
 	{
@@ -13,14 +14,15 @@ bool ModeGame::StartPlayerRotation()
 	// 回転演出の初期化
 	_isPlayerRotating = true;
 	_playerRotationTimer = 0.0f;
-	_playerRotationDuration = 2.0f; // 回転演出の総時間
+	_playerRotationDuration = 2.0f; // 回転演出の総時間（秒）
 
 	// 現在の回転角度を取得
 	_playerInitialRotation = targetPlayer->GetRotationY();
 
+	// 目標角度: dir.z = 1 の方向 = 0度（正面）
 	_playerTargetRotation = 0.0f;
 
-	// タヌキの操作を無効化
+	// タヌキプレイヤーの操作を無効化
 	targetPlayer->SetInputEnabled(false);
 
 	return true;
@@ -46,17 +48,13 @@ void ModeGame::StartSpotLightFadeIn()
 
 bool ModeGame::UpdateSpotLightCenterFromActivePlayer()
 {
-	PlayerTanuki* firstPlayer = nullptr;
-	if(_bShowTanuki && _playerTanuki)
-	{
-		firstPlayer = _playerTanuki.get();
-	}
-	else if(!firstPlayer)
+	PlayerBase* activePlayer = PlayerForm::GetInstance()->GetPlayer();
+	if(!activePlayer)
 	{
 		return false; // プレイヤーが存在しない場合は処理しない
 	}
 
-	const vec::Vec3 world = vec3::VAdd(firstPlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
+	const vec::Vec3 world = vec3::VAdd(activePlayer->GetPos(), vec3::VGet(0.0f, 60.0f, 0.0f));
 	const VECTOR dxWorld  = DxlibConverter::VecToDxLib(world);
 	const VECTOR view	  = ConvWorldPosToScreenPos(dxWorld);
 
@@ -80,7 +78,7 @@ void ModeGame::ProcessSpotlightFadeIn()
 
 	UpdateSpotLightCenterFromActivePlayer();
 
-	_spotFadeInSec += 1.0 / 60.0f; // 60FPS想定
+	_spotFadeInSec += 1.0f / 60.0f; // 60FPS想定
 	const float t = std::clamp(_spotFadeInSec / _spotFadeInDurationSec, 0.0f, 1.0f);
 
 	int screenW = 0;
