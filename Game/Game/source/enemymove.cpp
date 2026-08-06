@@ -774,7 +774,7 @@ bool EnemyMove::Process()
 		}
 		case STATUS::FOUND:
 		{
-			PlayAnimation("okkake", false);
+			PlayAnimation("okkake", true);
 			break;
 		}
 		}
