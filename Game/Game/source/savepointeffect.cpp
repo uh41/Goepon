@@ -1,5 +1,6 @@
 #include "savepointeffect.h"
 #include "savepoint.h"
+#include "playerform.h"
 
 SavePointEffect::SavePointEffect()
 {
@@ -63,6 +64,20 @@ bool SavePointEffect::Process()
 
 	auto em = EffekseerManager::GetInstance();
 	if(!em) { return true; }
+
+	if(!_targetPlayer)
+	{
+		auto playerForm = PlayerForm::GetInstance();
+		if(playerForm)
+		{
+			_targetPlayer = playerForm->GetPlayer();
+		}
+	}
+
+	if(!_targetPlayer)
+	{
+		return true;
+	}
 
 	// 一括停止用ラムダ
 	auto stopHandle = [&](int& h) {
@@ -138,7 +153,15 @@ bool SavePointEffect::Process()
 			}
 
 			// 再生すべきエフェクトを決定
-			int desiredEfHandle = touching ? _efKirakiraHandle : _efSaveHandle;
+			int desiredEfHandle;
+			if(touching)
+			{
+				desiredEfHandle = _efKirakiraHandle;
+			}
+			else
+			{
+				desiredEfHandle = _efSaveHandle;
+			}
 			bool desiredIsKirakira = touching;
 
 			// まだ再生ハンドルが無ければ再生、既にある場合は種類が一致するなら位置更新、違えば差し替え

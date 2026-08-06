@@ -188,11 +188,11 @@ void EnemyBase::OnPlayerLost()
 			_enemySensor->ResetDetection();
 		}
 
-		auto  hatenaEffect = EffectManager::GetHatenaEffect();
-		if(hatenaEffect)
-		{
-			hatenaEffect->PlayOnce(this);
-		}
+		//auto  hatenaEffect = EffectManager::GetHatenaEffect();
+		//if(hatenaEffect)
+		//{
+		//	hatenaEffect->PlayOnce(this);
+		//}
 	}
 	ResetChasedSearch();
 }
