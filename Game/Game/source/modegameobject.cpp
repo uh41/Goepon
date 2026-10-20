@@ -883,23 +883,13 @@ bool ModeGame::ProcessEnemyContainer(at::vspc<EnemyBase>& container, PlayerBase*
 			if(chaseStarted && playerForm->GetPlayerType() == PlayerBase::PlayerType::MONO &&
 				dynamic_cast<PlayerMono*>(player))
 			{
-				playerManager->RequestTransformToTanuki();
-				playerForm->TransformForEnemyDetetion(
-					PlayerBase::PlayerType::TANUKI,
-					player->GetPos(),
-					player->GetDir()
-				);
+				playerManager->TransformToTanukiImmediate();
 			}
 
 			// 人状態で尻尾（後方）を見られた場合、強制的にタヌキ表示へ切替
 			if(chaseStarted && isHumanForm)
 			{
-				playerManager->RequestTransformToTanuki();
-				playerForm->TransformForEnemyDetetion(
-					PlayerBase::PlayerType::TANUKI,
-					player->GetPos(),
-					player->GetDir()
-				);
+				playerManager->TransformToTanukiImmediate();
 			}
 		}
 		else

@@ -635,7 +635,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					}
 					if(auto* treEff = EffectManager::GetTreasureEffect())
 					{
-						treEff->PlayEffect(treasure->GetPos());
+						EffectManager::PlayTreasureOpenEffect(treasure->GetPos());
 					}
 
 					// 宝箱を開けた時の音波
@@ -796,7 +796,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				}
 				if(auto* treEff = EffectManager::GetTreasureEffect())
 				{
-					treEff->PlayEffect(currentTreasure->GetPos());
+					EffectManager::PlayTreasureOpenEffect(currentTreasure->GetPos());
 				}
 
 				if(gGlobal._soundServer)
