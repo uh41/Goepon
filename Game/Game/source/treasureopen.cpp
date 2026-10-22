@@ -53,10 +53,6 @@ void TreasureopenEffect::PlayEffect(const vec::Vec3& pos)
 
 	_playHandle = em->PlayEffect3DPos(_handle, pos);
 
-	//if (_playHandle != -1 && _targetPlayer)
-	//{
-	//	em->SetPosEffect(_playHandle, _targetPlayer->GetPos());
-	//}
 }
 
 

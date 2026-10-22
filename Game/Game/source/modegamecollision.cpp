@@ -613,7 +613,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				//player->SetInputEnabled(false);
 				if(player)
 				{
-					player->PlayAnimation("takarabako_open", true);
+					player->PlayAnimation("takarabako_open", false);
 				}
 
 				// SE再生（連打音）
