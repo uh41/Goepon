@@ -644,6 +644,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 
 					player->SetInputEnabled(true);
 
+					if(auto* tanuki = dynamic_cast<PlayerTanuki*>(player))
+					{
+						tanuki->SetStatusAnimationEnabled(true);
+					}
+
 					if(player)
 					{
 						player->PlayAnimation("idle", true);
@@ -720,6 +725,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
 				player->SetInputEnabled(true);
+
+				if(auto* tanuki = dynamic_cast<PlayerTanuki*>(player))
+				{
+					tanuki->SetStatusAnimationEnabled(true);
+				}
 				if(player)
 				{
 					player->PlayAnimation("idle", true);
@@ -763,7 +773,13 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				TreasureOpeningCameraControl();
 				_isOpeningTreasure = true;
+
 				player->SetInputEnabled(false);
+
+				if(auto* tanuki = dynamic_cast<PlayerTanuki*>(player))
+				{
+					tanuki->SetStatusAnimationEnabled(false);
+				}
 				player->PlayAnimation("takarabako_open", true);
 
 				auto sound = gGlobal._soundServer->Get("60");
@@ -797,6 +813,11 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				}
 
 				player->SetInputEnabled(true);
+
+				if(auto* tanuki = dynamic_cast<PlayerTanuki*>(player))
+				{
+					tanuki->SetStatusAnimationEnabled(true);
+				}
 
 				if(player)
 				{

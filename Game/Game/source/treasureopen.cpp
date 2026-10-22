@@ -45,27 +45,24 @@ void TreasureopenEffect::PlayEffect(const vec::Vec3& pos)
 	{
 		return;
 	}
+
+	if(_playHandle != -1 && em->IsPlayingEffect(_playHandle))
+	{
+		return;
+	}
+
 	_playHandle = em->PlayEffect3DPos(_handle, pos);
 
-	if (_playHandle != -1 && _targetPlayer)
-	{
-		em->SetPosEffect(_playHandle, _targetPlayer->GetPos());
-	}
+	//if (_playHandle != -1 && _targetPlayer)
+	//{
+	//	em->SetPosEffect(_playHandle, _targetPlayer->GetPos());
+	//}
 }
 
 
 bool TreasureopenEffect::Process()
 {
 	base::Process();
-
-	if (_playHandle != -1 && _targetPlayer)
-	{
-		auto em = EffekseerManager::GetInstance();
-		if (em)
-		{
-			em->SetPosEffect(_playHandle, _targetPlayer->GetPos());
-		}
-	}
 
 	return true;
 }

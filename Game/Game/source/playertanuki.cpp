@@ -283,6 +283,7 @@ bool PlayerTanuki::Process()
 
 	if(!_inputEnabled)
 	{
+		_vInput = vec3::VGet(0.0f, 0.0f, 0.0f);
 		_status = STATUS::WAIT;
 	}
 	else

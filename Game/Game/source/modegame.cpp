@@ -1600,6 +1600,9 @@ void ModeGame::ProcessTransformTimeLimit()
 			_tanukiReturnPending = false;
 			_tanukiReturnTimer = 0.0f;
 
+			_isTanukiAttackPlaying = false;
+			_tanukiAttackAnimId = -1;
+
 			// 攻撃アニメーションが終了したら、人間からタヌキに戻す
 			pm->TransformToTanuki();
 		}
