@@ -130,11 +130,11 @@ bool ModeGame::DebugProcess()
 	}
 
 	// Treasure が vector になった前提：全要素を処理
-	for(const auto& treasure : _treasure)
+	for(const auto& treasure : _treasureBase)
 	{
 		if(!treasure) continue;
 
-		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetHitCollisionFrame(), _d_view_collision ? TRUE : FALSE);
+		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetHitCollisionFrame(), _d_view_collision  ? TRUE : FALSE);
 		MV1SetFrameVisible(treasure->GetHandle(), treasure->GetOpenCollisionFrame(), _d_view_collision ? TRUE : FALSE);
 	}
 
