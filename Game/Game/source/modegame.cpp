@@ -616,6 +616,11 @@ void ModeGame::ApplySaveData(const SaveData& saveData)
 			}
 		}
 
+		if(auto* openEffect = EffectManager::GetTreasureOpenEffect())
+		{
+			openEffect->StopPlaying();
+		}
+
 		t->SetOpen(shouldOpen);
 
 		// ゲージ進行度を必ずリセット（セーブされていない開放は復元されないようにする）
@@ -1465,6 +1470,11 @@ void ModeGame::ProcessPlayerEnemyCollision()
 		{
 			continue;
 		}
+
+		//if(!CharaToCharaCollision(player, enemy.get()))
+		//{
+		//	continue;
+		//}
 
 		// 軽量な早期判定（XZ円）
 		if(CharaToCharaCollision(player, enemy.get()))

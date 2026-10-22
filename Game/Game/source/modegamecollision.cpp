@@ -296,20 +296,33 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 	// 重さの軽い方をmove、重い方をstopにする（同じなら処理しない）
 	CharaBase* move = nullptr;
 	CharaBase* stop = nullptr;
-	if(c1->GetCollisionWeight() < c2->GetCollisionWeight())
+
+	if(DxlibConverter::HitCheckCapsuleToCapsule(
+		c1_top,
+		c1_bottom,
+		c1_r,
+		c2_top,
+		c2_bottom,
+		c2_r))
 	{
-		move = c1; 
-		stop = c2;
+
+		if(c1->GetCollisionWeight() < c2->GetCollisionWeight())
+		{
+			move = c1;
+			stop = c2;
+		}
+		else if(c2->GetCollisionWeight() < c1->GetCollisionWeight())
+		{
+			move = c2;
+			stop = c1;
+		}
+		else
+		{
+			return false;
+		}
 	}
-	else if(c2->GetCollisionWeight() < c1->GetCollisionWeight())
-	{
-		move = c2; 
-		stop = c1;
-	}
-	else
-	{
-		return false;
-	}
+
+	
 
 	// 設定が有効なら押し出す
 	if(_d_use_collision)
@@ -317,18 +330,18 @@ bool ModeGame::CharaToCharaCollision(CharaBase* c1, CharaBase* c2)
 		PushChara(move, stop);
 	}
 
-	// デバック描画
-	if(_d_view_collision)
-	{
-		VECTOR mid = VGet(
-			(stop->GetPos().x + move->GetPos().x) / 2,
-			(stop->GetPos().y + move->GetPos().y) / 2,
-			(stop->GetPos().z + move->GetPos().z) / 2);
-		float halfSize = 8.0f;
-		VECTOR aBox = VAdd(mid, VGet(-halfSize, -halfSize, -halfSize));
-		VECTOR bBox = VAdd(mid, VGet( halfSize,  halfSize,  halfSize));
-		DrawCube3D(aBox, bBox, GetColor(255, 0, 255), TRUE, FALSE);
-	}
+	//// デバック描画
+	//if(_d_view_collision)
+	//{
+	//	VECTOR mid = VGet(
+	//		(stop->GetPos().x + move->GetPos().x) / 2,
+	//		(stop->GetPos().y + move->GetPos().y) / 2,
+	//		(stop->GetPos().z + move->GetPos().z) / 2);
+	//	float halfSize = 8.0f;
+	//	VECTOR aBox = VAdd(mid, VGet(-halfSize, -halfSize, -halfSize));
+	//	VECTOR bBox = VAdd(mid, VGet( halfSize,  halfSize,  halfSize));
+	//	DrawCube3D(aBox, bBox, GetColor(255, 0, 255), TRUE, FALSE);
+	//}
 
 	return true;
 }
@@ -539,6 +552,18 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 	bool inAnyTreasure = false; // どれか一つでも当たればtrue
 	TreasureBase* currentTreasure = nullptr; // 現在処理中の宝箱
 
+	auto allTreasureOpen = [&treasures]()
+		{
+			for(const auto& treasure : treasures)
+			{
+				if(treasure && treasure->IsVisible() && !treasure->IsOpen())
+				{
+					return false;
+				}
+			}
+			return true;
+		};
+
 	// 宝箱の指定フレームで判定
 	for (const auto& sp : treasures)
 	{
@@ -612,10 +637,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 					_treasureTakenCount++;
 					rapidFire->SetOpen(true);
 
-					if(_goal && _treasureTakenCount >= _treasureRequiredCount)
+					if(_goal && allTreasureOpen())
 					{
 						_goal->SetCollisionEnabled(true);
 					}
+
+					player->SetInputEnabled(true);
 
 					if(player)
 					{
@@ -692,7 +719,7 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
-				//player->SetInputEnabled(true);
+				player->SetInputEnabled(true);
 				if(player)
 				{
 					player->PlayAnimation("idle", true);
@@ -736,11 +763,8 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 			{
 				TreasureOpeningCameraControl();
 				_isOpeningTreasure = true;
-				//player->SetInputEnabled(false);
-				if(player)
-				{
-					player->PlayAnimation("takarabako_open", true);
-				}
+				player->SetInputEnabled(false);
+				player->PlayAnimation("takarabako_open", true);
 
 				auto sound = gGlobal._soundServer->Get("60");
 				if (sound && !sound->IsPlay())
@@ -767,10 +791,12 @@ bool ModeGame::CharaToTreasureOpenCollision(PlayerBase* player, const at::vspc<T
 				EndCinematicCamera();
 				_isOpeningTreasure = false;
 
-				if(_goal && _treasureTakenCount >= _treasureRequiredCount)
+				if(_goal && allTreasureOpen())
 				{
 					_goal->SetCollisionEnabled(true);
 				}
+
+				player->SetInputEnabled(true);
 
 				if(player)
 				{
